@@ -1,5 +1,5 @@
 /* NaCuFunc.cpp */
-static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.2 2003-01-06 10:20:23 vlad Exp $";
+static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.3 2003-01-06 10:21:16 vlad Exp $";
 
 #include <stdlib.h>
 #include <string.h>
@@ -254,7 +254,7 @@ NaCustomFunc::Load (NaDataStream& ds)
 				    + strlen(szFile)
 				    + strlen(NaEXFUNC_DIR_SEP)
 				    + strlen(NaEXFUNC_FILE_EXT) + 1];
-    sprintf(filepath, "%s%s%s%s", getenv(NaSHAREDOBJ_DIR_ENV),
+    sprintf(filepath, "%s%s%s%s", getenv(NaEXFUNC_DIR_ENV),
 	    NaEXFUNC_DIR_SEP, szFile, NaEXFUNC_FILE_EXT);
     so = dlopen(filepath, RTLD_LAZY);
     if(NULL == so)
