@@ -51,6 +51,9 @@ public:
     // Set link with neural net unit to teach it
     virtual void        set_nn (NaNNUnit* pNN);
 
+    // Reset NN weight changes
+    virtual void        reset_nn ();
+
     // Update NN weights
     virtual void        update_nn ();
 

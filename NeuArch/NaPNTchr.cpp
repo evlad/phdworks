@@ -58,6 +58,17 @@ NaPNTeacher::set_nn (NaNNUnit* pNN)
 
 
 //---------------------------------------------------------------------------
+// Reset NN weight changes
+void
+NaPNTeacher::reset_nn ()
+{
+    if(NULL != bpe){
+        bpe->ResetNN();
+    }
+}
+
+
+//---------------------------------------------------------------------------
 // Update NN weights
 void
 NaPNTeacher::update_nn ()

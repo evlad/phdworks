@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+ //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
 
@@ -119,6 +119,13 @@ NaReal  NaQuickProp::DeltaBias (unsigned iLayer, unsigned iNeuron)
 {
     return QuickPropDelta(iLayer, iNeuron, psBias[iLayer][iNeuron],
                           /* bias! */ 1.0, 1.0);
+}
+
+//---------------------------------------------------------------------------
+// Reset computed changes
+void    NaQuickProp::ResetNN ()
+{
+  NaStdBackProp::ResetNN();
 }
 
 //---------------------------------------------------------------------------

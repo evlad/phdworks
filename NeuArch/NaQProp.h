@@ -60,6 +60,9 @@ public:/* methods */
     NaQuickProp (NaNNUnit& rNN);
     virtual ~NaQuickProp ();
 
+    // Reset computed changes
+    virtual void    ResetNN ();
+
     // Update network parameters on the basis of computed changes
     virtual void    UpdateNN ();
 

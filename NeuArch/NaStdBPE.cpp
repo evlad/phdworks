@@ -81,6 +81,19 @@ NaStdBackProp::~NaStdBackProp ()
 }
 
 //---------------------------------------------------------------------------
+// Reset computed changes
+void
+NaStdBackProp::ResetNN ()
+{
+    unsigned    iLayer;
+    // Reset dWeight and dBias for the next epoch
+    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
+        dWeight[iLayer].init_zero();
+        dBias[iLayer].init_zero();
+    }
+}
+
+//---------------------------------------------------------------------------
 // Update network parameters on the basis of computed changes
 void
 NaStdBackProp::UpdateNN ()
@@ -125,10 +138,7 @@ NaStdBackProp::UpdateNN ()
     }
 
     // Reset dWeight and dBias for the next epoch
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        dWeight[iLayer].init_zero();
-        dBias[iLayer].init_zero();
-    }
+    ResetNN();
 
 #ifdef PrintUpdateNN
 #undef StdBPE_DEBUG
