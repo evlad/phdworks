@@ -1,5 +1,5 @@
 /* dmse.cpp */
-static char rcsid[] = "$Id: dmse.cpp,v 1.3 2001-11-18 17:22:57 vlad Exp $";
+static char rcsid[] = "$Id: dmse.cpp,v 1.4 2002-01-22 18:11:03 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -74,11 +74,11 @@ main (int argc, char* argv[])
       ++nSamples;
 
       if(NULL != dfObserved)
-	if(dfObserved->GoNextRecord())
+	if(!dfObserved->GoNextRecord())
 	  break;
     }while(dfSignal->GoNextRecord());
 
-    fMSE = /*sqrt(*/fMSE/*)*/ / nSamples;
+    fMSE = fMSE / nSamples;
 
     printf("%g\n", fMSE);
 
