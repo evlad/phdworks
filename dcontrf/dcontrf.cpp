@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.2 2001-05-13 19:35:09 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.3 2001-06-12 12:42:34 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
       ckind = NaNeuralContrER;
 
     // Additional log files
-    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"));
+    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
 
     nnllog->SetTitle("NN controller preliminary learning (error)");
 

@@ -1,5 +1,5 @@
 /* dobjid.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.7 2001-04-23 06:21:59 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.8 2001-06-12 12:43:33 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -50,7 +50,7 @@ main (int argc, char* argv[])
     nnfile.LoadFromFile(par("in_nnp_file"));
 
     // Additional log files
-    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"));
+    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
 
     nnllog->SetTitle("NN regression plant learning");
 

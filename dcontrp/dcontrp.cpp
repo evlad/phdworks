@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.3 2001-05-13 19:35:33 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.4 2001-06-12 12:42:57 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
       ckind = NaNeuralContrER;
 
     // Additional log files
-    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"));
+    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
 
     nnllog->SetTitle("NN controller preliminary learning (error)");
 
