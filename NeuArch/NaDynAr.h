@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaDynAr.h */
-/* $Id: NaDynAr.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaDynAr.h,v 1.3 2004-04-04 23:53:07 vlad Exp $ */
 #ifndef __NaDynAr_hxx
 #define __NaDynAr_hxx
 
@@ -104,7 +104,19 @@ private:
   }	*pHead, *pTail;
 
   /* Fetch item by index and return pointer at it or NULL. */
-  item*		fetch_item (int index) const;
+  item*		fetch_item (int index) const {
+    if(!good(index))
+      return NULL;
+
+    int	i;
+    item	*p = pHead;
+
+    for(i = 0; i < index; ++i)
+      p = p->pNext;
+
+    return p;
+  }
+
 
 };
 
@@ -470,24 +482,6 @@ NaDynAr<type>::operator() (int index) const
 {
   return get(index);
 }
-
-
-/* Fetch item by index and return pointer at it or NULL. */
-template <class type> inline NaDynAr<type>::item*
-NaDynAr<type>::fetch_item (int index) const
-{
-  if(!good(index))
-    return NULL;
-
-  int	i;
-  item	*p = pHead;
-
-  for(i = 0; i < index; ++i)
-    p = p->pNext;
-
-  return p;
-}
-
 
 /* Check index for being out of range.  Return `true' if it's
    in range and `false' otherwise. */
