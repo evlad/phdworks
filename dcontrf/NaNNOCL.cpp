@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.1 2001-04-29 08:36:41 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.2 2001-06-19 15:44:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -31,6 +31,7 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind)
     bus_p("bus_p"),
     bus_c("bus_c"),
     delay_c("delay_c"),
+    delta_e("delta_e"),
     sum_on("sum_on"),
     iderrcomp("iderrcomp"),
     iderrstat("iderrstat"),
@@ -88,6 +89,16 @@ NaNNOptimContrLearn::link_net ()
 	  net.link(&setpnt_gen.y, &cerrcomp.main);
 	net.link(&cerrcomp.cmp, &delay_c.in);
 	net.link(&delay_c.dout, &nncontr.x);
+	break;
+      case NaNeuralContrEdE:
+	if(0 == nSeriesLen)
+	  net.link(&setpnt_inp.out, &cerrcomp.main);
+	else
+	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	net.link(&cerrcomp.cmp, &bus_c.in1);
+	net.link(&cerrcomp.cmp, &delta_e.x);
+	net.link(&delta_e.dx, &bus_c.in2);
+	net.link(&bus_c.out, &nncontr.x);
 	break;
       }
 

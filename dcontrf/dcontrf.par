@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 1.1 2001-04-29 08:36:41 vlad Exp $
+# $Id: dcontrf.par,v 1.2 2001-06-19 15:44:27 vlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -11,6 +11,9 @@ stream_len = 5000
 
 # (input_kind = stream) Auto update frequency
 nnc_auf = 100
+
+# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
+nnc_mode = e+de
 
 # Linear plant transfer function
 linplant_tf = plant.tf

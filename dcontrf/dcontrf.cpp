@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.3 2001-06-12 12:42:34 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.4 2001-06-19 15:44:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -113,10 +113,18 @@ int main(int argc, char **argv)
 
     // Interpret NN-C structure
     NaControllerKind	ckind;
+    // Default rule
     if(au_nnc.descr.nInputsRepeat > 1)
       ckind = NaNeuralContrDelayedE;
     else
       ckind = NaNeuralContrER;
+    // Explicit rule
+    if(!strcmp(par("nnc_mode"), "e+r"))
+      ckind = NaNeuralContrER;
+    else if(!strcmp(par("nnc_mode"), "e+de"))
+      ckind = NaNeuralContrEdE;
+    else if(!strcmp(par("nnc_mode"), "e+e+..."))
+      ckind = NaNeuralContrDelayedE;
 
     // Additional log files
     NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
@@ -183,6 +191,8 @@ int main(int argc, char **argv)
     switch(ckind)
       {
       case NaNeuralContrDelayedE:
+      case NaNeuralContrEdE:
+	// Nothing special
 	break;
       case NaNeuralContrER:
 	nnocl.delay_c.set_delay(au_nnc.descr.nInputsRepeat - 1);

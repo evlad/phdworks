@@ -20,6 +20,7 @@
 #include <NaPNTime.h>
 #include <NaPNChPt.h>
 #include <NaPNFetc.h>
+#include <NaPNDerv.h>
 
 
 //---------------------------------------------------------------------------
@@ -79,6 +80,7 @@ public:/* data */
     NaPNBus2i1o     bus_p;      // ((u,y),e)->NN plant former
     NaPNBus2i1o     bus_c;      // (u,e)->NN controller former
     NaPNDelay       delay_c;    // (e(i),e(i-1),...e(i-n))->NNC former-delayer
+    NaPNDerivative  delta_e;    // (1-1/z)*e(k)
     NaPNSum         sum_on;     // plant + noise summator
     NaPNComparator  iderrcomp;  // identification error computer
     NaPNStatistics  iderrstat;  // identification error statistics
