@@ -1,5 +1,5 @@
-/* dcorr.cpp */
-static char rcsid[] = "$Id: dcorr.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
+/* dconst.cpp */
+static char rcsid[] = "$Id: dcorr.cpp,v 1.2 2002-03-09 18:44:23 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -11,13 +11,12 @@ static char rcsid[] = "$Id: dcorr.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
 #include <NaGenerl.h>
 #include <NaExcept.h>
 
-#include <NaConfig.h>
 #include <NaDataIO.h>
 
 
 /***********************************************************************
- * Read one or two discrete signal series and compute autocorrelation
- * or correlation series.
+ * Check for hypothesis of constant mean value (no trend).  Read one
+ * discrete signal series and perform "median series criteria".
  ***********************************************************************/
 main (int argc, char* argv[])
 {

@@ -1,5 +1,5 @@
 /* dsmooth.cpp */
-static char rcsid[] = "$Id: dsmooth.cpp,v 1.1 2002-02-25 14:05:21 vlad Exp $";
+static char rcsid[] = "$Id: dsmooth.cpp,v 1.2 2002-03-09 18:44:23 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -19,7 +19,7 @@ static char rcsid[] = "$Id: dsmooth.cpp,v 1.1 2002-02-25 14:05:21 vlad Exp $";
  ***********************************************************************/
 main (int argc, char* argv[])
 {
-  if(argc < 3)
+  if(argc != 3)
     {
       fprintf(stderr, "Error: need arguments\n");
       fprintf(stderr, "Usage: dsmooth SmoothBase SignalSeries\n");
