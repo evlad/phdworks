@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dtf.cpp,v 1.2 2001-06-12 12:31:56 vlad Exp $";
+static char rcsid[] = "$Id: dtf.cpp,v 1.3 2002-02-16 21:31:25 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@ static char rcsid[] = "$Id: dtf.cpp,v 1.2 2001-06-12 12:31:56 vlad Exp $";
 #include <NaExcept.h>
 
 #include <NaConfig.h>
-#include <NaTrFunc.h>
+#include <NaCoFunc.h>
 #include <NaDataIO.h>
 
 
@@ -36,11 +36,8 @@ main (int argc, char* argv[])
   NaOpenLogFile("dtf.log");
 
   try{
-    NaTransFunc		dtf;
-    NaConfigPart	*conf_list[] = { &dtf };
-    NaConfigFile	conf_file(";NeuCon transfer", 1, 0);
-    conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
-    conf_file.LoadFromFile(dtf_file);
+    NaCombinedFunc	dtf;
+    dtf.Load(dtf_file);
 
     NaDataFile	*dfIn = OpenInputDataFile(in_file);
     NaDataFile	*dfOut = OpenOutputDataFile(out_file, bdtAuto, 1);
