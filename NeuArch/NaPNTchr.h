@@ -1,12 +1,13 @@
 //-*-C++-*-
 /* NaPNTchr.h */
-/* $Id: NaPNTchr.h,v 1.6 2001-12-13 12:27:15 vlad Exp $ */
+/* $Id: NaPNTchr.h,v 1.7 2001-12-16 17:23:40 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTchrH
 #define NaPNTchrH
 
 #include <NaStdBPE.h>
 //qprop: #include <NaQProp.h>
+#include <NaPNNNUn.h>
 #include <NaPetri.h>
 
 
@@ -61,6 +62,10 @@ public:
     // Set link with neural net unit to teach it
     virtual void        set_nn (NaNNUnit* pNN);
 
+    // Set link with petri node neural net unit to teach it (with
+    // state stored in FIFO)
+    virtual void        set_nn (NaPNNNUnit* pnNN);
+
     // Reset NN weight changes
     virtual void        reset_nn ();
 
@@ -98,6 +103,9 @@ protected:/* data */
 
     // Neural network to teach
     NaNNUnit            *nn;
+
+    // Neural net petri node to teach
+    NaPNNNUnit          *pnn;
 
     // Autoupdate frequency (in activations); 0 means no autoupdate
     int			nAutoUpdateFreq;

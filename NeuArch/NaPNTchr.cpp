@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.8 2001-12-13 12:27:15 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.9 2001-12-16 17:23:39 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -9,8 +9,7 @@ static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.8 2001-12-13 12:27:15 vlad Exp $";
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
   : NaPetriNode(szNodeName), nAutoUpdateFreq(0), auProc(NULL),
-  nn(NULL),
-  bpe(NULL),  
+    nn(NULL), pnn(NULL), bpe(NULL),  
   ////////////////
   // Connectors //
   ////////////////
@@ -61,6 +60,24 @@ NaPNTeacher::set_auto_update_freq (int nFreq)
 
 
 //---------------------------------------------------------------------------
+// Set link with petri node neural net unit to teach it (with state
+// stored in FIFO)
+void
+NaPNTeacher::set_nn (NaPNNNUnit* pnNN)
+{
+  check_tunable();
+
+  if(NULL == pnNN)
+    throw(na_null_pointer);
+
+  pnn = pnNN;
+  pnn->need_nn_deck(true);
+
+  set_nn(pnn->get_nn_unit());
+}
+
+
+//---------------------------------------------------------------------------
 // Set link with neural net unit to teach it
 void
 NaPNTeacher::set_nn (NaNNUnit* pNN)
@@ -99,9 +116,13 @@ void
 NaPNTeacher::update_nn ()
 {
     if(NULL != bpe){
-        bpe->UpdateNN();
-	nLastUpdate = 0;
-	++iUpdateCounter;
+      // Replace NN by actual one
+      if(NULL != pnn)
+	bpe->nn = *nn;
+
+      bpe->UpdateNN();
+      nLastUpdate = 0;
+      ++iUpdateCounter;
     }
 }
 
@@ -186,6 +207,10 @@ NaPNTeacher::action ()
 
     // One more activations since last update
     ++nLastUpdate;
+
+    // Replace NN by stored in deck
+    if(NULL != pnn)
+      pnn->pop_nn(bpe->nn);
 
     for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
         if(nn->OutputLayer() == iLayer){
