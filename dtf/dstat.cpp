@@ -1,5 +1,5 @@
 /* dstat.cpp */
-static char rcsid[] = "$Id: dstat.cpp,v 1.1 2001-05-05 18:51:14 vlad Exp $";
+static char rcsid[] = "$Id: dstat.cpp,v 1.2 2001-05-05 20:20:41 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -24,12 +24,25 @@ main (int argc, char* argv[])
       fprintf(stderr, "Error: need arguments\n");
       fprintf(stderr,
 	      "Usage: dstat [ColNum] SignalSeries1 [SignalSeries2 ...]\n");
+      fprintf(stderr,
+	      " DSTAT_EOF=t - stop at EOF in any series\n"\
+	      " DSTAT_EOF=f - continue generating resulting series (default)\n");
       return 1;
     }
 
   char		*p, **args = argv + 1;
   int		i, argn = argc - 1, iCol;
   NaDataFile	**dfSeries = new NaDataFile*[argn];
+  bool		bStopEOF = false;
+  char		*szStopEOF = getenv("DSTAT_EOF");
+
+  if(NULL != szStopEOF)
+    {
+      if('t' == szStopEOF[0])
+	bStopEOF = true;
+      if('f' == szStopEOF[0])
+	bStopEOF = false;
+    }
 
   NaOpenLogFile("dstat.log");
 
@@ -74,10 +87,30 @@ main (int argc, char* argv[])
 	    fSum += fVal;
 	    fSumSq += fVal * fVal;
 	    if(!dfSeries[i]->GoNextRecord())
-	      bEOF = true;
+	      {
+		if(bStopEOF)
+		  bEOF = true;
+		else
+		  {
+		    delete dfSeries[i];
+		    dfSeries[i]= NULL;
+		  }
+	      }
 	  }
 
-      printf("%g %g\n", fSum/nVal, sqrt(fSumSq/nVal - (fSum*fSum)/(nVal*nVal)));
+      if(0 == nVal)
+	bEOF = true;
+      else if(1 == nVal)
+	/*       _         2   *
+	 *       x sd  n Sx Sx */
+	printf("%g %g %d %g %g\n",
+	       fSum, 0.0, nVal, fSumSq, fSum);
+      else /* if(1 < nVal) */
+	/*       _         2   *
+	 *       x sd  n Sx Sx */
+	printf("%g %g %d %g %g\n",
+	       fSum/nVal, sqrt(fSumSq/nVal - (fSum*fSum)/(nVal*nVal)),
+	       nVal, fSumSq, fSum);
 
     }while(!bEOF);
 
