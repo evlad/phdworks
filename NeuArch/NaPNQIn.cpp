@@ -1,5 +1,5 @@
 /* NaPNQIn.cpp */
-static char rcsid[] = "$Id: NaPNQIn.cpp,v 1.2 2001-06-23 17:46:30 vlad Exp $";
+static char rcsid[] = "$Id: NaPNQIn.cpp,v 1.3 2001-07-01 17:19:56 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNQIn.h"
@@ -70,9 +70,9 @@ NaPNQueueInput::put_data (const NaReal* pPortion)
 ///////////////////////
 
 //---------------------------------------------------------------------------
-// 2. Link connectors inside the node
+// 1. Open input data (pure output nodes) and get their dimensions
 void
-NaPNQueueInput::relate_connectors ()
+NaPNQueueInput::open_input_data ()
 {
   out.data().new_dim(nDataSize);
 }

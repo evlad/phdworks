@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.5 2001-06-25 20:17:27 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.6 2001-07-01 17:19:56 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -184,6 +184,19 @@ NaPetriNet::prepare (bool bDoPrintouts)
                 NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
             }
             pnaNet[iNode]->open_input_data();
+
+	    /* describe only output connectors */
+	    if(bDoPrintouts && pnaNet[iNode]->is_verbose()){
+	      int	iCn;
+	      NaPetriNode	&node = *pnaNet[iNode];
+
+	      for(iCn = 0; iCn < node.connectors(); ++iCn){
+		if(pckOutput == node.connector(iCn)->kind()){
+		  NaPrintLog("  #%d ", iCn + 1);
+		  node.connector(iCn)->describe();
+		}
+	      }
+	    }
         }catch(NaException exCode){
             NaPrintLog("Open input data phase (#1): node '%s' fault.\n"
                        "Caused by exception: %s\n",
@@ -203,6 +216,17 @@ NaPetriNet::prepare (bool bDoPrintouts)
                 NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
             }
             pnaNet[iNode]->relate_connectors();
+
+	    /* describe all connectors */
+	    if(bDoPrintouts && pnaNet[iNode]->is_verbose()){
+	      int	iCn;
+	      NaPetriNode	&node = *pnaNet[iNode];
+
+	      for(iCn = 0; iCn < node.connectors(); ++iCn){
+		NaPrintLog("  #%d ", iCn + 1);
+		node.connector(iCn)->describe();
+	      }
+	    }
         }catch(NaException exCode){
             NaPrintLog("Link connectors phase (#2): node '%s' fault.\n"
                        "Caused by exception: %s\n",
@@ -221,6 +245,19 @@ NaPetriNet::prepare (bool bDoPrintouts)
                 NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
             }
             pnaNet[iNode]->open_output_data();
+
+	    /* describe only input connectors */
+	    if(bDoPrintouts && pnaNet[iNode]->is_verbose()){
+	      int	iCn;
+	      NaPetriNode	&node = *pnaNet[iNode];
+
+	      for(iCn = 0; iCn < node.connectors(); ++iCn){
+		if(pckInput == node.connector(iCn)->kind()){
+		  NaPrintLog("  #%d ", iCn + 1);
+		  node.connector(iCn)->describe();
+		}
+	      }
+	    }
         }catch(NaException exCode){
             NaPrintLog("Open output data phase (#3): node '%s' fault.\n"
                        "Caused by exception: %s\n",

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNQIn.h */
-/* $Id: NaPNQIn.h,v 1.1 2001-06-23 08:59:57 vlad Exp $ */
+/* $Id: NaPNQIn.h,v 1.2 2001-07-01 17:19:56 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNQInH
 #define NaPNQInH
@@ -47,8 +47,8 @@ public:
   // Phases of network //
   ///////////////////////
 
-  // 2. Link connectors inside the node
-  virtual void		relate_connectors ();
+  // 1. Open input data (pure output nodes) and get their dimensions
+  virtual void		open_input_data ();
 
   // 6. Initialize node activity and setup starter flag if needed
   virtual void		initialize (bool& starter);
