@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaVector.h */
-/* $Id: NaVector.h,v 1.3 2001-05-15 06:02:23 vlad Exp $ */
+/* $Id: NaVector.h,v 1.4 2002-03-19 21:57:28 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaVectorH
 #define NaVectorH
@@ -77,6 +77,9 @@ public:
     // Get average value of the vector
     virtual NaReal      average () const;
 
+    // Get median value of the vector
+    virtual NaReal      median () const;
+
     // Get R(N) metric of the vector
     virtual NaReal      metric () const;
 
@@ -111,6 +114,12 @@ public:
     // Mutual correlation series: -N..0..N => 0..2N-1
     virtual void        cov (const NaVector& rVectY,
                              NaVector& rVectMCF) const;
+
+    // Sort items in vector in ascent order
+    virtual void        sort ();
+
+    // Revert order of vector items: v[0]->v[N-1], v[1]->v[N-2]
+    virtual void        revert ();
 
     /*=======================================*
      *         PRINTOUT OF THE ARRAY         *

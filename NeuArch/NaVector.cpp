@@ -1,5 +1,5 @@
 /* NaVector.cpp */
-static char rcsid[] = "$Id: NaVector.cpp,v 1.5 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id: NaVector.cpp,v 1.6 2002-03-19 21:57:14 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <math.h>
 #include <stdio.h>
@@ -244,6 +244,27 @@ NaVector::average () const
 }
 
 //---------------------------------------------------------------------------
+// Get median value of the vector
+NaReal
+NaVector::median () const
+{
+  if(0 == dim())
+    return 0.0;
+
+  NaVector	rVect(*this);
+  int		N = rVect.dim();
+
+  rVect.sort();
+
+  if(1 == N % 2){
+    return rVect((N - 1) / 2);
+  }else{
+    return (rVect((N / 2) - 1) +
+	    rVect((N / 2))) / 2;
+  }
+}
+
+//---------------------------------------------------------------------------
 // Get R(N) metric of the vector
 NaReal
 NaVector::metric () const
@@ -432,6 +453,38 @@ NaVector::cov (const NaVector& rVectY, NaVector& rVectMCF) const
 }
 
 //---------------------------------------------------------------------------
+static int
+compare_NaReals (const void *a, const void *b)
+{
+  const NaReal *da = (const NaReal *) a;
+  const NaReal *db = (const NaReal *) b;
+     
+  return (*da > *db) - (*da < *db);
+}
+
+//---------------------------------------------------------------------------
+// Sort items in vector in ascent order
+void
+NaVector::sort ()
+{
+  qsort(pVect, dim(), sizeof(NaReal), compare_NaReals);
+}
+
+//---------------------------------------------------------------------------
+// Revert order of vector items: v[0]->v[N-1], v[1]->v[N-2]
+void
+NaVector::revert ()
+{
+  NaReal	tmp;
+  int		i, N = dim(), N_2 = dim()/2;
+  for(i = 0; i < N_2; ++i){
+    tmp = fetch(i);
+    fetch(i) = fetch(N - 1 - i);
+    fetch(N - 1 - i) = tmp;
+  }
+}
+
+//---------------------------------------------------------------------------
 
     /*=======================================*
      *         PRINTOUT OF THE ARRAY         *
@@ -439,7 +492,8 @@ NaVector::cov (const NaVector& rVectY, NaVector& rVectMCF) const
 
 //---------------------------------------------------------------------------
 // Print contents of the array via NaPrintLog() facility
-void       NaVector::print_contents () const
+void
+NaVector::print_contents () const
 {
     unsigned    i;
     NaPrintLog("Vector(this=%p, dim=%u):\n", this, dim());
@@ -456,7 +510,8 @@ void       NaVector::print_contents () const
 
 //---------------------------------------------------------------------------
 // Substitute vector's data by other data storage
-void        NaVector::link_data (unsigned n, NaReal* p)
+void
+NaVector::link_data (unsigned n, NaReal* p)
 {
     if(bOwnStorage){
         delete[] pVect;
@@ -468,7 +523,8 @@ void        NaVector::link_data (unsigned n, NaReal* p)
 
 //---------------------------------------------------------------------------
 // Substitute vector's data by other data storage
-void        NaVector::link_data (NaVector& rVect)
+void
+NaVector::link_data (NaVector& rVect)
 {
     if(bOwnStorage){
         delete[] pVect;
@@ -480,7 +536,8 @@ void        NaVector::link_data (NaVector& rVect)
 
 //---------------------------------------------------------------------------
 // Return sign of linked data (not own storage management)
-bool        NaVector::linked_data () const
+bool
+NaVector::linked_data () const
 {
     return !bOwnStorage;
 }
@@ -493,7 +550,8 @@ bool        NaVector::linked_data () const
 
 //---------------------------------------------------------------------------
 // Read given variable from data file
-void        NaVector::read_file (NaDataFile* pDF, int iVar)
+void
+NaVector::read_file (NaDataFile* pDF, int iVar)
 {
     if(NULL == pDF)
         throw(na_null_pointer);
@@ -508,7 +566,8 @@ void        NaVector::read_file (NaDataFile* pDF, int iVar)
 
 //---------------------------------------------------------------------------
 // Write vector to data file
-void        NaVector::write_file (NaDataFile* pDF) const
+void
+NaVector::write_file (NaDataFile* pDF) const
 {
     if(NULL == pDF)
         throw(na_null_pointer);
