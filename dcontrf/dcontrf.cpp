@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.1 2001-04-29 08:36:41 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.2 2001-05-13 19:35:09 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -102,12 +102,12 @@ int main(int argc, char **argv)
     //au_nnc.SetInstance("Plant");
 
     NaConfigPart        *conf_list_nnc[] = { &au_nnc };
-    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 1);
     nncfile.AddPartitions(NaNUMBER(conf_list_nnc), conf_list_nnc);
     nncfile.LoadFromFile(par("in_nnc_file"));
 
     NaConfigPart        *conf_list_nnp[] = { &au_nnp };
-    NaConfigFile        nnpfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nnpfile(";NeuCon NeuralNet", 1, 1);
     nnpfile.AddPartitions(NaNUMBER(conf_list_nnp), conf_list_nnp);
     nnpfile.LoadFromFile(par("in_nnp_file"));
 

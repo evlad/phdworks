@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.3 2001-05-08 16:12:15 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.4 2001-05-13 19:36:34 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -44,7 +44,7 @@ main (int argc, char* argv[])
     //au_nn.SetInstance("Object");
 
     NaConfigPart        *conf_list[] = { &au_nn };
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
     nnfile.AddPartitions(NaNUMBER(conf_list), conf_list);
     nnfile.LoadFromFile(par("in_nnp_file"));
 

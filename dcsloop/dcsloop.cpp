@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.4 2001-04-29 08:38:09 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.5 2001-05-13 19:36:17 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 
     // Configuration files
     NaConfigPart        *nnc_conf_list[] = { &au_nnc };
-    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 1);
     nncfile.AddPartitions(NaNUMBER(nnc_conf_list), nnc_conf_list);
 
     NaConfigPart	*conf_list_linplant[] = { &au_linplant };

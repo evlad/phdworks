@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.2 2001-04-21 16:11:05 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.3 2001-05-13 19:35:33 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     //au_nn.SetInstance("Object");
 
     NaConfigPart        *conf_list[] = { &au_nnc };
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
     nnfile.AddPartitions(NaNUMBER(conf_list), conf_list);
     nnfile.LoadFromFile(par("in_nnc_file"));
 
