@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.5 2002-02-28 20:18:55 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.6 2002-02-28 21:07:19 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -48,9 +48,6 @@ PrintLog (int iAct, void* pData)
 	 "  Ident.MSE=%7.4f delta=%+9.7f\n", iAct,
 	 nnocl.cerrstat.RMS[0], nnocl.cerrstat.RMS[0] - fPrevMSEc,
 	 nnocl.iderrstat.RMS[0], nnocl.iderrstat.RMS[0] - fPrevMSEi);
-
-  printf("      Min=%g Max=%g Mean=%g\n",
-	 nnocl.cerrstat.Min[0], nnocl.cerrstat.Max[0], nnocl.cerrstat.Mean[0]);
 
   fPrevMSEc = nnocl.cerrstat.RMS[0];
   fPrevMSEi = nnocl.iderrstat.RMS[0];
