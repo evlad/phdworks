@@ -1,4 +1,4 @@
-% $Id: Thesis.tex,v 1.9 2001-11-04 15:03:55 vlad Exp $
+% $Id: Thesis.tex,v 1.10 2002-02-28 21:12:10 vlad Exp $
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Главный файл
 %\documentclass[12pt,a4paper,draft]{report}
@@ -22,22 +22,23 @@
 
 % My macros
 \newcommand\figref[1]{\cyrr\cyri\cyrs.~\ref{#1}}
+\newcommand\pgref[1]{\cyrs\cyrt\cyrr.~\pageref{#1}}
 %\newcommand\eqref[1]{(\ref{#1})}
 
 \renewcommand{\tan}{\mathop{\rm tg}}
 \renewcommand{\arctan}{\mathop{\rm arctg}}
 \renewcommand{\tanh}{\mathop{\rm th}}
 \newcommand{\DEF}{\mathrel{\mathop=^{\rm def}}}
-\newcommand{\SE}{\overline{\varepsilon^2}}
-\newcommand{\hatSE}{\overline{\hat{\varepsilon}^2}}
-\newcommand{\MSE}{\overline{\varepsilon^2}_{\rm min}}
+\newcommand{\MSE}{\overline{\varepsilon^2}}
+\newcommand{\hatMSE}{\overline{\hat{\varepsilon}^2}}
+\newcommand{\MSEmin}{\overline{\varepsilon^2}_{\rm min}}
 \newcommand{\dt}{\Delta t}
 
 % Activation function
 \newcommand{\fa}{\phi}
 
-% Gauss Dsitribution parameters
-\newcommand{\GaDi}[2]{$\{#1,#2\}$}
+% Gauss Distribution parameters
+\newcommand{\GaDi}[2]{$(#1;#2)$}
 
 % Позволить переносы двух последних букв слова
 \righthyphenmin=2
