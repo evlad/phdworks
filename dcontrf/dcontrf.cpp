@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.8 2004-02-15 09:10:27 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.9 2004-02-15 20:37:10 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -144,6 +144,8 @@ int main(int argc, char **argv)
 
   try{
     NaParams	par(argv[1]);
+
+    NaPrintLog("Run dcontrf with %s\n", argv[1]);
 
     /*************************************************************/
     enum {
