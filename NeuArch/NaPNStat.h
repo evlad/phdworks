@@ -1,11 +1,39 @@
 //-*-C++-*-
 /* NaPNStat.h */
-/* $Id: NaPNStat.h,v 1.4 2001-12-11 21:20:48 vlad Exp $ */
+/* $Id: NaPNStat.h,v 1.5 2001-12-12 22:38:20 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNStatH
 #define NaPNStatH
 
 #include <NaPetri.h>
+
+
+// Condition sign
+#define LESS_THAN	(-1)
+#define EQUAL_TO	0
+#define GREATER_THAN	1
+
+// Statistics id
+#define NaSI_MEAN	0
+#define NaSI_RMS	1
+#define NaSI_STDDEV	2
+#define NaSI_MAX	3
+#define NaSI_MIN	4
+#define NaSI_ABS	5
+
+#define NaSI_number	6
+
+#define NaSIdToMask(id)	(1<<(id))
+
+// Statistics mask
+#define NaSM_MEAN	(1<<0)
+#define NaSM_RMS	(1<<1)
+#define NaSM_STDDEV	(1<<2)
+#define NaSM_MAX	(1<<3)
+#define NaSM_MIN	(1<<4)
+#define NaSM_ABS	(1<<5)
+#define NaSM_ALL	(NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
+			 NaSM_MAX | NaSM_MIN | NaSM_ABS)
 
 
 //---------------------------------------------------------------------------
@@ -18,71 +46,120 @@ class NaPNStatistics : public NaPetriNode
 {
 public:
 
-    // Create node for Petri network
-    NaPNStatistics (const char* szNodeName = "statistics");
+  // Create node for Petri network
+  NaPNStatistics (const char* szNodeName = "statistics");
 
 
-    ////////////////
-    // Connectors //
-    ////////////////
+  ////////////////
+  // Connectors //
+  ////////////////
 
-    // Input (mainstream)
-    NaPetriCnInput      signal;
+  // Input (mainstream)
+  NaPetriCnInput      signal;
 
-
-    ///////////////////
-    // Node specific //
-    ///////////////////
-
-    // Print to the log statistics
-    void                print_stat (const char* szTitle = NULL);
-
-
-    /////////////////////////
-    // Computed statistics //
-    /////////////////////////
-
-    // Mean value: M(signal)
-    NaVector            Mean;
-
-    // Standard deviation value: d(signal) = sqrt(M(signal^2) - M(signal)^2)
-    NaVector            StdDev;
-
-    // Root mean square: M(signal^2)
-    NaVector            RMS;
-
-    // Minimum value of the series
-    NaVector            Min;
-
-    // Maximum value of the series
-    NaVector            Max;
+  // Output vector:
+  //  [0] mean value: S(x)/n
+  //  [1] root mean square value: S(^2)/n
+  //  [2] standard deviation value: S(^2)/n - (S(x)/n)^2
+  //  [3] maximum value: Max(x)
+  //  [4] minimum value: Min(x)
+  //  [5] absolute maximum value: Max(|Max(x)|,|Min(x)|)
+  NaPetriCnOutput     stat;
 
 
+  ///////////////////
+  // Node specific //
+  ///////////////////
 
-    ///////////////////////
-    // Phases of network //
-    ///////////////////////
+  // Confugure computation rule as continuos or floating gap
+  void		set_floating_gap (unsigned gap_width);
 
-    // 4. Allocate resources for internal usage
-    virtual void        allocate_resources ();
+  // Confugure output values
+  void		configure_output (int stat_mask = NaSM_ALL);
 
-    // 5. Verification to be sure all is OK (true)
-    virtual bool        verify ();
+  // Setup net stop condition:
+  // sign<0 --> stop if statistics value is less than value
+  // sign=0 --> stop if statistics value is equal than value
+  // sign>0 --> stop if statistics value is greater than value
+  void		halt_condition (int stat_id, int sign, NaReal value);
 
-    // 6. Initialize node activity and setup starter flag if needed
-    virtual void        initialize (bool& starter);
+  // Print to the log statistics
+  void		print_stat (const char* szTitle = NULL);
 
-    // 8. True action of the node (if activate returned true)
-    virtual void        action ();
+
+  /////////////////////////
+  // Computed statistics //
+  /////////////////////////
+
+  // Mean value: M(signal)
+  NaVector	Mean;
+
+  // Root mean square: M(signal^2)
+  NaVector	RMS;
+
+  // Standard deviation value: d(signal) = sqrt(M(signal^2) - M(signal)^2)
+  NaVector	StdDev;
+
+  // Minimum value of the series
+  NaVector	Min;
+
+  // Maximum value of the series
+  NaVector	Max;
+
+
+
+  ///////////////////////
+  // Phases of network //
+  ///////////////////////
+
+  // 2. Link connectors inside the node
+  virtual void	relate_connectors ();
+
+  // 4. Allocate resources for internal usage
+  virtual void	allocate_resources ();
+
+  // 5. Verification to be sure all is OK (true)
+  virtual bool	verify ();
+
+  // 6. Initialize node activity and setup starter flag if needed
+  virtual void	initialize (bool& starter);
+
+  // 8. True action of the node (if activate returned true)
+  virtual void	action ();
+
+  // 9. Finish data processing by the node (if activate returned true)
+  virtual void	post_action ();
 
 private:
 
-    /////////////////////////
-    // Temporal statistics //
-    /////////////////////////
+  // Check for given condition
+  static bool	check_condition (NaReal stat, int sign, NaReal value);
 
-    NaVector            Sum;
-    NaVector            Sum2;
+  // Output mask
+  int		mOutStat;
+
+  // Computation gap width or 0 if floating
+  unsigned	nGapWidth;
+
+  // Counter of activations inside gap
+  unsigned	nGapAct;
+
+  /////////////////////////
+  // Temporal statistics //
+  /////////////////////////
+
+  NaVector	Sum;
+  NaVector	Sum2;
+
+  /////////////////////////
+  // Halt condition part //
+  /////////////////////////
+
+  int		mHalt;
+  struct {
+    int		sign;
+    NaReal	value;
+  }		HaltCond[NaSI_number];
 
 };
 
