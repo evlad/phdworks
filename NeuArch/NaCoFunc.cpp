@@ -1,5 +1,5 @@
 /* NaCoFunc.cpp */
-static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
+static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.2 2002-03-19 21:56:00 vlad Exp $";
 
 #include <string.h>
 #include <stdlib.h>
@@ -119,6 +119,7 @@ NaCombinedFunc::Function (NaReal* x, NaReal* y)
       tmp = *y;
     }
   }
+  *y = tmp;
 }
 
 
