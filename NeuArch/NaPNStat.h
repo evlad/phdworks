@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNStat.h */
-/* $Id: NaPNStat.h,v 1.6 2001-12-13 12:27:49 vlad Exp $ */
+/* $Id: NaPNStat.h,v 1.7 2001-12-15 16:07:35 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNStatH
 #define NaPNStatH
@@ -47,8 +47,11 @@ int		NaStatTextToId (const char* szStatText);
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: compute statistics for the N-dimensional signal.
-// Has the only input which can be N-dimensional.  Computes mean, StdDeversion
-// and mean square error (MSE).
+// Has the only input which can be N-dimensional.  Computes mean, standard
+// deviation, root mean sum and some other informative N-dimension values.
+// First items of these statistics can be accessed from the only output and
+// passed so to other nodes.  The node provides simple way for making
+// decision about stopping net computation (see halt_condition()).
 
 //---------------------------------------------------------------------------
 class NaPNStatistics : public NaPetriNode
@@ -64,9 +67,9 @@ public:
   ////////////////
 
   // Input (mainstream)
-  NaPetriCnInput      signal;
+  NaPetriCnInput	signal;
 
-  // Output vector:
+  // Output vector (see configure_output() and NaSM_* macros):
   //  [0] absolute mean value: |S(x)/n|
   //  [1] mean value: S(x)/n
   //  [2] root mean square value: S(^2)/n
@@ -74,7 +77,7 @@ public:
   //  [4] maximum value: Max(x)
   //  [5] minimum value: Min(x)
   //  [6] absolute maximum value: Max(|Max(x)|,|Min(x)|)
-  NaPetriCnOutput     stat;
+  NaPetriCnOutput	stat;
 
 
   ///////////////////
