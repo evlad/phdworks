@@ -1,5 +1,5 @@
 /* NaCoFunc.cpp */
-static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.3 2003-06-11 19:11:11 vlad Exp $";
+static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.4 2003-06-19 20:11:50 vlad Exp $";
 
 #include <string.h>
 #include <stdlib.h>
@@ -173,6 +173,8 @@ NaCombinedFunc::Save (NaDataStream& ds)
 }
 
 
+//-----------------------------------------------------------------------
+// Structured line of combined function
 struct item_t {
   char	*szType;
   char	*szInstance;
@@ -304,16 +306,21 @@ NaCombinedFunc::Load (const char* szFileName)
 
       NaTransFunc	*p = new NaTransFunc;
       pParts[0] = p;
-      pParts[0]->pSelfData = (NaUnit*)p;
 
+      // Load the transfer function
+      p->Load(szFileName);
+
+      // Just to have the save facility
       conf_file.RemovePartitions();
       conf_file.AddPartitions(nParts, pParts);
-      conf_file.LoadFromFile(szFileName);
 
-      // To be fully compatible with Save() of .cof format
-      NaConfigPart	*conf_list[] = { this, p };
-      conf_file.RemovePartitions();
-      conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
+      NaTimedUnit	*tu = new NaTimedUnit;
+
+      tu->nTimeRange[0] = 0;
+      tu->nTimeRange[1] = NaInfinity;
+      tu->pUnit = p;
+
+      pParts[0]->pSelfData = tu;
 
       return;
     }
