@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 2.2 2003-06-15 08:34:26 vlad Exp $
+# $Id: dcontrf.par,v 2.3 2004-02-05 21:09:30 vlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -36,6 +36,10 @@ out_e = nncfin_e.dat
 out_y = nncfin_y.dat
 out_nn_y = nncfin_nn_y.dat
 out_ny = nncfin_ny.dat
+
+# Logging of controller's and plant's inputs
+c_in = c_in.dat
+p_in = p_in.dat
 
 # Neural net files
 in_nnp_file = ../nnp_1+1_1res.nn
