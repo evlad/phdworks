@@ -126,8 +126,9 @@ NaPNDelay::activate ()
                    name(), activations(), (int)nDelay);
     }
 
-    return !bAwaken && !in.is_waiting() && !sync.is_waiting()
-        || bAwaken && NaPetriNode::activate();
+    return !in.is_waiting() && !sync.is_waiting();
+    //    return !bAwaken && !in.is_waiting() && !sync.is_waiting()
+    //        || bAwaken && NaPetriNode::activate();
 }
 
 

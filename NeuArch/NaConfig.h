@@ -235,8 +235,9 @@ private:
     char        *szTitleEndMark;    // Finish of the partition title
     char        *szCommentMark;     // Start of the comment until end of line
 
-    // Version info
-    unsigned        nVer[2];        // [0] - major, [1] - minor
+    // Version info: [0] - major, [1] - minor
+    unsigned        nVer[2];        // own class version
+    unsigned        nFileVer[2];    // actual file version
 
     // Storage for partitions
     unsigned        nPartList;

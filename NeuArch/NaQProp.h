@@ -80,7 +80,7 @@ public:/* methods */
 public:/* data */
 
     // Previous step input
-    NaVector    Xinp_prev[MAX_HIDDEN+1];
+    NaVector    Xinp_prev[NaMAX_HIDDEN+1];
 
 };
 

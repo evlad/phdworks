@@ -44,6 +44,7 @@ SRCS	=NaConLaw.cpp \
 	NaPNTime.cpp \
 	NaPNTran.cpp \
 	NaPNTrig.cpp \
+	NaPNLAnd.cpp \
 	NaPetCn.cpp \
 	NaPetNet.cpp \
 	NaPetNod.cpp \
@@ -112,6 +113,7 @@ OBJS	=NaConLaw.o \
 	NaPNTime.o \
 	NaPNTran.o \
 	NaPNTrig.o \
+	NaPNLAnd.o \
 	NaPetCn.o \
 	NaPetNet.o \
 	NaPetNod.o \
@@ -133,8 +135,7 @@ OBJS	=NaConLaw.o \
 	kbdif.o
 
 TestNN:	TestNN.o libpnna.a
-	$(LINK.cpp) -o $@ TestNN.o libpnna.a -lm
-
+	$(LINK.cpp) -o $@ TestNN.o libpnna.a ../Matrix.041/libmatrix.a -lm
 
 clean:
 	-@rm -f $(OBJS)

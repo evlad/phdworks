@@ -189,7 +189,7 @@ NaConfigFile::NaConfigFile (const char* szMagic,
                             unsigned nMinorVerNo,
                             const char* szFileExt,
                             const char* szMarks)
-: NaDataStream(nVer), nPartList(0), pPartList(NULL), fp(NULL)
+: NaDataStream(nFileVer), nPartList(0), pPartList(NULL), fp(NULL)
 {
     if(NULL == szMagic || NULL == szFileExt || NULL == szMarks)
         throw(na_null_pointer);
@@ -210,8 +210,8 @@ NaConfigFile::NaConfigFile (const char* szMagic,
     szTitleEndMark[-1] = '\0';
     szCommentMark[-1] = '\0';
 
-    nVer[NaMajorVerNo] = nMajorVerNo;
-    nVer[NaMinorVerNo] = nMinorVerNo;
+    nFileVer[NaMajorVerNo] = nVer[NaMajorVerNo] = nMajorVerNo;
+    nFileVer[NaMinorVerNo] = nVer[NaMinorVerNo] = nMinorVerNo;
 }
 
 //---------------------------------------------------------------------------
@@ -404,7 +404,6 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
     }
 
     // Parse version of file
-    unsigned    nFileVer[2];
     sscanf(szLineBuf + strlen(Magic()), "%u.%u",
            &nFileVer[NaMajorVerNo], &nFileVer[NaMinorVerNo]);
 
@@ -511,6 +510,10 @@ CloseFile:
     NaPrintLog("Close file '%s'\n", szFilePath);
 #endif /* CONFIG_DEBUG */
     fclose(fp);
+
+    /* restore own version */
+    nFileVer[NaMajorVerNo] = nVer[NaMajorVerNo];
+    nFileVer[NaMinorVerNo] = nVer[NaMinorVerNo];
 }
 
 

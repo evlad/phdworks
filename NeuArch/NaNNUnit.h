@@ -86,14 +86,14 @@ public:
     NaVector        feedback;
 
     // Parameters of the network (0.layers()-1)
-    NaMatrix        weight[MAX_HIDDEN+1];
-    NaVector        bias[MAX_HIDDEN+1];
+    NaMatrix        weight[NaMAX_HIDDEN+1];
+    NaVector        bias[NaMAX_HIDDEN+1];
 
     // Results of the computation
     NaVector&       Xinp (unsigned iLayer); // input of the layer
     NaVector        Xinp0;                  // input of the first layer
-    NaVector        Yout[MAX_HIDDEN+1];     // after ActFunc
-    NaVector        Znet[MAX_HIDDEN+1];     // before ActFunc
+    NaVector        Yout[NaMAX_HIDDEN+1];   // after ActFunc
+    NaVector        Znet[NaMAX_HIDDEN+1];   // before ActFunc
 
     // Scaler of the output layer
     struct NaScaler {

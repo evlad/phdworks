@@ -89,18 +89,18 @@ public:/* data */
     NaNNUnit    &nn;
 
     // Intermediate delta (t)
-    NaVector    delta[MAX_HIDDEN+1];
+    NaVector    delta[NaMAX_HIDDEN+1];
 
     // Intermediate delta (t-1)
-    NaVector    delta_prev[MAX_HIDDEN+1];
+    NaVector    delta_prev[NaMAX_HIDDEN+1];
 
     // Accumulated changes: dw(t)
-    NaMatrix    dWeight[MAX_HIDDEN+1];
-    NaVector    dBias[MAX_HIDDEN+1];
+    NaMatrix    dWeight[NaMAX_HIDDEN+1];
+    NaVector    dBias[NaMAX_HIDDEN+1];
 
     // Previous step of change: (w(t-1) - w(t-2))
-    NaMatrix    psWeight[MAX_HIDDEN+1];
-    NaVector    psBias[MAX_HIDDEN+1];
+    NaMatrix    psWeight[NaMAX_HIDDEN+1];
+    NaVector    psBias[NaMAX_HIDDEN+1];
 
 };
 

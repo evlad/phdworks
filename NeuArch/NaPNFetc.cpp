@@ -13,8 +13,8 @@ NaPNFetcher::NaPNFetcher (const char* szNodeName)
   in(this, "in"),
   out(this, "out")
 {
-    iInpPos = -1;       // Position of input vector in output
-    nOutDim = -1;       // Output dimension
+    piOutMap = NULL;	// Inputs in output vector
+    nOutDim = -1;	// Output dimension
 }
 
 
@@ -29,10 +29,44 @@ NaPNFetcher::NaPNFetcher (const char* szNodeName)
 void
 NaPNFetcher::set_output (int iPos, int nDim)
 {
-    check_tunable();
+  check_tunable();
 
-    iInpPos = iPos;
-    nOutDim = nDim;
+  nOutDim = nDim;
+  delete piOutMap;
+
+  if(nOutDim < 0)
+    piOutMap = NULL;
+  else
+    {
+      int	i;
+      piOutMap = new int[nOutDim];
+      for(i = 0; i < nOutDim; ++i)
+	piOutMap[i] = iPos + i;
+    }
+}
+
+
+//---------------------------------------------------------------------------
+// Set output dimension and positions of input (0,1...)
+void
+NaPNFetcher::set_output (int nDim, int* piMap)
+{
+  check_tunable();
+
+  nOutDim = nDim;
+  delete piOutMap;
+
+  if(nOutDim < 0)
+    piOutMap = NULL;
+  else if(NULL == piMap)
+    throw(na_null_pointer);
+  else
+    {
+      int	i;
+      piOutMap = new int[nOutDim];
+      for(i = 0; i < nOutDim; ++i)
+	piOutMap[i] = piMap[i];
+    }
 }
 
 
@@ -58,15 +92,23 @@ NaPNFetcher::relate_connectors ()
 bool
 NaPNFetcher::verify ()
 {
-    if(nOutDim < 0){
-        NaPrintLog("VERIFY FAILED: output dimension is not set!\n");
-        return false;
-    }
-    if(iInpPos < 0){
-        NaPrintLog("VERIFY FAILED: input position is not set!\n");
-        return false;
-    }
-    return (unsigned)(nOutDim + iInpPos) <= in.data().dim();
+  if(nOutDim < 0){
+    NaPrintLog("VERIFY FAILED: output dimension is not set!\n");
+    return false;
+  }
+
+  int	i, iMaxPos = 0;
+  for(i = 0; i < nOutDim; ++i){
+    if(iMaxPos < piOutMap[i])
+      iMaxPos = piOutMap[i];
+  }
+
+  if((unsigned)iMaxPos >= in.data().dim()){
+    NaPrintLog("VERIFY FAILED: some output positions are out of input range!\n");
+    return false;
+  }
+
+  return true;
 }
 
 
@@ -75,10 +117,10 @@ NaPNFetcher::verify ()
 void
 NaPNFetcher::action ()
 {
-    int i;
-    for(i = 0; i < nOutDim; ++i){
-        out.data()[i] = in.data()[i + iInpPos];
-    }
+  int	i;
+  for(i = 0; i < nOutDim; ++i){
+    out.data()[i] = in.data()[piOutMap[i]];
+  }
 }
 
 

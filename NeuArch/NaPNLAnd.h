@@ -1,52 +1,53 @@
 //-*-C++-*-
 //---------------------------------------------------------------------------
-#ifndef NaPNFetcH
-#define NaPNFetcH
+#ifndef NaPNLAndH
+#define NaPNLAndH
 
 #include "NaPetri.h"
 
 
 //---------------------------------------------------------------------------
-// Applied Petri net node: make bus narrower
-// Fetch [iPos..iPos+nDim] line to output bus.
+// Applied Petri net node: logical "AND" operator
+// Has two inputs: in1 and in2 and out output.
+// +1(>0) - TRUE; -1(<=0) - FALSE
 
 //---------------------------------------------------------------------------
-class NaPNFetcher : public NaPetriNode
+class NaPNLogicalAND : public NaPetriNode
 {
 public:
 
     // Create node for Petri network
-    NaPNFetcher (const char* szNodeName = "fetcher");
+    NaPNLogicalAND (const char* szNodeName = "logicaland");
 
 
     ////////////////
     // Connectors //
     ////////////////
 
-    // Input (mainstream)
-    NaPetriCnInput      in;
+    // Input #1 (mainstream)
+    NaPetriCnInput      in1;
+
+    // Input #2
+    NaPetriCnInput      in2;
 
     // Output (mainstream)
     NaPetriCnOutput     out;
 
 
     ///////////////////
-    // Node specific //
+    // Quick linkage //
     ///////////////////
 
-    // Set output dimension and position of input
-    virtual void        set_output (int iPos, int nDim = 1);
+    // Return mainstream input connector (the only input or NULL)
+    virtual NaPetriConnector*   main_input_cn ();
 
-    // Set output dimension and positions of input (0,1...)
-    virtual void        set_output (int nDim, int* piMap);
-
-
+    
     ///////////////////////
     // Phases of network //
     ///////////////////////
 
-    // 2. Link connectors inside the node
-    virtual void        relate_connectors ();
+    // 3. Open output data (pure input nodes) and set their dimensions
+    virtual void        open_output_data ();
 
     // 5. Verification to be sure all is OK (true)
     virtual bool        verify ();
@@ -54,16 +55,7 @@ public:
     // 8. True action of the node (if activate returned true)
     virtual void        action ();
 
-protected:
-
-    // Position of input vector in output
-    int                 *piOutMap;
-
-    // Output dimension
-    int                 nOutDim;
-
 };
-
 
 //---------------------------------------------------------------------------
 #endif

@@ -4,13 +4,11 @@
 #define NaNDescrH
 //---------------------------------------------------------------------------
 
-#include "NaGenerl.h"
-#include "NaExcept.h"
-#include "NaLogFil.h"
-#include "NaConfig.h"
-#include "NaVector.h"
-
-#define MAX_HIDDEN      NaMAX_HIDDEN
+#include <NaGenerl.h>
+#include <NaExcept.h>
+#include <NaLogFil.h>
+#include <NaConfig.h>
+#include <NaVector.h>
 
 
 //---------------------------------------------------------------------------
@@ -53,11 +51,11 @@ class NaNeuralNetDescr: public NaLogging, public NaConfigPart
 {
 public:/* data */
 
-    // Number of hidden layers (up to MAX_HIDDEN)
+    // Number of hidden layers (up to NaMAX_HIDDEN)
     unsigned    nHidLayers;
 
     // Number of neurons in each hidden layer
-    unsigned    nHidNeurons[MAX_HIDDEN];
+    unsigned    nHidNeurons[NaMAX_HIDDEN];
 
     // Dimension of input (1 by default)
     unsigned    nInputsNumber;
@@ -93,6 +91,10 @@ public:/* methods */
         return nInputsNumber * nInputsRepeat + nOutNeurons * nOutputsRepeat;
     }
 
+    unsigned	MaxInputDelay () const;
+    unsigned	MaxOutputDelay () const;
+
+
     NaNeuralNetDescr&   operator= (const NaNeuralNetDescr& rDescr);
 
     bool    operator== (const NaNeuralNetDescr& rDescr) const;
@@ -117,4 +119,3 @@ public:/* methods */
 
 //---------------------------------------------------------------------------
 #endif
- 
