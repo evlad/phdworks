@@ -1,4 +1,4 @@
-PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat
+PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat djacob
 
 all:	$(PROGRAMS)
 
@@ -18,10 +18,11 @@ SRCS	=dtf.cpp \
 	dmse.cpp \
 	dcorr.cpp \
 	dsum.cpp \
-	dstat.cpp
+	dstat.cpp \
+	djacob.cpp
 
 OBJS	=$(dtf_OBJS) $(d2ts_OBJS) $(drand_OBJS) $(dwtest_OBJS) \
-	$(dmse_OBJS) $(dcorr_OBJS)
+	$(dmse_OBJS) $(dcorr_OBJS) $(dsum_OBJS) $(dstat_OBJS) $(djacob_OBJS)
 
 dtf_OBJS	=dtf.o
 dtf:	$(dtf_OBJS) $(LIBS)
@@ -58,6 +59,10 @@ dsum:	$(dsum_OBJS) $(LIBS)
 dstat_OBJS	=dstat.o
 dstat:	$(dstat_OBJS) $(LIBS)
 	g++ -o $@ $(dstat_OBJS) $(LIBS) -lm
+
+djacob_OBJS	=djacob.o
+djacob:	$(djacob_OBJS) $(LIBS)
+	g++ -o $@ $(djacob_OBJS) $(LIBS) -lm
 
 clean:
 	-@rm -f $(OBJS) $(PROGRAMS)
