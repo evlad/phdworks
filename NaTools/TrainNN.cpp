@@ -1,5 +1,5 @@
 /* TrainNN.cpp */
-static char rcsid[] = "$Id: TrainNN.cpp,v 1.1 2003-09-24 19:50:48 vlad Exp $";
+static char rcsid[] = "$Id: TrainNN.cpp,v 1.2 2003-10-15 19:02:59 vlad Exp $";
 
 #include <stdio.h>
 #include <signal.h>
@@ -38,6 +38,13 @@ handle_sigint (int signo)
 */
 main (int argc, char* argv[])
 {
+  if(argc < 4)
+    {
+      printf("Usage: %s NN-file LearnIn LearnOut [TestIn TestOut [NN-out]]\n",
+	     argv[0]);
+      return 1;
+    }
+
   NaOpenLogFile("TrainNN.log");
 
   /* Let's handle SIGINT(2) */
