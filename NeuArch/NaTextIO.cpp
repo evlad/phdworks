@@ -1,5 +1,5 @@
 /* NaTextIO.cpp */
-static char rcsid[] = "$Id: NaTextIO.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
+static char rcsid[] = "$Id: NaTextIO.cpp,v 1.4 2001-06-24 06:06:23 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -19,16 +19,21 @@ NaTextStreamFile::NaTextStreamFile (const char* fname,
 
     case fmReadOnly:
         fp = fopen(szFileName, "r");
-        try{
-            GoStartRecord();
-        }catch(...){}
         break;
     case fmCreateEmpty:
         fp = fopen(szFileName, "w");
         break;
     }
+
     if(NULL == fp)
         throw(na_cant_open_file);
+
+    if(fmReadOnly == eFileMode)
+      {
+        try{
+            GoStartRecord();
+        }catch(...){}
+      }
 
     setvbuf(fp, NULL, _IOFBF, IOBUF_SIZE);
 
