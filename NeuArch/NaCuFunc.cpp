@@ -1,8 +1,9 @@
 /* NaCuFunc.cpp */
-static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
+static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.2 2003-01-06 10:20:23 vlad Exp $";
 
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <dlfcn.h>
 
 #include "NaExFunc.h"
@@ -248,13 +249,17 @@ NaCustomFunc::Load (NaDataStream& ds)
   }
 
   // Try to load shared object file
-  if(NULL != getenv(NaSHAREDOBJ_DIR_ENV)){
-    char	*filepath = new char[strlen(getenv(NaSHAREDOBJ_DIR_ENV))
-				    + strlen(szFile) + 2];
-    sprintf(filepath, "%s/%s", getenv(NaSHAREDOBJ_DIR_ENV), szFile);
+  if(NULL != getenv(NaEXFUNC_DIR_ENV)){
+    char	*filepath = new char[strlen(getenv(NaEXFUNC_DIR_ENV))
+				    + strlen(szFile)
+				    + strlen(NaEXFUNC_DIR_SEP)
+				    + strlen(NaEXFUNC_FILE_EXT) + 1];
+    sprintf(filepath, "%s%s%s%s", getenv(NaSHAREDOBJ_DIR_ENV),
+	    NaEXFUNC_DIR_SEP, szFile, NaEXFUNC_FILE_EXT);
     so = dlopen(filepath, RTLD_LAZY);
     if(NULL == so)
-      NaPrintLog("Can't find shared object '%s'.\n", filepath);
+      NaPrintLog("Can't find shared object '%s' due to %s.\n",
+		 filepath, strerror(errno));
     delete[] filepath;
   }
 

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaCuFunc.h */
-/* $Id: NaCuFunc.h,v 1.1 2002-02-16 21:34:41 vlad Exp $ */
+/* $Id: NaCuFunc.h,v 1.2 2003-01-06 10:20:12 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaCuFuncH
 #define NaCuFuncH
@@ -21,7 +21,24 @@
 #define NaCF_options		"options"
 #define NaCF_initial		"initial"
 
-#define NaSHAREDOBJ_DIR_ENV	"NASODIR"
+#define NaEXFUNC_DIR_ENV	"NAEXFDIR"
+
+#if defined(unix)
+#   define NaEXFUNC_FILE_EXT	".so"
+#elif defined(WIN32)
+#   define NaEXFUNC_FILE_EXT	".dll"
+#else
+#   error "Extension for external function implementation file is not defined"
+#endif
+
+#if defined(unix)
+#   define NaEXFUNC_DIR_SEP	"/"
+#elif defined(WIN32)
+#   define NaEXFUNC_DIR_SEP	"\\"
+#else
+#   error "Directory separator is not defined"
+#endif
+
 
 //---------------------------------------------------------------------------
 // Class for custum function
