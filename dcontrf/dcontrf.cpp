@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.10 2001-12-16 17:25:30 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.1 2002-01-13 15:04:28 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -42,6 +42,7 @@ NaReal	fPrevMSEc = 0.0, fPrevMSEi = 0.0;
 void
 PrintLog (int iAct, void* pData)
 {
+#if 0
   NaNNOptimContrLearn	&nnocl = *(NaNNOptimContrLearn*)pData;
 
   printf("%4d: Control MSE=%7.4f delta=%+9.7f"\
@@ -51,6 +52,14 @@ PrintLog (int iAct, void* pData)
 
   fPrevMSEc = nnocl.cerrstat.RMS[0];
   fPrevMSEi = nnocl.iderrstat.RMS[0];
+#else
+  NaNNOptimContrLearn	&nnocl = *(NaNNOptimContrLearn*)pData;
+
+  printf("%4d: Control MSE=%7.4f delta=%+9.7f\n", iAct,
+	 nnocl.cerrstat.RMS[0], nnocl.cerrstat.RMS[0] - fPrevMSEc);
+
+  fPrevMSEc = nnocl.cerrstat.RMS[0];
+#endif
 }
 
 
@@ -244,40 +253,56 @@ int main(int argc, char **argv)
     NaNNOptimContrLearn     nnocl(len, ckind, "nncfl");
 
     // Configure nodes
-    nnocl.plant.set_transfer_func(&au_linplant);
-    nnocl.nncontr.set_nn_unit(&au_nnc);
-    nnocl.nnteacher.set_nn(&nnocl.nncontr/*&au_nnc*/);
-    nnocl.nnplant.set_nn_unit(&au_nnp);
-    nnocl.errbackprop.set_nn(&nnocl.nnplant/*&au_nnp*/);
-
     nnocl.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
     nnocl.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
 
-    /* Equalize delay to provide synchronous start of delay_u and
-       delay_y nodes */
     unsigned	iDelay_u = nnocl.delay_u.get_max_delay();
     unsigned	iDelay_y = nnocl.delay_y.get_max_delay();
-    if(iDelay_u < iDelay_y)
-      {
-	iDelay_u = iDelay_y - iDelay_u;
-	iDelay_y = 0;
-      }
-    else if(iDelay_u > iDelay_y)
-      {
-	iDelay_y = iDelay_u - iDelay_y;
-	iDelay_u = 0;
-      }
-    else /* if(iDelay_u == iDelay_y) */
-      {
-	iDelay_y = 0;
-	iDelay_u = 0;
-      }
+    unsigned	iSkip_u, iSkip_y;
+    unsigned	iDelay_e, iSkip_e;
 
-    // Provide delay equalization on plant input
-    nnocl.delay_y.add_delay(iDelay_y);
-    nnocl.delay_u.add_delay(iDelay_u);
+    // Skip u or y due to absent earlier values of y or u
+    if(iDelay_y >= iDelay_u)
+      {
+	iSkip_u = iDelay_y - iDelay_u + 1;
+      }
+    else /* if(iDelay_u > iDelay_y) */
+      {
+	iSkip_y = iDelay_u - iDelay_y - 1;
+      }
+    iDelay_e = iDelay_y + iSkip_y;
+    iSkip_e = 1 + iDelay_e;
 
-    nnocl.errfetch.set_output(0);	/* u[0] - actual controller force */
+    nnocl.skip_u.set_skip_number(iSkip_u);
+    nnocl.skip_y.set_skip_number(iSkip_y);
+
+    // Additional delay for target value
+    nnocl.skip_e.set_skip_number(1 + iSkip_e);
+    nnocl.delay_e.set_delay(0);
+    //nnocl.delay_e.add_delay(1);
+
+    printf("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+    printf("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+    printf("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
+
+#if 0
+    printf("skip_u=%u  skip_y=%u  ->  skip_e=%u\n",
+	   iSkip_u, iSkip_y, iSkip_e);
+
+    printf("delay_u=%u  delay_y=%u  ->  delay_e=%u\n",
+	   iDelay_u, iDelay_y, iDelay_e);
+#endif
+
+    nnocl.plant.set_transfer_func(&au_linplant);
+    nnocl.nncontr.set_nn_unit(&au_nnc);
+    nnocl.nnteacher.set_nn(&nnocl.nncontr, iSkip_e);
+    /*nnocl.nnteacher.set_nn(&au_nnc);*/
+    nnocl.nnplant.set_nn_unit(&au_nnp);
+    nnocl.errbackprop.set_nn(&nnocl.nnplant);
+    /*nnocl.errbackprop.set_nn(&au_nnp);*/
+
+    // u[0] - actual controller force
+    nnocl.errfetch.set_output(0);
 
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
@@ -289,6 +314,9 @@ int main(int argc, char **argv)
 	   par("cerr_trace_file"));
     printf("Writing identification error statistics to '%s' file.\n",
 	   par("iderr_trace_file"));
+
+    nnocl.c_in.set_output_filename(par("c_in"));
+    nnocl.p_in.set_output_filename(par("p_in"));
 
     switch(inp_data_mode)
       {
@@ -422,7 +450,7 @@ int main(int argc, char **argv)
 	    dfCErr->SetValue(buf[i], i);
 
 	  dfIdErr->AppendRecord();
-	  nnocl.iderr_qout.get_data(buf);
+	  //nnocl.iderr_qout.get_data(buf);
 	  for(i = 0; i < NaSI_number; ++i)
 	    dfIdErr->SetValue(buf[i], i);
 
