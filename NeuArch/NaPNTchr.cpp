@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
-: NaPetriNode(szNodeName),
+  : NaPetriNode(szNodeName), nAutoUpdateFreq(0),
   nn(NULL),
   bpe(NULL),  
   ////////////////
@@ -34,6 +34,18 @@ NaPNTeacher::~NaPNTeacher ()
 ///////////////////
 // Node specific //
 ///////////////////
+
+//---------------------------------------------------------------------------
+// Set up updating frequency; 0 (no update) by default
+void
+NaPNTeacher::set_auto_update_freq (int nFreq)
+{
+  nAutoUpdateFreq = nFreq;
+
+  if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq)
+    update_nn();
+}
+
 
 //---------------------------------------------------------------------------
 // Set link with neural net unit to teach it
@@ -75,6 +87,7 @@ NaPNTeacher::update_nn ()
 {
     if(NULL != bpe){
         bpe->UpdateNN();
+	nLastUpdate = 0;
     }
 }
 
@@ -156,6 +169,9 @@ NaPNTeacher::action ()
     unsigned    iLayer;
     unsigned    iInpLayer = nn->InputLayer();
 
+    // One more activations since last update
+    ++nLastUpdate;
+
     for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
         if(nn->OutputLayer() == iLayer){
             // Output layer
@@ -183,6 +199,10 @@ NaPNTeacher::action ()
             einp[iInput] -= bpe->PartOfDeltaRule(iInpLayer, iInput);
         }
     }
+
+    // Autoupdate facility
+    if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq)
+      update_nn();
 }
 
 

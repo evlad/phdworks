@@ -48,6 +48,9 @@ public:
     // Node specific //
     ///////////////////
 
+    // Set up updating frequency; 0 (no update) by default
+    virtual void	set_auto_update_freq (int nFreq);
+
     // Set link with neural net unit to teach it
     virtual void        set_nn (NaNNUnit* pNN);
 
@@ -88,6 +91,12 @@ protected:/* data */
 
     // Neural network to teach
     NaNNUnit            *nn;
+
+    // Autoupdate frequency (in activations); 0 means no autoupdate
+    int			nAutoUpdateFreq;
+
+    // Number of activations since last update
+    int			nLastUpdate;
 
     // Method of teaching
     NaStdBackProp       *bpe;

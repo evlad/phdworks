@@ -472,7 +472,7 @@ NaMatrix&   NaMatrix::trans (NaMatrix& mTrans) const
 void       NaMatrix::print_contents () const
 {
     unsigned    iR, iC;
-    NaPrintLog("Matrix(this=0x%p, rows=%u, cols=%u):\n",
+    NaPrintLog("Matrix(this=%p, rows=%u, cols=%u):\n",
                this, nDimRow, nDimCol);
     for(iR = 0; iR < nDimRow; ++iR){
         for(iC = 0; (int)iC < (int)nDimCol - 1; ++iC)

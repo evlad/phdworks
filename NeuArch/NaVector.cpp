@@ -440,7 +440,7 @@ NaVector::cov (const NaVector& rVectY, NaVector& rVectMCF) const
 void       NaVector::print_contents () const
 {
     unsigned    i;
-    NaPrintLog("Vector(this=0x%p, dim=%u):\n", this, dim());
+    NaPrintLog("Vector(this=%p, dim=%u):\n", this, dim());
     for(i = 0; i < dim(); ++i){
         NaPrintLog("\t%g\n", pVect[i]);
     }

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaGenerl.h */
-/* $Id: NaGenerl.h,v 1.1 2001-04-01 08:15:53 vlad Exp $ */
+/* $Id: NaGenerl.h,v 1.2 2001-04-23 06:17:23 vlad Exp $ */
 #ifndef __NaGeneral_h
 #define __NaGeneral_h
 

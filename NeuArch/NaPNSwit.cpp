@@ -65,7 +65,17 @@ NaPNSwitcher::verify ()
 bool
 NaPNSwitcher::activate ()
 {
-    return !turn.is_waiting();
+  /*NaPrintLog("\tturn=%d\n\tin1=%d\n\tin2=%d\n\tout=%d\n",
+	     turn.is_waiting(), in1.is_waiting(),
+	     in2.is_waiting(), out.is_waiting());*/
+
+  if(turn.is_waiting())
+    return false;
+  
+  if(turn.data()[0] > 0)
+    return !in1.is_waiting() && !out.is_waiting();
+  /* else */
+  return !in2.is_waiting() && !out.is_waiting();
 }
 
 

@@ -11,6 +11,26 @@
 
 #define MAX_HIDDEN      NaMAX_HIDDEN
 
+
+//---------------------------------------------------------------------------
+// For applied neural networks: Kind of controller
+enum NaControllerKind
+{
+  NaLinearContr,
+  NaNeuralContrDelayedE,
+  NaNeuralContrER
+};
+
+
+//---------------------------------------------------------------------------
+// For applied neural networks: Kind of algorithm
+enum NaAlgorithmKind
+{
+  NaTrainingAlgorithm,	// learn
+  NaEvaluationAlgorithm	// test
+};
+
+
 //---------------------------------------------------------------------------
 // Kind of activation function
 enum NaActFuncKind

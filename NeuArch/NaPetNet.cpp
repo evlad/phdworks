@@ -362,6 +362,9 @@ NaPetriNet::step_alive (bool bDoPrintouts)
         }
     }
 
+    if(bDoPrintouts)
+      NaPrintLog("----------------------------------------\n");
+
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
         bool    bActivate = false;
 
