@@ -1,0 +1,36 @@
+# dobjid parameters
+# $Id: dobjid.par,v 1.1 2001-04-22 09:41:35 vlad Exp $
+
+# NNP TEACHING
+# Input files
+in_x = u_learn.dat
+in_y = ny_learn.dat
+
+# Output files
+nn_y = nn_y_0.1_8.dat
+
+# NNP TESTING
+# Input files
+test_in_x = u_test.dat
+test_in_y = ny_test.dat
+
+# Output files
+test_nn_y = y_test_0.1_8.dat
+
+# Neural net file
+in_nnp_file = nnp_0.1_8.nn
+out_nnp_file = nnp_0.1_8_res.nn
+
+# Tracking learning process:
+# LearnME LearnSDE LearnMSE TestME TestSDE TestMSE NormLearnMSE NormTestMSE
+trace_file = nnp_trace_0.1_8.dat
+
+# Stop learning if...
+finish_on_value=0.001
+finish_on_grow=20
+finish_max_epoch=400
+
+# Learning algorithm setup
+eta = 0.01
+eta_output = 0.001
+alpha = 0.0

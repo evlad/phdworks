@@ -1,5 +1,5 @@
-/* dtf.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.4 2001-04-10 21:40:06 vlad Exp $";
+/* dobjid.cpp */
+static char rcsid[] = "$Id: dobjid.cpp,v 1.5 2001-04-22 09:41:35 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -47,30 +47,30 @@ main (int argc, char* argv[])
     NaConfigPart        *conf_list[] = { &au_nn };
     NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
     nnfile.AddPartitions(NaNUMBER(conf_list), conf_list);
-    nnfile.LoadFromFile(par("in_nno_file"));
+    nnfile.LoadFromFile(par("in_nnp_file"));
 
     // Additional log files
     NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"));
 
-    nnllog->SetTitle("NN regression object learning");
+    nnllog->SetTitle("NN regression plant learning");
 
     nnllog->SetVarName(0, "Mean");
     nnllog->SetVarName(1, "StdDev");
     nnllog->SetVarName(2, "MSE");
 
-    NaNNRegrObjectLearn     nnrol;	// teach
-    NaNNRegrObjectEmulate   nnroe;	// test
+    NaNNRegrPlantLearn     nnrol;	// teach
+    NaNNRegrPlantEmulate   nnroe;	// test
 
     // Configure nodes
     nnrol.nnteacher.set_nn(&au_nn);
 
-    nnrol.nnobject.set_transfer_func(&au_nn);
+    nnrol.nnplant.set_transfer_func(&au_nn);
     nnrol.in_x.set_input_filename(par("in_x"));
     nnrol.in_y.set_input_filename(par("in_y"));
     nnrol.nn_y.set_output_filename(par("nn_y"));
     nnrol.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
-    nnroe.nnobject.set_transfer_func(&au_nn);
+    nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.in_x.set_input_filename(par("test_in_x"));
     nnroe.in_y.set_input_filename(par("test_in_y"));
     nnroe.nn_y.set_output_filename(par("test_nn_y"));
@@ -103,7 +103,7 @@ main (int argc, char* argv[])
     printf("Press 'q' or 'x' for exit\n");
 #endif /* DOS & Win */
 
-    au_nn.Initialize();
+    //au_nn.Initialize();
 
     NaReal	fNormMSE, fNormTestMSE;
     NaReal	fPrevMSE = 0.0, fLastMSE = 0.0;
@@ -168,7 +168,7 @@ main (int argc, char* argv[])
 
 	      au_nn = rPrevNN;
 	      fLastMSE = fNormMSE;
-	      nnrol.nnobject.set_transfer_func(&au_nn);
+	      nnrol.nnplant.set_transfer_func(&au_nn);
 	      nnrol.nnteacher.reset_nn();
 
 	      printf(" -> repeat with (%g, %g, %g)\n",
@@ -277,7 +277,7 @@ main (int argc, char* argv[])
 
     delete nnllog;
 
-    nnfile.SaveToFile(par("out_nno_file"));
+    nnfile.SaveToFile(par("out_nnp_file"));
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));

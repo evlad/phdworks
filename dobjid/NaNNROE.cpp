@@ -1,3 +1,5 @@
+/* NaNNROE.cpp */
+static char rcsid[] = "$Id: NaNNROE.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -5,18 +7,18 @@
 #include <conio.h>
 #endif /* DOS & Win */
 
-#include "NaExcept.h"
+#include <NaExcept.h>
 #include "NaNNROE.h"
 
 
 //---------------------------------------------------------------------------
 // Create the object
-NaNNRegrObjectEmulate::NaNNRegrObjectEmulate ()
+NaNNRegrPlantEmulate::NaNNRegrPlantEmulate ()
 : net("nncp2pn"),
   in_x("in_x"),
   in_y("in_y"),
   nn_y("nn_y"),
-  nnobject("nnobject"),
+  nnplant("nnplant"),
   bus("bus"),
   errcomp("errcomp"),
   switcher("switcher"),
@@ -32,7 +34,7 @@ NaNNRegrObjectEmulate::NaNNRegrObjectEmulate ()
 
 //---------------------------------------------------------------------------
 // Destroy the object
-NaNNRegrObjectEmulate::~NaNNRegrObjectEmulate ()
+NaNNRegrPlantEmulate::~NaNNRegrPlantEmulate ()
 {
     // Nothing to do
 }
@@ -47,7 +49,7 @@ NaNNRegrObjectEmulate::~NaNNRegrObjectEmulate ()
 //---------------------------------------------------------------------------
 // Link the network (tune the net before)
 void
-NaNNRegrObjectEmulate::link_net ()
+NaNNRegrPlantEmulate::link_net ()
 {
     try{
         // Link the network
@@ -55,7 +57,7 @@ NaNNRegrObjectEmulate::link_net ()
 
         net.link(&trig_x.out, &bus.in1);
         net.link(&delay.dout, &bus.in2);
-        net.link(&bus.out, &nnobject.x);
+        net.link(&bus.out, &nnplant.x);
 
         net.link(&in_y.out, &delay.in);
 
@@ -66,7 +68,7 @@ NaNNRegrObjectEmulate::link_net ()
         net.link(&delay.sync, &trig_y.turn);
 
         net.link(&delay.sync, &switcher.turn);
-        net.link(&nnobject.y, &switcher.in1);
+        net.link(&nnplant.y, &switcher.in1);
         net.link(&in_y.out, &switcher.in2);
         net.link(&switcher.out, &nn_y.in);
 
@@ -82,7 +84,7 @@ NaNNRegrObjectEmulate::link_net ()
 //---------------------------------------------------------------------------
 // Run the network
 NaPNEvent
-NaNNRegrObjectEmulate::run_net ()
+NaNNRegrPlantEmulate::run_net ()
 {
     try{
         // Prepare petri net engine
@@ -124,7 +126,7 @@ NaNNRegrObjectEmulate::run_net ()
 //---------------------------------------------------------------------------
 // Check for user break
 bool
-NaNNRegrObjectEmulate::user_break ()
+NaNNRegrPlantEmulate::user_break ()
 {
 #if defined(__MSDOS__) || defined(__WIN32__)
     if(kbhit()){
@@ -141,7 +143,7 @@ NaNNRegrObjectEmulate::user_break ()
 //---------------------------------------------------------------------------
 // Each cycle callback
 void
-NaNNRegrObjectEmulate::idle_entry ()
+NaNNRegrPlantEmulate::idle_entry ()
 {
     // Nothing to do
 }
@@ -149,4 +151,3 @@ NaNNRegrObjectEmulate::idle_entry ()
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
- 

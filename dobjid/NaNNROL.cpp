@@ -1,3 +1,5 @@
+/* NaNNROL.cpp */
+static char rcsid[] = "$Id: NaNNROL.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -5,18 +7,18 @@
 #include <conio.h>
 #endif /* DOS & Win */
 
-#include "NaExcept.h"
+#include <NaExcept.h>
 #include "NaNNROL.h"
 
 
 //---------------------------------------------------------------------------
 // Create the object
-NaNNRegrObjectLearn::NaNNRegrObjectLearn ()
+NaNNRegrPlantLearn::NaNNRegrPlantLearn ()
 : net("nncp2pn"),
   in_x("in_x"),
   in_y("in_y"),
   nn_y("nn_y"),
-  nnobject("nnobject"),
+  nnplant("nnplant"),
   nnteacher("nnteacher"),
   bus("bus"),
   errcomp("errcomp"),
@@ -33,7 +35,7 @@ NaNNRegrObjectLearn::NaNNRegrObjectLearn ()
 
 //---------------------------------------------------------------------------
 // Destroy the object
-NaNNRegrObjectLearn::~NaNNRegrObjectLearn ()
+NaNNRegrPlantLearn::~NaNNRegrPlantLearn ()
 {
     // Nothing to do
 }
@@ -48,7 +50,7 @@ NaNNRegrObjectLearn::~NaNNRegrObjectLearn ()
 //---------------------------------------------------------------------------
 // Link the network (tune the net before)
 void
-NaNNRegrObjectLearn::link_net ()
+NaNNRegrPlantLearn::link_net ()
 {
     try{
         // Link the network
@@ -56,20 +58,20 @@ NaNNRegrObjectLearn::link_net ()
 
         net.link(&trig_x.out, &bus.in1);
         net.link(&delay.dout, &bus.in2);
-        net.link(&bus.out, &nnobject.x);
+        net.link(&bus.out, &nnplant.x);
 
         net.link(&in_y.out, &delay.in);
 
         net.link(&in_y.out, &statan_y.signal);
         net.link(&in_y.out, &trig_y.in);
         net.link(&trig_y.out, &nnteacher.desout);
-        net.link(&nnobject.y, &nnteacher.nnout);
+        net.link(&nnplant.y, &nnteacher.nnout);
 
         net.link(&delay.sync, &trig_x.turn);
         net.link(&delay.sync, &trig_y.turn);
 
         net.link(&delay.sync, &switcher.turn);
-        net.link(&nnobject.y, &switcher.in1);
+        net.link(&nnplant.y, &switcher.in1);
         net.link(&in_y.out, &switcher.in2);
         net.link(&switcher.out, &nn_y.in);
 
@@ -85,7 +87,7 @@ NaNNRegrObjectLearn::link_net ()
 //---------------------------------------------------------------------------
 // Run the network
 NaPNEvent
-NaNNRegrObjectLearn::run_net ()
+NaNNRegrPlantLearn::run_net ()
 {
     try{
         // Prepare petri net engine
@@ -127,7 +129,7 @@ NaNNRegrObjectLearn::run_net ()
 //---------------------------------------------------------------------------
 // Check for user break
 bool
-NaNNRegrObjectLearn::user_break ()
+NaNNRegrPlantLearn::user_break ()
 {
 #if defined(__MSDOS__) || defined(__WIN32__)
     if(kbhit()){
@@ -144,7 +146,7 @@ NaNNRegrObjectLearn::user_break ()
 //---------------------------------------------------------------------------
 // Each cycle callback
 void
-NaNNRegrObjectLearn::idle_entry ()
+NaNNRegrPlantLearn::idle_entry ()
 {
     // Nothing to do
 }
@@ -152,4 +154,3 @@ NaNNRegrObjectLearn::idle_entry ()
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
- 
