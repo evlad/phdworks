@@ -201,8 +201,10 @@ NaPNTeacher::action ()
     }
 
     // Autoupdate facility
-    if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq)
+    if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
+      NaPrintLog("Automatic update of NN (%d sample)\n", activations());
       update_nn();
+    }
 }
 
 
