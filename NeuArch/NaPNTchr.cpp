@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.9 2001-12-16 17:23:39 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.10 2001-12-17 21:16:51 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -211,6 +211,24 @@ NaPNTeacher::action ()
     // Replace NN by stored in deck
     if(NULL != pnn)
       pnn->pop_nn(bpe->nn);
+
+    if(is_verbose()){
+      int	i;
+      NaPrintLog("NaPNTeacher (%p, %s.%s):\n  NN input: ",
+		 this, net()->name(), name());
+      for(i = 0; i < bpe->nn.Xinp0.dim(); ++i)
+	NaPrintLog(" %g", bpe->nn.Xinp0[i]);
+      if(errout.links() == 0){
+	NaPrintLog("\n  NN target: ");
+	for(i = 0; i < desout.data().dim(); ++i)
+	  NaPrintLog(" %g", desout.data()[i]);
+      }else{
+	NaPrintLog("\n  NN target: ");
+	for(i = 0; i < errout.data().dim(); ++i)
+	  NaPrintLog(" %g", errout.data()[i]);
+      }
+      NaPrintLog("\n");
+    }
 
     for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
         if(nn->OutputLayer() == iLayer){

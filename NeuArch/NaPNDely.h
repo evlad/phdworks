@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNDely.h */
-/* $Id: NaPNDely.h,v 1.6 2001-12-11 18:21:38 vlad Exp $ */
+/* $Id: NaPNDely.h,v 1.7 2001-12-17 21:16:51 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
@@ -61,11 +61,17 @@ public:
     // Set value to substitute output in sleep time
     void                set_sleep_value (NaReal fValue);
 
+    // Print actual status
+    void                print_status ();
+
     // Return true is passive sleep time is over and false otherwise
     bool                awake ();
 
     // Get maximum lag
     unsigned            get_max_delay () const;
+
+    // Get minimum lag
+    unsigned            get_min_delay () const;
 
 
     ///////////////////////
@@ -92,8 +98,8 @@ public:
 
 protected:/* data */
 
-    // Maximum delay that can be provided by given setting
-    unsigned            nMaxLag;
+    // Maximum and minimum delays that can be provided by given setting
+    unsigned            nMaxLag, nMinLag;
 
     // Sleeping mode means real input replacement by sleeping value
     // Decremented each time new input data arrival

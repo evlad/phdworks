@@ -1,9 +1,9 @@
 //-*-C++-*-
 /* NaPNNNUn.h */
-/* $Id: NaPNNNUn.h,v 1.1 2001-12-16 17:23:39 vlad Exp $ */
+/* $Id: NaPNNNUn.h,v 1.2 2001-12-17 21:16:51 vlad Exp $ */
 //---------------------------------------------------------------------------
-#ifndef NaPNSkipH
-#define NaPNSkipH
+#ifndef NaPNNNUnH
+#define NaPNNNUnH
 
 #include <NaNNUnit.h>
 #include <NaDynAr.h>
