@@ -1,5 +1,5 @@
 /* NaPNDely.cpp */
-static char rcsid[] = "$Id: NaPNDely.cpp,v 1.5 2001-10-01 18:03:05 vlad Exp $";
+static char rcsid[] = "$Id: NaPNDely.cpp,v 1.6 2001-11-29 20:08:10 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNDely.h"
@@ -57,12 +57,14 @@ NaPNDelay::set_delay (unsigned nSamples)
 {
     check_tunable();
 
-    nOutDim = 1 + (nDelay = nSamples);
+    nOutDim = nDelay = 1 + nSamples;
     piOutMap = new unsigned[nOutDim];
     unsigned	i;
     for(i = 0; i < nOutDim; ++i)
       piOutMap[i] = i;
     bAwaken = false;
+
+  NaPrintLog("\tnDelay=%u\n", nDelay);
 }
 
 
@@ -91,6 +93,8 @@ NaPNDelay::set_delay (unsigned nDim, unsigned* piMap)
 	nDelay = piOutMap[i];
     }
   ++nDelay;
+
+  NaPrintLog("\tnDelay=%u\n", nDelay);
 
   bAwaken = false;
 }
@@ -220,7 +224,7 @@ NaPNDelay::action ()
 
     // Sleep/awaken related nodes
     if(bAwaken){
-        sync.data()[0] = 1.0;   // Let linked nodes deliver data
+        sync.data()[0] = 1.0;   // Let linked nodes to deliver data
     }else{
         sync.data()[0] = -1.0;  // Force to be passive linked nodes
     }
