@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dtf.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
+static char rcsid[] = "$Id: dtf.cpp,v 1.2 2001-06-12 12:31:56 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -43,7 +43,7 @@ main (int argc, char* argv[])
     conf_file.LoadFromFile(dtf_file);
 
     NaDataFile	*dfIn = OpenInputDataFile(in_file);
-    NaDataFile	*dfOut = OpenOutputDataFile(out_file);
+    NaDataFile	*dfOut = OpenOutputDataFile(out_file, bdtAuto, 1);
 
     dfIn->GoStartRecord();
     dtf.Reset();
