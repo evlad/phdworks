@@ -1,5 +1,5 @@
 /* djacob.cpp */
-static char rcsid[] = "$Id: djacob.cpp,v 1.1 2001-05-12 20:45:33 vlad Exp $";
+static char rcsid[] = "$Id: djacob.cpp,v 1.2 2001-06-05 15:15:07 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -24,7 +24,8 @@ main (int argc, char* argv[])
   if(argc != 3)
     {
       fprintf(stderr, "Error: need 2 arguments\n");
-      fprintf(stderr, "Usage: dsum InputSeries OutputSeries\n");
+      fprintf(stderr, "Usage: djacob u-Series y-Series\n");
+      fprintf(stderr, "  Output contains du dy J=dy/du\n");
       return 1;
     }
 

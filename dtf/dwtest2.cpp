@@ -1,5 +1,5 @@
 /* dwtest2.cpp */
-static char rcsid[] = "$Id: dwtest2.cpp,v 1.2 2001-04-20 18:10:02 vlad Exp $";
+static char rcsid[] = "$Id: dwtest2.cpp,v 1.3 2001-06-05 15:15:07 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -57,7 +57,7 @@ main (int argc, char* argv[])
 
     NaDataFile	*dfSignal = OpenInputDataFile(signal_file);
     NaDataFile	*dfNoise = OpenInputDataFile(noise_file);
-    NaDataFile	*dfOut = OpenOutputDataFile(out_file);
+    NaDataFile	*dfOut = OpenOutputDataFile(out_file, bdtAuto, 1);
     NaDataFile	*dfIn = NULL;
 
     if(NULL != in_file)
