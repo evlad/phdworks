@@ -1,5 +1,5 @@
 /* NaDataIO.cpp */
-static char rcsid[] = "$Id: NaDataIO.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaDataIO.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <string.h>
 
@@ -87,6 +87,8 @@ NaFileFormat NaDataFile::GuessFileFormatByName (const char* szFName)
             return ffTextStream;
         else if(!stricmp(szFName + len - 4, NaIO_STATISTICA_EXT))
             return ffStatistica;
+        else if(!stricmp(szFName + len - 4, NaIO_BINARY_STREAM_EXT))
+            return ffBinaryStream;
         else if(!stricmp(szFName + len - 4, NaIO_DPLOT_EXT))
             return ffDPlot;
     }
@@ -137,6 +139,20 @@ NaFileFormat NaDataFile::GuessFileFormatByMagic (const char* szFName)
         }
     }
 
+    // NeuArch binary data stream
+    {
+        unsigned    magic_len = strlen(NaIO_BINARY_MAGIC);
+        char        buf[1 + sizeof(NaIO_BINARY_MAGIC)];
+        fseek(fp, 0, SEEK_SET);
+        if(magic_len == fread(buf, 1, magic_len, fp)){
+            buf[magic_len] = '\0';
+            if(!strcmp(buf, NaIO_BINARY_MAGIC)){
+                guess = ffBinaryStream;
+                goto END;
+            }
+        }
+    }
+
     // Other data file
     guess = ffUnknown;
 
@@ -182,6 +198,12 @@ NaDataFile* OpenInputDataFile (const char* szPath)
                    szPath);
         break;
 
+    case ffBinaryStream:
+        pDF = new NaBinaryStreamFile(szPath, fmReadOnly);
+        NaPrintLog("Binary stream input data file '%s'\n",
+                   szPath);
+        break;
+
     case ffDPlot:
         pDF = new NaDPlotFile(szPath, fmReadOnly);
         NaPrintLog("DPlot input data file '%s'\n",
@@ -200,7 +222,9 @@ NaDataFile* OpenInputDataFile (const char* szPath)
 
 //---------------------------------------------------------------------------
 // Create object (NaDataFile descendant) for writing given data file
-NaDataFile* OpenOutputDataFile (const char* szPath)
+NaDataFile* OpenOutputDataFile (const char* szPath,
+				NaBinaryDataType bdt,
+				int var_num)
 {
     NaDataFile  *pDF;
     switch(NaDataFile::GuessFileFormatByName(szPath)){
@@ -220,6 +244,12 @@ NaDataFile* OpenOutputDataFile (const char* szPath)
         pDF = new NaTextStreamFile(szPath, fmCreateEmpty);
         NaPrintLog("Text stream output data file '%s'\n",
                    szPath);
+        break;
+
+    case ffBinaryStream:
+        pDF = new NaBinaryStreamFile(szPath, fmCreateEmpty, bdt, var_num);
+        NaPrintLog("Binary stream input data file '%s' (%d variables)\n",
+                   szPath, var_num);
         break;
 
     case ffDPlot:

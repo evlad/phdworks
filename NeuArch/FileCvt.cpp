@@ -1,5 +1,5 @@
 /* FileCvt.cpp */
-static char rcsid[] = "$Id: FileCvt.cpp,v 1.2 2001-05-15 06:02:20 vlad Exp $";
+static char rcsid[] = "$Id: FileCvt.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
 
 #pragma hdrstop
 #include <condefs.h>
@@ -7,8 +7,11 @@ static char rcsid[] = "$Id: FileCvt.cpp,v 1.2 2001-05-15 06:02:20 vlad Exp $";
 #include <NaDataIO.h>
 
 //---------------------------------------------------------------------------
+#ifdef BORLANDC
 USELIB("NeuArch.lib");
 USELIB("..\StaDev\stadev32.lib");
+#endif
+
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaDataIO.h */
-/* $Id: NaDataIO.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaDataIO.h,v 1.3 2001-05-19 21:19:08 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaDataIOH
 #define NaDataIOH
@@ -15,6 +15,7 @@ enum NaFileFormat{
     ffTextStream = 0,   // Simple value-space-value format
     ffStatistica,       // STATISTICA packet file format
     ffDPlot,            // DPLOT/W v.1.2 file format
+    ffBinaryStream,	// Simple enough binary data format
     ffUnknown           // Unknown file format - can't guess anything
 };
 
@@ -23,15 +24,21 @@ enum NaFileFormat{
 #define __ffNumber      ffUnknown
 
 //---------------------------------------------------------------------------
+// Default name of the only variable
+#define NaVAR_NAME      "VAR"
+
+//---------------------------------------------------------------------------
 // Supported file formats' specifics
 
 #define NaIO_STATISTICA_MAGIC   "CSS "
 #define NaIO_DPLOT_MAGIC        "DPLOT/W v1.2"
+#define NaIO_BINARY_MAGIC	"[BinaryDataHeader]\n"
 
 // Filename extension
 #define NaIO_TEXT_STREAM_EXT    ".DAT"
 #define NaIO_STATISTICA_EXT     ".STA"
 #define NaIO_DPLOT_EXT          ".GRF"
+#define NaIO_BINARY_STREAM_EXT  ".BIS"
 
 
 //---------------------------------------------------------------------------
@@ -40,6 +47,25 @@ enum NaFileMode {
     fmReadOnly = 0,
     fmCreateEmpty
 };
+
+//---------------------------------------------------------------------------
+// Data type in steam
+enum NaBinaryDataType
+{
+  bdtAuto = 0,		// in fmReadOnly mode; ->bdtReal8 in fmCreateEmpty
+  bdtInteger1,		// INTEGER*1 - char
+  bdtInteger2,		// INTEGER*2 - short
+  bdtInteger4,		// INTEGER*4 - long
+  bdtReal4,		// REAL*4 - float
+  bdtReal8		// REAL*8 - double (NaReal)
+};
+
+#define NaVARFMT_I1		"I1"
+#define NaVARFMT_I2		"I2"
+#define NaVARFMT_I4		"I4"
+#define NaVARFMT_R4		"R4"
+#define NaVARFMT_R8		"R8"
+
 
 //---------------------------------------------------------------------------
 // Class for data file manipulation as a set of variables
@@ -129,13 +155,16 @@ protected:
 #include <NaStaIO.h>
 #endif /* unix */
 #include <NaPlotIO.h>
+#include <NaBinrIO.h>
 
 
 // Create object (NaDataFile descendant) for reading given data file
 NaDataFile* OpenInputDataFile (const char* szPath);
 
 // Create object (NaDataFile descendant) for writing given data file
-NaDataFile* OpenOutputDataFile (const char* szPath);
+NaDataFile* OpenOutputDataFile (const char* szPath,
+				NaBinaryDataType bdt = bdtAuto,
+				int var_num = 0);
 
 
 //---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /* NaTextIO.cpp */
-static char rcsid[] = "$Id: NaTextIO.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id: NaTextIO.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +13,7 @@ static char rcsid[] = "$Id: NaTextIO.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
 // Create a stream or simply read it
 NaTextStreamFile::NaTextStreamFile (const char* fname,
                                     NaFileMode fm)
-  : NaDataFile(fname, fm), fCurVal(NULL), nVar(0) //, pBufIO(NULL)
+  : NaDataFile(fname, fm), fCurVal(NULL), nVar(0)
 {
     switch(eFileMode){
 
@@ -30,8 +30,7 @@ NaTextStreamFile::NaTextStreamFile (const char* fname,
     if(NULL == fp)
         throw(na_cant_open_file);
 
-    //pBufIO = new char[IOBUF_SIZE];
-    setvbuf(fp, NULL/*pBufIO*/, _IOFBF, IOBUF_SIZE);
+    setvbuf(fp, NULL, _IOFBF, IOBUF_SIZE);
 
     iCase = -1;
 }
@@ -40,11 +39,12 @@ NaTextStreamFile::NaTextStreamFile (const char* fname,
 // Close (and write) file
 NaTextStreamFile::~NaTextStreamFile ()
 {
-    if(fmCreateEmpty == eFileMode)
-        fflush(fp);
-    fclose(fp);
-    delete[] fCurVal;
-    //delete[] pBufIO; <-- cause SIGSEGV
+  if(fmCreateEmpty == eFileMode){
+    AppendRecord();
+    fflush(fp);
+  }
+  fclose(fp);
+  delete[] fCurVal;
 }
 
 

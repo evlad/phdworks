@@ -6,6 +6,7 @@ SRCS	=NaConLaw.cpp \
 	NaConfig.cpp \
 	NaDDir.cpp \
 	NaDataIO.cpp \
+	NaBinrIO.cpp \
 	NaDynAr.cpp \
 	NaExcept.cpp \
 	NaInfoSt.cpp \
@@ -75,6 +76,7 @@ OBJS	=NaConLaw.o \
 	NaConfig.o \
 	NaDDir.o \
 	NaDataIO.o \
+	NaBinrIO.o \
 	NaDynAr.o \
 	NaExcept.o \
 	NaInfoSt.o \

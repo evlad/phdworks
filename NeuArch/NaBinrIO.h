@@ -1,27 +1,45 @@
 //-*-C++-*-
-/* NaTextIO.h */
-/* $Id: NaTextIO.h,v 1.3 2001-05-19 21:19:08 vlad Exp $ */
+/* NaBinrIO.h */
+/* $Id: NaBinrIO.h,v 1.1 2001-05-19 21:19:08 vlad Exp $ */
 //---------------------------------------------------------------------------
-#ifndef NaTextIOH
-#define NaTextIOH
+#ifndef NaBinrIOH
+#define NaBinrIOH
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <NaDataIO.h>
 
+/* Structure of the file:
+
+   [BinaryDataHeader]
+   Version=1.0
+   VarNum=###
+   VarFmt=??
+   [BinaryDataStream]
+   binary data with little-endian byte order
+*/
+
+// Macro
+#define NaIO_BINARY_HEADER	NaIO_BINARY_MAGIC
+#define NaIO_BINARY_STREAM	"[BinaryDataStream]\n"
+#define NaIO_BIN_HDR_VERSION_KW	"Version="
+#define NaIO_BIN_HDR_VARNUM_KW	"VarNum="
+#define NaIO_BIN_HDR_VARFMT_KW	"VarFmt="
 
 //---------------------------------------------------------------------------
-// Class for simple text data file manipulation.
-class NaTextStreamFile : public NaDataFile
+// Class for simple binary data file manipulation
+class NaBinaryStreamFile : public NaDataFile
 {
 public:
 
     // Create a stream or simply read it
-    NaTextStreamFile (const char* fname,
-                      NaFileMode fm = fmReadOnly);
+    NaBinaryStreamFile (const char* fname,
+			NaFileMode fm = fmReadOnly,
+			NaBinaryDataType bdt = bdtAuto,
+			int var_num = 0);
 
     // Close (and write) file
-    virtual ~NaTextStreamFile ();
+    virtual ~NaBinaryStreamFile ();
 
     //***********************************
     // Per cell operations
@@ -64,20 +82,30 @@ public:
 protected:
 
     // File handle
-    FILE        *fp;
+    FILE	*fp;
 
     // Index of the current record or EOF if so
-    long        iCase;
+    long	iCurLine;
 
-    // Preread current value [nVar]
-    NaReal      *fCurVal;
-
-    // Line buffer
-#define LINE_BUF_SIZE   1024
-    char        szBuf[LINE_BUF_SIZE+1];
+    // Preread current line of values [nVar]
+    void	*vCurLine;
 
     // Number of variables in the line
-    int         nVar;
+    int		nVar;
+
+    // Actual data type
+    NaBinaryDataType	eDataType;
+    size_t	nDataSize;
+
+    // Offset to the 1st byte of binary data stream
+    long	oBinStream;
+
+    // Version (major.minor)
+    int		nVersion[2];
+
+    // Read/write file header
+    void	ReadHeader ();
+    void	WriteHeader ();
 
 };
 
