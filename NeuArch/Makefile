@@ -65,6 +65,8 @@ SRCS	=NaConLaw.cpp \
 	NaVector.cpp \
 	NaParams.cpp \
 	NaPNDerv.cpp \
+	NaPNQIn.cpp \
+	NaPNQOut.cpp \
 	kbdif.cpp
 
 #	NaStaIO.cpp \
@@ -136,6 +138,8 @@ OBJS	=NaConLaw.o \
 	NaVector.o \
 	NaParams.o \
 	NaPNDerv.o \
+	NaPNQIn.o \
+	NaPNQOut.o \
 	kbdif.o
 
 TestNN:	TestNN.o libpnna.a

@@ -1,5 +1,5 @@
 /* NaPNFOut.cpp */
-static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.3 2001-06-03 21:29:36 vlad Exp $";
+static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.4 2001-06-23 08:59:57 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>
@@ -8,7 +8,7 @@ static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.3 2001-06-03 21:29:36 vlad Exp $";
 
 
 //---------------------------------------------------------------------------
-// Create generator node
+// Create node
 NaPNFileOutput::NaPNFileOutput (const char* szNodeName)
 : NaPetriNode(szNodeName),
   ////////////////

@@ -1,5 +1,5 @@
 /* NaPetNod.cpp */
-static char rcsid[] = "$Id: NaPetNod.cpp,v 1.3 2001-05-22 18:18:43 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNod.cpp,v 1.4 2001-06-23 08:59:57 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaStrOps.h"
 #include "NaPetNod.h"
@@ -47,7 +47,7 @@ NaPetriNode::~NaPetriNode ()
 //---------------------------------------------------------------------------
 // Return name of the connector
 NaPetriNet*
-NaPetriNode::net ()
+NaPetriNode::net () const
 {
     return pNet;
 }
@@ -56,7 +56,7 @@ NaPetriNode::net ()
 //---------------------------------------------------------------------------
 // Return name of the connector
 const char*
-NaPetriNode::name ()
+NaPetriNode::name () const
 {
     return szName;
 }
@@ -65,7 +65,7 @@ NaPetriNode::name ()
 //---------------------------------------------------------------------------
 // Return number of connectors
 int
-NaPetriNode::connectors ()
+NaPetriNode::connectors () const
 {
     return pcaPorts.count();
 }
@@ -74,9 +74,9 @@ NaPetriNode::connectors ()
 //---------------------------------------------------------------------------
 // Return pointer to given connector
 NaPetriConnector*
-NaPetriNode::connector (int i)
+NaPetriNode::connector (int i) const
 {
-    return pcaPorts[i];
+    return pcaPorts(i);
 }
 
 
@@ -85,7 +85,7 @@ NaPetriNode::connector (int i)
 // 'true' means the net is dead or node is not linked
 // 'false' means the net is alive and node can't be changed this time
 bool
-NaPetriNode::tunable ()
+NaPetriNode::tunable () const
 {
     return bTunable;
 }
@@ -94,7 +94,7 @@ NaPetriNode::tunable ()
 //---------------------------------------------------------------------------
 // Check whether node is tunable and generate exception
 void
-NaPetriNode::check_tunable ()
+NaPetriNode::check_tunable () const
 {
     if(!tunable())
         throw(na_not_tunable);
@@ -104,7 +104,7 @@ NaPetriNode::check_tunable ()
 //---------------------------------------------------------------------------
 // Get number of past node's activations (incremented after action() call)
 unsigned
-NaPetriNode::activations ()
+NaPetriNode::activations () const
 {
     return nActivations;
 }
@@ -113,7 +113,7 @@ NaPetriNode::activations ()
 //---------------------------------------------------------------------------
 // Get number of past node calls (incremented after activate() call)
 unsigned
-NaPetriNode::calls ()
+NaPetriNode::calls () const
 {
     return nCalls;
 }
@@ -122,11 +122,11 @@ NaPetriNode::calls ()
 //---------------------------------------------------------------------------
 // Check whether the node is waiting for data
 bool
-NaPetriNode::is_waiting ()
+NaPetriNode::is_waiting () const
 {
     int     iCn;
-    for(iCn = 0; iCn < pcaPorts.count(); ++iCn){
-        if(pcaPorts[iCn]->is_waiting()){
+    for(iCn = 0; iCn < connectors(); ++iCn){
+        if(connector(iCn)->is_waiting()){
             return true;
         }
     }

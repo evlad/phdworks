@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNod.h */
-/* $Id: NaPetNod.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPetNod.h,v 1.3 2001-06-23 08:59:57 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNodH
 #define NaPetNodH
@@ -33,33 +33,33 @@ public:
     /////////////////
 
     // Return name of the connector
-    NaPetriNet*         net ();
+    NaPetriNet*         net () const;
 
     // Return name of the connector
-    const char*         name ();
+    const char*         name () const;
 
     // Return number of connectors
-    int                 connectors ();
+    int                 connectors () const;
 
     // Return pointer to given connector
-    NaPetriConnector*   connector (int i);
+    NaPetriConnector*   connector (int i) const;
 
     // Request for external change of some important node parameters
     // 'true' means the net is dead or node is not linked
     // 'false' means the net is alive and node can't be changed this time
-    bool                tunable ();
+    bool                tunable () const;
 
     // Check whether node is tunable and generate exception
-    void                check_tunable ();
+    void                check_tunable () const;
 
     // Get number of past node's activations (incremented after action() call)
-    unsigned            activations ();
+    unsigned            activations () const;
 
     // Get number of past node calls (incremented after activate() call)
-    unsigned            calls ();
+    unsigned            calls () const;
 
     // Check whether the node is waiting for data
-    virtual bool        is_waiting ();
+    virtual bool        is_waiting () const;
 
     // Check whether the node is verbose
     virtual bool        is_verbose () const;

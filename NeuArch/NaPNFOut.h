@@ -1,25 +1,24 @@
 //-*-C++-*-
 /* NaPNFOut.h */
-/* $Id: NaPNFOut.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNFOut.h,v 1.3 2001-06-23 08:59:57 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNFOutH
 #define NaPNFOutH
 
-#include <NaPCnInp.h>
-#include <NaPetNod.h>
+#include <NaPetri.h>
 #include <NaDataIO.h>
 
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: data file writer.
-// Has no input and the only output.  Reads given file value-by-value.
+// Has the only input and no output.  Writes given file value-by-value.
 
 //---------------------------------------------------------------------------
 class NaPNFileOutput : public NaPetriNode
 {
 public:
 
-    // Create generator node
+    // Create node
     NaPNFileOutput (const char* szNodeName = "fileout");
 
     // Destroy the node
