@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.8 2002-02-28 20:19:43 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.9 2004-02-29 09:08:34 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -132,6 +132,10 @@ protected:/* data */
     bool		bStepPrintout;	// step_alive(true)
     bool		bTermPrintout;	// terminate(true)
     bool		bMapPrintout;	// activation map
+
+    // In addition it's possible to make some node to be verbose() by
+    // setting env. variable with name szNodeName_verbose to not an
+    // empty (NULL or "") value at initialization stage
 
     // Array of nodes
     NaPNodePtrAr        pnaNet;
