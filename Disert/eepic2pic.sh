@@ -1,6 +1,13 @@
 #!/bin/sh
 
-for eepic in *.eepic
+if [ -z "$*" ]
+then
+    filelist=*.eepic
+else
+    filelist=$*
+fi
+
+for eepic in $filelist
 do
     pic=${eepic%%.eepic}.pic
     echo "$eepic -> $pic"
