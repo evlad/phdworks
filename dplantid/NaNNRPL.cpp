@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.7 2001-12-15 16:08:29 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.8 2001-12-17 21:50:55 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -23,14 +23,15 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
   nnteacher("nnteacher"),
   bus("bus"),
   errcomp("errcomp"),
-  switcher("switcher"),
-  trig_y("trig_y"),
-  delay_u("delay_u"),
-  delay_y("delay_y"),
   statan("statan"),
   statan_y("statan_y"),
-  land("land"),
-  skip_u("skip_u")
+  delay_u("delay_u"),
+  delay_y("delay_y"),
+  delay_yt("delay_yt"),
+  skip_u("skip_u"),
+  skip_y("skip_y"),
+  skip_yt("skip_yt"),
+  switch_y("switch_y")
 {
     // Nothing to do
 }
@@ -59,36 +60,30 @@ NaNNRegrPlantLearn::link_net ()
 	// Link the network
 	net.link(&in_u.out, &skip_u.in);
 	net.link(&skip_u.out, &delay_u.in);
-	net.link(&in_y.out, &delay_y.in);
-
-	// Additional delay
-        delay_y.add_delay(1);
+	net.link(&in_y.out, &skip_y.in);
+	net.link(&skip_y.out, &delay_y.in);
 
         net.link(&delay_u.dout, &bus.in1);
         net.link(&delay_y.dout, &bus.in2);
         net.link(&bus.out, &nnplant.x);
 
-        net.link(&in_y.out, &statan_y.signal);
-        net.link(&in_y.out, &trig_y.in);
+        net.link(&in_y.out, &skip_yt.in);
+	net.link(&skip_yt.out, &delay_yt.in);
+	net.link(&delay_yt.dout, &statan_y.signal);
+	net.link(&skip_yt.sync, &switch_y.turn);
 
 	if(eAlgoKind == NaTrainingAlgorithm)
 	  {
-	    net.link(&trig_y.out, &nnteacher.desout);
+	    net.link(&delay_yt.dout, &nnteacher.desout);
 	    net.link(&nnplant.y, &nnteacher.nnout);
 	  }
 
-        net.link(&delay_u.sync, &land.in1);
-        net.link(&delay_y.sync, &land.in2);
+	net.link(&in_y.out, &switch_y.in2);
+	net.link(&nnplant.y, &switch_y.in1);
+	net.link(&switch_y.out, &nn_y.in);
 
-	net.link(&land.out, &trig_y.turn);
-        net.link(&land.out, &switcher.turn);
-
-        net.link(&nnplant.y, &switcher.in1);
-        net.link(&in_y.out, &switcher.in2);
-        net.link(&switcher.out, &nn_y.in);
-
-        net.link(&switcher.out, &errcomp.aux);
-        net.link(&in_y.out, &errcomp.main);
+        net.link(&nnplant.y, &errcomp.aux);
+        net.link(&delay_yt.dout, &errcomp.main);
         net.link(&errcomp.cmp, &statan.signal);
     }catch(NaException ex){
         NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
@@ -160,7 +155,13 @@ NaNNRegrPlantLearn::user_break ()
 void
 NaNNRegrPlantLearn::idle_entry ()
 {
-    // Nothing to do
+  // Nothing to do
+  if(delay_u.is_verbose())
+    delay_u.print_status();
+  if(delay_y.is_verbose())
+    delay_y.print_status();
+  if(delay_yt.is_verbose())
+    delay_yt.print_status();
 }
 
 

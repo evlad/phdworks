@@ -28,60 +28,61 @@ class NaNNRegrPlantLearn
 {
 public:/* methods */
 
-    // Create the object
-    NaNNRegrPlantLearn (NaAlgorithmKind akind,
-			const char* szNetName = "nncp2pn");
+  // Create the object
+  NaNNRegrPlantLearn (NaAlgorithmKind akind,
+		      const char* szNetName = "nncp2pn");
 
-    // Destroy the object
-    virtual ~NaNNRegrPlantLearn ();
+  // Destroy the object
+  virtual ~NaNNRegrPlantLearn ();
 
-    ////////////////////
-    // Network phases //
-    ////////////////////
+  ////////////////////
+  // Network phases //
+  ////////////////////
 
-    // Link the network (tune the net before)
-    virtual void        link_net ();
+  // Link the network (tune the net before)
+  virtual void		link_net ();
 
-    // Run the network
-    virtual NaPNEvent   run_net ();
+  // Run the network
+  virtual NaPNEvent	run_net ();
 
 
-    //////////////////
-    // Overloadable //
-    //////////////////
+  //////////////////
+  // Overloadable //
+  //////////////////
 
     // Check for user break
-    virtual bool        user_break ();
+  virtual bool		user_break ();
 
-    // Each cycle callback
-    virtual void        idle_entry ();
+  // Each cycle callback
+  virtual void		idle_entry ();
 
 public:/* data */
 
-    // Main Petri network module
-    NaPetriNet      net;
+  // Main Petri network module
+  NaPetriNet		net;
 
-    // Functional Petri network nodes
-    NaPNFileInput   in_y;       // target plant output
-    NaPNFileInput   in_u;       // preset control force
-    NaPNFileOutput  nn_y;       // NN plant output
-    NaPNTransfer    nnplant;    // NN plant
-    NaPNTeacher     nnteacher;  // NN teacher
-    NaPNBus2i1o     bus;        // ((x,y),e)->NN former
-    NaPNComparator  errcomp;    // error computer
-    NaPNStatistics  statan;     // error estimator
-    NaPNStatistics  statan_y;   // target plant output analyzer
-    NaPNSwitcher    switcher;   // (nno,y)->(y_nn)
-    NaPNTrigger     trig_y;     // pre-teacher y delayer
-    NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
-    NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
-    NaPNLogicalAND  land;       // activate just after delay units are ready
-    NaPNSkip        skip_u;     // skip u(0) due to there is no y(-1) available
+  // Functional Petri network nodes
+  NaPNFileInput		in_y;		// target plant output
+  NaPNFileInput		in_u;		// preset control force
+  NaPNFileOutput	nn_y;		// NN plant output
+  NaPNTransfer		nnplant;	// NN plant
+  NaPNTeacher		nnteacher;	// NN teacher
+  NaPNBus2i1o		bus;		// ((x,y),e)->NN former
+  NaPNComparator	errcomp;	// error computer
+  NaPNStatistics	statan;		// error estimator
+  NaPNStatistics	statan_y;	// target plant output analyzer
+  NaPNDelay		delay_y;	// y -> y(-1), y(-2), ...
+  NaPNDelay		delay_u;	// u -> u(-1), u(-2), ...
+  NaPNDelay		delay_yt;	// delay for target y value
+  NaPNSkip		skip_y;		// skip some y due to u isn't available
+  NaPNSkip		skip_u;		// skip some u due to y isn't available
+  NaPNSkip		skip_yt;	// skip started target y values
+  NaPNSwitcher		switch_y;	// switch output to nn_y
 
 private:/* data */
 
     // Kind of an algorithm
-    NaAlgorithmKind	eAlgoKind;
+  NaAlgorithmKind	eAlgoKind;
 
 };
 

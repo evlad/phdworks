@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.9 2001-12-15 16:08:29 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.10 2001-12-17 21:50:55 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -98,41 +98,41 @@ main (int argc, char* argv[])
     nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
-    /* Equalize delay to provide synchronous start of delay_u and
-       delay_y nodes */
     unsigned	iDelay_u = nnrol.delay_u.get_max_delay();
     unsigned	iDelay_y = nnrol.delay_y.get_max_delay();
-    if(iDelay_u < iDelay_y)
-      {
-	iDelay_u = iDelay_y - iDelay_u;
-	iDelay_y = 0;
-      }
-    else if(iDelay_u > iDelay_y)
-      {
-	iDelay_y = iDelay_u - iDelay_y;
-	iDelay_u = 0;
-      }
-    else /* if(iDelay_u == iDelay_y) */
-      {
-	iDelay_y = 0;
-	iDelay_u = 0;
-      }
+    unsigned	iSkip_u, iSkip_y;
+    unsigned	iDelay_yt, iSkip_yt;
 
-    // Skip u(0) due to y(-1) and earlier are not available in series
-    nnrol.skip_u.set_skip_number(1);
-    nnroe.skip_u.set_skip_number(1);
+    // Skip u or y due to absent earlier values of y or u
+    if(iDelay_y >= iDelay_u)
+      {
+	iSkip_u = iDelay_y - iDelay_u + 1;
+      }
+    else /* if(iDelay_u > iDelay_y) */
+      {
+	iSkip_y = iDelay_u - iDelay_y - 1;
+      }
+    iDelay_yt = iDelay_y + iSkip_y;
+    iSkip_yt = 1 + iDelay_yt;
 
-    // Provide equalization
-    nnrol.delay_y.add_delay(iDelay_y);
-    nnrol.delay_u.add_delay(iDelay_u);
+    nnrol.skip_u.set_skip_number(iSkip_u);
+    nnroe.skip_u.set_skip_number(iSkip_u);
+
+    nnrol.skip_y.set_skip_number(iSkip_y);
+    nnroe.skip_y.set_skip_number(iSkip_y);
+
+    // Additional delay for target value
+    nnrol.skip_yt.set_skip_number(iSkip_yt);
+    nnrol.delay_yt.set_delay(0);
+    nnrol.delay_yt.add_delay(iDelay_yt);
+
+    nnroe.skip_yt.set_skip_number(iSkip_yt);
+    nnroe.delay_yt.set_delay(0);
+    nnroe.delay_yt.add_delay(iDelay_yt);
 
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
-
-    // Provide the same equalization for evaluation petri net
-    nnroe.delay_y.add_delay(iDelay_y);
-    nnroe.delay_u.add_delay(iDelay_u);
 
     // Configure learning parameters
     nnrol.nnteacher.lpar.eta = atof(par("eta"));
