@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.14 2004-04-05 22:01:49 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.15 2004-04-06 00:16:10 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -379,7 +379,6 @@ int main(int argc, char **argv)
       {
 	// Set autoupdate facility
 	nnocl.nnteacher.set_auto_update_freq(auf);
-	nnocl.errbackprop.set_auto_reset_freq(auf);
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
 	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
