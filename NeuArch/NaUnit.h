@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaUnit.h */
-/* $Id: NaUnit.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
+/* $Id: NaUnit.h,v 1.3 2001-11-18 17:13:56 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaUnitH
 #define NaUnitH
@@ -76,9 +76,9 @@ public:
     // Return feedback depth
     virtual unsigned    FeedbackDepth () const;
 
-    //=====================\\
-    // NaLogging inherited \\
-    //=====================\\
+    /*=====================*
+     * NaLogging inherited *
+     *=====================*/
 
     virtual void    PrintLog () const;
 
