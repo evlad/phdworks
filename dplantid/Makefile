@@ -1,9 +1,10 @@
-PROGRAM	=dplantid
+PROGRAMS	=dplantid \
+		dnnplant
 
-all:	$(PROGRAM)
+all:	$(PROGRAMS)
 
-install:	$(PROGRAM)
-	cp $(PROGRAM) $(HOME)/bin
+install:	$(PROGRAMS)
+	cp $(PROGRAMS) $(HOME)/bin
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
@@ -11,16 +12,27 @@ LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
 
 
 SRCS	=dplantid.cpp \
+	dnnplant.cpp \
 	NaNNRPL.cpp
 
-OBJS	=dplantid.o \
-	NaNNRPL.o
+OBJS	=$(common_OBJS) \
+	$(dplantid_OBJS) \
+	$(dnnplant_OBJS)
 
-$(PROGRAM):	$(OBJS) $(LIBS)
-	g++ -o $@ $(OBJS) $(LIBS) -lm
+common_OBJS	=NaNNRPL.o
+
+dplantid_OBJS	=dplantid.o
+
+dnnplant_OBJS	=dnnplant.o
+
+dplantid:	$(dplantid_OBJS) $(common_OBJS) $(LIBS)
+	g++ -o $@ $(dplantid_OBJS) $(common_OBJS) $(LIBS) -lm
+
+dnnplant:	$(dnnplant_OBJS) $(common_OBJS) $(LIBS)
+	g++ -o $@ $(dnnplant_OBJS) $(common_OBJS) $(LIBS) -lm
 
 clean:
-	-@rm -f $(OBJS) $(PROGRAM)
+	-@rm -f $(OBJS) $(PROGRAMS)
 
 .cpp.o:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
