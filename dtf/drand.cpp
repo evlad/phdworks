@@ -1,5 +1,5 @@
 /* drand.cpp */
-static char rcsid[] = "$Id: drand.cpp,v 1.2 2001-04-19 18:48:39 vlad Exp $";
+static char rcsid[] = "$Id: drand.cpp,v 1.3 2001-06-24 18:07:40 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -29,7 +29,7 @@ main (int argc, char* argv[])
       fprintf(stderr,
 	      "Usage: drand Length Mean StdDev [DiscrTrFunc]\n"\
 	      "    or drand InputSeries DiscrTrFunc\n"\
-	      "DRAND_SAFE=something to protect the same seed in srand()\n");
+	      "DRAND_SAFE=something to avoid the same seed in srand()\n");
       return 1;
     }
 
