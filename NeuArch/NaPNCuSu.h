@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNCuSu.h */
-/* $Id: NaPNCuSu.h,v 1.1 2003-06-23 05:22:47 vlad Exp $ */
+/* $Id: NaPNCuSu.h,v 1.2 2003-07-07 20:24:09 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNCuSuH
 #define NaPNCuSuH
@@ -61,17 +61,8 @@ public:
   // Phases of network //
   ///////////////////////
 
-  // 1. Open input data (pure output nodes) and get their dimensions
-  virtual void	open_input_data ();
-
   // 2. Link connectors inside the node
   virtual void	relate_connectors ();
-
-  // 3. Open output data (pure input nodes) and set their dimensions
-  virtual void	open_output_data ();
-
-  // 4. Allocate resources for internal usage
-  virtual void	allocate_resources ();
 
   // 5. Verification to be sure all is OK (true)
   virtual bool	verify ();
@@ -79,17 +70,8 @@ public:
   // 6. Initialize node activity and setup starter flag if needed
   virtual void	initialize (bool& starter);
 
-  // 7. Do one step of node activity and return true if succeeded
-  virtual bool	activate ();
-
   // 8. True action of the node (if activate returned true)
   virtual void	action ();
-
-  // 9. Finish data processing by the node (if activate returned true)
-  virtual void	post_action ();
-
-  // 10. Deallocate resources and close external data
-  virtual void	release_and_close ();
 
 protected:/* methods */
 
