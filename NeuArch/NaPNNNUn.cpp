@@ -1,5 +1,5 @@
 /* NaPNNNUn.cpp */
-static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.2 2001-12-23 14:21:49 vlad Exp $";
+static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.3 2001-12-23 14:40:59 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNNNUn.h"
@@ -79,8 +79,9 @@ NaPNNNUnit::push_nn ()
     deck.addh(*nn);
   }
 
-  NaPrintLog("NaPNNNUnit::push_nn(%s.%s, %p) --> %u items stored\n",
-	     net()->name(), name(), this, deck.count());
+  if(is_verbose())
+    NaPrintLog("NaPNNNUnit::push_nn(%s.%s, %p) --> %u items stored\n",
+	       net()->name(), name(), this, deck.count());
 }
 
 
@@ -92,8 +93,9 @@ NaPNNNUnit::pop_nn (NaNNUnit& nnunit)
   nnunit = deck(0);
   deck.remove(0);
 
-  NaPrintLog("NaPNNNUnit::pop_nn(%s.%s, %p) --> %u items stored left\n",
-	     net()->name(), name(), this, deck.count());
+  if(is_verbose())
+    NaPrintLog("NaPNNNUnit::pop_nn(%s.%s, %p) --> %u items stored left\n",
+	       net()->name(), name(), this, deck.count());
 }
 
 
