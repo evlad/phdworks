@@ -89,8 +89,9 @@ public:/* data */
   NaPNSum         sum_on;     // plant + noise summator
   NaPNComparator  iderrcomp;  // identification error computer
   NaPNStatistics  iderrstat;  // identification error statistics
-  NaPNComparator  cerrcomp;   // control error computer
+  NaPNComparator  cerrcomp;   // control error computer (r_k-y_k)
   NaPNStatistics  cerrstat;   // control error statistics
+  NaPNComparator  devcomp;    // deviation computation (r_k-y_{k-1})
   NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
   NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
   NaPNFetcher     errfetch;   // fetch control error 
@@ -102,6 +103,7 @@ public:/* data */
   NaPNSkip        skip_u;     // skip some u due to y isn't available
   NaPNSkip        skip_e;     // pre-teacher e delayer
   NaPNSkip        skip_ny;    // skip some not meaning n+y values
+  NaPNSkip        skip_r;     // skip first reference tick due to starter
   NaPNFill        fill_nn_y;  // fill by zeros nn_y output to fit on_y
 
   NaPNFileOutput  c_in;       // logging controller input

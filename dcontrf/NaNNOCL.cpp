@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.3 2002-01-15 12:41:48 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.4 2002-02-28 20:18:54 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -40,6 +40,8 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
     iderrstat("iderrstat"),
     cerrcomp("cerrcomp"),
     cerrstat("cerrstat"),
+    devcomp("devcomp"),
+    skip_r("skip_r"),
     skip_e("skip_e"),
     skip_u("skip_u"),
     skip_y("skip_y"),
@@ -85,37 +87,44 @@ NaNNOptimContrLearn::link_net ()
       {
       case NaNeuralContrER:
 	if(0 == nSeriesLen){
-	  net.link(&setpnt_inp.out, &bus_c.in1);
-	  net.link(&setpnt_inp.out, &cerrcomp.main);
+	  net.link_1n(&setpnt_inp.out,
+		      &bus_c.in1, &skip_r.in, &cerrcomp.main, NULL);
 	}else{
-	  net.link(&setpnt_gen.y, &bus_c.in1);
-	  net.link(&setpnt_gen.y, &setpnt_out.in);
-	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	  net.link_1n(&setpnt_gen.y,
+		      &setpnt_out.in,
+		      &bus_c.in1, &skip_r.in, &cerrcomp.main, NULL);
 	}
-	net.link(&cerrcomp.cmp, &bus_c.in2);
+	net.link(&skip_r.out, &devcomp.main);
+	net.link(&devcomp.cmp, &bus_c.in2);
 	net.link(&bus_c.out, &nncontr.x);
 	break;
       case NaNeuralContrDelayedE:
 	if(0 == nSeriesLen){
-	  net.link(&setpnt_inp.out, &cerrcomp.main);
+	  net.link_1n(&setpnt_inp.out,
+		      &skip_r.in, &cerrcomp.main, NULL);
 	}
 	else{
-	  net.link(&setpnt_gen.y, &setpnt_out.in);
-	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	  net.link_1n(&setpnt_gen.y,
+		      &setpnt_out.in,
+		      &skip_r.in, &cerrcomp.main, NULL);
 	}
-	net.link(&cerrcomp.cmp, &delay_c.in);
+	net.link(&skip_r.out, &devcomp.main);
+	net.link(&devcomp.cmp, &delay_c.in);
 	net.link(&delay_c.dout, &nncontr.x);
 	break;
       case NaNeuralContrEdE:
 	if(0 == nSeriesLen){
-	  net.link(&setpnt_inp.out, &cerrcomp.main);
+	  net.link_1n(&setpnt_inp.out,
+		      &skip_r.in, &cerrcomp.main, NULL);
 	}
 	else{
-	  net.link(&setpnt_gen.y, &setpnt_out.in);
-	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	  net.link_1n(&setpnt_gen.y,
+		      &setpnt_out.in,
+		      &skip_r.in, &cerrcomp.main, NULL);
 	}
-	net.link(&cerrcomp.cmp, &bus_c.in1);
-	net.link(&cerrcomp.cmp, &delta_e.x);
+	net.link(&skip_r.out, &devcomp.main);
+	net.link(&devcomp.cmp, &bus_c.in1);
+	net.link(&devcomp.cmp, &delta_e.x);
 	net.link(&delta_e.dx, &bus_c.in2);
 	net.link(&bus_c.out, &nncontr.x);
 	break;
@@ -161,8 +170,9 @@ NaNNOptimContrLearn::link_net ()
     net.link(&nnplant.y, &fill_nn_y.in);
     net.link(&fill_nn_y.out, &nn_y.in);
 
+    net.link(&on_y.out, &devcomp.aux);
     net.link(&on_y.out, &cerrcomp.aux);
-    net.link(&cerrcomp.cmp, &cerrstat.signal);
+    net.link(&skip_e.out, &cerrstat.signal);
 
     if(0 == nSeriesLen){
       net.link(&cerrstat.stat, &cerr_qout.in);
@@ -191,7 +201,8 @@ NaNNOptimContrLearn::run_net ()
     rMain.init_value(1.);
     rAux.init_value(-1.);
 
-    cerrcomp.cmp.set_starter(rZero);
+    skip_r.set_skip_number(1);
+    devcomp.cmp.set_starter(rZero);
     sum_on.set_gain(rMain, rAux);
 
     net.set_timing_node((0==nSeriesLen)
