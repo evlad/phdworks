@@ -64,6 +64,7 @@ SRCS	=NaConLaw.cpp \
 	NaUnit.cpp \
 	NaVector.cpp \
 	NaParams.cpp \
+	NaPNDerv.cpp \
 	kbdif.cpp
 
 #	NaStaIO.cpp \
@@ -134,10 +135,14 @@ OBJS	=NaConLaw.o \
 	NaUnit.o \
 	NaVector.o \
 	NaParams.o \
+	NaPNDerv.o \
 	kbdif.o
 
 TestNN:	TestNN.o libpnna.a
 	$(LINK.cpp) -o $@ TestNN.o libpnna.a ../Matrix.041/libmatrix.a -lm
+
+TestTF:	TestTF.o libpnna.a
+	$(LINK.cpp) -o $@ TestTF.o libpnna.a ../Matrix.041/libmatrix.a -lm
 
 clean:
 	-@rm -f $(OBJS)

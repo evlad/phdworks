@@ -1,13 +1,13 @@
 /* TestTF.cpp */
-static char rcsid[] = "$Id: TestTF.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
+static char rcsid[] = "$Id: TestTF.cpp,v 1.3 2001-06-18 19:15:55 vlad Exp $";
 
 #pragma hdrstop
-#include <condefs.h>
+//#include <condefs.h>
 
 #include "NaTrFunc.h"
 
 //---------------------------------------------------------------------------
-USELIB("NeuArch.lib");
+//USELIB("NeuArch.lib");
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)
