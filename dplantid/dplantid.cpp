@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.13 2002-02-14 14:15:22 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.14 2004-02-15 21:07:22 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -35,6 +35,8 @@ main (int argc, char* argv[])
 
   try{
     NaParams	par(argv[1]);
+
+    NaPrintLog("Run dplantid with %s\n", argv[1]);
 
     // Read neural network from file
     NaNNUnit            au_nn;
@@ -133,9 +135,9 @@ main (int argc, char* argv[])
     nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
-    printf("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
-    printf("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
-    printf("delay_yt=%d,  skip_yt=%d\n", iDelay_yt, iSkip_yt);
+    NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+    NaPrintLog("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+    NaPrintLog("delay_yt=%d,  skip_yt=%d\n", iDelay_yt, iSkip_yt);
 
     // Duplicate input y series at the same time ticks as nn_y
     nnrol.fetch_y.set_output(0);
@@ -379,6 +381,7 @@ main (int argc, char* argv[])
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+    fprintf(stderr, "EXCEPTION: %s\n", NaExceptionMsg(ex));
   }
 
   return 0;
