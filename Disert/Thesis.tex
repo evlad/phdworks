@@ -1,12 +1,14 @@
-% $Id: Thesis.tex,v 1.13 2002-11-19 10:35:34 vlad Exp $
+% -*-coding: koi8-r;-*-
+% $Id: Thesis.tex,v 1.14 2005-02-10 20:58:08 evlad Exp $
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ЁшпрщКы Дпыш
+% Главный файл
 \documentclass[12pt,draft]{rusthesis}
 %\documentclass[12pt,a4paper,draft]{report}
 %\documentclass[12pt,a4paper,draft]{article}
 \usepackage[T2A]{fontenc}
 %\usepackage[cp1251]{inputenc}
-\usepackage[iso88595]{inputenc}
+%\usepackage[iso88595]{inputenc}
+\usepackage[koi8-r]{inputenc}
 \usepackage{graphics}
 \usepackage{latexcad}
 \usepackage{amsmath}
@@ -19,7 +21,9 @@
 \bibliographystyle{plain}
 
 %\language=1 %cp1251
-\language=6 %iso88595
+\language=4
+%\Russian
+%=6 %iso88595
 
 % My macros
 \newcommand\tablref[1]{\cyrt\cyra\cyrb\cyrl.~\ref{#1}}
@@ -44,16 +48,16 @@
 % Gauss Distribution parameters
 \newcommand{\GaDi}[2]{$(#1;#2)$}
 
-% ©чврчшьБЛ ъуЮущчАК трЦЕ ъчАшутщьЕ яЦзр Ашчрп
+% Позволить переносы двух последних букв слова
 \righthyphenmin=2
 
-% ╢чъчшщьБушЛщКу ъуЮущчАК
-\hyphenation{чХья-зь чяКГ-щч АьА-Буэ щу-ъч-АЮут-АБрущ-щч-сч
-ЦА-ъуХ-щч Юпв-яЮч-Ап Юпв-яЮчА пр-Бч-Юус-ЮуА-Аьь чт-щч-рЮу-эущ-щч
-щу-ГуБ-зч-шч-сь-Гу-Азьы
+% Дополнительные переносы
+\hyphenation{ошиб-ки обыч-но сис-тем не-по-сред-ствен-но-го
+ус-пеш-но раз-бро-са раз-брос ав-то-рег-рес-сии од-но-вре-мен-но
+не-чет-ко-ло-ги-че-ский
 back-pro-pa-ga-tion out-put}
 
-% ╫ЦэуЮпФьО АчрАуэ эушзьЕ ъЦщзБчр
+% Нумерация совсем мелких пунктов
 \newcounter{subbbcounter}[subsubsection]
 \renewcommand{\thesubbbcounter}{%
 \arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
@@ -62,7 +66,7 @@ back-pro-pa-ga-tion out-put}
 \refstepcounter{subbbcounter}%
 {\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
 
-% ╡КрчтК
+% Выводы
 %\makeatletter
 %\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
 %\newcommand{\conclusion}[1]{\section*{#1}%
@@ -75,66 +79,66 @@ back-pro-pa-ga-tion out-put}
 \input{txdtools.tex}
 \input{blockdiagram.tex}
 
-% ╢шО эпзЮчАчр texdraw ЦАБпщчрьБЛ ЦэчшГпБушЛщчы утьщьФуы ьвэуЮущьО эьшшьэуБЮК
+% Для макросов texdraw установить умолчательной единицей измерения миллиметры
 %texdraw \everytexdraw{\drawdim mm}
 
-\title{аБчЕпАБьГуАзьы зрпвьчъБьэпшЛщКы щуыЮчАуБурчы ЮусЦшОБчЮ}
+\title{Стохастический квазиоптимальный нейросетевой регулятор}
 
-\author{╣шьАуур ╡шптьэьЮ ╩учщьтчрьГ}
+\author{Елисеев Владимир Леонидович}
 
 \begin{document}
 
-% бьБЦшЛщКу АБЮпщьФК
+% Титульные страницы
 %\maketitle
 
-% ╬сшпршущьу
+% Оглавление
 \setcounter{tocdepth}{4}\tableofcontents
 %\newpage
 
-% ╡рутущьу
-\chapter*{╡рутущьу}
-\addcontentsline{toc}{chapter}{╡рутущьу}
+% Введение
+\chapter*{Введение}
+\addcontentsline{toc}{chapter}{Введение}
 \input{Intro.tex}
 
-% Ёшпрп 1 - ╬явчЮ шьБуЮпБЦЮК
-\chapter{╬явчЮ ь пщпшьв эуБчтчр щуыЮчАуБурчсч ЦъЮпршущьО}
-%\chapter{╫уыЮчщщКу АуБь р АьАБуэпЕ ЦъЮпршущьО}
+% Глава 1 - Обзор литературы
+\chapter{Обзор и анализ методов нейросетевого управления}
+%\chapter{Нейронные сети в системах управления}
 \input{Part1_New.tex}
 
-% Ёшпрп 2 - аБчЕпАБьГуАзчу чъБьэпшЛщчу ЦъЮпршущьу
-\chapter{╪уБчтьзп щуыЮчАуБурчсч чъБьэпшЛщчсч ЦъЮпршущьО}
+% Глава 2 - Стохастическое оптимальное управление
+\chapter{Методика нейросетевого оптимального управления}
 \input{Part2.tex}
 
-% Ёшпрп 3 - аЮпрщьБушЛщКу МзАъуЮьэущБК А ©╦╢, ╡ьщуЮчрАзьэ ь щуыЮчАуБурКэ
-%           чъБьэпшЛщКэь ЮусЦшОБчЮпэь
-\chapter{аЮпрщьБушЛщКу МзАъуЮьэущБК А ©╦╢, ╡ьщуЮчрАзьэ ь щуыЮчАуБурКэ
-         чъБьэпшЛщКэь ЮусЦшОБчЮпэь}
+% Глава 3 - Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+%           оптимальными регуляторами
+\chapter{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+         оптимальными регуляторами}
 \input{Part3.tex}
 
-% Ёшпрп 3 - ╟тпъБьрщчу ЦъЮпршущьу
-% \chapter{╟тпъБьрщчу ЦъЮпршущьу}
+% Глава 3 - Адаптивное управление
+% \chapter{Адаптивное управление}
 % \input{Part3.tex}
 
-% Ёшпрп 4 - ╦щАБЮЦэущБпшЛщКу ъЮчсЮпээщКу АЮутАБрп
-% \chapter{╦щАБЮЦэущБпшЛщКу ъЮчсЮпээщКу АЮутАБрп}
-%\chapter{цъЮпршущьу эчяьшЛщКэ ЮчячБчэ}
-%\input{Part4.tex}
+% Глава 4 - Инструментальные программные средства
+% \chapter{Инструментальные программные средства}
+\chapter{Управление мобильным роботом}
+\input{Part4.tex}
 
-% ╠ьяшьчсЮпДьО
+% Библиография
 \bibliography{Bibliogr}
 
-% ©ЮьшчжущьО
+% Приложения
 %\appendix
 
-% ©Юьшчжущьу 1 - мзАъуЮьэущБК
-%\section{аЮпрщьБушЛщКу МзАъуЮьэущБК А ©╦╢, ╡ьщуЮчрАзьэ ь щуыЮчАуБурКэ
-%         чъБьэпшЛщКэь ЮусЦшОБчЮпэь}
+% Приложение 1 - Эксперименты
+%\section{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+%         оптимальными регуляторами}
 %\input{Appendix1.tex}
 
-%\chapter{╡Крчт зьщуэпБьГуАзьЕ ЦЮпрщущьы трьжущьО эпОзп р ъчшу
-%         вЮущьО рьтучзпэуЮК эчяьшЛщчсч ЮчячБп}
-%\input{AppendixMobotKin.tex}
+%\chapter{Вывод кинематических уравнений движения маяка в поле
+%         зрения видеокамеры мобильного робота}
+\input{AppendixMobotKin.tex}
 
 \end{document}
 
-% ╨чщуФ сшпрщчсч Дпышп
+% Конец главного файла
