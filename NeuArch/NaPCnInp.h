@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPCnInp.h */
-/* $Id: NaPCnInp.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaPCnInp.h,v 1.3 2004-04-04 23:53:32 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPCnInpH
 #define NaPCnInpH
@@ -20,7 +20,7 @@ class NaPetriCnOutput;  // Adjoint connector
 //---------------------------------------------------------------------------
 class NaPetriCnInput : public NaPetriConnector
 {
-    friend  NaPetriCnOutput;
+    friend class NaPetriCnOutput;
 
 public:
 
