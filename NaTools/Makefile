@@ -1,4 +1,4 @@
-PROGRAMS=UNGen MakeNN Distr2D StatAn ResetNN
+PROGRAMS=UNGen MakeNN Distr2D StatAn ResetNN FileCvt
 
 all:	$(PROGRAMS)
 
@@ -23,6 +23,9 @@ ResetNN:	ResetNN.o $(LIBS)
 
 UNGen:	UNGen.o $(LIBS)
 	g++ -o $@ UNGen.o $(LDFLAGS) $(LIBS)
+
+FileCvt:	FileCvt.o $(LIBS)
+	g++ -o $@ FileCvt.o $(LDFLAGS) $(LIBS)
 
 clean:
 	-@rm -f *.o $(PROGRAMS)

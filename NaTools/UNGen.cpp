@@ -1,4 +1,3 @@
-
 #ifndef unix
 #pragma hdrstop
 #include <condefs.h>
@@ -71,8 +70,8 @@ int main(int argc, char **argv)
         NaControlLaw        au_setpoint(10);
         NaLinearNoiseGen    au_linnoise(10);
 
-        // List of configurable units
-        NaConfigPart    *conf_list[] = {
+        // List of configurable units
+        NaConfigPart    *conf_list[] = {
             &sysschema,
             &au_setpoint,
             &au_linnoise
