@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.10 2004-02-15 20:39:49 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.11 2004-02-22 14:20:56 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -134,16 +134,16 @@ ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
 #pragma argsused
 int main(int argc, char **argv)
 {
-  if(2 != argc)
+  if(argc < 2)
     {
-      fprintf(stderr, "Usage: dcontrf ParamFile\n");
+      fprintf(stderr, "Usage: dcontrf ParamFile [Extra name=value pairs]\n");
       return 1;
     }
 
   NaOpenLogFile("dcontrf.log");
 
   try{
-    NaParams	par(argv[1]);
+    NaParams	par(argv[1], argc - 2, argv + 2);
 
     NaPrintLog("Run dcontrf with %s\n", argv[1]);
 

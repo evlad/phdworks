@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.10 2004-02-15 21:17:58 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.11 2004-02-22 14:19:49 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -27,16 +27,16 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.10 2004-02-15 21:17:58 vlad Exp $";
 #pragma argsused
 int main(int argc, char **argv)
 {
-  if(2 != argc)
+  if(argc < 2)
     {
-      fprintf(stderr, "Usage: dcsloop ParamFile\n");
+      fprintf(stderr, "Usage: dcsloop ParamFile [Extra name=value pairs]\n");
       return 1;
     }
 
   NaOpenLogFile("dcsloop.log");
 
   try{
-    NaParams	par(argv[1]);
+    NaParams	par(argv[1], argc - 2, argv + 2);
 
     NaPrintLog("Run dcsloop with %s\n", argv[1]);
 

@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.14 2004-02-15 21:07:22 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.15 2004-02-22 14:20:02 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -25,16 +25,16 @@ static char rcsid[] = "$Id: dplantid.cpp,v 1.14 2004-02-15 21:07:22 vlad Exp $";
  ***********************************************************************/
 main (int argc, char* argv[])
 {
-  if(2 != argc)
+  if(argc < 2)
     {
-      fprintf(stderr, "Usage: dplantid ParamFile\n");
+      fprintf(stderr, "Usage: dplantid ParamFile [Extra name=value pairs]\n");
       return 1;
     }
 
   NaOpenLogFile("dplantid.log");
 
   try{
-    NaParams	par(argv[1]);
+    NaParams	par(argv[1], argc - 2, argv + 2);
 
     NaPrintLog("Run dplantid with %s\n", argv[1]);
 
