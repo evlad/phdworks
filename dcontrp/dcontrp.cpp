@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.7 2001-12-03 21:25:23 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.8 2001-12-09 12:49:40 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -266,6 +266,17 @@ int main(int argc, char **argv)
 	    {
 	      NaPrintLog("Test MSE reached preset value %g -> stop\n",
 			 fFinishOnReachMSE);
+	      break;
+	    }
+	  if(fFinishOnDecrease != 0 &&
+	     fPrevTestMSE - fNormTestMSE > 0 &&
+	     fPrevTestMSE - fNormTestMSE <= fFinishOnDecrease)
+	    {
+	      NaPrintLog("Test MSE became lower: %g -> %g = %g\n",
+			 fPrevTestMSE, fNormTestMSE,
+			 fPrevTestMSE - fNormTestMSE);
+	      NaPrintLog("Test MSE decrease less than predefined %g -> stop\n",
+			 fFinishOnDecrease);
 	      break;
 	    }
 	  if(fPrevTestMSE < fNormTestMSE)
