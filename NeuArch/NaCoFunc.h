@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaCoFunc.h */
-/* $Id: NaCoFunc.h,v 1.1 2002-02-16 21:34:41 vlad Exp $ */
+/* $Id: NaCoFunc.h,v 1.2 2003-06-11 19:11:11 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaCoFuncH
 #define NaCoFuncH
@@ -83,6 +83,11 @@ protected:
 
   // Configuration file
   NaConfigFile	conf_file;
+
+private:
+
+  // Time sample
+  int		iTime;
 
 };
 

@@ -1,5 +1,5 @@
 /* NaCoFunc.cpp */
-static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.2 2002-03-19 21:56:00 vlad Exp $";
+static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.3 2003-06-11 19:11:11 vlad Exp $";
 
 #include <string.h>
 #include <stdlib.h>
@@ -8,6 +8,18 @@ static char rcsid[] = "$Id: NaCoFunc.cpp,v 1.2 2002-03-19 21:56:00 vlad Exp $";
 #include "NaCuFunc.h"
 
 #include "NaCoFunc.h"
+
+
+#define NaInfinity	(-1)
+
+
+//-----------------------------------------------------------------------
+// Reference to unit with time range of it's activity
+struct NaTimedUnit
+{
+  NaUnit	*pUnit;		// reference to computational unit
+  int		nTimeRange[2];	// -1 means +oo (Infinity)
+};
 
 
 //-----------------------------------------------------------------------
@@ -23,8 +35,8 @@ NaCombinedFunc::NaRegCombinedFunc ()
 // Make empty combined function
 NaCombinedFunc::NaCombinedFunc ()
   : NaConfigPart(NaTYPE_CombinedFunc),
-    nParts(0), pParts(NULL),
-    conf_file(";NeuCon combined function", 1, 0, ".cof")
+    nParts(0), pParts(NULL), iTime(0),
+    conf_file(";NeuCon combined function", 1, 1, ".cof")
 {
   // Nothing to do
 }
@@ -58,8 +70,18 @@ NaCombinedFunc::PrintLog (const char* szIndent) const
   NaPrintLog("%sCombined function %s:\n", indent,
 	     (NULL == GetInstance())? "": GetInstance());
   for(i = 0; i < nParts; ++i){
-    NaPrintLog("%s  %s %s\n", indent,
-	       pParts[i]->GetType(), pParts[i]->GetInstance());
+    NaTimedUnit	*tu = (NaTimedUnit*)pParts[i]->pSelfData;
+    if(0 == tu->nTimeRange[0] && NaInfinity == tu->nTimeRange[1])
+      NaPrintLog("%s  %s %s\n", indent,
+		 pParts[i]->GetType(), pParts[i]->GetInstance());
+    else if(NaInfinity == tu->nTimeRange[1])
+      NaPrintLog("%s  %s %s  [%d..+oo]\n", indent,
+		 pParts[i]->GetType(), pParts[i]->GetInstance(),
+		 tu->nTimeRange[0]);
+    else
+      NaPrintLog("%s  %s %s  [%d..%d]\n", indent,
+		 pParts[i]->GetType(), pParts[i]->GetInstance(),
+		 tu->nTimeRange[0], tu->nTimeRange[1]);
   }
 }
 
@@ -78,6 +100,12 @@ NaCombinedFunc::Empty () const
 void
 NaCombinedFunc::Clean ()
 {
+  unsigned	i;
+  for(i = 0; i < nParts; ++i){
+    NaTimedUnit	*tu = (NaTimedUnit*)pParts[i]->pSelfData;
+    delete tu;
+  }
+
   nParts = 0;
   delete[] pParts;
 }
@@ -95,9 +123,10 @@ NaCombinedFunc::Reset ()
 {
   unsigned	i;
   for(i = 0; i < nParts; ++i){
-    NaUnit	*pUnit = (NaUnit*)pParts[i]->pSelfData;
-    pUnit->Reset();
+    NaTimedUnit	*tu = (NaTimedUnit*)pParts[i]->pSelfData;
+    tu->pUnit->Reset();
   }
+  iTime = 0;
 }
 
 
@@ -108,18 +137,23 @@ void
 NaCombinedFunc::Function (NaReal* x, NaReal* y)
 {
   unsigned	i;
-  NaReal	tmp;
+  NaReal	tmp = *x;
 
   for(i = 0; i < nParts; ++i){
-    NaUnit	*pUnit = (NaUnit*)pParts[i]->pSelfData;
-    if(0 == i)
-      pUnit->Function(x, &tmp);
-    else{
-      pUnit->Function(&tmp, y);
+    NaTimedUnit	*tu = (NaTimedUnit*)pParts[i]->pSelfData;
+
+    if(iTime >= tu->nTimeRange[0] &&
+       (NaInfinity == tu->nTimeRange[1] ||
+	iTime < tu->nTimeRange[1])){
+      // Activate function only in case of 1) eternal time range or 2)
+      // current time index is in time range of the unit
+      tu->pUnit->Function(&tmp, y);
       tmp = *y;
     }
   }
   *y = tmp;
+
+  ++iTime;
 }
 
 
@@ -142,6 +176,7 @@ NaCombinedFunc::Save (NaDataStream& ds)
 struct item_t {
   char	*szType;
   char	*szInstance;
+  int	nTimeRange[2];
 };
 
 
@@ -159,10 +194,12 @@ NaCombinedFunc::Load (NaDataStream& ds)
   // Read line-by-line
   while(true){
     try{
-      char	*szType, *szInstance, *s = ds.GetData();
+      char	*szType, *szInstance, *szStartTime, *szEndTime;
 
-      szType = strtok(s, " ");
+      szType = strtok(ds.GetData(), " ");
       szInstance = strtok(NULL, " ");
+      szStartTime = strtok(NULL, " ");
+      szEndTime = strtok(NULL, " ");
 
       if(NULL == szType || NULL == szInstance)
 	continue;
@@ -175,6 +212,22 @@ NaCombinedFunc::Load (NaDataStream& ds)
 
       item.szType = new char[strlen(szType) + 1];
       item.szInstance = new char[strlen(szInstance) + 1];
+
+      if(NULL != szStartTime && NULL != szEndTime)
+	{
+	  item.nTimeRange[0] = atoi(szStartTime);
+	  item.nTimeRange[1] = atoi(szEndTime);
+	}
+      else if(NULL != szStartTime && NULL == szEndTime)
+	{
+	  item.nTimeRange[0] = atoi(szStartTime);
+	  item.nTimeRange[1] = NaInfinity;
+	}
+      else // time range is not defined, so define eternal time range
+	{
+	  item.nTimeRange[0] = 0;
+	  item.nTimeRange[1] = NaInfinity;
+	}
 
       strcpy(item.szType, szType);
       strcpy(item.szInstance, szInstance);
@@ -197,14 +250,21 @@ NaCombinedFunc::Load (NaDataStream& ds)
 
   unsigned	i;
   for(i = 0; i < nParts; ++i){
+    NaTimedUnit	*tu = new NaTimedUnit;
+
+    tu->nTimeRange[0] = items[i].nTimeRange[0];
+    tu->nTimeRange[1] = items[i].nTimeRange[1];
+
     if(!strcmp(items[i].szType, NaTYPE_TransFunc)){
       NaTransFunc	*p = new NaTransFunc;
       pParts[i] = p;
-      pParts[i]->pSelfData = (NaUnit*)p;
+      tu->pUnit = p;
+      pParts[i]->pSelfData = tu;
     }else if(!strcmp(items[i].szType, NaTYPE_CustomFunc)){
       NaCustomFunc	*p = new NaCustomFunc;
       pParts[i] = p;
-      pParts[i]->pSelfData = (NaUnit*)p;
+      tu->pUnit = p;
+      pParts[i]->pSelfData = tu;
     }
     pParts[i]->SetInstance(items[i].szInstance);
 
