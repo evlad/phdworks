@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.4 2001-06-07 18:55:04 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.5 2001-10-01 18:04:50 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -57,6 +57,9 @@ NaNNRegrPlantLearn::link_net ()
         // Link the network
         net.link(&in_u.out, &delay_u.in);
         net.link(&in_y.out, &delay_y.in);
+
+	// Additional delay
+        delay_y.add_delay(1);
 
         net.link(&delay_u.dout, &bus.in1);
         net.link(&delay_y.dout, &bus.in2);

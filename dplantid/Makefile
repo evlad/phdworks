@@ -34,5 +34,9 @@ dnnplant:	$(dnnplant_OBJS) $(common_OBJS) $(LIBS)
 clean:
 	-@rm -f $(OBJS) $(PROGRAMS)
 
+dplantid.o:	NaNNRPL.h
+dnnplant.o:	NaNNRPL.h
+NaNNRPL.o:	NaNNRPL.h
+
 .cpp.o:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
