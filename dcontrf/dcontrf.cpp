@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.12 2004-02-22 21:02:41 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.13 2004-04-05 22:00:55 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -370,14 +370,16 @@ int main(int argc, char **argv)
 
     NaReal	fPrevMSE = 0.0;
     int		auf = 0;
+    int		max_epochs = 0;
 
-    switch(inp_data_mode)
+    auf = atoi(par("nnc_auf"));
+
+    if(stream_mode == inp_data_mode ||
+       file_mode == inp_data_mode && auf > 0)
       {
-      case stream_mode:
 	// Set autoupdate facility
-	auf = atoi(par("nnc_auf"));
-
 	nnocl.nnteacher.set_auto_update_freq(auf);
+	nnocl.errbackprop.set_auto_reset_freq(auf);
 	nnocl.cerrstat.set_floating_gap(auf);
 	nnocl.iderrstat.set_floating_gap(auf);
 
@@ -390,15 +392,15 @@ int main(int argc, char **argv)
 
 	pnev = nnocl.run_net();
 
-	if(pneError == pnev)
-	  break;
-
-	nnocl.iderrstat.print_stat();
-	nnocl.cerrstat.print_stat();
-	break;
-
-      case file_mode:
-	// Update NN-C at the end of iteration
+	if(pneError != pnev)
+	  {
+	    nnocl.iderrstat.print_stat();
+	    nnocl.cerrstat.print_stat();
+	  }
+      }
+    else /* Update NN-C at the end of iteration */
+      {
+	max_epochs = atoi(par("max_epochs"));
 
 	do{
 	  ++iIter;
@@ -424,6 +426,12 @@ int main(int argc, char **argv)
 	    break;
 
 	  PrintLog(iIter, &nnocl);
+
+	  if(max_epochs > 0 && iIter >= max_epochs){
+	    // Limited number of epochs
+	    nnocl.nnteacher.update_nn();
+	    break;
+	  }
 
 	  if(fPrevMSE != 0.0 && fPrevMSE < nnocl.cerrstat.RMS[0]){
 	    if(nSkipped < nSkipGrowErr && nNumGrowErr > 0){
@@ -460,7 +468,6 @@ int main(int argc, char **argv)
 	  nnocl.nnteacher.update_nn();
 
 	}while(pneDead == pnev);
-	break;
       }
 
     char	*szFirst = "IMPORTANT: net is dead due to";
@@ -483,7 +490,10 @@ int main(int argc, char **argv)
       break;
 
     default:
-      szSecond = "unknown reason.";
+      if(max_epochs > 0 && iIter >= max_epochs)
+	szSecond = "maximum number of epochs was reached.";
+      else
+	szSecond = "unknown reason.";
       break;
     }
 

@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 2.4 2004-02-22 21:09:12 vlad Exp $
+# $Id: dcontrf.par,v 2.5 2004-04-05 21:59:53 vlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -9,7 +9,7 @@ input_kind = stream
 # (input_kind = stream) Length of series
 stream_len = 5000
 
-# (input_kind = stream) Auto update frequency
+# (input_kind = stream,file) Auto update frequency; 0 to disable
 nnc_auf = 500
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
@@ -21,6 +21,9 @@ linplant_tf = ../../../plant.tf
 # (input_kind = stream) Input transfer (or combined) functions
 refer_tf = ../../../refer.tf
 noise_tf = ../../../noise.tf
+
+# (input_kind = file) Maximum number of epochs; 0 is unlimited
+max_epochs = 0
 
 # (input_kind = file) Input files
 in_r = r.dat
