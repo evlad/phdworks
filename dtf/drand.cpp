@@ -1,5 +1,5 @@
 /* drand.cpp */
-static char rcsid[] = "$Id: drand.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
+static char rcsid[] = "$Id: drand.cpp,v 1.2 2001-04-19 18:48:39 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -55,7 +55,7 @@ main (int argc, char* argv[])
 	dtf_file = argv[4];
     }
 
-  //NaOpenLogFile("drand.log");
+  NaOpenLogFile("drand.log");
 
   try{
     int		i;
@@ -71,14 +71,7 @@ main (int argc, char* argv[])
 
     if(NULL == ins)
       {
-	char	*p = getenv("DRAND_SAFE");
-	if(NULL != p)
-	  if(strlen(p) > 0)
-	    {
-	      /* wait a bit to prevent random number generator
-		 initialization with the same seed (time(NULL)) */
-	      sleep(1);
-	    }
+	// See DRAND_SAFE to prevent dependent random series
 	reset_rand();
       }
     else

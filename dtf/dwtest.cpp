@@ -1,5 +1,5 @@
 /* dwtest.cpp */
-static char rcsid[] = "$Id: dwtest.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
+static char rcsid[] = "$Id: dwtest.cpp,v 1.2 2001-04-19 18:48:39 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -85,7 +85,7 @@ main (int argc, char* argv[])
     }while(dfSignal->GoNextRecord() && dfNoise->GoNextRecord());
 
     printf("Series length=%d samples\n", n);
-    printf("Mean squared error=%g\n", sqrt(e2)/n);
+    printf("Mean squared error=%g\n", e2/n);
 
     delete dfIn;
     delete dfOut;
