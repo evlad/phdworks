@@ -14,6 +14,8 @@
 #include <NaPNBu21.h>
 #include <NaPNDely.h>
 #include <NaPNDerv.h>
+#include <NaPNSwit.h>
+#include <NaPNTrig.h>
 
 
 //---------------------------------------------------------------------------
@@ -24,7 +26,8 @@ class NaNNContrPreLearn
 public:/* methods */
 
     // Create the object
-    NaNNContrPreLearn (NaAlgorithmKind akind, NaControllerKind ckind);
+    NaNNContrPreLearn (NaAlgorithmKind akind, NaControllerKind ckind,
+		       const char* szNetName = "nncp1pn");
 
     // Destroy the object
     virtual ~NaNNContrPreLearn ();
@@ -68,6 +71,8 @@ public:/* data */
     NaPNComparator  errcomp;    // error computer
     NaPNStatistics  statan;     // error estimator
     NaPNStatistics  statan_u;   // target controller output analyzer
+    NaPNSwitcher    switcher;   // switch in_u to nn_u until real nnc output
+    NaPNTrigger     trigger;    // skip in_u for NNT and statistics
 
 private:/* data */
 

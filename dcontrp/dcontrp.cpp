@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.6 2001-11-29 20:07:33 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.7 2001-12-03 21:25:23 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -47,7 +47,6 @@ int main(int argc, char **argv)
 
     // Read neural network from file
     NaNNUnit            au_nnc(nn_descr);
-    //au_nn.SetInstance("Object");
 
     NaConfigPart        *conf_list[] = { &au_nnc };
     NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
@@ -78,8 +77,8 @@ int main(int argc, char **argv)
     nnllog->SetVarName(1, "StdDev");
     nnllog->SetVarName(2, "MSE");
 
-    NaNNContrPreLearn	nncpl(NaTrainingAlgorithm, ckind);
-    NaNNContrPreLearn	nncpe(NaEvaluationAlgorithm, ckind);
+    NaNNContrPreLearn	nncpl(NaTrainingAlgorithm, ckind, "nncpl");
+    NaNNContrPreLearn	nncpe(NaEvaluationAlgorithm, ckind, "nncpe");
 
     // Configure nodes
     nncpl.nncontr.set_transfer_func(&au_nnc);
@@ -98,9 +97,9 @@ int main(int argc, char **argv)
 
       case NaNeuralContrDelayedE:
 	nncpl.delay.set_delay(au_nnc.descr.nInputsRepeat - 1);
-	nncpl.delay.set_sleep_value(0.0);
+	//nncpl.delay.set_sleep_value(0.0);
 	nncpe.delay.set_delay(au_nnc.descr.nInputsRepeat - 1);
-	nncpe.delay.set_sleep_value(0.0);
+	//nncpe.delay.set_sleep_value(0.0);
 	break;
       }
 
@@ -116,8 +115,6 @@ int main(int argc, char **argv)
     // Link the network
     nncpl.link_net();
     nncpe.link_net();
-
-    //nncpl.nnteacher.verbose();
 
     // Configure learning parameters
     nncpl.nnteacher.lpar.eta = atof(par("eta"));
@@ -167,12 +164,6 @@ int main(int argc, char **argv)
 
     do{
       ++iIter;
-
-      /*nncpl.bus.verbose(true);
-      nncpl.in_e.verbose(true);
-      nncpl.in_u.verbose(true);
-      nncpl.nncontr.verbose(true);
-      nncpl.delta_e.verbose(true);*/
 
       // teach pass
       pnev = nncpl.run_net();

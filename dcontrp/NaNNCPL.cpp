@@ -1,5 +1,5 @@
 /* NaNNCPL.cpp */
-static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.3 2001-06-18 19:22:53 vlad Exp $";
+static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.4 2001-12-03 21:25:23 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <NaExcept.h>
@@ -9,8 +9,9 @@ static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.3 2001-06-18 19:22:53 vlad Exp $";
 //---------------------------------------------------------------------------
 // Create the object
 NaNNContrPreLearn::NaNNContrPreLearn (NaAlgorithmKind akind,
-				      NaControllerKind ckind)
-: net("nncp1pn"), eContrKind(ckind), eAlgoKind(akind),
+				      NaControllerKind ckind,
+				      const char* szNetName)
+: net(szNetName), eContrKind(ckind), eAlgoKind(akind),
   in_r("in_r"),
   bus("bus"),
   delay("delay"),
@@ -22,7 +23,8 @@ NaNNContrPreLearn::NaNNContrPreLearn (NaAlgorithmKind akind,
   nnteacher("nnteacher"),
   errcomp("errcomp"),
   statan("statan"),
-  statan_u("statan_u")
+  statan_u("statan_u"),
+  switcher("switcher")
 {
   // Nothing
 }
@@ -55,6 +57,8 @@ NaNNContrPreLearn::link_net ()
 	  case NaNeuralContrDelayedE:
 	    net.link(&in_e.out, &delay.in);
 	    net.link(&delay.dout, &nncontr.x);
+	    net.link(&delay.sync, &switcher.turn);
+	    net.link(&delay.sync, &trigger.turn);
 	    break;
 	  case NaNeuralContrER:
 	    net.link(&in_r.out, &bus.in1);
@@ -71,11 +75,29 @@ NaNNContrPreLearn::link_net ()
 	if(eAlgoKind == NaTrainingAlgorithm)
 	  {
 	    net.link(&nncontr.y, &nnteacher.nnout);
-	    net.link(&in_u.out, &nnteacher.desout);
+
+	    if(NaNeuralContrDelayedE == eContrKind)
+	      net.link(&trigger.out, &nnteacher.desout);
+	    else
+	      net.link(&in_u.out, &nnteacher.desout);
 	  }
+
         net.link(&nncontr.y, &errcomp.aux);
-        net.link(&nncontr.y, &nn_u.in);
-        net.link(&in_u.out, &errcomp.main);
+	switch(eContrKind)
+	  {
+	  case NaNeuralContrDelayedE:
+	    net.link(&nncontr.y, &switcher.in1);
+	    net.link(&in_u.out, &switcher.in2);
+	    net.link(&in_u.out, &trigger.in);
+	    net.link(&switcher.out, &nn_u.in);
+	    net.link(&trigger.out, &errcomp.main);
+	    break;
+	  default:
+	    net.link(&nncontr.y, &nn_u.in);
+	    net.link(&in_u.out, &errcomp.main);
+	    break;
+	  }
+
         net.link(&errcomp.cmp, &statan.signal);
 
 	if(NaNeuralContrER == eContrKind)
