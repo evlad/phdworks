@@ -3,6 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "NaMath.h"
 #include "NaLogFil.h"
@@ -19,8 +20,17 @@
 extern "C" void
 reset_rand ()
 {
-    time_t	tTime = time(NULL);
-    srand(tTime);
+  char	*p = getenv("DRAND_SAFE");
+  if(NULL != p)
+    if(strlen(p) > 0)
+      {
+	/* wait a bit to prevent random number generator
+	   initialization with the same seed (time(NULL)) */
+	sleep(1);
+      }
+
+  time_t	tTime = time(NULL);
+  srand(tTime);
 }
 
 
