@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.5 2001-05-13 19:36:17 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.6 2001-06-19 15:29:45 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -119,6 +119,11 @@ int main(int argc, char **argv)
     // Load plant
     conf_file_linplant.LoadFromFile(par("linplant_tf"));
 
+    // Initial state
+    NaVector	vInitial(1);
+    vInitial.init_zero();
+
+    // Type of controller
     NaControllerKind	ckind;
 
     // Load controller
@@ -127,9 +132,25 @@ int main(int argc, char **argv)
       case linear_contr:
 	conf_file_lincontr.LoadFromFile(par("lincontr_tf"));
 	ckind = NaLinearContr;
+
+	vInitial.init_value(atof(par("plant_initial_state")));
 	break;
       case neural_contr:
 	nncfile.LoadFromFile(par("nncontr"));
+
+	// Interpret NN-C structure
+	// Default rule
+	if(au_nnc.descr.nInputsRepeat > 1)
+	  ckind = NaNeuralContrDelayedE;
+	else
+	  ckind = NaNeuralContrER;
+	// Explicit rule
+	if(!strcmp(par("nnc_mode"), "e+r"))
+	  ckind = NaNeuralContrER;
+	else if(!strcmp(par("nnc_mode"), "e+de"))
+	  ckind = NaNeuralContrEdE;
+	else if(!strcmp(par("nnc_mode"), "e+e+..."))
+	  ckind = NaNeuralContrDelayedE;
 	if(au_nnc.descr.nInputsRepeat > 1)
 	  ckind = NaNeuralContrDelayedE;
 	else
@@ -183,6 +204,7 @@ int main(int argc, char **argv)
       }
 
     // Plant
+    csm.set_initial_state(vInitial);
     csm.plant.set_transfer_func(&au_linplant);
 
     // Controller
@@ -195,11 +217,6 @@ int main(int argc, char **argv)
 	csm.controller.set_transfer_func(&au_nnc);
 	break;
       }
-
-    //csm.onsum.verbose(true);
-    //csm.cmp.verbose(true);
-    //csm.controller.verbose(true);
-    //csm.plant.verbose(true);
 
     NaPNEvent   pnev = csm.run_net();
 

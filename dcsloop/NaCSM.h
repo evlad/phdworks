@@ -15,6 +15,7 @@
 #include <NaPNBu21.h>
 #include <NaPNDely.h>
 #include <NaPNRand.h>
+#include <NaPNDerv.h>
 #include <NaNDescr.h>
 
 
@@ -53,6 +54,13 @@ public:/* methods */
     // Each cycle callback
     virtual void        idle_entry ();
 
+    ////////////////
+    // Additional //
+    ////////////////
+
+    // Set initial observed state of a plant
+    void		set_initial_state (const NaVector& v);
+
 public:/* data */
 
     // Main Petri network module
@@ -78,6 +86,7 @@ public:/* data */
     NaPNStatistics  statan_r;
     NaPNBus2i1o     bus;        // (u,e)->NN former
     NaPNDelay       delay;      // (e(i),e(i-1),...e(i-n))->NN delayer-former
+    NaPNDerivative  delta_e;    // (1-1/z)*e(k)
 
 private:/* data */
 
@@ -85,7 +94,10 @@ private:/* data */
     NaControllerKind	eContrKind;
 
     // Length of series or 0 for data input
-    int		nSeriesLen;
+    int			nSeriesLen;
+
+    // Initial state of a plant
+    NaVector		vInitial;
 
 };
 

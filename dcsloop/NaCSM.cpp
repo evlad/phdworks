@@ -1,5 +1,5 @@
 /* NaCSM.cpp */
-static char rcsid[] = "$Id: NaCSM.cpp,v 1.3 2001-04-22 09:34:09 vlad Exp $";
+static char rcsid[] = "$Id: NaCSM.cpp,v 1.4 2001-06-19 15:29:45 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -15,12 +15,13 @@ static char rcsid[] = "$Id: NaCSM.cpp,v 1.3 2001-04-22 09:34:09 vlad Exp $";
 // Create control system with stream of given length in input or with
 // with data files if len=0
 NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
-  : net("nncp0pn"), nSeriesLen(len), eContrKind(ckind),
+: net("nncp0pn"), nSeriesLen(len), eContrKind(ckind), vInitial(1),
   setpnt_inp("setpnt_inp"),
   setpnt_gen("setpnt_gen"),
   chkpnt_r("chkpnt_r"),
   bus("bus"),
   delay("delay"),
+  delta_e("delta_e"),
   cmp("cmp"),
   chkpnt_e("chkpnt_e"),
   controller("controller"),
@@ -36,7 +37,7 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   statan_e("statan_e"),
   statan_r("statan_r")
 {
-    // Nothing to do
+  vInitial.init_zero();
 }
 
 
@@ -82,6 +83,12 @@ NaControlSystemModel::link_net ()
 	    net.link(&chkpnt_e.out, &bus.in2);
 	    net.link(&bus.out, &controller.x);
 	    break;
+	  case NaNeuralContrEdE:
+	    net.link(&chkpnt_e.out, &bus.in1);
+	    net.link(&chkpnt_e.out, &delta_e.x);
+	    net.link(&delta_e.dx, &bus.in2);
+	    net.link(&bus.out, &controller.x);
+	    break;
 	  }
 
         net.link_nodes(
@@ -119,13 +126,11 @@ NaPNEvent
 NaControlSystemModel::run_net ()
 {
     try{
-        NaVector	rZero(1);
-	rZero.init_zero();
 	NaVector	rMain(1), rAux(1);
 	rMain.init_value(1.);
 	rAux.init_value(-1.);
 
-        chkpnt_y.out.set_starter(rZero);
+        chkpnt_y.out.set_starter(vInitial);
 	onsum.set_gain(rMain, rAux);
 
 	net.set_timing_node((0==nSeriesLen)? &setpnt_inp: &setpnt_gen);
@@ -198,6 +203,15 @@ NaControlSystemModel::idle_entry ()
     // Dummy
     printf("Sample %u\r", net.timer().CurrentIndex());
     fflush(stdout);
+}
+
+
+//---------------------------------------------------------------------------
+// Set initial observed state of a plant
+void
+NaControlSystemModel::set_initial_state (const NaVector& v)
+{
+  vInitial = v;
 }
 
 
