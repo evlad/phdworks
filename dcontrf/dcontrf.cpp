@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.7 2003-06-15 08:34:26 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.8 2004-02-15 09:10:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -248,9 +248,9 @@ int main(int argc, char **argv)
     nnocl.skip_ny.set_skip_number(1 + iSkip_e);
     nnocl.fill_nn_y.set_fill_number(iSkip_e);
 
-    printf("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
-    printf("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
-    printf("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
+    NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+    NaPrintLog("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+    NaPrintLog("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
 
     nnocl.plant.set_transfer_func(&au_linplant);
     nnocl.nncontr.set_nn_unit(&au_nnc);
