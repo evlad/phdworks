@@ -1,12 +1,13 @@
 //-*-C++-*-
 /* NaConfig.h */
-/* $Id: NaConfig.h,v 1.3 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaConfig.h,v 1.4 2002-02-16 21:34:41 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaConfigH
 #define NaConfigH
 //---------------------------------------------------------------------------
 
 #include <NaExcept.h>
+#include <NaDynAr.h>
 
 // Very long string length
 #define MaxConfigFileLine           1024
@@ -83,7 +84,7 @@ private:
 // Has generic name and instance name.
 class NaConfigPart
 {
-public:
+public:/* methods */
 
     // Initialize configuration partition with type name - one word
     // without spaces, punctuation and special marks
@@ -115,13 +116,30 @@ public:
     // Retrieve configuration data in internal order from given stream
     virtual void    Load (NaDataStream& ds) = 0;
 
-private:
+private:/* data */
 
     // Storage
     char    *szTypeName;        // Type of the partition
     char    *szInstanceName;    // Instance of the partition
     
+public:/* data */
+
+    // Data reference that can be accessed knowing the type
+    void    *pSelfData;
 };
+
+
+// Registrar function type
+typedef NaConfigPart* (*NaCPRegistrar)();
+
+// Registrar storage item
+typedef struct {
+  char		*szTypeName;
+  NaCPRegistrar	pRegFunc;
+}	NaCPRegItem;
+
+// Registrar storage array
+typedef NaDynAr<NaCPRegItem>	NaCPRegArray;
 
 
 //---------------------------------------------------------------------------
@@ -172,6 +190,17 @@ public:
     // Comment mark string used in file
     const char*     CommentMark () const;
 
+
+    //***********************************************************************
+    // Registrar for dynamic partition attachment
+    //***********************************************************************
+
+    // Add registrar for given partition type (create it dynamically)
+    void            AddRegistrar (const char* szPartType,
+				  NaCPRegistrar pRegFunc);
+
+    // Find registrar for given partition type (create it dynamically)
+    NaCPRegistrar   FindRegistrar (const char* szPartType);
 
     //***********************************************************************
     // Partition attachment/detachment operations
@@ -233,21 +262,24 @@ private:
     char    *szFileExtString;   // Filename extension
 
     char    *szMarksBuf;        // Common memory buffer for next marks:
-    char        *szTitleStartMark;  // Start of the partition title
-    char        *szTitleEndMark;    // Finish of the partition title
-    char        *szCommentMark;     // Start of the comment until end of line
+    char    *szTitleStartMark;  // Start of the partition title
+    char    *szTitleEndMark;    // Finish of the partition title
+    char    *szCommentMark;     // Start of the comment until end of line
 
     // Version info: [0] - major, [1] - minor
-    unsigned        nVer[2];        // own class version
-    unsigned        nFileVer[2];    // actual file version
+    unsigned        nVer[2];    // own class version
+    unsigned        nFileVer[2];// actual file version
 
     // Storage for partitions
     unsigned        nPartList;
     NaConfigPart    **pPartList;
 
+    // Storage for registrars
+    NaCPRegArray    arReg;
+
     // During save/load operations
-    FILE        *fp;
-    char        szLineBuf[MaxConfigFileLine + 1];
+    FILE    *fp;
+    char    szLineBuf[MaxConfigFileLine + 1];
 
 };
 

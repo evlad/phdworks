@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaTrFunc.h */
-/* $Id: NaTrFunc.h,v 1.3 2002-02-14 14:08:58 vlad Exp $ */
+/* $Id: NaTrFunc.h,v 1.4 2002-02-16 21:34:41 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaTrFuncH
 #define NaTrFuncH
@@ -74,11 +74,19 @@ class NaTransFunc;
 // Array of units
 typedef NaDynAr<NaTransFunc*>   NaTFAr;
 
+
+// Name of the type for config file
+#define NaTYPE_TransFunc	"TransferFunction"
+
+
 //---------------------------------------------------------------------------
 // Class for transfer function
 class NaTransFunc : public NaUnit, public NaConfigPart
 {
 public:
+
+    // Registrar for the NaTransFunc
+    static NaConfigPart*	NaRegTransFunc ();
 
     // Make empty (K=1) transfer function
     NaTransFunc ();

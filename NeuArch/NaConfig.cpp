@@ -1,5 +1,5 @@
 /* NaConfig.cpp */
-static char rcsid[] = "$Id: NaConfig.cpp,v 1.5 2001-11-25 21:35:22 vlad Exp $";
+static char rcsid[] = "$Id: NaConfig.cpp,v 1.6 2002-02-16 21:34:41 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #define _GNU_SOURCE
@@ -118,7 +118,10 @@ NaConfigPart::NaConfigPart (const char* szType)
         throw(na_null_pointer);
     szTypeName = new char[strlen(szType) + 1];
     strcpy(szTypeName, szType);
+
     szInstanceName = NULL;
+
+    pSelfData = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -133,6 +136,8 @@ NaConfigPart::NaConfigPart (const NaConfigPart& rCP)
 
     szInstanceName = NULL;
     SetInstance(szInstance);
+
+    pSelfData = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -285,6 +290,54 @@ const char*
 NaConfigFile::CommentMark () const
 {
     return szCommentMark;
+}
+
+
+//***********************************************************************
+// Registrar for dynamic partition attachment
+//***********************************************************************
+
+//---------------------------------------------------------------------------
+// Add registrator for given partition type (create it dynamically)
+void
+NaConfigFile::AddRegistrar (const char* szPartType, NaCPRegistrar pRegFunc)
+{
+  NaCPRegItem	it;
+
+  if(NULL == szPartType || NULL == pRegFunc)
+    throw(na_null_pointer);
+
+  if(NULL != FindRegistrar(szPartType))
+    /* already exist */
+    return;
+
+  it.pRegFunc = pRegFunc;
+  it.szTypeName = new char[strlen(szPartType) + 1];
+  strcpy(it.szTypeName, szPartType);
+
+  arReg.addh(it);
+}
+
+
+//---------------------------------------------------------------------------
+// Find registrar for given partition type (create it dynamically)
+NaCPRegistrar
+NaConfigFile::FindRegistrar (const char* szPartType)
+{
+  NaCPRegistrar	pFunc = NULL;
+  int		i;
+
+  if(NULL == szPartType)
+    throw(na_null_pointer);
+
+  for(i = 0; i < arReg.count(); ++i){
+    if(!strcmp(arReg[i].szTypeName, szPartType)){
+      pFunc = arReg[i].pRegFunc;
+      break;
+    }
+  }
+
+  return pFunc;
 }
 
 
@@ -442,9 +495,30 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
 #endif /* CONFIG_DEBUG */
         ParseTitle(szLineBuf, szType, szInstance);
 #ifdef CONFIG_DEBUG
-        NaPrintLog("Partition %s is found (instance %s).\n",
+        NaPrintLog("Partition %s is found in file (instance %s).\n",
                    szType, szInstance? szInstance: "isn't defined");
 #endif /* CONFIG_DEBUG */
+
+	NaCPRegistrar	pRegFunc = FindRegistrar(szType);
+
+	// Check for partition type registrar
+	if(NULL != pRegFunc){
+	  // Create partition dynamically...
+	  NaConfigPart	*cp = (*pRegFunc)();
+
+	  // ...set instance...
+	  if(NULL != szInstance)
+	    cp->SetInstance(szInstance);
+
+	  // ...and add it to list
+	  AddPartitions(1, &cp);
+
+#ifdef CONFIG_DEBUG
+	  NaPrintLog("Partition %s (instance %s) is registered "\
+		     "in list dynamically.\n",
+		     szType, szInstance? szInstance: "isn't defined");
+#endif /* CONFIG_DEBUG */
+	}
 
         // Store file position
         long    iPos = ftell(fp);
@@ -462,6 +536,8 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
                     // Different types
 #ifdef CONFIG_DEBUG
                     NaPrintLog("reject due to different types\n");
+                    NaPrintLog("\"%s\" != \"%s\"\n",
+			       szType, pPartList[iPart]->GetType());
 #endif /* CONFIG_DEBUG */
                     continue;
                 }

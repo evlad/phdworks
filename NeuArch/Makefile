@@ -61,6 +61,9 @@ SRCS	=NaConLaw.cpp \
 	NaTextIO.cpp \
 	NaTimer.cpp \
 	NaTrFunc.cpp \
+	NaCoFunc.cpp \
+	NaCuFunc.cpp \
+	NaExFunc.cpp \
 	NaUnit.cpp \
 	NaVector.cpp \
 	NaParams.cpp \
@@ -137,6 +140,9 @@ OBJS	=NaConLaw.o \
 	NaTextIO.o \
 	NaTimer.o \
 	NaTrFunc.o \
+	NaCoFunc.o \
+	NaCuFunc.o \
+	NaExFunc.o \
 	NaUnit.o \
 	NaVector.o \
 	NaParams.o \

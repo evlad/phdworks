@@ -1,5 +1,5 @@
 /* NaTrFunc.cpp */
-static char rcsid[] = "$Id: NaTrFunc.cpp,v 1.3 2002-02-14 14:08:58 vlad Exp $";
+static char rcsid[] = "$Id: NaTrFunc.cpp,v 1.4 2002-02-16 21:34:41 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <ctype.h>
@@ -244,10 +244,19 @@ NaPolyFrac::Load (NaDataStream& ds)
 //
 //===========================================================================
 
+//-----------------------------------------------------------------------
+// Registrar for the NaTransFunc
+NaConfigPart*
+NaTransFunc::NaRegTransFunc ()
+{
+  return new NaTransFunc();
+}
+
+
 //---------------------------------------------------------------------------
 // Make empty (K=1) transfer function
 NaTransFunc::NaTransFunc ()
-: NaConfigPart("TransferFunction"), ut(utPolyFrac)
+: NaConfigPart(NaTYPE_TransFunc), ut(utPolyFrac)
 {
   pf.num.new_dim(1);
   pf.num[0] = 1.0;
@@ -260,7 +269,7 @@ NaTransFunc::NaTransFunc ()
 // NaTransFunc (int nA, NaReal A0, A1, ..., An,
 //              int mB, NaReal B0, B1, ..., Bm);
 NaTransFunc::NaTransFunc (int nA, ...)
-: NaConfigPart("TransferFunction"), ut(utPolyFrac)
+: NaConfigPart(NaTYPE_TransFunc), ut(utPolyFrac)
 {
     unsigned    i;
     va_list ap;
@@ -287,7 +296,7 @@ NaTransFunc::NaTransFunc (int nA, ...)
 //---------------------------------------------------------------------------
 // Make A(s)/B(s) polynomial fraction
 NaTransFunc::NaTransFunc (const NaVector& A, const NaVector& B)
-: NaConfigPart("TransferFunction"), ut(utPolyFrac), pf(A, B)
+: NaConfigPart(NaTYPE_TransFunc), ut(utPolyFrac), pf(A, B)
 {
     // dummy
 }
@@ -295,7 +304,7 @@ NaTransFunc::NaTransFunc (const NaVector& A, const NaVector& B)
 //---------------------------------------------------------------------------
 // Make an explicit copy of the transfer function
 NaTransFunc::NaTransFunc (const NaTransFunc& orig)
-: NaConfigPart("TransferFunction"),
+: NaConfigPart(NaTYPE_TransFunc),
   ut(orig.ut), pf(orig.pf)
 {
     int i;
