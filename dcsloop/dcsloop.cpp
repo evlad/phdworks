@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.9 2003-06-15 08:29:57 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.10 2004-02-15 21:17:58 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -37,6 +37,8 @@ int main(int argc, char **argv)
 
   try{
     NaParams	par(argv[1]);
+
+    NaPrintLog("Run dcsloop with %s\n", argv[1]);
 
     /*************************************************************/
     enum {
@@ -159,6 +161,7 @@ int main(int argc, char **argv)
     csm.chkpnt_n.set_output_filename(par("out_n"));
     csm.chkpnt_y.set_output_filename(par("out_y"));
     csm.chkpnt_ny.set_output_filename(par("out_ny"));
+    csm.cusum_out.set_output_filename(par("cusum"));
 
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
@@ -192,6 +195,10 @@ int main(int argc, char **argv)
 	csm.controller.set_transfer_func(&au_nnc);
 	break;
       }
+
+    // Setup parameters for CUSUM (change-point detection)
+    csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
+		    atof(par("h_sol")), atof(par("k_const")));
 
     NaPNEvent   pnev = csm.run_net();
 
@@ -235,6 +242,7 @@ int main(int argc, char **argv)
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+    fprintf(stderr, "EXCEPTION: %s\n", NaExceptionMsg(ex));
   }
 
   return 0;
