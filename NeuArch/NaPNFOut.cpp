@@ -1,5 +1,5 @@
 /* NaPNFOut.cpp */
-static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.3 2001-06-03 21:29:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>
@@ -69,7 +69,7 @@ NaPNFileOutput::open_output_data ()
 
     delete pDataF;
 
-    pDataF = OpenOutputDataFile(szDataFName);
+    pDataF = OpenOutputDataFile(szDataFName, bdtAuto, in.data().dim());
 
     if(NULL != pDataF){
         unsigned    i;

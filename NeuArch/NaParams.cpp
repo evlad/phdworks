@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.5 2001-06-03 21:29:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -63,6 +63,7 @@ NaParams::NaParams (const char* szFileName,
   else
     {
       int	item_i = 0;
+      char	szAbsent[] = "?absent";
       storage = new item_t[stored_n];
 
       // read file to the storage
@@ -99,7 +100,7 @@ NaParams::NaParams (const char* szFileName,
 
 	      if(NULL == (value = strchr(value, spec[ASSIGN])))
 		// no assignment char in the line
-		value = "?absent";
+		value = szAbsent;
 	      else
 		++value;
 	    }

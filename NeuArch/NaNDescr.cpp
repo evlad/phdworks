@@ -1,5 +1,5 @@
 /* NaNDescr.cpp */
-static char rcsid[] = "$Id: NaNDescr.cpp,v 1.6 2001-05-30 18:14:23 vlad Exp $";
+static char rcsid[] = "$Id: NaNDescr.cpp,v 1.7 2001-06-03 21:29:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>
@@ -234,10 +234,10 @@ void    NaNeuralNetDescr::Load (NaDataStream& ds)
     else /* Version 1.1 and newer */
       {
 	for(i = 0; i < nInputsRepeat; ++i)
-	  ds.GetF("%g", &vInputDelays[i]);
+	  ds.GetF("%lg", &vInputDelays[i]);
 
 	for(i = 0; i < nOutputsRepeat; ++i)
-	  ds.GetF("%g", &vOutputDelays[i]);
+	  ds.GetF("%lg", &vOutputDelays[i]);
       }
 }
 

@@ -1,5 +1,5 @@
 /* NaPNDely.cpp */
-static char rcsid[] = "$Id: NaPNDely.cpp,v 1.3 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNDely.cpp,v 1.4 2001-06-03 21:29:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNDely.h"
@@ -9,6 +9,8 @@ static char rcsid[] = "$Id: NaPNDely.cpp,v 1.3 2001-05-15 06:02:22 vlad Exp $";
 // Create node for Petri network
 NaPNDelay::NaPNDelay (const char* szNodeName)
 : NaPetriNode(szNodeName),
+  piOutMap(NULL),
+  nOutDim(0),
   ////////////////
   // Connectors //
   ////////////////
@@ -38,8 +40,42 @@ NaPNDelay::set_delay (unsigned nSamples)
 {
     check_tunable();
 
-    nDelay = nSamples;
+    nOutDim = 1 + (nDelay = nSamples);
+    piOutMap = new unsigned[nOutDim];
+    unsigned	i;
+    for(i = 0; i < nOutDim; ++i)
+      piOutMap[i] = i;
     bAwaken = false;
+}
+
+
+//---------------------------------------------------------------------------
+// Set delay encoded in piMap[nDim]
+void
+NaPNDelay::set_delay (unsigned nDim, unsigned* piMap)
+{
+  check_tunable();
+
+  nOutDim = nDim;
+  delete piOutMap;
+
+  if(0 == nOutDim)
+    throw(na_bad_value);
+  else if(NULL == piMap)
+    throw(na_null_pointer);
+
+  piOutMap = new unsigned[nOutDim];
+  nDelay = 0;
+  unsigned	i;
+  for(i = 0; i < nOutDim; ++i)
+    {
+      piOutMap[i] = piMap[i];
+      if(piOutMap[i] > nDelay)
+	nDelay = piOutMap[i];
+    }
+  ++nDelay;
+
+  bAwaken = false;
 }
 
 
@@ -89,7 +125,7 @@ void
 NaPNDelay::relate_connectors ()
 {
     // Get nDelay + 1 times input vector
-    dout.data().new_dim(in.data().dim() * (1 + nDelay));
+    dout.data().new_dim(in.data().dim() * nOutDim);
 
     // Just for synchronization...
     sync.data().new_dim(1);
@@ -102,7 +138,7 @@ bool
 NaPNDelay::verify ()
 {
     return 1 == sync.data().dim()
-        && dout.data().dim() == in.data().dim() * (1 + nDelay);
+        && dout.data().dim() == in.data().dim() * nOutDim;
 }
 
 
@@ -113,6 +149,7 @@ NaPNDelay::initialize (bool& starter)
 {
     bAwaken = bSleepValue;
     dout.data().init_value(fSleepValue);
+    vBuffer.new_dim(nDelay * in.data().dim());
 }
 
 
@@ -123,14 +160,19 @@ NaPNDelay::activate ()
 {
     bAwaken = awake();
 
-    if(bAwaken && is_verbose()){
-        NaPrintLog("node '%s' is awaken: activations=%d, delay=%d\n",
-                   name(), activations(), (int)nDelay);
-    }
+    if(bAwaken && is_verbose())
+      {
+	unsigned	i;
+	NaPrintLog("node '%s' is awaken: activations=%d, delay=",
+		   name(), activations());
+	for(i = 0; i < nOutDim; ++i)
+	  if(i + 1 == nOutDim)
+	    NaPrintLog("%d\n", piOutMap[i]);
+	  else
+	    NaPrintLog("%d,", piOutMap[i]);
+      }
 
     return !in.is_waiting() && !sync.is_waiting();
-    //    return !bAwaken && !in.is_waiting() && !sync.is_waiting()
-    //        || bAwaken && NaPetriNode::activate();
 }
 
 
@@ -139,13 +181,27 @@ NaPNDelay::activate ()
 void
 NaPNDelay::action ()
 {
-    dout.data().shift(in.data().dim());
+    // Portion size
+    unsigned	nSize = in.data().dim();
 
-    unsigned    i;
-    for(i = 0; i < in.data().dim(); ++i){
-        dout.data()[i] = in.data()[i];
-    }
+    // Make free space in buffer area
+    vBuffer.shift(nSize);
 
+    // Copy input data to buffer
+    unsigned    i, j;
+    for(i = 0; i < nSize; ++i)
+      {
+        vBuffer[i] = in.data()[i];
+      }
+
+    // Copy selected portions of stored data to output
+    for(j = 0; j < nOutDim; ++j)
+      for(i = 0; i < nSize; ++i)
+	{
+	  dout.data()[j * nSize + i] = vBuffer[piOutMap[j] * nSize + i];
+	}
+
+    // Sleep/awaken related nodes
     if(bAwaken){
         sync.data()[0] = 1.0;   // Let linked nodes deliver data
     }else{

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNDely.h */
-/* $Id: NaPNDely.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNDely.h,v 1.3 2001-06-03 21:29:36 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
@@ -52,6 +52,9 @@ public:
     // Set delay (0 - no delay, 1 - one delayed step, etc)
     void                set_delay (unsigned nSamples);
 
+    // Set delay encoded in piMap[nDim]
+    void                set_delay (unsigned nDim, unsigned* piMap);
+
     // Set value to substitute output in sleep time
     void                set_sleep_value (NaReal fValue);
 
@@ -94,6 +97,15 @@ protected:/* data */
 
     // Sleep value
     NaReal              fSleepValue;
+
+    // Buffer for data
+    NaVector		vBuffer;
+
+    // Position of delayed values
+    unsigned		*piOutMap;
+
+    // Output dimension (multiply by in.data().dim())
+    int			nOutDim;
 
 };
 
