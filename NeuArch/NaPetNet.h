@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.3 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.4 2001-06-25 20:17:27 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -66,6 +66,9 @@ public:
     // Prepare the network before start and return true if it's ready
     // and false if verification is failed.
     virtual bool        prepare (bool bDoPrintouts = false);
+
+    // Separate initialization (called inside prepare())
+    virtual void        initialize (bool bDoPrintouts = false);
 
     // Run the network for one step and return state of the network
     virtual NaPNEvent   step_alive (bool bDoPrintouts = false);

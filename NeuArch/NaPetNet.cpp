@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.4 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.5 2001-06-25 20:17:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -293,6 +293,33 @@ NaPetriNet::prepare (bool bDoPrintouts)
     }
 
     // 6. Initialize node activity and setup starter flag if needed
+    initialize(bDoPrintouts);
+
+#if defined(unix)
+    // Prepare value of handling user break
+    bUserBreak = false;
+
+    // Register the signal handler
+    struct sigaction	sa, sa_old;
+    sa.sa_handler = user_break;
+    sa.sa_flags = SA_ONESHOT;
+    sigaction(SIGINT, &sa, &sa_old);
+    sigaction(SIGTERM, &sa, &sa_old);
+    sigaction(SIGQUIT, &sa, &sa_old);
+#endif /* unix */
+
+    return true;
+}
+
+
+//---------------------------------------------------------------------------
+// Separate initialization (called inside prepare())
+void
+NaPetriNet::initialize (bool bDoPrintouts)
+{
+    int     iNode;
+
+    // 6. Initialize node activity and setup starter flag if needed
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
         try{
             bool    bStarter = false;
@@ -321,21 +348,6 @@ NaPetriNet::prepare (bool bDoPrintouts)
                        pnaNet[iNode]->name(), NaExceptionMsg(exCode));
         }
     }
-
-#if defined(unix)
-    // Prepare value of handling user break
-    bUserBreak = false;
-
-    // Register the signal handler
-    struct sigaction	sa, sa_old;
-    sa.sa_handler = user_break;
-    sa.sa_flags = SA_ONESHOT;
-    sigaction(SIGINT, &sa, &sa_old);
-    sigaction(SIGTERM, &sa, &sa_old);
-    sigaction(SIGQUIT, &sa, &sa_old);
-#endif /* unix */
-
-    return true;
 }
 
 
