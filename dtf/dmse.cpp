@@ -1,5 +1,5 @@
 /* dmse.cpp */
-static char rcsid[] = "$Id: dmse.cpp,v 1.2 2001-04-21 09:55:44 vlad Exp $";
+static char rcsid[] = "$Id: dmse.cpp,v 1.3 2001-11-18 17:22:57 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -21,56 +21,69 @@ static char rcsid[] = "$Id: dmse.cpp,v 1.2 2001-04-21 09:55:44 vlad Exp $";
  ***********************************************************************/
 main (int argc, char* argv[])
 {
-  if(argc != 3)
+  if(argc != 2 && argc != 3)
     {
-      fprintf(stderr, "Error: need 2 arguments\n");
+      fprintf(stderr, "Error: need 1 or 2 arguments\n");
       fprintf(stderr,
-	      "Usage: DMSE_DELAY=Delay dmse SignalSeries ObservSeries\n");
+	      "Usage: DMSE_DELAY=Delay dmse SignalSeries [ObservSeries]\n");
       return 1;
     }
 
-  char	*signal_file = argv[1];
-  char	*observed_file = argv[2];
+  char	*szSignalFile = argv[1];
+  char	*szObservedFile = (argc == 2) ? NULL : argv[2];
 
   NaOpenLogFile("dmse.log");
 
   try{
-    NaDataFile	*dfSignal = OpenInputDataFile(signal_file);
-    NaDataFile	*dfObserved = OpenInputDataFile(observed_file);
+    NaDataFile	*dfSignal = OpenInputDataFile(szSignalFile);
+    NaDataFile	*dfObserved =
+      (szObservedFile != NULL) ? OpenInputDataFile(szObservedFile) : NULL;
 
-    if(NULL == dfSignal || NULL == dfObserved)
+    if(NULL == dfSignal || (NULL != szObservedFile
+			    && NULL == dfObserved))
       throw(na_cant_open_file);
 
     NaReal	fMSE = 0.;
     unsigned	nSamples = 0;
 
     dfSignal->GoStartRecord();
-    dfObserved->GoStartRecord();
+    if(dfObserved != NULL)
+      dfObserved->GoStartRecord();
 
-    char *p = getenv("DMSE_DELAY");
-    if(NULL != p)
+    if(dfObserved != NULL)
       {
-	int	i, n = atoi(p);
-	for(i = 0; i < n; ++i)
-	  /* avoid delay between signal and observation */
-	  dfObserved->GoNextRecord();
+	char *p = getenv("DMSE_DELAY");
+	if(NULL != p)
+	  {
+	    int	i, n = atoi(p);
+	    for(i = 0; i < n; ++i)
+	      /* avoid delay between signal and observation */
+	      dfObserved->GoNextRecord();
+	  }
       }
 
     do{
       NaReal	fSignal, fObserved;
       fSignal = dfSignal->GetValue();
-      fObserved = dfObserved->GetValue();
+      if(dfObserved != NULL)
+	fObserved = dfObserved->GetValue();
+      else
+	fObserved = 0.;
 
       fMSE += (fSignal - fObserved) * (fSignal - fObserved);
       ++nSamples;
-    }while(dfSignal->GoNextRecord() &&
-	   dfObserved->GoNextRecord());
+
+      if(NULL != dfObserved)
+	if(dfObserved->GoNextRecord())
+	  break;
+    }while(dfSignal->GoNextRecord());
 
     fMSE = /*sqrt(*/fMSE/*)*/ / nSamples;
 
     printf("%g\n", fMSE);
 
-    delete dfObserved;
+    if(NULL != dfObserved)
+      delete dfObserved;
     delete dfSignal;
   }
   catch(NaException& ex){
