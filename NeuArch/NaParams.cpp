@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.5 2001-06-03 21:29:36 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.6 2001-06-05 20:44:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -173,6 +173,70 @@ NaParams::GetParam (const char* szParamName) const
 	     szParamName, szParamValue);
 
   return szParamValue;
+}
+
+
+//---------------------------------------------------------------------------
+// Get array of parameters listed in the line
+char**
+NaParams::GetListOfParams (const char* szParamName,
+			   int& nList,
+			   const char* szDelims) const
+{
+  item_t	it, *pit;
+  it.name = (char*)szParamName;
+  it.value = NULL;
+
+  char	**szResult;
+  char	*szParamValue;
+
+  pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
+  if(NULL == pit)
+    {
+      nList = 0;
+      szParamValue = "?not found";
+    }
+  else
+    {
+      /* split value by delimiters */
+      char	*szParVal, *p, *buf = new char[strlen(pit->value) + 1];
+      strcpy(buf, pit->value);
+
+      /* pass 1: count all parameters */
+      for(p = buf, nList = 0;
+	  NULL != strtok(p, szDelims);
+	  p = NULL, ++nList)
+	;
+
+      if(nList > 0)
+	{
+	  int	i;
+
+	  /* allocate array of pointers */
+	  szResult = new char*[nList];
+
+	  /* pass 2: storing arguments */
+	  for(i = 0, p = buf;
+	      i < nList;
+	      ++i, p += strlen(p) + 1)
+	    szResult[i] = p;
+	}
+      else
+	{
+	  nList = 0;
+	  szParamValue = "?empty list";
+	}
+    }
+
+  if(0 == nList)
+    {
+      szResult = new char*[nList];
+      szResult[0] = new char[strlen(szParamValue) + 1];
+      strcpy(szResult[0], szParamValue);
+      nList = 1;
+    }
+
+  return szResult;
 }
 
 

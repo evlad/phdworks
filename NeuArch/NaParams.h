@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaParams.h */
-/* $Id: NaParams.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaParams.h,v 1.3 2001-06-05 20:44:36 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaParamsH
 #define NaParamsH
@@ -32,6 +32,16 @@ public:
   char*		GetParam (const char* szParamName) const;
   char*		operator() (const char* szParamName) const{
     return GetParam(szParamName);
+  }
+
+  // Get array of parameters listed in the line
+  char**	GetListOfParams (const char* szParamName,
+				 int& nList,
+				 const char* szDelims = " ") const;
+  char**	operator() (const char* szParamName,
+			    int& nList,
+			    const char* szDelims = " ") const{
+    return GetListOfParams(szParamName, nList, szDelims);
   }
 
 protected:
