@@ -1,5 +1,5 @@
 # dcsloop parameters
-# $Id: dcsloop.par,v 1.1 2001-04-20 20:07:32 vlad Exp $
+# $Id: dcsloop.par,v 1.2 2001-04-21 10:51:24 vlad Exp $
 
 ########################################
 # Type of controller
@@ -8,11 +8,11 @@ contr_kind = lin
 
 ########################################
 # Mode of the modeling
-#input_kind = stream
-input_kind = file
+input_kind = stream
+#input_kind = file
 
 # (input_kind = stream) Length of series
-stream_len = 100
+stream_len = 5000
 
 # Linear object transfer function
 linobject_tf = plant.tf

@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.1 2001-04-20 20:07:32 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.2 2001-04-21 10:51:24 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -202,12 +202,14 @@ int main(int argc, char **argv)
 	break;
       }
 
-    csm.onsum.verbose(true);
-    csm.cmp.verbose(true);
-    csm.controller.verbose(true);
-    csm.object.verbose(true);
+    //csm.onsum.verbose(true);
+    //csm.cmp.verbose(true);
+    //csm.controller.verbose(true);
+    //csm.object.verbose(true);
 
     NaPNEvent   pnev = csm.run_net();
+
+    printf("\nMean squared error=%g\n", csm.statan_e.RMS[0]);
 
     NaPrintLog("IMPORTANT: net is dead due to ");
     switch(pnev){

@@ -82,7 +82,8 @@ public:/* data */
     NaPNCheckPoint  chkpnt_y;
     NaPNCheckPoint  chkpnt_ny;
     NaPNSum         onsum;
-    NaPNStatistics  statan_e;
+    NaPNComparator  cmp_e;	// reference minus pure y produces e for MSE
+    NaPNStatistics  statan_e;	// MSE computation
     NaPNStatistics  statan_r;
     NaPNBus2i1o     bus;        // (u,e)->NN former
     NaPNDelay       delay;      // (e(i),e(i-1),...e(i-n))->NN delayer-former

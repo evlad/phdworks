@@ -30,6 +30,7 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   chkpnt_y("chkpnt_y"),
   onsum("onsum"),
   chkpnt_ny("chkpnt_ny"),
+  cmp_e("cmp_e"),
   statan_e("statan_e"),
   statan_r("statan_r")
 {
@@ -57,7 +58,6 @@ void
 NaControlSystemModel::link_net ()
 {
     try{
-#if 0
         // Link the network
         net.link_nodes(
                        (0==nSeriesLen)? &setpnt_inp: &setpnt_gen,
@@ -96,77 +96,15 @@ NaControlSystemModel::link_net ()
                        NULL);
 
 
-        net.link(&chkpnt_y.out, &cmp.aux);
+        net.link(&chkpnt_ny.out, &cmp.aux);
         net.link(&chkpnt_n.out, &onsum.aux);
 
-        net.link(&chkpnt_e.out, &statan_e.signal);
+        net.link(&chkpnt_r.out, &cmp_e.main);
+        net.link(&object.y, &cmp_e.aux);
+
+        net.link(&cmp_e.cmp, &statan_e.signal);
         net.link(&chkpnt_r.out, &statan_r.signal);
-#elif 0
-        // Link the network
-        net.link_nodes(
-                       (0==nSeriesLen)? &setpnt_inp: &setpnt_gen,
-		       &chkpnt_r,
-		       &onsum,
-                       &chkpnt_ny,
-                       &cmp,
-                       &chkpnt_e,
-                       NULL);
-        net.link_nodes(
-                       (0==nSeriesLen)? &noise_inp: &noise_gen,
-                       &chkpnt_n,
-                       NULL);
 
-	switch(eContrKind)
-	  {
-	  case NaLinearContr:
-	    net.link(&chkpnt_e.out, &controller.x);
-	    break;
-	  case NaNeuralContrDelayedE:
-	    net.link(&chkpnt_e.out, &delay.in);
-	    net.link(&delay.dout, &controller.x);
-	    break;
-	  case NaNeuralContrER:
-	    net.link(&chkpnt_r.out, &bus.in1);
-	    net.link(&chkpnt_e.out, &bus.in2);
-	    net.link(&bus.out, &controller.x);
-	    break;
-	  }
-
-        net.link_nodes(
-                       &controller,
-		       &chkpnt_u,
-                       &object,
-		       &chkpnt_y,
-                       NULL);
-
-        net.link(&chkpnt_y.out, &cmp.aux);
-        net.link(&chkpnt_n.out, &onsum.aux);
-
-        net.link(&chkpnt_e.out, &statan_e.signal);
-        net.link(&chkpnt_r.out, &statan_r.signal);
-#else
-        // Link the network
-        net.link_nodes(
-                       (0==nSeriesLen)? &setpnt_inp: &setpnt_gen,
-		       &onsum,
-		       &chkpnt_ny,
-                       &cmp,
-		       &chkpnt_e,
-		       &controller,
-		       &object,
-		       &chkpnt_y,
-                       NULL);
-        net.link_nodes(
-                       (0==nSeriesLen)? &noise_inp: &noise_gen,
-                       &chkpnt_n,
-                       NULL);
-
-        net.link(&chkpnt_y.out, &cmp.aux);
-        net.link(&chkpnt_n.out, &onsum.aux);
-
-        net.link(&chkpnt_e.out, &statan_e.signal);
-        /*net.link(&chkpnt_r.out, &statan_r.signal);*/
-#endif
     }catch(NaException ex){
         NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
     }
@@ -181,7 +119,14 @@ NaControlSystemModel::run_net ()
     try{
         NaVector	rZero(1);
 	rZero.init_zero();
+	NaVector	rMain(1), rAux(1);
+	rMain.init_value(1.);
+	rAux.init_value(-1.);
+
         chkpnt_y.out.set_starter(rZero);
+	onsum.set_gain(rMain, rAux);
+
+	net.set_timing_node((0==nSeriesLen)? &setpnt_inp: &setpnt_gen);
 
         // Prepare petri net engine
         if(!net.prepare()){
@@ -249,9 +194,7 @@ void
 NaControlSystemModel::idle_entry ()
 {
     // Dummy
-    printf("Sample %u\ttime: %g\r",
-           net.timer().CurrentIndex(),
-           net.timer().CurrentTime());
+    printf("Sample %u\r", net.timer().CurrentIndex());
     fflush(stdout);
 }
 
