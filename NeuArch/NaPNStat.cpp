@@ -1,5 +1,5 @@
 /* NaPNStat.cpp */
-static char rcsid[] = "$Id: NaPNStat.cpp,v 1.6 2002-02-28 18:45:15 vlad Exp $";
+static char rcsid[] = "$Id: NaPNStat.cpp,v 1.7 2002-02-28 19:22:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -132,7 +132,7 @@ NaPNStatistics::print_stat (const char* szTitle)
 	       "         RMS  Volume\n");
     for(unsigned i = 0; i < Mean.dim(); ++i){
       NaPrintLog("%12g  %12g  %12g  %12g  %12g  %u\n",
-		 Min[0], Max[0], Mean[0], StdDev[0], RMS[0], activations());
+		 Min[i], Max[i], Mean[i], StdDev[i], RMS[i], activations());
     }
 }
 
