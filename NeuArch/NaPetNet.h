@@ -100,6 +100,9 @@ public:
     // Setup timer
     virtual void        set_timer (NaTimer* pTimer_);
 
+    // Setup timing node; timer steps when node is activated
+    virtual void        set_timing_node (NaPetriNode* pTimingNode_);
+
 
 protected:/* methods */
 
@@ -117,6 +120,9 @@ protected:/* data */
 
     // Timer object or default library timer
     NaTimer             *pTimer;
+
+    // Node which activation force timer to step
+    NaPetriNode		*pTimingNode;
 
     // Time chart facility
     bool                bTimeChart;

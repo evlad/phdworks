@@ -46,7 +46,7 @@ public:
     // Standard deviation value: d(signal) = sqrt(M(signal^2) - M(signal)^2)
     NaVector            StdDev;
 
-    // Root mean square: sqrt(M(signal^2))
+    // Root mean square: M(signal^2)
     NaVector            RMS;
 
     // Minimum value of the series

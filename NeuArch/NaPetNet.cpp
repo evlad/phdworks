@@ -46,6 +46,7 @@ NaPetriNet::NaPetriNet (const char* szNetName)
     pTimer = &TheTimer;
     bTimeChart = false;
     dfTimeChart = NULL;
+    pTimingNode = NULL;
 
     if(NULL == szNetName)
         szName = autoname("pnet", iNetNumber);
@@ -380,6 +381,10 @@ NaPetriNet::step_alive (bool bDoPrintouts)
                            pnaNet[iNode]->name(), bActivate?"" :"not ");
             }
 
+	    // Node is timing one
+	    if(bActivate && pnaNet[iNode] == pTimingNode)
+	      timer().GoNextTime();
+
         }catch(NaException exCode){
             NaPrintLog("Step of node activity phase (#7): node '%s' fault.\n"
                        "Caused by exception: %s\n",
@@ -645,6 +650,20 @@ NaPetriNet::set_timer (NaTimer* pTimer_)
         pTimer = &TheTimer;
     else
         pTimer = pTimer_;
+}
+
+
+//---------------------------------------------------------------------------
+// Setup timing node; timer steps when node is activated
+void
+NaPetriNet::set_timing_node (NaPetriNode* pTimingNode_)
+{
+  pTimingNode = pTimingNode_;
+
+  if(NULL == pTimingNode)
+    NaPrintLog("Timing node is off\n");
+  else
+    NaPrintLog("Timing node '%s' (%p)\n", pTimingNode->name(), pTimingNode);
 }
 
 

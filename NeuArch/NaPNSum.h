@@ -41,6 +41,15 @@ public:
     virtual NaPetriConnector*   main_input_cn ();
 
 
+    ///////////////////
+    // Node specific //
+    ///////////////////
+
+    // Assign gain weights on input; ones by default
+    virtual void        set_gain (const NaVector& vMainK,
+				  const NaVector& vAuxK);
+
+
     ///////////////////////
     // Phases of network //
     ///////////////////////
@@ -53,6 +62,11 @@ public:
 
     // 8. True action of the node (if activate returned true)
     virtual void        action ();
+
+protected:/* data */
+
+    // Gain for main and auxiliary inputs
+    NaVector		vMainGain, vAuxGain;
 
 };
 
