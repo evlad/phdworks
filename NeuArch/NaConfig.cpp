@@ -1,5 +1,5 @@
 /* NaConfig.cpp */
-static char rcsid[] = "$Id: NaConfig.cpp,v 1.7 2003-01-12 12:22:45 vlad Exp $";
+static char rcsid[] = "$Id: NaConfig.cpp,v 1.8 2004-01-28 19:54:19 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #define _GNU_SOURCE
@@ -570,13 +570,17 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
 
                 // Restore file position
                 fseek(fp, iPos, SEEK_SET);
+
+		// Assign partition instance
+		if(NULL != szInstance)
+		  pPartList[iPart]->SetInstance(szInstance);
+
 #ifdef CONFIG_DEBUG
                 NaPrintLog("Loading configuration for instance %s.\n",
-                           NULL == szInstance?"(nil)"
-                                             :pPartList[iPart]->GetInstance());
+                           (NULL == szInstance)? "(nil)": szInstance);
 #endif /* CONFIG_DEBUG */
                 try{
-                    pPartList[iPart]->Load(*this);
+		    pPartList[iPart]->Load(*this);
                 }
                 catch(NaException exCode){
                     NaPrintLog("Failed while loading: %s\n",
