@@ -1,9 +1,10 @@
 set nokey
 set grid
 set ytics border -1,1,1
-plot [t=-10:10] 2*(1/(1+exp(-t))-0.5) with lines linewidth 4.0
+plot [t=-10:10] [-1.2:1.2] 2*(1/(1+exp(-t))-0.5) with lines linewidth 4.0
 pause -1 "Press RETURN to make an output file"
-set terminal eepic
-set output 'tanh.pic'
+set terminal postscript landscape
+set output 'tanh.ps'
 replot
-set terminal windows
+set terminal x11
+#set terminal windows
