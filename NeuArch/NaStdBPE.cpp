@@ -1,5 +1,5 @@
 /* NaStdBPE.cpp */
-static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.6 2002-01-27 10:21:13 vlad Exp $";
+static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.7 2003-01-06 10:17:20 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
@@ -205,9 +205,9 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
     NaReal      fError;
     unsigned    iNeuron, iLayer = nn.OutputLayer();
 
-#ifdef StdBPE_DEBUG
+#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
     NaPrintLog("+++ Standard delta rule [%u]-output +++\n", iLayer);
-#endif // StdBPE_DEBUG
+#endif // StdBPE_DEBUG || NNUnit_SCALE
 
     if(NULL == Ytarg)
         throw(na_null_pointer);
@@ -222,7 +222,7 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
 	  // is good enough to work in real application with outputs
 	  // without scaling.  Don't scale NN outputs until you will
 	  // be sure about proper way to scale precomputed error too!
-#if 1
+#if 0
             // Error must not be scaled
             fError = Ytarg[iNeuron];
 #else
@@ -230,9 +230,9 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
 	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
 			 &(Ytarg[iNeuron]), &fError, 1);
 #endif
-#ifdef StdBPE_DEBUG
+#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
             NaPrintLog("    ~ precomp.error[%d]= %g\n", iNeuron, fError);
-#endif // StdBPE_DEBUG
+#endif // StdBPE_DEBUG || NNUnit_SCALE
         }else{
             NaReal  Ydes_i;
 
@@ -241,9 +241,9 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
 			 &(Ytarg[iNeuron]), &Ydes_i, 1);
 
             fError = nn.Yout[iLayer][iNeuron] - Ydes_i;
-#ifdef StdBPE_DEBUG
+#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
             NaPrintLog("    ~ error[%d]= %g\n", iNeuron, fError);
-#endif // StdBPE_DEBUG
+#endif // StdBPE_DEBUG || NNUnit_SCALE
         }
 
         delta_prev[iLayer][iNeuron] = delta[iLayer][iNeuron];
