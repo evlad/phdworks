@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNStat.h */
-/* $Id: NaPNStat.h,v 1.5 2001-12-12 22:38:20 vlad Exp $ */
+/* $Id: NaPNStat.h,v 1.6 2001-12-13 12:27:49 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNStatH
 #define NaPNStatH
@@ -14,26 +14,35 @@
 #define GREATER_THAN	1
 
 // Statistics id
-#define NaSI_MEAN	0
-#define NaSI_RMS	1
-#define NaSI_STDDEV	2
-#define NaSI_MAX	3
-#define NaSI_MIN	4
-#define NaSI_ABS	5
+#define NaSI_ABSMEAN	0
+#define NaSI_MEAN	1
+#define NaSI_RMS	2
+#define NaSI_STDDEV	3
+#define NaSI_MAX	4
+#define NaSI_MIN	5
+#define NaSI_ABSMAX	6
 
-#define NaSI_number	6
+#define NaSI_number	7
+#define NaSI_bad_id	(-1)
 
 #define NaSIdToMask(id)	(1<<(id))
 
 // Statistics mask
-#define NaSM_MEAN	(1<<0)
-#define NaSM_RMS	(1<<1)
-#define NaSM_STDDEV	(1<<2)
-#define NaSM_MAX	(1<<3)
-#define NaSM_MIN	(1<<4)
-#define NaSM_ABS	(1<<5)
-#define NaSM_ALL	(NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
-			 NaSM_MAX | NaSM_MIN | NaSM_ABS)
+#define NaSM_ABSMEAN	(1<<0)
+#define NaSM_MEAN	(1<<1)
+#define NaSM_RMS	(1<<2)
+#define NaSM_STDDEV	(1<<3)
+#define NaSM_MAX	(1<<4)
+#define NaSM_MIN	(1<<5)
+#define NaSM_ABSMAX	(1<<6)
+
+#define NaSM_ALL	(NaSM_ABSMEAN | NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
+			 NaSM_MAX | NaSM_MIN | NaSM_ABSMAX)
+
+
+// Stat identifier string<->id conversion
+const char*	NaStatIdToText (int stat_id);
+int		NaStatTextToId (const char* szStatText);
 
 
 //---------------------------------------------------------------------------
@@ -58,12 +67,13 @@ public:
   NaPetriCnInput      signal;
 
   // Output vector:
-  //  [0] mean value: S(x)/n
-  //  [1] root mean square value: S(^2)/n
-  //  [2] standard deviation value: S(^2)/n - (S(x)/n)^2
-  //  [3] maximum value: Max(x)
-  //  [4] minimum value: Min(x)
-  //  [5] absolute maximum value: Max(|Max(x)|,|Min(x)|)
+  //  [0] absolute mean value: |S(x)/n|
+  //  [1] mean value: S(x)/n
+  //  [2] root mean square value: S(^2)/n
+  //  [3] standard deviation value: S(^2)/n - (S(x)/n)^2
+  //  [4] maximum value: Max(x)
+  //  [5] minimum value: Min(x)
+  //  [6] absolute maximum value: Max(|Max(x)|,|Min(x)|)
   NaPetriCnOutput     stat;
 
 

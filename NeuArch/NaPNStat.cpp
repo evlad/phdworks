@@ -1,19 +1,55 @@
 /* NaPNStat.cpp */
-static char rcsid[] = "$Id: NaPNStat.cpp,v 1.4 2001-12-12 22:38:20 vlad Exp $";
+static char rcsid[] = "$Id: NaPNStat.cpp,v 1.5 2001-12-13 12:27:49 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "NaPNStat.h"
 
 
-static 	char	*szId[NaSI_number] = {
-  "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABS"
+static char	*szId[NaSI_number] = {
+  "ABSMEAN", "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABSMAX"
 };
 static char	*szSign[3] = {
   "<", "=", ">"
 };
+
+
+//---------------------------------------------------------------------------
+// Stat identifier string<-id conversion
+const char*
+NaStatIdToText (int stat_id)
+{
+  if(stat_id < NaSI_ABSMEAN || stat_id > NaSI_ABSMAX)
+    return "? bad_id";
+
+  return szId[stat_id];
+}
+
+
+//---------------------------------------------------------------------------
+// Stat identifier string->id conversion
+int
+NaStatTextToId (const char* szStatText)
+{
+  if(!strcasecmp(szStatText, NaStatIdToText(NaSI_ABSMEAN)))
+    return NaSI_ABSMEAN;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_MEAN)))
+    return NaSI_MEAN;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_RMS)))
+    return NaSI_RMS;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_STDDEV)))
+    return NaSI_STDDEV;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_MAX)))
+    return NaSI_MAX;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_MIN)))
+    return NaSI_MIN;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_ABSMAX)))
+    return NaSI_ABSMAX;
+  return NaSI_bad_id;
+}
 
 
 //---------------------------------------------------------------------------
@@ -66,7 +102,7 @@ NaPNStatistics::configure_output (int stat_mask)
 void
 NaPNStatistics::halt_condition (int stat_id, int sign, NaReal value)
 {
-  if(stat_id < NaSI_MEAN || stat_id > NaSI_ABS){
+  if(stat_id < NaSI_ABSMEAN || stat_id > NaSI_ABSMAX){
     NaPrintLog("NaPNStatistics::halt_condition(): unknown id=%d\n", stat_id);
   }
 
@@ -270,12 +306,13 @@ NaPNStatistics::action ()
   for(id = 0; id < NaSI_number; ++id){
     switch(mOutStat & NaSIdToMask(id))
       {
+      case NaSM_ABSMEAN:stat.data()[j++] = fabs(Mean[0]);break;
       case NaSM_MEAN:	stat.data()[j++] = Mean[0];	break;
       case NaSM_RMS:	stat.data()[j++] = RMS[0];	break;
       case NaSM_STDDEV:	stat.data()[j++] = StdDev[0];	break;
       case NaSM_MAX:	stat.data()[j++] = Max[0];	break;
       case NaSM_MIN:	stat.data()[j++] = Min[0];	break;
-      case NaSM_ABS:	stat.data()[j++] = fAbs;	break;
+      case NaSM_ABSMAX:	stat.data()[j++] = fAbs;	break;
       }
   }
 
@@ -286,6 +323,12 @@ NaPNStatistics::action ()
       for(id = 0; id < NaSI_number; ++id){
 	switch(mHalt & NaSIdToMask(id))
 	  {
+	  case NaSM_ABSMEAN:
+	    mHaltedBy |=
+	      check_condition(fabs(Mean[0]), HaltCond[id].sign,
+			      HaltCond[id].value)
+	      ? NaSIdToMask(id) : 0;
+	    break;
 	  case NaSM_MEAN:
 	    mHaltedBy |=
 	      check_condition(Mean[0], HaltCond[id].sign, HaltCond[id].value)
@@ -311,7 +354,7 @@ NaPNStatistics::action ()
 	      check_condition(Min[0], HaltCond[id].sign, HaltCond[id].value)
 	      ? NaSIdToMask(id) : 0;
 	    break;
-	  case NaSM_ABS:
+	  case NaSM_ABSMAX:
 	    mHaltedBy |=
 	      check_condition(fAbs, HaltCond[id].sign, HaltCond[id].value)
 	      ? NaSIdToMask(id) : 0;
@@ -321,13 +364,11 @@ NaPNStatistics::action ()
 
       // if any of halt flags is true...
       if(mHaltedBy & NaSM_ALL){
-	if(is_verbose()){
-	  NaPrintLog("Statistics node '%s' caused halt due to:\n", name());
-	  for(id = 0; id < NaSI_number; ++id){
-	    if(mHaltedBy & NaSIdToMask(id))
-	      NaPrintLog("  %s[0] %s %g\n", szId[id],
-			 szSign[1 + HaltCond[id].sign], HaltCond[id].value);
-	  }
+	NaPrintLog("Statistics node '%s' caused halt due to:\n", name());
+	for(id = 0; id < NaSI_number; ++id){
+	  if(mHaltedBy & NaSIdToMask(id))
+	    NaPrintLog("  %s[0] %s %g\n", szId[id],
+		       szSign[1 + HaltCond[id].sign], HaltCond[id].value);
 	}
 
 	// some halt condition results true
