@@ -13,6 +13,7 @@
 #include <NaPNTchr.h>
 #include <NaPNBu21.h>
 #include <NaPNDely.h>
+#include <NaPNDerv.h>
 
 
 //---------------------------------------------------------------------------
@@ -56,7 +57,8 @@ public:/* data */
 
     // Functional Petri network nodes
     NaPNFileInput   in_r;       // set point
-    NaPNBus2i1o     bus;        // (u,e)->NN former
+    NaPNBus2i1o     bus;        // (r,e),(e,de)->NN former
+    NaPNDerivative  delta_e;    // (1-1/z)*e(k)
     NaPNDelay       delay;      // (e(i),e(i-1),...e(i-n))->NN delayer-former
     NaPNFileInput   in_e;       // control error
     NaPNFileInput   in_u;       // target control force

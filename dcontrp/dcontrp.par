@@ -1,5 +1,8 @@
 # dcontrp parameters
-# $Id: dcontrp.par,v 1.1 2001-04-21 14:46:19 vlad Exp $
+# $Id: dcontrp.par,v 1.2 2001-06-18 19:22:53 vlad Exp $
+
+# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
+nnc_mode = e+de
 
 # NNC TEACHING
 # Input files
@@ -20,12 +23,12 @@ test_in_u = u_test.dat
 test_nn_u = nn_u_test.dat
 
 # Neural net file
-in_nnc_file = nnc.nn
-out_nnc_file = nnc_res.nn
+in_nnc_file = nnc_ede.nn
+out_nnc_file = nnc_ede_res.nn
 
 # Tracking learning process:
 # LearnME LearnSDE LearnMSE TestME TestSDE TestMSE NormLearnMSE NormTestMSE
-trace_file = nnc_trace.dat
+trace_file = nnc_ede_trace.dat
 
 # Stop learning if...
 #finish_decrease=0.0001
@@ -34,6 +37,6 @@ finish_on_grow=20
 finish_max_epoch=400
 
 # Learning algorithm setup
-eta = 0.01
-eta_output = 0.001
+eta = 0.05
+eta_output = 0.005
 alpha = 0.0

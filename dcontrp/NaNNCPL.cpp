@@ -1,5 +1,5 @@
 /* NaNNCPL.cpp */
-static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.2 2001-04-21 16:11:05 vlad Exp $";
+static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.3 2001-06-18 19:22:53 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <NaExcept.h>
@@ -14,6 +14,7 @@ NaNNContrPreLearn::NaNNContrPreLearn (NaAlgorithmKind akind,
   in_r("in_r"),
   bus("bus"),
   delay("delay"),
+  delta_e("delta_e"),
   in_e("in_e"),
   in_u("in_u"),
   nn_u("nn_u"),
@@ -23,7 +24,7 @@ NaNNContrPreLearn::NaNNContrPreLearn (NaAlgorithmKind akind,
   statan("statan"),
   statan_u("statan_u")
 {
-    // Nothing to do
+  // Nothing
 }
 
 
@@ -60,6 +61,12 @@ NaNNContrPreLearn::link_net ()
 	    net.link(&in_e.out, &bus.in2);
 	    net.link(&bus.out, &nncontr.x);
 	    break;
+	  case NaNeuralContrEdE:
+	    net.link(&in_e.out, &bus.in1);
+	    net.link(&in_e.out, &delta_e.x);
+	    net.link(&delta_e.dx, &bus.in2);
+	    net.link(&bus.out, &nncontr.x);
+	    break;
 	  }
 	if(eAlgoKind == NaTrainingAlgorithm)
 	  {
@@ -70,7 +77,9 @@ NaNNContrPreLearn::link_net ()
         net.link(&nncontr.y, &nn_u.in);
         net.link(&in_u.out, &errcomp.main);
         net.link(&errcomp.cmp, &statan.signal);
-	net.link(&in_r.out, &statan_u.signal);
+
+	if(NaNeuralContrER == eContrKind)
+	  net.link(&in_r.out, &statan_u.signal);
     }catch(NaException ex){
         NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
     }

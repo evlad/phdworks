@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.4 2001-06-12 12:42:57 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.5 2001-06-18 19:22:53 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -55,10 +55,18 @@ int main(int argc, char **argv)
 
     // Interpret NN-C structure
     NaControllerKind	ckind;
+    // Default rule
     if(au_nnc.descr.nInputsRepeat > 1)
       ckind = NaNeuralContrDelayedE;
     else
       ckind = NaNeuralContrER;
+    // Explicit rule
+    if(!strcmp(par("nnc_mode"), "e+r"))
+      ckind = NaNeuralContrER;
+    else if(!strcmp(par("nnc_mode"), "e+de"))
+      ckind = NaNeuralContrEdE;
+    else if(!strcmp(par("nnc_mode"), "e+e+..."))
+      ckind = NaNeuralContrDelayedE;
 
     // Additional log files
     NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
@@ -81,6 +89,10 @@ int main(int argc, char **argv)
       case NaNeuralContrER:
 	nncpl.in_r.set_input_filename(par("in_r"));
 	nncpe.in_r.set_input_filename(par("test_in_r"));
+	break;
+
+      case NaNeuralContrEdE:
+	// Nothing special
 	break;
 
       case NaNeuralContrDelayedE:
@@ -155,6 +167,12 @@ int main(int argc, char **argv)
     do{
       ++iIter;
 
+      /*nncpl.bus.verbose(true);
+      nncpl.in_e.verbose(true);
+      nncpl.in_u.verbose(true);
+      nncpl.nncontr.verbose(true);
+      nncpl.delta_e.verbose(true);*/
+
       // teach pass
       pnev = nncpl.run_net();
 
@@ -164,7 +182,10 @@ int main(int argc, char **argv)
       NaPrintLog("*** Teach pass ***\n");
       nncpl.statan.print_stat();
 
-      fNormMSE = nncpl.statan.RMS[0] / nncpl.statan_u.RMS[0];
+      if(NaNeuralContrER == ckind)
+	fNormMSE = nncpl.statan.RMS[0] / nncpl.statan_u.RMS[0];
+      else
+	fNormMSE = nncpl.statan.RMS[0];
 
       printf("Iteration %-4d, MSE=%g (%g)", iIter, nncpl.statan.RMS[0],
 	     fNormMSE);
@@ -231,10 +252,13 @@ int main(int argc, char **argv)
 	  if(pneError == pnev_test || pneTerminate == pnev_test)
 	    break;
 
-	  fNormTestMSE = nncpe.statan.RMS[0] / nncpe.statan_u.RMS[0];
+	  if(NaNeuralContrER == ckind)
+	    fNormTestMSE = nncpe.statan.RMS[0] / nncpe.statan_u.RMS[0];
+	  else
+	    fNormTestMSE = nncpe.statan.RMS[0];
 
 	  printf("          Test: MSE=%g (%g)\n", nncpe.statan.RMS[0],
-		 nncpe.statan.RMS[0] / nncpe.statan_u.RMS[0]);
+		 fNormTestMSE);
 
 	  NaPrintLog("*** Test pass ***\n");
 	  nncpe.statan.print_stat();
@@ -305,10 +329,10 @@ int main(int argc, char **argv)
     delete nnllog;
 
     nnfile.SaveToFile(par("out_nnc_file"));
-    }
-    catch(NaException& ex){
-        NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
-    }
+  }
+  catch(NaException& ex){
+    NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+  }
 
-    return 0;
+  return 0;
 }
