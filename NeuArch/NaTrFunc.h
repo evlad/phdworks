@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaTrFunc.h */
-/* $Id: NaTrFunc.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
+/* $Id: NaTrFunc.h,v 1.3 2002-02-14 14:08:58 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaTrFuncH
 #define NaTrFuncH
@@ -134,6 +134,12 @@ public:
 
     // Retrieve configuration data in internal order from given stream
     virtual void    Load (NaDataStream& ds);
+
+    // Store transfer function to given configuration file
+    virtual void    Save (const char* szFileName);
+
+    // Read transfer function from given configuration file
+    virtual void    Load (const char* szFileName);
 
     //-----------------------------------------------------------------------
     // Operators

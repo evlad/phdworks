@@ -1,5 +1,5 @@
 /* NaTrFunc.cpp */
-static char rcsid[] = "$Id: NaTrFunc.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id: NaTrFunc.cpp,v 1.3 2002-02-14 14:08:58 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <ctype.h>
@@ -469,6 +469,28 @@ NaTransFunc::Load (NaDataStream& ds)
         pf.Load(ds);
         break;
     }
+}
+
+//---------------------------------------------------------------------------
+// Store transfer function to given configuration file
+void
+NaTransFunc::Save (const char* szFileName)
+{
+  NaConfigPart	*conf_list[] = { this };
+  NaConfigFile	conf_file(";NeuCon transfer", 1, 0, ".tf");
+  conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
+  conf_file.SaveToFile(szFileName);
+}
+
+//---------------------------------------------------------------------------
+// Read transfer function from given configuration file
+void
+NaTransFunc::Load (const char* szFileName)
+{
+  NaConfigPart	*conf_list[] = { this };
+  NaConfigFile	conf_file(";NeuCon transfer", 1, 0, ".tf");
+  conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
+  conf_file.LoadFromFile(szFileName);
 }
 
 //-----------------------------------------------------------------------

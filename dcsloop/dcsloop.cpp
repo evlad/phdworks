@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.7 2001-12-09 15:32:16 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.8 2002-02-14 14:12:53 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -89,36 +89,10 @@ int main(int argc, char **argv)
     NaTransFunc		noise_tf;
     NaTransFunc		au_linplant;
     NaTransFunc		au_lincontr;
-    NaNeuralNetDescr	nnc_descr;
-    NaNNUnit		au_nnc(nnc_descr);
-
-    // Configuration files
-    NaConfigPart        *nnc_conf_list[] = { &au_nnc };
-    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 1);
-    nncfile.AddPartitions(NaNUMBER(nnc_conf_list), nnc_conf_list);
-
-    NaConfigPart	*conf_list_linplant[] = { &au_linplant };
-    NaConfigFile	conf_file_linplant(";NeuCon transfer", 1, 0);
-    conf_file_linplant.AddPartitions(NaNUMBER(conf_list_linplant),
-				     conf_list_linplant);
-
-    NaConfigPart	*conf_list_lincontr[] = { &au_lincontr };
-    NaConfigFile	conf_file_lincontr(";NeuCon transfer", 1, 0);
-    conf_file_lincontr.AddPartitions(NaNUMBER(conf_list_lincontr),
-				     conf_list_lincontr);
-
-    NaConfigPart	*conf_list_refer[] = { &refer_tf };
-    NaConfigFile	conf_file_refer(";NeuCon transfer", 1, 0);
-    conf_file_refer.AddPartitions(NaNUMBER(conf_list_refer),
-				  conf_list_refer);
-
-    NaConfigPart	*conf_list_noise[] = { &noise_tf };
-    NaConfigFile	conf_file_noise(";NeuCon transfer", 1, 0);
-    conf_file_noise.AddPartitions(NaNUMBER(conf_list_noise),
-				  conf_list_noise);
+    NaNNUnit		au_nnc;
 
     // Load plant
-    conf_file_linplant.LoadFromFile(par("linplant_tf"));
+    au_linplant.Load(par("linplant_tf"));
 
     // Initial state
     NaVector	vInitial(1);
@@ -131,13 +105,13 @@ int main(int argc, char **argv)
     switch(contr_kind)
       {
       case linear_contr:
-	conf_file_lincontr.LoadFromFile(par("lincontr_tf"));
+	au_lincontr.Load(par("lincontr_tf"));
 	ckind = NaLinearContr;
 
 	vInitial.init_value(atof(par("plant_initial_state")));
 	break;
       case neural_contr:
-	nncfile.LoadFromFile(par("nncontr"));
+	au_nnc.Load(par("nncontr"));
 
 	// Interpret NN-C structure
 	// Default rule
@@ -164,8 +138,8 @@ int main(int argc, char **argv)
     switch(inp_data_mode)
       {
       case stream_mode:
-	conf_file_refer.LoadFromFile(par("refer_tf"));
-	conf_file_noise.LoadFromFile(par("noise_tf"));
+	refer_tf.Load(par("refer_tf"));
+	noise_tf.Load(par("noise_tf"));
 	len = atoi(par("stream_len"));
 	break;
       case file_mode:

@@ -1,5 +1,5 @@
 /* dnnplant.cpp */
-static char rcsid[] = "$Id: dnnplant.cpp,v 1.3 2002-01-23 06:41:10 vlad Exp $";
+static char rcsid[] = "$Id: dnnplant.cpp,v 1.4 2002-02-14 14:16:03 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -39,10 +39,7 @@ main (int argc, char* argv[])
 
     // Read neural network from file
     NaNNUnit		au_nn(nn_descr);
-    NaConfigPart        *conf_list[] = { &au_nn };
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
-    nnfile.AddPartitions(NaNUMBER(conf_list), conf_list);
-    nnfile.LoadFromFile(argv[1]);
+    au_nn.Load(argv[1]);
 
     NaNNRegrPlantLearn	nnroe(NaEvaluationAlgorithm);	// test
 

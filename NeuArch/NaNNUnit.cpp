@@ -1,13 +1,21 @@
 /* NaNNUnit.cpp */
-static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.5 2001-09-30 16:04:07 vlad Exp $";
+static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.6 2002-02-14 14:08:58 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
 #include <stdlib.h>
 
 #include "NaRandom.h"
-
 #include "NaNNUnit.h"
+
+
+//---------------------------------------------------------------------------
+NaNNUnit::NaNNUnit ()
+  : NaUnit(1, 1, 0), feedback(0), NaConfigPart("NeuralNet")
+{
+  /* nothing */
+}
+
 
 //---------------------------------------------------------------------------
 NaNNUnit::NaNNUnit (const NaNeuralNetDescr& rDescr)
@@ -227,6 +235,30 @@ NaNNUnit::Load (NaDataStream& ds)
         ds.GetF("%lg %lg",
                 &OutputScaler.min[iNeuron], &OutputScaler.max[iNeuron]);
     }
+}
+
+
+//---------------------------------------------------------------------------
+// Store neural net to the file
+void
+NaNNUnit::Save (const char* szFileName)
+{
+  NaConfigPart	*conf_list[] = { this };
+  NaConfigFile	conf_file(";NeuCon NeuralNet", 1, 1, ".nn");
+  conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
+  conf_file.SaveToFile(szFileName);
+}
+
+
+//---------------------------------------------------------------------------
+// Retrieve neural net from the file
+void
+NaNNUnit::Load (const char* szFileName)
+{
+  NaConfigPart	*conf_list[] = { this };
+  NaConfigFile	conf_file(";NeuCon NeuralNet", 1, 1, ".nn");
+  conf_file.AddPartitions(NaNUMBER(conf_list), conf_list);
+  conf_file.LoadFromFile(szFileName);
 }
 
 

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNNUnit.h */
-/* $Id: NaNNUnit.h,v 1.4 2001-11-25 21:35:22 vlad Exp $ */
+/* $Id: NaNNUnit.h,v 1.5 2002-02-14 14:08:58 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNUnitH
 #define NaNNUnitH
@@ -18,6 +18,7 @@ class NaNNUnit : public NaUnit, public NaConfigPart
 {
 public:
 
+    NaNNUnit ();
     NaNNUnit (const NaNeuralNetDescr& rDescr);
     NaNNUnit (const NaNNUnit& rUnit);
     virtual ~NaNNUnit ();
@@ -37,6 +38,12 @@ public:
 
     // Retrieve configuration data in internal order from given stream
     virtual void    Load (NaDataStream& ds);
+
+    // Store neural net to the file
+    virtual void    Save (const char* szFileName);
+
+    // Retrieve neural net from the file
+    virtual void    Load (const char* szFileName);
 
     //==================
     // NaUnit inherited 

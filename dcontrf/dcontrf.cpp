@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.3 2002-01-15 12:41:48 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.4 2002-02-14 14:19:58 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -173,11 +173,6 @@ int main(int argc, char **argv)
     NaTransFunc		noise_tf;
     NaTransFunc		au_linplant;
 
-    NaConfigPart	*conf_list_linplant[] = { &au_linplant };
-    NaConfigFile	conf_file_linplant(";NeuCon transfer", 1, 0);
-    conf_file_linplant.AddPartitions(NaNUMBER(conf_list_linplant),
-				     conf_list_linplant);
-
     NaConfigPart	*conf_list_refer[] = { &refer_tf };
     NaConfigFile	conf_file_refer(";NeuCon transfer", 1, 0);
     conf_file_refer.AddPartitions(NaNUMBER(conf_list_refer),
@@ -189,24 +184,14 @@ int main(int argc, char **argv)
 				  conf_list_noise);
 
     // Load plant
-    conf_file_linplant.LoadFromFile(par("linplant_tf"));
-
-    // Neural network description
-    NaNeuralNetDescr    nnc_descr, nnp_descr;
+    au_linplant.Load(par("linplant_tf"));
 
     // Read neural network from file
-    NaNNUnit            au_nnc(nnc_descr), au_nnp(nnp_descr);
+    NaNNUnit            au_nnc, au_nnp;
     //au_nnc.SetInstance("Plant");
 
-    NaConfigPart        *conf_list_nnc[] = { &au_nnc };
-    NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 1);
-    nncfile.AddPartitions(NaNUMBER(conf_list_nnc), conf_list_nnc);
-    nncfile.LoadFromFile(par("in_nnc_file"));
-
-    NaConfigPart        *conf_list_nnp[] = { &au_nnp };
-    NaConfigFile        nnpfile(";NeuCon NeuralNet", 1, 1);
-    nnpfile.AddPartitions(NaNUMBER(conf_list_nnp), conf_list_nnp);
-    nnpfile.LoadFromFile(par("in_nnp_file"));
+    au_nnc.Load(par("in_nnc_file"));
+    au_nnp.Load(par("in_nnp_file"));
 
     // Get NNP delays
     unsigned	*input_delays = au_nnp.descr.InputDelays();
@@ -232,8 +217,8 @@ int main(int argc, char **argv)
     switch(inp_data_mode)
       {
       case stream_mode:
-	conf_file_refer.LoadFromFile(par("refer_tf"));
-	conf_file_noise.LoadFromFile(par("noise_tf"));
+	refer_tf.Load(par("refer_tf"));
+	noise_tf.Load(par("noise_tf"));
 	len = atoi(par("stream_len"));
 	break;
       case file_mode:
@@ -509,7 +494,7 @@ int main(int argc, char **argv)
     delete dfCErr;
     delete dfIdErr;
 
-    nncfile.SaveToFile(par("out_nnc_file"));
+    au_nnc.Save(par("out_nnc_file"));
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));

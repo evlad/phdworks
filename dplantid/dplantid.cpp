@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.12 2002-01-11 21:21:17 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.13 2002-02-14 14:15:22 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -36,17 +36,9 @@ main (int argc, char* argv[])
   try{
     NaParams	par(argv[1]);
 
-    // Neural network description
-    NaNeuralNetDescr    nn_descr;
-
     // Read neural network from file
-    NaNNUnit            au_nn(nn_descr);
-    //au_nn.SetInstance("Object");
-
-    NaConfigPart        *conf_list[] = { &au_nn };
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
-    nnfile.AddPartitions(NaNUMBER(conf_list), conf_list);
-    nnfile.LoadFromFile(par("in_nnp_file"));
+    NaNNUnit            au_nn;
+    au_nn.Load(par("in_nnp_file"));
 
     // Additional log files
     NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
@@ -383,7 +375,7 @@ main (int argc, char* argv[])
 
     delete nnllog;
 
-    nnfile.SaveToFile(par("out_nnp_file"));
+    au_nn.Save(par("out_nnp_file"));
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
