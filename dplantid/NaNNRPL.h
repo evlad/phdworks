@@ -15,6 +15,7 @@
 #include <NaPNSwit.h>
 #include <NaPNTrig.h>
 #include <NaPNDely.h>
+#include <NaPNLAnd.h>
 
 
 //---------------------------------------------------------------------------
@@ -68,9 +69,10 @@ public:/* data */
     NaPNStatistics  statan;     // error estimator
     NaPNStatistics  statan_y;   // target plant output analyzer
     NaPNSwitcher    switcher;   // (nno,y)->(y_nn)
-    NaPNTrigger     trig_u;     // pre-bus x delayer
     NaPNTrigger     trig_y;     // pre-teacher y delayer
-    NaPNDelay       delay;      // y -> y(-1), y(-2), ...
+    NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
+    NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
+    NaPNLogicalAND  and;        // activate just after delay units are ready
 
 private:/* data */
 

@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.1 2001-05-08 11:42:21 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.2 2001-05-08 16:12:15 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -23,11 +23,12 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind)
   bus("bus"),
   errcomp("errcomp"),
   switcher("switcher"),
-  trig_u("trig_u"),
   trig_y("trig_y"),
-  delay("delay"),
+  delay_u("delay_u"),
+  delay_y("delay_y"),
   statan("statan"),
-  statan_y("statan_y")
+  statan_y("statan_y"),
+  and("and")
 {
     // Nothing to do
 }
@@ -54,13 +55,12 @@ NaNNRegrPlantLearn::link_net ()
 {
     try{
         // Link the network
-        net.link(&in_u.out, &trig_u.in);
+        net.link(&in_u.out, &delay_u.in);
+        net.link(&in_y.out, &delay_y.in);
 
-        net.link(&trig_u.out, &bus.in1);
-        net.link(&delay.dout, &bus.in2);
+        net.link(&delay_u.dout, &bus.in1);
+        net.link(&delay_y.dout, &bus.in2);
         net.link(&bus.out, &nnplant.x);
-
-        net.link(&in_y.out, &delay.in);
 
         net.link(&in_y.out, &statan_y.signal);
         net.link(&in_y.out, &trig_y.in);
@@ -71,10 +71,12 @@ NaNNRegrPlantLearn::link_net ()
 	    net.link(&nnplant.y, &nnteacher.nnout);
 	  }
 
-        net.link(&delay.sync, &trig_u.turn);
-        net.link(&delay.sync, &trig_y.turn);
+        net.link(&delay_u.sync, &and.in1);
+        net.link(&delay_y.sync, &and.in2);
 
-        net.link(&delay.sync, &switcher.turn);
+	net.link(&and.out, &trig_y.turn);
+        net.link(&and.out, &switcher.turn);
+
         net.link(&nnplant.y, &switcher.in1);
         net.link(&in_y.out, &switcher.in2);
         net.link(&switcher.out, &nn_y.in);

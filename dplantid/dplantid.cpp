@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.2 2001-05-08 11:42:59 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.3 2001-05-08 16:12:15 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -67,15 +67,19 @@ main (int argc, char* argv[])
     nnrol.in_u.set_input_filename(par("in_u"));
     nnrol.in_y.set_input_filename(par("in_y"));
     nnrol.nn_y.set_output_filename(par("nn_y"));
-    nnrol.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
+    nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat - 1);
+    nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.in_u.set_input_filename(par("test_in_u"));
     nnroe.in_y.set_input_filename(par("test_in_y"));
     nnroe.nn_y.set_output_filename(par("test_nn_y"));
-    nnroe.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
+    nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat - 1);
+    nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
-    //nnrol.delay.verbose();
+    //nnrol.delay_u.verbose();
+    //nnrol.delay_y.verbose();
+    //nnrol.and.verbose();
     //nnrol.in_y.verbose();
     //nnrol.trig_u.verbose();
     //nnrol.trig_y.verbose();

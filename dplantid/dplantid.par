@@ -1,5 +1,5 @@
 # dobjid parameters
-# $Id: dplantid.par,v 1.1 2001-05-08 11:42:21 vlad Exp $
+# $Id: dplantid.par,v 1.2 2001-05-08 16:12:16 vlad Exp $
 
 # NNP TEACHING
 # Input files
@@ -18,7 +18,7 @@ test_in_y = ny_test.dat
 test_nn_y = y_nn_test.dat
 
 # Neural net file
-in_nnp_file = nnp_in.nn
+in_nnp_file = new.nn
 out_nnp_file = nnp_out.nn
 
 # Tracking learning process:
