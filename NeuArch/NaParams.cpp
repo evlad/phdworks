@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.10 2004-02-22 20:57:18 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.11 2004-02-25 22:01:27 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -194,6 +194,7 @@ NaParams::GetParam (const char* szParamName) const
 
   char	*szParamValue = "?not found";
 
+  printf("stored_n=%d\n", stored_n);
   pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
   if(NULL != pit)
     szParamValue = pit->value;
@@ -421,8 +422,14 @@ main (int argc, char* argv[])
     };
     int	i;
 
-    for(i = 0; i < sizeof(names); ++i)
+    for(i = 0; i < sizeof(names)/sizeof(names[0]); ++i)
       printf("name='%s' -> value='%s'\n", names[i], par(names[i]));
+
+    printf("****\n");
+    for(i = 0; i < sizeof(names)/sizeof(names[0]); ++i)
+      printf("name='%s' -> check=%d\n", names[i], par.CheckParam(names[i]));
+
+    printf("++++\n");
   }
   catch(NaException& exCode){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(exCode));
