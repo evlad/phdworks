@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNTchr.h */
-/* $Id: NaPNTchr.h,v 1.4 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNTchr.h,v 1.5 2001-12-11 21:21:14 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTchrH
 #define NaPNTchrH
@@ -53,6 +53,11 @@ public:
     // Set up updating frequency; 0 (no update) by default
     virtual void	set_auto_update_freq (int nFreq);
 
+    // Set up procedure which will be executed each time the updating
+    // will take place
+    virtual void	set_auto_update_proc (void (*proc)(void* data),
+					      void* data);
+
     // Set link with neural net unit to teach it
     virtual void        set_nn (NaNNUnit* pNN);
 
@@ -96,6 +101,10 @@ protected:/* data */
 
     // Autoupdate frequency (in activations); 0 means no autoupdate
     int			nAutoUpdateFreq;
+
+    // Auto update calling procedure
+    void		(*auProc)(void* pData);
+    void		*pData;
 
     // Number of activations since last update
     int			nLastUpdate;

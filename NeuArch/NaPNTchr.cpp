@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.6 2001-05-22 18:18:43 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.7 2001-12-11 21:21:14 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -8,7 +8,7 @@ static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.6 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
-  : NaPetriNode(szNodeName), nAutoUpdateFreq(0),
+  : NaPetriNode(szNodeName), nAutoUpdateFreq(0), auProc(NULL),
   nn(NULL),
   bpe(NULL),  
   ////////////////
@@ -36,6 +36,17 @@ NaPNTeacher::~NaPNTeacher ()
 ///////////////////
 // Node specific //
 ///////////////////
+
+//---------------------------------------------------------------------------
+// Set up procedure which will be executed each time the updating
+// will take place
+void
+NaPNTeacher::set_auto_update_proc (void (*proc)(void* data), void* data)
+{
+  auProc = proc;
+  pData = data;
+}
+
 
 //---------------------------------------------------------------------------
 // Set up updating frequency; 0 (no update) by default
@@ -206,6 +217,10 @@ NaPNTeacher::action ()
     if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
       NaPrintLog("Automatic update of NN (%d sample)\n", activations());
       update_nn();
+
+      // Call procedure
+      if(NULL != auProc)
+	(*auProc)(pData);
     }
 }
 
