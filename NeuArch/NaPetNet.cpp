@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.8 2001-07-03 18:26:17 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.9 2001-09-30 16:10:31 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -51,19 +51,12 @@ NaPetriNet::NaPetriNet (const char* szNetName)
     dfTimeChart = NULL;
     pTimingNode = NULL;
 
+    fpMap = NULL;
+
     if(NULL == szNetName)
         szName = autoname("pnet", iNetNumber);
     else
         szName = newstr(szNetName);
-
-    char	szMapName[100/*strlen(name()) + 5*/];
-    sprintf(szMapName, "%s.map", name());
-    fpMap = fopen(szMapName, "w");
-    if(NULL == fpMap){
-      NaPrintLog("Failed to write activation map\n");
-    }else{
-      NaPrintLog("Activation map will be put to '%s'\n", szMapName);
-    }
 }
 
 
@@ -73,8 +66,6 @@ NaPetriNet::~NaPetriNet ()
 {
     delete dfTimeChart;
     delete[] szName;
-    if(NULL != fpMap)
-      fclose(fpMap);
 }
 
 
@@ -128,6 +119,18 @@ NaPetriNet::prepare (bool bDoPrintouts)
 {
     int     iNode;
     bool    bFailed;
+
+    /* Create activation map file */
+    if(bDoPrintouts){
+      char	szMapName[100/*strlen(name()) + 5*/];
+      sprintf(szMapName, "%s.map", name());
+      fpMap = fopen(szMapName, "w");
+      if(NULL == fpMap){
+	NaPrintLog("Failed to write activation map\n");
+      }else{
+	NaPrintLog("Activation map will be put to '%s'\n", szMapName);
+      }
+    }
 
     // Do preparation phases
 
@@ -640,6 +643,13 @@ NaPetriNet::terminate (bool bDoPrintouts)
     sigaction(SIGTERM, &sa, &sa_old);
     sigaction(SIGQUIT, &sa, &sa_old);
 #endif /* unix */
+
+    /* Close activation map file */
+    if(NULL != fpMap)
+      {
+	fclose(fpMap);
+	fpMap = NULL;
+      }
 }
 
 
