@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.3 2001-04-22 09:34:09 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.4 2001-04-29 08:38:09 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -90,12 +90,6 @@ int main(int argc, char **argv)
     NaTransFunc		au_lincontr;
     NaNeuralNetDescr	nnc_descr;
     NaNNUnit		au_nnc(nnc_descr);
-
-    // Input data
-    NaDataFile	*df_r = NULL, *df_n = NULL;
-
-    // Output data
-    NaDataFile	*df_e = NULL, *df_u = NULL, *df_y = NULL, *df_ny = NULL;
 
     // Configuration files
     NaConfigPart        *nnc_conf_list[] = { &au_nnc };
