@@ -1,5 +1,5 @@
 /* NaStdBPE.cpp */
-static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.4 2001-09-30 16:04:07 vlad Exp $";
+static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.5 2001-12-23 14:27:16 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
@@ -206,8 +206,20 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
     for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron){
         // Compute error by comparing values Ydes and Yout
         if(bError){
+	  // I still don't know whether precomputed error needs to be
+	  // scaled the same manner as desired value or not.  Anyway
+	  // I'm sure this bit of code (with disabled error scaling)
+	  // is good enough to work in real application with outputs
+	  // without scaling.  Don't scale NN outputs until you will
+	  // be sure about proper way to scale precomputed error too!
+#if 1
             // Error must not be scaled
             fError = Ytarg[iNeuron];
+#else
+            // Error must be scaled to standard range too
+	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
+			 &(Ytarg[iNeuron]), &fError, 1);
+#endif
 #ifdef StdBPE_DEBUG
             NaPrintLog("    ~ precomp.error[%d]= %g\n", iNeuron, fError);
 #endif // StdBPE_DEBUG
