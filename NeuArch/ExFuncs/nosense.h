@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* nosense.h */
-/* $Id: nosense.h,v 1.1 2002-02-16 21:34:41 vlad Exp $ */
+/* $Id: nosense.h,v 1.2 2003-01-06 10:15:14 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef __nosense_h
 #define __nosense_h
@@ -10,6 +10,15 @@
 
 //---------------------------------------------------------------------------
 // Class for external function which implements no-sensitive area
+//            ^
+//            |      /
+//            |     /
+//            |    / Gain
+// -------=========-------->
+//       /    |
+//      /     |<-->
+//     /      | HalfWidth
+//
 class NaNoSenseAreaFunc : public NaExternFunc
 {
 public:
