@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.12 2001-12-23 14:41:00 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.13 2001-12-23 14:42:13 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -255,7 +255,7 @@ NaPNTeacher::action ()
         einp.init_zero();
         for(iInput = 0; iInput < einp.dim(); ++iInput){
 	    // Or may be += ???  I didn't recognize the difference...
-            einp[iInput] += bpe->PartOfDeltaRule(iInpLayer, iInput);
+            einp[iInput] -= bpe->PartOfDeltaRule(iInpLayer, iInput);
         }
     }
 
