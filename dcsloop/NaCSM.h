@@ -18,16 +18,6 @@
 
 
 //---------------------------------------------------------------------------
-// Kind of controller
-enum NaControllerKind
-{
-  NaLinearContr,
-  NaNeuralContrDelayedE,
-  NaNeuralContrER
-};
-
-
-//---------------------------------------------------------------------------
 // Class for traditional control system modelling
 class NaControlSystemModel
 {
