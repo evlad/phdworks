@@ -1,5 +1,5 @@
 # dcsloop parameters
-# $Id: dpidsys.par,v 1.2 2001-04-22 19:22:27 vlad Exp $
+# $Id: dpidstep.par,v 1.1 2001-04-22 19:22:27 vlad Exp $
 
 ########################################
 # Type of controller
@@ -28,13 +28,13 @@ refer_tf = refer.tf
 noise_tf = noise.tf
 
 # (input_kind = file) Input files
-in_r = r.dat
-in_n = n.dat
+in_r = step.dat
+in_n = zero.dat
 
 # Output files
 out_u = u.dat
 out_e = e.dat
-out_y = y.dat
+out_y = resp.dat
 out_ny = ny.dat
 
 # (input_kind = stream) Output files
