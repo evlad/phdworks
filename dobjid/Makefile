@@ -11,10 +11,12 @@ LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
 
 
 SRCS	=dobjid.cpp \
-	NaNNROL.cpp
+	NaNNROL.cpp \
+	NaNNROE.cpp
 
 OBJS	=dobjid.o \
-	NaNNROL.o
+	NaNNROL.o \
+	NaNNROE.o
 
 $(PROGRAM):	$(OBJS) $(LIBS)
 	g++ -o $@ $(OBJS) $(LIBS) -lm

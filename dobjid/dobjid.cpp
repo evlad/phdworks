@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.1 2001-04-01 20:06:01 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.2 2001-04-03 16:45:00 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -18,6 +18,7 @@ static char rcsid[] = "$Id: dobjid.cpp,v 1.1 2001-04-01 20:06:01 vlad Exp $";
 #include <kbdif.h>
 
 #include "NaNNROL.h"
+#include "NaNNROE.h"
 
 
 /***********************************************************************
@@ -57,15 +58,23 @@ main (int argc, char* argv[])
     nnllog->SetVarName(1, "StdDev");
     nnllog->SetVarName(2, "MSE");
 
-    NaNNRegrObjectLearn     nnrol;
+    NaNNRegrObjectLearn     nnrol;	// teach
+    NaNNRegrObjectEmulate   nnroe;	// test
 
     // Configure nodes
-    nnrol.nnobject.set_transfer_func(&au_nn);
     nnrol.nnteacher.set_nn(&au_nn);
+
+    nnrol.nnobject.set_transfer_func(&au_nn);
     nnrol.in_x.set_input_filename(par("in_x"));
     nnrol.in_y.set_input_filename(par("in_y"));
     nnrol.nn_y.set_output_filename(par("nn_y"));
     nnrol.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
+
+    nnroe.nnobject.set_transfer_func(&au_nn);
+    nnroe.in_x.set_input_filename(par("test_in_x"));
+    nnroe.in_y.set_input_filename(par("test_in_y"));
+    nnroe.nn_y.set_output_filename(par("test_nn_y"));
+    nnroe.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
     //nnrol.delay.verbose();
     //nnrol.in_y.verbose();
@@ -76,6 +85,7 @@ main (int argc, char* argv[])
 
     // Link the network
     nnrol.link_net();
+    nnroe.link_net();
 
     // Configure learning parameters
     nnrol.nnteacher.lpar.eta = atof(par("eta"));
@@ -85,7 +95,7 @@ main (int argc, char* argv[])
     ask_user_lpar(nnrol.nnteacher.lpar);
 
     // Teach the network iteratively
-    NaPNEvent   pnev;
+    NaPNEvent   pnev, pnev_test;
     int         iIter = 0;
 
 #if defined(__MSDOS__) || defined(__WIN32__)
@@ -95,7 +105,10 @@ main (int argc, char* argv[])
     au_nn.Initialize();
 
     NaReal	fPrevMSE = 0.0, fLastMSE = 0.0;
+    NaReal	fPrevTestMSE = 0.0;
+    int		nGrowingMSE = 0;
     NaNNUnit	rPrevNN(au_nn);
+    bool	bTeach;
 
     // Time chart
     //nnrol.net.time_chart(true);
@@ -103,42 +116,24 @@ main (int argc, char* argv[])
     do{
       ++iIter;
 
+      // teach pass
       pnev = nnrol.run_net();
 
       if(pneError == pnev || pneTerminate == pnev)
 	break;
 
+      NaPrintLog("*** Teach pass ***\n");
       nnrol.statan.print_stat();
-
-      nnllog->AppendRecord();
-      nnllog->SetValue(nnrol.statan.Mean[0], 0);
-      nnllog->SetValue(nnrol.statan.StdDev[0], 1);
-      nnllog->SetValue(nnrol.statan.RMS[0], 2);
 
       printf("Iteration %-4d, MSE=%g", iIter, nnrol.statan.RMS[0]);
 
-      /*
-      switch(eState)
-	{
-	case first_pass:
-	  fPrevMSE = nnrol.statan.RMS[0];
-	  rPrevNN = au_nn;
-	  nnrol.nnteacher.update_nn();
-	  break;
-
-	case prev_rejected:
-	  break;
-
-	case prev_success:
-	  break;
-	}
-      */
-      if(1 == iIter /* 0.0 == fPrevMSE */)
+      if(1 == iIter)
 	{
 	  fLastMSE = fPrevMSE = nnrol.statan.RMS[0];
 	  rPrevNN = au_nn;
 	  nnrol.nnteacher.update_nn();
 	  printf(" -> teach NN\n");
+	  bTeach = true;
 	}
       else
 	{
@@ -146,16 +141,6 @@ main (int argc, char* argv[])
 	  if(fLastMSE < nnrol.statan.RMS[0])
 	    {
 	      /* growing MSE */
-#if 0
-	      if(ask_user_bool("MSE started to grow; stop learning?", true)){
-		pnev = pneTerminate;
-		break;
-	      }
-	      if(ask_user_bool("Would you like to change learning parameters?",
-			       false)){
-		ask_user_lpar(nnrol.nnteacher.lpar);
-	      }
-#else
 	      nnrol.nnteacher.lpar.eta /= 2;
 	      nnrol.nnteacher.lpar.eta_output /= 2;
 	      nnrol.nnteacher.lpar.alpha /= 2;
@@ -175,7 +160,8 @@ main (int argc, char* argv[])
 		     nnrol.nnteacher.lpar.eta,
 		     nnrol.nnteacher.lpar.eta_output,
 		     nnrol.nnteacher.lpar.alpha);
-#endif
+
+	      bTeach = false;
 	    }
 	  else
 	    {
@@ -184,7 +170,47 @@ main (int argc, char* argv[])
 	      rPrevNN = au_nn;
 	      nnrol.nnteacher.update_nn();
 	      printf(" -> teach NN\n");
+	      bTeach = true;
 	    }
+	}
+
+      if(bTeach)
+	{
+	  nnllog->AppendRecord();
+	  nnllog->SetValue(nnrol.statan.Mean[0], 0);
+	  nnllog->SetValue(nnrol.statan.StdDev[0], 1);
+	  nnllog->SetValue(nnrol.statan.RMS[0], 2);
+
+	  // test pass
+	  pnev_test = nnroe.run_net();
+
+	  if(pneError == pnev_test || pneTerminate == pnev_test)
+	    break;
+
+	  printf("          Test: MSE=%g\n", nnroe.statan.RMS[0]);
+
+	  NaPrintLog("*** Test pass ***\n");
+	  nnroe.statan.print_stat();
+
+	  nnllog->SetValue(nnroe.statan.Mean[0], 3);
+	  nnllog->SetValue(nnroe.statan.StdDev[0], 4);
+	  nnllog->SetValue(nnroe.statan.RMS[0], 5);
+
+	  if(fPrevTestMSE < nnroe.statan.RMS[0])
+	    {
+	      /* Start growing */
+	      ++nGrowingMSE;
+	      if(nGrowingMSE > 3)
+		{
+		  NaPrintLog("Test MSE start growing -> stop\n");
+		  break;
+		}
+	    }
+	  else
+	    /* Reset counter */
+	    nGrowingMSE = 0;
+
+	  fPrevTestMSE = nnroe.statan.RMS[0];
 	}
 
     }while(pneDead == pnev);
