@@ -1,5 +1,5 @@
 /* TestCF.cpp */
-static char rcsid[] = "$Id: TestCF.cpp,v 1.1 2003-01-12 12:22:45 vlad Exp $";
+static char rcsid[] = "$Id: TestCF.cpp,v 1.2 2003-06-15 05:09:17 vlad Exp $";
 
 #include <stdio.h>
 
@@ -35,6 +35,8 @@ main (int argc, char* argv[])
       cofu->Function(x + i, y + i);
       NaPrintLog("x[%u]=%g\t y[%u]=%g\n", i, x[i], i, y[i]);
     }
+
+    delete cofu;
   }
   catch(NaException ex){
     NaPrintLog("main: %s\n", NaExceptionMsg(ex));
