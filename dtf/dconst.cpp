@@ -1,5 +1,5 @@
 /* dconst.cpp */
-static char rcsid[] = "$Id: dconst.cpp,v 1.1 2002-03-09 21:05:16 vlad Exp $";
+static char rcsid[] = "$Id: dconst.cpp,v 1.2 2002-03-12 21:45:07 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -20,10 +20,12 @@ static char rcsid[] = "$Id: dconst.cpp,v 1.1 2002-03-09 21:05:16 vlad Exp $";
  ***********************************************************************/
 main (int argc, char* argv[])
 {
+  int	rc;
+
   if(argc != 2)
     {
       fprintf(stderr, "Usage: dconst SignalSeries\n");
-      return 1;
+      return 2;
     }
 
   char	*signal_file = argv[1];
@@ -110,14 +112,20 @@ main (int argc, char* argv[])
     NaPrintLog("nu(95%)=%g\n", nu_95);
     NaPrintLog("tau(5%)=%g\n", tau_05);
 
-    printf("Constant mean hypothesis is %s.\n",
-	   (nu > (int)nu_95 && tau < (int)tau_05)? "true": "false");
+    if((nu > (int)nu_95 && tau < (int)tau_05))
+      rc = 0;
+    else
+      rc = 1;
+
+    printf("Constant mean hypothesis is %s.\n", rc == 0 ? "true": "false");
 
     delete dfSignal;
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+
+    rc = 3;
   }
 
-  return 0;
+  return rc;
 }
