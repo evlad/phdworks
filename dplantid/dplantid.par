@@ -1,12 +1,12 @@
 # dplantid parameters
-# $Id: dplantid.par,v 1.5 2001-12-20 20:53:47 vlad Exp $
+# $Id: dplantid.par,v 1.6 2003-11-04 20:39:29 vlad Exp $
 
 # NNP TEACHING
 # Input files
 in_u = moby/ex0_u.dat
 in_y = moby/ex0_x.dat
 
-# Output files
+# Output files (tr_y is in_y without several startup samples)
 nn_y = moby/ex0_x_nn.dat
 tr_y = moby/ex0_x_tr.dat
 
