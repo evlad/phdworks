@@ -1,5 +1,5 @@
 /* dmse.cpp */
-static char rcsid[] = "$Id: dmse.cpp,v 1.4 2002-01-22 18:11:03 vlad Exp $";
+static char rcsid[] = "$Id: dmse.cpp,v 1.5 2002-02-11 21:32:40 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -70,6 +70,7 @@ main (int argc, char* argv[])
       else
 	fObserved = 0.;
 
+      //printf("%g\t%g\n", fSignal, fObserved);
       fMSE += (fSignal - fObserved) * (fSignal - fObserved);
       ++nSamples;
 
@@ -78,6 +79,7 @@ main (int argc, char* argv[])
 	  break;
     }while(dfSignal->GoNextRecord());
 
+    //printf("SS=%g\tN=%d\n", fMSE, nSamples);
     fMSE = fMSE / nSamples;
 
     printf("%g\n", fMSE);
