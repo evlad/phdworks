@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.9 2001-12-20 20:53:47 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.10 2002-01-11 21:21:17 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -31,7 +31,7 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
   skip_u("skip_u"),
   skip_y("skip_y"),
   skip_yt("skip_yt"),
-  fetch_y("fetch_y"),
+  //fetch_y("fetch_y"),
   tr_y("tr_y")
 {
     // Nothing to do
@@ -66,13 +66,14 @@ NaNNRegrPlantLearn::link_net ()
 
         net.link(&delay_u.dout, &bus.in1);
         net.link(&delay_y.dout, &bus.in2);
-	net.link(&delay_y.dout, &fetch_y.in);
-	net.link(&fetch_y.out, &tr_y.in);
+	//net.link(&delay_y.dout, &fetch_y.in);
+	//net.link(&fetch_y.out, &tr_y.in);
         net.link(&bus.out, &nnplant.x);
 
         net.link(&in_y.out, &skip_yt.in);
 	net.link(&skip_yt.out, &delay_yt.in);
 	net.link(&delay_yt.dout, &statan_y.signal);
+	net.link(&delay_yt.dout, &tr_y.in);
 
 	if(eAlgoKind == NaTrainingAlgorithm)
 	  {

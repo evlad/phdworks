@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.11 2001-12-20 20:53:47 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.12 2002-01-11 21:21:17 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -140,6 +140,10 @@ main (int argc, char* argv[])
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
+
+    printf("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+    printf("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+    printf("delay_yt=%d,  skip_yt=%d\n", iDelay_yt, iSkip_yt);
 
     // Duplicate input y series at the same time ticks as nn_y
     nnrol.fetch_y.set_output(0);

@@ -1,5 +1,5 @@
 /* dnnplant.cpp */
-static char rcsid[] = "$Id: dnnplant.cpp,v 1.1 2001-10-01 15:47:40 vlad Exp $";
+static char rcsid[] = "$Id: dnnplant.cpp,v 1.2 2002-01-11 21:21:17 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -58,6 +58,7 @@ main (int argc, char* argv[])
     nnroe.in_u.set_input_filename(argv[2]);
     nnroe.in_y.set_input_filename(argv[3]);
     nnroe.nn_y.set_output_filename(argv[4]);
+    nnroe.tr_y.set_output_filename("/tmp/tr_y.dat");
 
     try{
       nnroe.link_net();
