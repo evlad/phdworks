@@ -1,9 +1,9 @@
 # dobjid parameters
-# $Id: dobjid.par,v 1.1 2001-04-22 09:41:35 vlad Exp $
+# $Id: dobjid.par,v 1.2 2001-04-22 19:36:11 vlad Exp $
 
 # NNP TEACHING
 # Input files
-in_x = u_learn.dat
+in_u = u_learn.dat
 in_y = ny_learn.dat
 
 # Output files
@@ -11,7 +11,7 @@ nn_y = nn_y_0.1_8.dat
 
 # NNP TESTING
 # Input files
-test_in_x = u_test.dat
+test_in_u = u_test.dat
 test_in_y = ny_test.dat
 
 # Output files

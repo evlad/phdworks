@@ -1,5 +1,5 @@
 /* NaNNROE.cpp */
-static char rcsid[] = "$Id: NaNNROE.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
+static char rcsid[] = "$Id: NaNNROE.cpp,v 1.4 2001-04-22 19:39:04 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -15,14 +15,14 @@ static char rcsid[] = "$Id: NaNNROE.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
 // Create the object
 NaNNRegrPlantEmulate::NaNNRegrPlantEmulate ()
 : net("nncp2pn"),
-  in_x("in_x"),
+  in_u("in_u"),
   in_y("in_y"),
   nn_y("nn_y"),
   nnplant("nnplant"),
   bus("bus"),
   errcomp("errcomp"),
   switcher("switcher"),
-  trig_x("trig_x"),
+  trig_u("trig_u"),
   trig_y("trig_y"),
   delay("delay"),
   statan("statan"),
@@ -53,9 +53,9 @@ NaNNRegrPlantEmulate::link_net ()
 {
     try{
         // Link the network
-        net.link(&in_x.out, &trig_x.in);
+        net.link(&in_u.out, &trig_u.in);
 
-        net.link(&trig_x.out, &bus.in1);
+        net.link(&trig_u.out, &bus.in1);
         net.link(&delay.dout, &bus.in2);
         net.link(&bus.out, &nnplant.x);
 
@@ -64,7 +64,7 @@ NaNNRegrPlantEmulate::link_net ()
         net.link(&in_y.out, &trig_y.in);
         net.link(&in_y.out, &statan_y.signal);
 
-        net.link(&delay.sync, &trig_x.turn);
+        net.link(&delay.sync, &trig_u.turn);
         net.link(&delay.sync, &trig_y.turn);
 
         net.link(&delay.sync, &switcher.turn);

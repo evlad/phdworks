@@ -1,5 +1,5 @@
 /* NaNNROL.cpp */
-static char rcsid[] = "$Id: NaNNROL.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
+static char rcsid[] = "$Id: NaNNROL.cpp,v 1.4 2001-04-22 19:39:04 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -15,7 +15,7 @@ static char rcsid[] = "$Id: NaNNROL.cpp,v 1.3 2001-04-22 09:41:35 vlad Exp $";
 // Create the object
 NaNNRegrPlantLearn::NaNNRegrPlantLearn ()
 : net("nncp2pn"),
-  in_x("in_x"),
+  in_u("in_u"),
   in_y("in_y"),
   nn_y("nn_y"),
   nnplant("nnplant"),
@@ -23,7 +23,7 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn ()
   bus("bus"),
   errcomp("errcomp"),
   switcher("switcher"),
-  trig_x("trig_x"),
+  trig_u("trig_u"),
   trig_y("trig_y"),
   delay("delay"),
   statan("statan"),
@@ -54,9 +54,9 @@ NaNNRegrPlantLearn::link_net ()
 {
     try{
         // Link the network
-        net.link(&in_x.out, &trig_x.in);
+        net.link(&in_u.out, &trig_u.in);
 
-        net.link(&trig_x.out, &bus.in1);
+        net.link(&trig_u.out, &bus.in1);
         net.link(&delay.dout, &bus.in2);
         net.link(&bus.out, &nnplant.x);
 
@@ -67,7 +67,7 @@ NaNNRegrPlantLearn::link_net ()
         net.link(&trig_y.out, &nnteacher.desout);
         net.link(&nnplant.y, &nnteacher.nnout);
 
-        net.link(&delay.sync, &trig_x.turn);
+        net.link(&delay.sync, &trig_u.turn);
         net.link(&delay.sync, &trig_y.turn);
 
         net.link(&delay.sync, &switcher.turn);

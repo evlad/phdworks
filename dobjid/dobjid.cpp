@@ -1,5 +1,5 @@
 /* dobjid.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.5 2001-04-22 09:41:35 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.6 2001-04-22 19:36:11 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -65,20 +65,20 @@ main (int argc, char* argv[])
     nnrol.nnteacher.set_nn(&au_nn);
 
     nnrol.nnplant.set_transfer_func(&au_nn);
-    nnrol.in_x.set_input_filename(par("in_x"));
+    nnrol.in_u.set_input_filename(par("in_u"));
     nnrol.in_y.set_input_filename(par("in_y"));
     nnrol.nn_y.set_output_filename(par("nn_y"));
     nnrol.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
     nnroe.nnplant.set_transfer_func(&au_nn);
-    nnroe.in_x.set_input_filename(par("test_in_x"));
+    nnroe.in_u.set_input_filename(par("test_in_u"));
     nnroe.in_y.set_input_filename(par("test_in_y"));
     nnroe.nn_y.set_output_filename(par("test_nn_y"));
     nnroe.delay.set_delay(au_nn.descr.nOutputsRepeat - 1);
 
     //nnrol.delay.verbose();
     //nnrol.in_y.verbose();
-    //nnrol.trig_x.verbose();
+    //nnrol.trig_u.verbose();
     //nnrol.trig_y.verbose();
     //nnrol.switcher.verbose();
     //nnrol.errcomp.verbose();

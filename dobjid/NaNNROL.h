@@ -59,7 +59,7 @@ public:/* data */
 
     // Functional Petri network nodes
     NaPNFileInput   in_y;       // target plant output
-    NaPNFileInput   in_x;       // preset control force
+    NaPNFileInput   in_u;       // preset control force
     NaPNFileOutput  nn_y;       // NN plant output
     NaPNTransfer    nnplant;    // NN plant
     NaPNTeacher     nnteacher;  // NN teacher
@@ -68,7 +68,7 @@ public:/* data */
     NaPNStatistics  statan;     // error estimator
     NaPNStatistics  statan_y;   // target plant output analyzer
     NaPNSwitcher    switcher;   // (nno,y)->(y_nn)
-    NaPNTrigger     trig_x;     // pre-bus x delayer
+    NaPNTrigger     trig_u;     // pre-bus x delayer
     NaPNTrigger     trig_y;     // pre-teacher y delayer
     NaPNDelay       delay;      // y -> y(-1), y(-2), ...
 
