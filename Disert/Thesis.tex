@@ -1,3 +1,5 @@
+% $Id: Thesis.tex,v 1.9 2001-11-04 15:03:55 vlad Exp $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Главный файл
 %\documentclass[12pt,a4paper,draft]{report}
 \documentclass[12pt,a4paper,draft]{article}
@@ -31,6 +33,9 @@
 \newcommand{\MSE}{\overline{\varepsilon^2}_{\rm min}}
 \newcommand{\dt}{\Delta t}
 
+% Activation function
+\newcommand{\fa}{\phi}
+
 % Gauss Dsitribution parameters
 \newcommand{\GaDi}[2]{$\{#1,#2\}$}
 
@@ -40,6 +45,22 @@
 % Дополнительные переносы
 \hyphenation{ошиб-ки обыч-но сис-тем не-по-сред-ствен-но-го
 ус-пеш-но back-pro-pa-ga-tion раз-бро-са раз-брос ав-то-рег-рес-сии}
+
+% Нумерация совсем мелких пунктов
+\newcounter{subbbcounter}[subsubsection]
+\renewcommand{\thesubbbcounter}{%
+\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
+\arabic{subbbcounter}}
+\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
+\refstepcounter{subbbcounter}%
+{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
+
+% Выводы
+\makeatletter
+\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
+\newcommand{\conclusion}[1]{\section*{#1}%
+\addcontentsline{toc}{conclusion}{#1}}
+\makeatother
 
 \input{RusDoc.tex}
 \input{RusStyle.tex}
@@ -60,7 +81,7 @@
 %\maketitle
 
 % Оглавление
-\setcounter{tocdepth}{3}\tableofcontents
+\setcounter{tocdepth}{4}\tableofcontents
 %\newpage
 
 % Введение

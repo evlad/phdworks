@@ -1,0 +1,69 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(4974,3517)(0,-10)
+\put(612,2557){\ellipse{150}{150}}
+\put(612,3157){\ellipse{150}{150}}
+\put(612,1957){\ellipse{150}{150}}
+\put(612,157){\ellipse{150}{150}}
+\put(3012,3157){\ellipse{300}{300}}
+\put(3012,157){\ellipse{300}{300}}
+\put(3012,2407){\ellipse{300}{300}}
+\put(3012,1657){\ellipse{300}{300}}
+\put(4212,2407){\ellipse{300}{300}}
+\put(4212,757){\ellipse{300}{300}}
+\put(1812,2557){\ellipse{300}{300}}
+\put(1812,1657){\ellipse{300}{300}}
+\put(1812,607){\ellipse{300}{300}}
+\path(537,3157)(12,3157)
+\path(537,1957)(12,1957)
+\path(687,3157)(1662,2557)(687,2557)
+	(1662,1657)(687,1957)(1662,607)
+	(687,157)(1662,1657)(687,3157)
+	(1662,607)(687,2557)
+\path(687,1957)(1662,2557)(687,157)
+\path(537,2557)(12,2557)
+\thicklines
+\dottedline{90}(612,1732)(612,382)
+\thinlines
+\path(537,157)(12,157)
+\thicklines
+\dottedline{90}(3012,1357)(3012,457)
+\dottedline{90}(3312,157)(4062,157)
+\thinlines
+\path(2862,157)(1962,607)(2862,1657)
+	(1962,1657)(2862,2407)(1962,2557)
+	(2862,3157)(1962,1657)(2862,157)
+	(1962,2557)(2862,1657)
+\path(2862,3157)(1962,607)(2862,2407)
+\path(3162,3157)(4062,2407)(3162,157)
+	(4062,757)(3162,2407)(4062,2407)
+	(3162,1657)(4062,757)(3162,3157)
+\path(4362,2407)(4962,2407)
+\path(4362,757)(4962,757)
+\thicklines
+\dottedline{90}(4212,2107)(4212,1057)
+\dottedline{90}(1812,1357)(1812,907)
+\put(12,307){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$x\_$\{$n\_0$\}$\$}}}}}
+\put(12,2107){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$x\_3\$}}}}}
+\put(12,2707){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$x\_2\$}}}}}
+\put(12,3307){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$x\_1\$}}}}}
+\put(3012,2332){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$2\$}}}}}
+\put(3012,3082){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$1\$}}}}}
+\put(3012,1582){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$3\$}}}}}
+\put(4212,2332){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$1\$}}}}}
+\put(4962,2557){\makebox(0,0)[rb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$y\_1\$}}}}}
+\put(4962,907){\makebox(0,0)[rb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$y\_$\{$n\_m$\}$\$}}}}}
+\put(1812,2482){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$1\$}}}}}
+\put(1812,1582){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$2\$}}}}}
+\put(1812,552){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$n\_1\$}}}}}
+\put(3012,102){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$n\_2\$}}}}}
+\put(4212,707){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$n\_m\$}}}}}
+\end{picture}
+}
