@@ -1,5 +1,5 @@
 /* NaPNDely.cpp */
-static char rcsid[] = "$Id: NaPNDely.cpp,v 1.7 2001-12-03 21:20:36 vlad Exp $";
+static char rcsid[] = "$Id: NaPNDely.cpp,v 1.8 2001-12-11 18:21:38 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNDely.h"
@@ -31,6 +31,15 @@ NaPNDelay::NaPNDelay (const char* szNodeName)
 ///////////////////
 // Node specific //
 ///////////////////
+
+//---------------------------------------------------------------------------
+// Get maximum lag
+unsigned
+NaPNDelay::get_max_delay () const
+{
+  return nMaxLag;
+}
+
 
 //---------------------------------------------------------------------------
 // Add delay

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNDely.h */
-/* $Id: NaPNDely.h,v 1.5 2001-12-03 21:20:36 vlad Exp $ */
+/* $Id: NaPNDely.h,v 1.6 2001-12-11 18:21:38 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
@@ -63,6 +63,9 @@ public:
 
     // Return true is passive sleep time is over and false otherwise
     bool                awake ();
+
+    // Get maximum lag
+    unsigned            get_max_delay () const;
 
 
     ///////////////////////
