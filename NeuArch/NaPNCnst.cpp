@@ -1,5 +1,5 @@
 /* NaPNCnst.cpp */
-static char rcsid[] = "$Id: NaPNCnst.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNCnst.cpp,v 1.3 2001-07-01 12:47:45 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNCnst.h"
@@ -91,9 +91,9 @@ NaPNConstGen::set_const_value (const NaReal* fConst)
 ///////////////////////
 
 //---------------------------------------------------------------------------
-// 3. Open output data (pure input nodes) and set their dimensions
+// 1. Open input data (pure output nodes) and get their dimensions
 void
-NaPNConstGen::open_output_data ()
+NaPNConstGen::open_input_data ()
 {
     out.data().new_dim(nOutDim);
 }
@@ -119,4 +119,3 @@ NaPNConstGen::action ()
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
- 

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNCnst.h */
-/* $Id: NaPNCnst.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNCnst.h,v 1.3 2001-07-01 12:47:56 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNCnstH
 #define NaPNCnstH
@@ -52,8 +52,8 @@ public:
     // Phases of network //
     ///////////////////////
 
-    // 3. Open output data (pure input nodes) and set their dimensions
-    virtual void        open_output_data ();
+    // 1. Open input data (pure output nodes) and get their dimensions
+    virtual void        open_input_data ();
 
     // 5. Verification to be sure all is OK (true)
     virtual bool        verify ();
