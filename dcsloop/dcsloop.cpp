@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.8 2002-02-14 14:12:53 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.9 2003-06-15 08:29:57 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -17,7 +17,7 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.8 2002-02-14 14:12:53 vlad Exp $";
 #include <NaGenerl.h>
 #include <NaExcept.h>
 #include <NaConfig.h>
-#include <NaTrFunc.h>
+#include <NaCoFunc.h>
 #include <NaParams.h>
 #include <NaNNUnit.h>
 
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
 
     /*************************************************************/
     // Applied units
-    NaTransFunc		refer_tf;
-    NaTransFunc		noise_tf;
-    NaTransFunc		au_linplant;
-    NaTransFunc		au_lincontr;
+    NaCombinedFunc	refer_tf;
+    NaCombinedFunc	noise_tf;
+    NaCombinedFunc	au_linplant;
+    NaCombinedFunc	au_lincontr;
     NaNNUnit		au_nnc;
 
     // Load plant

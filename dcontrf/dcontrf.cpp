@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.6 2002-02-28 21:07:19 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.7 2003-06-15 08:34:26 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -26,7 +26,7 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 2.6 2002-02-28 21:07:19 vlad Exp $";
 #include <NaExcept.h>
 
 #include <NaConfig.h>
-#include <NaTrFunc.h>
+#include <NaCoFunc.h>
 #include <NaNNUnit.h>
 #include <NaNNLrn.h>
 #include <NaDataIO.h>
@@ -169,19 +169,9 @@ int main(int argc, char **argv)
 
     /*************************************************************/
     // Applied units
-    NaTransFunc		refer_tf;
-    NaTransFunc		noise_tf;
-    NaTransFunc		au_linplant;
-
-    NaConfigPart	*conf_list_refer[] = { &refer_tf };
-    NaConfigFile	conf_file_refer(";NeuCon transfer", 1, 0);
-    conf_file_refer.AddPartitions(NaNUMBER(conf_list_refer),
-				  conf_list_refer);
-
-    NaConfigPart	*conf_list_noise[] = { &noise_tf };
-    NaConfigFile	conf_file_noise(";NeuCon transfer", 1, 0);
-    conf_file_noise.AddPartitions(NaNUMBER(conf_list_noise),
-				  conf_list_noise);
+    NaCombinedFunc	refer_tf;
+    NaCombinedFunc	noise_tf;
+    NaCombinedFunc	au_linplant;
 
     // Load plant
     au_linplant.Load(par("linplant_tf"));

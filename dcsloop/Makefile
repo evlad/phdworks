@@ -17,7 +17,7 @@ OBJS	=dcsloop.o \
 	NaCSM.o
 
 $(PROGRAM):	$(OBJS) $(LIBS)
-	g++ -o $@ $(OBJS) $(LIBS) -lm
+	g++ -o $@ $(OBJS) $(LIBS) -ldl -lm
 
 clean:
 	-@rm -f $(OBJS) $(PROGRAM)

@@ -20,7 +20,7 @@ OBJS	=dcontrf.o \
 NaNNOCL2.o: NaNNOCL2.h
 
 $(PROGRAM):	$(OBJS) $(LIBS)
-	g++ -o $@ $(OBJS) $(LIBS) -lm
+	g++ -o $@ $(OBJS) $(LIBS) -ldl -lm
 
 clean:
 	-@rm -f $(OBJS) $(PROGRAM)

@@ -1,5 +1,5 @@
 # dcsloop parameters
-# $Id: dcsloop.par,v 1.4 2001-06-19 15:29:45 vlad Exp $
+# $Id: dcsloop.par,v 1.5 2003-06-15 08:29:57 vlad Exp $
 
 ########################################
 # Type of controller
@@ -20,10 +20,10 @@ input_kind = stream
 # (input_kind = stream) Length of series
 stream_len = 5000
 
-# Linear plant transfer function
+# Linear (or combined) plant transfer function
 linplant_tf = plant.tf
 
-# (contr_kind = lin) Linear controller transfer function
+# (contr_kind = lin) Linear (or combined) controller transfer function
 lincontr_tf = contr.tf
 
 # (contr_kind = nnc) Neural net controller
