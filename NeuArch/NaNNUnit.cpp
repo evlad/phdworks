@@ -1,5 +1,5 @@
 /* NaNNUnit.cpp */
-static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.6 2002-02-14 14:08:58 vlad Exp $";
+static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.7 2003-09-05 20:49:35 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -641,13 +641,14 @@ NaNNUnit::ScaleData (const NaNNUnit::NaScaler& rSrcScaler,
                      const NaNNUnit::NaScaler& rDstScaler,
                      const NaReal* pSrcVect,
                      NaReal* pDstVect,
-                     unsigned nDim) const
+                     unsigned nDim,
+		     unsigned iIndex) const
 {
     if(NULL == pSrcVect || NULL == pDstVect)
         throw(na_null_pointer);
 
     unsigned    i;
-    for(i = 0; i < nDim; ++i){
+    for(i = iIndex; i < nDim; ++i){
         NaReal  fDstDiff = rDstScaler.max(i) - rDstScaler.min(i);
         NaReal  fSrcDiff = rSrcScaler.max(i) - rSrcScaler.min(i);
 	NaReal	fSrcVal = pSrcVect[i];

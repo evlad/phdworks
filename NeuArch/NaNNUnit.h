@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNNUnit.h */
-/* $Id: NaNNUnit.h,v 1.5 2002-02-14 14:08:58 vlad Exp $ */
+/* $Id: NaNNUnit.h,v 1.6 2003-09-05 20:49:43 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNUnitH
 #define NaNNUnitH
@@ -133,7 +133,8 @@ public:
                                const NaNNUnit::NaScaler& rDstScaler,
                                const NaReal* pSrcVect,
                                NaReal* pDstVect,
-                               unsigned nDim) const;
+                               unsigned nDim,
+			       unsigned iIndex = 0) const;
 
 };
 

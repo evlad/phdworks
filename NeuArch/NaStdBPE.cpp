@@ -1,5 +1,5 @@
 /* NaStdBPE.cpp */
-static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.7 2003-01-06 10:17:20 vlad Exp $";
+static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.8 2003-09-05 20:49:26 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
@@ -228,7 +228,7 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
 #else
             // Error must be scaled to standard range too
 	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
-			 &(Ytarg[iNeuron]), &fError, 1);
+			 &(Ytarg[iNeuron]), &fError, 1, iNeuron);
 #endif
 #if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
             NaPrintLog("    ~ precomp.error[%d]= %g\n", iNeuron, fError);
@@ -238,7 +238,7 @@ NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
 
             // Scale Ydes to standard range [-1,1]
 	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
-			 &(Ytarg[iNeuron]), &Ydes_i, 1);
+			 &(Ytarg[iNeuron]), &Ydes_i, 1, iNeuron);
 
             fError = nn.Yout[iLayer][iNeuron] - Ydes_i;
 #if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
