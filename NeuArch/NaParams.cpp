@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.9 2004-02-22 20:43:08 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.10 2004-02-22 20:57:18 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -300,6 +300,19 @@ NaParams::GetListOfParams (const char* szParamName,
     }
 
   return szResult;
+}
+
+
+//---------------------------------------------------------------------------
+// Put parameters to log file
+void
+NaParams::ListOfParamsToLog () const
+{
+  int	i;
+  NaPrintLog("----------------------------->8----------------------------\n");
+  for(i = 0; i < stored_n; ++i)
+    NaPrintLog("%s=%s\n", storage[i].name, storage[i].value);
+  NaPrintLog("-----------------------------8<----------------------------\n");
 }
 
 

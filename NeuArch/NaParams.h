@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaParams.h */
-/* $Id: NaParams.h,v 1.4 2004-02-22 14:17:21 vlad Exp $ */
+/* $Id: NaParams.h,v 1.5 2004-02-22 20:57:27 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaParamsH
 #define NaParamsH
@@ -54,6 +54,9 @@ public:
 			    const char* szDelims = " ") const{
     return GetListOfParams(szParamName, nList, szDelims);
   }
+
+  // Put parameters to log file
+  void		ListOfParamsToLog () const;
 
 protected:
 
