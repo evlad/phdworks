@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.7 2004-02-22 14:17:29 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.8 2004-02-22 14:36:16 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -94,7 +94,7 @@ NaParams::NaParams (const char* szFileName,
 	      value = szAbsent;
 	    }
 
-	  NaPrintLog("name='%s' value='%s'\n", name, value);
+	  NaPrintLog("name='%s' value='%s' ", name, value);
 
 	  if(CheckParam(name))
 	    {
