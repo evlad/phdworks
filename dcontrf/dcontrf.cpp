@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.5 2001-06-19 20:44:33 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.6 2001-07-01 12:33:18 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -12,7 +12,7 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 1.5 2001-06-19 20:44:33 vlad Exp $";
 // NNCP - neural network control paradigm. (C)opyright by Eliseev Vladimir
 //---------------------------------------------------------------------------
 // Phase #3: NN optimal controller (in Wiener filter terms) training using
-//           NN identifier for error computation.  Input data - u(t), n(t).
+//           NN identifier for error computation.  Input data - r(t), n(t).
 //           + prelearned regression NN plant model.
 //---------------------------------------------------------------------------
 
@@ -214,19 +214,19 @@ int main(int argc, char **argv)
 
     // If error changed for less than given value consider stop learning
     // Finish error decrease
-    NaReal  fErrPrec = 1e-6;
+    NaReal  fErrPrec = atof(par("finish_decrease"));
 
     // If error started grows, skip checking MSE given number of epochs
     // Skip growing error up to given epochs
-    int     nSkipped = 0, nSkipGrowErr = 35;
+    int     nSkipped = 0, nSkipGrowErr = atoi(par("skip_growing"));
 
     // Maximum number of growing error slopes
-    int     nNumGrowErr = 35;
+    int     nNumGrowErr = atoi(par("finish_on_grow"));
 
     // Configure learning parameters
-    nnocl.nnteacher.lpar.eta = 0.01;
-    nnocl.nnteacher.lpar.eta_output = 0.004;
-    nnocl.nnteacher.lpar.alpha = 0.0;
+    nnocl.nnteacher.lpar.eta = atof(par("eta"));
+    nnocl.nnteacher.lpar.eta_output = atof(par("eta_output"));
+    nnocl.nnteacher.lpar.alpha = atof(par("alpha"));
 
     // Teach the network iteratively
     NaPNEvent   pnev;
