@@ -1,5 +1,5 @@
 /* NaExcept.cpp */
-static char rcsid[] = "$Id: NaExcept.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaExcept.cpp,v 1.3 2004-02-21 09:16:33 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 
@@ -54,6 +54,9 @@ NaExceptionMsg (enum NaException exCode)
         break;
     case na_not_tunable:
         szMsg = "some object can't be changed so at this moment.";
+        break;
+    case na_not_found:
+        szMsg = "some object is not found as expected.";
         break;
     default:
         sprintf(szBuf, "undefined #%d.", exCode);
