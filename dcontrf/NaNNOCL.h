@@ -92,7 +92,7 @@ public:/* data */
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
     NaPNFetcher     errfetch;   // fetch control error 
-    NaPNLogicalAND  and;        // activate just after delay units are ready
+    NaPNLogicalAND  land;        // activate just after delay units are ready
 
 private:/* data */
 

@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.6 2001-07-01 12:33:18 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.7 2001-11-26 20:31:26 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -17,6 +17,7 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 1.6 2001-07-01 12:33:18 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include <NaLogFil.h>

@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.3 2001-06-19 20:44:33 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.4 2001-11-26 20:31:26 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -119,17 +119,17 @@ NaNNOptimContrLearn::link_net ()
     net.link(&on_y.out, &delay_y.in);
     net.link(&nn_u.out, &delay_u.in);
 
-    net.link(&delay_u.sync, &and.in1);
-    net.link(&delay_y.sync, &and.in2);
+    net.link(&delay_u.sync, &land.in1);
+    net.link(&delay_y.sync, &land.in2);
 
-    net.link(&and.out, &trig_e.turn);
+    net.link(&land.out, &trig_e.turn);
     net.link(&cerrcomp.cmp, &trig_e.in);
     net.link(&trig_e.out, &errbackprop.errout);
 
     net.link(&errbackprop.errinp, &errfetch.in);
     net.link(&errfetch.out, &nnteacher.errout);
 
-    net.link(&and.out, &switch_y.turn);
+    net.link(&land.out, &switch_y.turn);
     net.link(&nnplant.y, &switch_y.in1);
     net.link(&on_y.out, &switch_y.in2);
     net.link(&switch_y.out, &nn_y.in);
@@ -162,7 +162,9 @@ NaNNOptimContrLearn::run_net ()
     on_y.out.set_starter(rZero);
     sum_on.set_gain(rMain, rAux);
 
-    net.set_timing_node((0==nSeriesLen)? &setpnt_inp: &setpnt_gen);
+    net.set_timing_node((0==nSeriesLen)
+			? (NaPetriNode*)&setpnt_inp
+			: (NaPetriNode*)&setpnt_gen);
 
    // Prepare petri net engine
     if(!net.prepare(true)){

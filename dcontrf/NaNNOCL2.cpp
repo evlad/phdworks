@@ -1,5 +1,5 @@
 /* NaNNOCL2.cpp */
-static char rcsid[] = "$Id: NaNNOCL2.cpp,v 1.1 2001-06-25 20:16:51 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL2.cpp,v 1.2 2001-11-26 20:31:26 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -103,17 +103,17 @@ NaNNOptimContrLearnClosedLoop::NaNNOptimContrLearnClosedLoop::link_net ()
     net.link(&plant_y.out, &delay_y.in);
     net.link(&nn_u.out, &delay_u.in);
 
-    net.link(&delay_u.sync, &and.in1);
-    net.link(&delay_y.sync, &and.in2);
+    net.link(&delay_u.sync, &land.in1);
+    net.link(&delay_y.sync, &land.in2);
 
-    net.link(&and.out, &trig_e.turn);
+    net.link(&land.out, &trig_e.turn);
     net.link(&cerrcomp.cmp, &trig_e.in);
     net.link(&trig_e.out, &errbackprop.errout);
 
     net.link(&errbackprop.errinp, &errfetch.in);
     net.link(&errfetch.out, &nnteacher.errout);
 
-    net.link(&and.out, &switch_y.turn);
+    net.link(&land.out, &switch_y.turn);
     net.link(&nnplant.y, &switch_y.in1);
     net.link(&plant_y.out, &switch_y.in2);
     net.link(&switch_y.out, &nn_y.in);
