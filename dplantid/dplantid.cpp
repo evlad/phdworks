@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.8 2001-12-11 18:35:16 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.9 2001-12-15 16:08:29 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -117,6 +117,10 @@ main (int argc, char* argv[])
 	iDelay_y = 0;
 	iDelay_u = 0;
       }
+
+    // Skip u(0) due to y(-1) and earlier are not available in series
+    nnrol.skip_u.set_skip_number(1);
+    nnroe.skip_u.set_skip_number(1);
 
     // Provide equalization
     nnrol.delay_y.add_delay(iDelay_y);

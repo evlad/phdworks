@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.6 2001-12-11 18:35:16 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.7 2001-12-15 16:08:29 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -29,7 +29,8 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
   delay_y("delay_y"),
   statan("statan"),
   statan_y("statan_y"),
-  land("land")
+  land("land"),
+  skip_u("skip_u")
 {
     // Nothing to do
 }
@@ -55,9 +56,10 @@ void
 NaNNRegrPlantLearn::link_net ()
 {
     try{
-        // Link the network
-        net.link(&in_u.out, &delay_u.in);
-        net.link(&in_y.out, &delay_y.in);
+	// Link the network
+	net.link(&in_u.out, &skip_u.in);
+	net.link(&skip_u.out, &delay_u.in);
+	net.link(&in_y.out, &delay_y.in);
 
 	// Additional delay
         delay_y.add_delay(1);

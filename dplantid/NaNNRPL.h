@@ -17,6 +17,7 @@
 #include <NaPNDely.h>
 #include <NaPNLAnd.h>
 #include <NaPNFetc.h>
+#include <NaPNSkip.h>
 
 
 //---------------------------------------------------------------------------
@@ -75,6 +76,7 @@ public:/* data */
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
     NaPNLogicalAND  land;       // activate just after delay units are ready
+    NaPNSkip        skip_u;     // skip u(0) due to there is no y(-1) available
 
 private:/* data */
 
