@@ -16,6 +16,7 @@
 #include <NaPNTrig.h>
 #include <NaPNDely.h>
 #include <NaPNLAnd.h>
+#include <NaPNFetc.h>
 
 
 //---------------------------------------------------------------------------
@@ -72,6 +73,8 @@ public:/* data */
     NaPNTrigger     trig_y;     // pre-teacher y delayer
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
+    NaPNFetcher     fetch_y;    // real delays of y
+    NaPNFetcher     fetch_u;    // real delays of u
     NaPNLogicalAND  and;        // activate just after delay units are ready
 
 private:/* data */

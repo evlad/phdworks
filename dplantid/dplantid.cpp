@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.4 2001-05-13 19:36:34 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.5 2001-05-13 20:47:54 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -67,24 +67,23 @@ main (int argc, char* argv[])
     nnrol.in_u.set_input_filename(par("in_u"));
     nnrol.in_y.set_input_filename(par("in_y"));
     nnrol.nn_y.set_output_filename(par("nn_y"));
-    nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat - 1);
-    nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat - 1);
+    nnrol.fetch_u.set_output(au_nn.descr.nInputsRepeat,
+			     au_nn.descr.InputDelays());
+    nnrol.fetch_y.set_output(au_nn.descr.nOutputsRepeat,
+			     au_nn.descr.OutputDelays());
+    nnrol.delay_u.set_delay(au_nn.descr.MaxInputDelay());
+    nnrol.delay_y.set_delay(au_nn.descr.MaxOutputDelay());
 
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.in_u.set_input_filename(par("test_in_u"));
     nnroe.in_y.set_input_filename(par("test_in_y"));
     nnroe.nn_y.set_output_filename(par("test_nn_y"));
-    nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat - 1);
-    nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat - 1);
-
-    //nnrol.delay_u.verbose();
-    //nnrol.delay_y.verbose();
-    //nnrol.and.verbose();
-    //nnrol.in_y.verbose();
-    //nnrol.trig_u.verbose();
-    //nnrol.trig_y.verbose();
-    //nnrol.switcher.verbose();
-    //nnrol.errcomp.verbose();
+    nnroe.fetch_u.set_output(au_nn.descr.nInputsRepeat,
+			     au_nn.descr.InputDelays());
+    nnroe.fetch_y.set_output(au_nn.descr.nOutputsRepeat,
+			     au_nn.descr.OutputDelays());
+    nnroe.delay_u.set_delay(au_nn.descr.MaxInputDelay());
+    nnroe.delay_y.set_delay(au_nn.descr.MaxOutputDelay());
 
     // Link the network
     nnrol.link_net();
