@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.11 2001-11-29 18:52:58 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.12 2001-12-03 21:20:53 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -67,6 +67,8 @@ NaPetriNet::NaPetriNet (const char* szNetName)
 	bInitPrintout = false;				// initialize(???)
 	bPrepPrintout = false;				// prepare(???)
 	bStepPrintout = false;				// step_alive(???)
+	bTermPrintout = false;				// terminate(???)
+	bMapPrintout = false;				// no activation map
       }
     else
       {
@@ -74,6 +76,8 @@ NaPetriNet::NaPetriNet (const char* szNetName)
 	bInitPrintout = !!strchr(szEnvValue, 'i');	// initialize(true)
 	bPrepPrintout = !!strchr(szEnvValue, 'p');	// prepare(true)
 	bStepPrintout = !!strchr(szEnvValue, 's');	// step_alive(true)
+	bTermPrintout = !!strchr(szEnvValue, 't');	// terminate(true)
+	bMapPrintout = !!strchr(szEnvValue, 'm');	// print activation map
       }
 }
 
@@ -142,7 +146,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
       bDoPrintouts = bPrepPrintout;
 
     /* Create activation map file */
-    if(bDoPrintouts){
+    if(bMapPrintout){
       char	szMapName[100/*strlen(name()) + 5*/];
       sprintf(szMapName, "%s.map", name());
       fpMap = fopen(szMapName, "w");
@@ -668,16 +672,29 @@ NaPetriNet::terminate (bool bDoPrintouts)
 {
     int     iNode;
 
+    if(bTermPrintout)
+      bDoPrintouts = bTermPrintout;
+
     if(bDoPrintouts){
-        NaPrintLog("# net '%s', phase #10: deallocation and closing data.\n",
-                   name());
+      // Get statistics from each node
+      NaPrintLog("# net '%s', obtain statistics:\n", name());
+      for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+	NaPrintLog(" * node '%s' was called %u times and %u times "\
+		   "was activated.\n",
+		   pnaNet[iNode]->name(),
+		   pnaNet[iNode]->nCalls,
+		   pnaNet[iNode]->nActivations);
+      }
+
+      NaPrintLog("# net '%s', phase #10: deallocation and closing data.\n",
+		 name());
     }
 
     // 10. Deallocate resources and close external data
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
         try{
             if(bDoPrintouts){
-                NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
+		NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
             }
             pnaNet[iNode]->release_and_close();
         }catch(NaException exCode){

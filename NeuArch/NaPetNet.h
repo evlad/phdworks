@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.6 2001-11-29 18:52:58 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.7 2001-12-03 21:20:53 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -121,9 +121,13 @@ protected:/* data */
     char                *szName;
 
     // External printout hints
+    // Managed by szName_printout env. variable; maximum printout can
+    // be obtained by value "ipstm"
     bool		bInitPrintout;	// initialize(true)
     bool		bPrepPrintout;	// prepare(true)
     bool		bStepPrintout;	// step_alive(true)
+    bool		bTermPrintout;	// terminate(true)
+    bool		bMapPrintout;	// activation map
 
     // Array of nodes
     NaPNodePtrAr        pnaNet;
