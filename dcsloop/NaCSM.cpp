@@ -1,5 +1,5 @@
 /* NaCSM.cpp */
-static char rcsid[] = "$Id: NaCSM.cpp,v 1.4 2001-06-19 15:29:45 vlad Exp $";
+static char rcsid[] = "$Id: NaCSM.cpp,v 1.5 2001-12-09 15:32:16 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -63,7 +63,8 @@ NaControlSystemModel::link_net ()
     try{
         // Link the network
         net.link_nodes(
-                       (0==nSeriesLen)? &setpnt_inp: &setpnt_gen,
+		       (0==nSeriesLen)?
+		       (NaPetriNode*)&setpnt_inp: (NaPetriNode*)&setpnt_gen,
 		       &chkpnt_r,
                        &cmp,
                        &chkpnt_e,
@@ -100,7 +101,8 @@ NaControlSystemModel::link_net ()
                        &chkpnt_ny,
                        NULL);
         net.link_nodes(
-                       (0==nSeriesLen)? &noise_inp: &noise_gen,
+		       (0==nSeriesLen)?
+		       (NaPetriNode*)&noise_inp: (NaPetriNode*)&noise_gen,
                        &chkpnt_n,
                        NULL);
 
@@ -133,7 +135,9 @@ NaControlSystemModel::run_net ()
         chkpnt_y.out.set_starter(vInitial);
 	onsum.set_gain(rMain, rAux);
 
-	net.set_timing_node((0==nSeriesLen)? &setpnt_inp: &setpnt_gen);
+	net.set_timing_node((0==nSeriesLen)?
+			    (NaPetriNode*)&setpnt_inp:
+			    (NaPetriNode*)&setpnt_gen);
 
         // Prepare petri net engine
         if(!net.prepare()){

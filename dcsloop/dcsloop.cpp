@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.6 2001-06-19 15:29:45 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.7 2001-12-09 15:32:16 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -11,6 +11,7 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.6 2001-06-19 15:29:45 vlad Exp $";
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
