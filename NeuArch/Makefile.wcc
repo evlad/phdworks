@@ -1,78 +1,8 @@
 CC		=cc
 CFLAGS	=$(FLAGS) -g2 -T1
 CCC		=CC
-CXXFLAGS=$(FLAGS) -Dbool=int -Dtrue=1 -Dfalse=0 -g2 -T1 -I../Matrix.041 -I.
+CXXFLAGS=$(FLAGS) -WC,-xs -Dbool=int -Dtrue=1 -Dfalse=0 -g2 -T1 -I../matrix -I.
 LIBRARY	=pnna.lib
-
-SRCS	=NaConLaw.cpp \
-	NaConfig.cpp \
-	NaDDir.cpp \
-	NaDataIO.cpp \
-	NaBinrIO.cpp \
-	NaDynAr.cpp \
-	NaExcept.cpp \
-	NaInfoSt.cpp \
-	NaLiNois.cpp \
-	NaLinCon.cpp \
-	NaLogFil.cpp \
-	NaMath.cpp \
-	NaMatrix.cpp \
-	NaNDescr.cpp \
-	NaNNCon.cpp \
-	NaNNLrn.cpp \
-	NaNNPObj.cpp \
-	NaNNUnit.cpp \
-	NaNNet.cpp \
-	NaPCnInp.cpp \
-	NaPCnOut.cpp \
-	NaPID.cpp \
-	NaPNAct.cpp \
-	NaPNBu21.cpp \
-	NaPNChPt.cpp \
-	NaPNCmp.cpp \
-	NaPNCnst.cpp \
-	NaPNDely.cpp \
-	NaPNFIn.cpp \
-	NaPNFOut.cpp \
-	NaPNFetc.cpp \
-	NaPNGen.cpp \
-	NaPNKalm.cpp \
-	NaPNRand.cpp \
-	NaPNStat.cpp \
-	NaPNSum.cpp \
-	NaPNSwap.cpp \
-	NaPNSwit.cpp \
-	NaPNTchr.cpp \
-	NaPNTimD.cpp \
-	NaPNTime.cpp \
-	NaPNTran.cpp \
-	NaPNTrig.cpp \
-	NaPNLAnd.cpp \
-	NaPetCn.cpp \
-	NaPetNet.cpp \
-	NaPetNod.cpp \
-	NaPetri.cpp \
-	NaPlotIO.cpp \
-	NaQProp.cpp \
-	NaRandom.cpp \
-	NaSSCtrl.cpp \
-	NaSSPlan.cpp \
-	NaStdBPE.cpp \
-	NaStrOps.cpp \
-	NaSysSch.cpp \
-	NaTextIO.cpp \
-	NaTimer.cpp \
-	NaTrFunc.cpp \
-	NaUnit.cpp \
-	NaVector.cpp \
-	NaParams.cpp \
-	kbdif.cpp
-
-#	NaStaIO.cpp \
-#	PNPrint.cpp \
-#	PNPrinter.cpp \
-#	PNPrintr.cpp \
-#	PNRandom.cpp
 
 OBJS	=NaConLaw.o \
 	NaConfig.o \
@@ -136,10 +66,10 @@ OBJS	=NaConLaw.o \
 	NaUnit.o \
 	NaVector.o \
 	NaParams.o \
+	NaPNDerv.o \
+	NaPNQIn.o \
+	NaPNQOut.o \
 	kbdif.o
-
-#TestNN:	TestNN.o $(LIBRARY)
-#	$(LINK.cpp) -o $@ TestNN.o $(LIBRARY) ../Matrix.041/libmatrix.a -lm
 
 all:	$(LIBRARY)
 
@@ -152,6 +82,5 @@ $(LIBRARY):	$(OBJS)
 #.cpp.o:
 $(OBJS):
 	$(CCC) $(CXXFLAGS) -c $(@:.o=.cpp) -o $@
-	rm $@
 
 #	$(CCC) $(CXXFLAGS) -c $< -a $(LIBRARY) -o $@
