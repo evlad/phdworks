@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.6 2001-12-13 14:33:03 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.7 2001-12-16 17:25:30 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -182,7 +182,8 @@ NaNNOptimContrLearn::run_net ()
     rMain.init_value(1.);
     rAux.init_value(-1.);
 
-    on_y.out.set_starter(rZero);
+    //on_y.out.set_starter(rZero);
+    sum_on.sum.set_starter(rZero);
     sum_on.set_gain(rMain, rAux);
 
     net.set_timing_node((0==nSeriesLen)

@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.9 2001-12-13 14:33:03 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.10 2001-12-16 17:25:30 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -244,11 +244,11 @@ int main(int argc, char **argv)
     NaNNOptimContrLearn     nnocl(len, ckind, "nncfl");
 
     // Configure nodes
-    nnocl.nncontr.set_transfer_func(&au_nnc);
-    nnocl.nnteacher.set_nn(&au_nnc);
     nnocl.plant.set_transfer_func(&au_linplant);
-    nnocl.nnplant.set_transfer_func(&au_nnp);
-    nnocl.errbackprop.set_nn(&au_nnp);
+    nnocl.nncontr.set_nn_unit(&au_nnc);
+    nnocl.nnteacher.set_nn(&nnocl.nncontr/*&au_nnc*/);
+    nnocl.nnplant.set_nn_unit(&au_nnp);
+    nnocl.errbackprop.set_nn(&nnocl.nnplant/*&au_nnp*/);
 
     nnocl.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
     nnocl.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);

@@ -23,6 +23,8 @@
 #include <NaPNDerv.h>
 #include <NaPNLAnd.h>
 #include <NaPNQOut.h>
+#include <NaPNSkip.h>
+#include <NaPNNNUn.h>
 
 
 //---------------------------------------------------------------------------
@@ -77,8 +79,8 @@ public:/* data */
     NaPNCheckPoint  on_y;       // plant (free) + noise (fixed) output
     NaPNFileOutput  nn_y;       // NN plant output
     NaPNCheckPoint  nn_u;       // NN controller output
-    NaPNTransfer    nncontr;    // NN controller
-    NaPNTransfer    nnplant;    // NN plant
+    NaPNNNUnit      nncontr;    // NN controller
+    NaPNNNUnit      nnplant;    // NN plant
     NaPNTransfer    plant;      // plant model
     NaPNTeacher     nnteacher;  // NN teacher
     NaPNTeacher     errbackprop;// NN error backpropagator
@@ -101,6 +103,7 @@ public:/* data */
     NaPNQueueOutput cerr_qout;  // output statistics of control error (queue)
     NaPNFileOutput  iderr_fout; // output statistics of identif. error (file)
     NaPNQueueOutput iderr_qout; // output statistics of identif. error (queue)
+  //NaPNSkip        skip_trig_e;// skip first value of raw error for propagation
 
 private:/* data */
 
