@@ -55,11 +55,12 @@ int main(int argc, char **argv)
 
     if(argn > 0)
       {
+	--argn;		/* used argument */
 	fname = args[0];
 	printf("Target filename: %s\n", fname);
       }
     else
-      fname = ask_user_name("Target filename", argn > 0? args[0]: deffname);
+      fname = ask_user_name("Target filename", deffname);
 
     // Some default NN description
     NaNNUnit            nnu(nnd);
@@ -79,9 +80,10 @@ int main(int argc, char **argv)
         printf("Creating new NN file '%s'\n", fname);
     }
 
-    if(argn > 1)
+    if(argn > 0)
       {
-	nname = args[1];
+	--argn;		/* used argument */
+	nname = args[0];
 	printf("Name of NN instance: %s\n", nname);
       }
     else
@@ -90,44 +92,49 @@ int main(int argc, char **argv)
     nnu.SetInstance(nname);
 
     // Ask for NN description
-    if(argn > 2)
+    if(argn > 0)
       {
-	nnd.nInputsNumber = atoi(args[2]);
+	--argn;		/* used argument */
+	nnd.nInputsNumber = atoi(args[0]);
 	printf("Input dimension: %d\n", nnd.nInputsNumber);
       }
     else
       nnd.nInputsNumber = ask_user_int("Input dimension",
 				       nnd.nInputsNumber);
 
-    if(argn > 3)
+    if(argn > 0)
       {
-	nnd.nInputsRepeat = atoi(args[3]);
+	--argn;		/* used argument */
+	nnd.nInputsRepeat = atoi(args[0]);
 	printf("Input repeats: %d\n", nnd.nInputsRepeat);
       }
     else
       nnd.nInputsRepeat = ask_user_int("Input repeats",
 				       nnd.nInputsRepeat);
 
-    if(argn > 4)
+    if(argn > 0)
       {
-	nnd.nOutNeurons = atoi(args[4]);
+	--argn;		/* used argument */
+	nnd.nOutNeurons = atoi(args[0]);
 	printf("Output dimension: %d\n", nnd.nOutNeurons);
       }
     else
       nnd.nOutNeurons = ask_user_int("Output dimension",
 				     nnd.nOutNeurons);
 
-    if(argn > 5)
+    if(argn > 0)
       {
-	nnd.nOutputsRepeat = atoi(args[5]);
+	--argn;		/* used argument */
+	nnd.nOutputsRepeat = atoi(args[0]);
 	printf("Output repeats: %d\n", nnd.nOutputsRepeat);
       }
     else
       nnd.nOutputsRepeat = ask_user_int("Output repeats",
 					nnd.nOutputsRepeat);
 
-    if(argn > 6)
+    if(argn > 0)
       {
+	--argn;		/* used argument */
 	nnd.nFeedbackDepth = atoi(args[6]);
 	printf("Feedback depth: %d\n", nnd.nFeedbackDepth);
       }
@@ -135,9 +142,10 @@ int main(int argc, char **argv)
       nnd.nFeedbackDepth = ask_user_int("Feedback depth",
 					nnd.nFeedbackDepth);
 
-    if(argn > 7)
+    if(argn > 0)
       {
-	nnd.eLastActFunc = (NaActFuncKind) atoi(args[7]);
+	--argn;		/* used argument */
+	nnd.eLastActFunc = (NaActFuncKind) atoi(args[0]);
 	printf("Output activation (0-linear; 1-sigmoid): %d\n",
 	       nnd.eLastActFunc);
       }
@@ -146,9 +154,10 @@ int main(int argc, char **argv)
         (NaActFuncKind) ask_user_int("Output activation (0-linear; 1-sigmoid)",
 				     nnd.eLastActFunc);
 
-    if(argn > 8)
+    if(argn > 0)
       {
-	nnd.nHidLayers = atoi(args[8]);
+	--argn;		/* used argument */
+	nnd.nHidLayers = atoi(args[0]);
 	printf("Number of hidden layers (0-3): %d\n", nnd.nHidLayers);
       }
     else
@@ -159,8 +168,6 @@ int main(int argc, char **argv)
         printf("Not more than %u layers are allowed.\n", MAX_HIDDEN);
         nnd.nHidLayers = MAX_HIDDEN;
     }
-    argn -= 9;
-    args += 9;
 
     unsigned    iLayer;
     for(iLayer = 0; iLayer < nnd.nHidLayers; ++iLayer){
