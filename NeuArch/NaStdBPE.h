@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaStdBPE.h */
-/* $Id: NaStdBPE.h,v 1.4 2001-05-15 06:02:23 vlad Exp $ */
+/* $Id: NaStdBPE.h,v 1.5 2002-01-27 10:21:13 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaStdBPEH
 #define NaStdBPEH
@@ -84,6 +84,9 @@ public:/* methods */
     // Make slower learning rate for last layer
     // Learning rate coefficient for the given layer
     virtual NaReal  LearningRate (unsigned iLayer) const;
+
+    // Return true if there is a need to prohibit bias change.
+    virtual bool    DontTouchBias ();
 
 public:/* data */
 

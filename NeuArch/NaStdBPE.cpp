@@ -1,5 +1,5 @@
 /* NaStdBPE.cpp */
-static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.5 2001-12-23 14:27:16 vlad Exp $";
+static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.6 2002-01-27 10:21:13 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
@@ -101,6 +101,7 @@ void
 NaStdBackProp::UpdateNN ()
 {
     unsigned    iInput, iNeuron, iLayer;
+    bool        bProhibitBiasChange = DontTouchBias();
 
 #ifdef PrintUpdateNN
 #define StdBPE_DEBUG
@@ -130,12 +131,21 @@ NaStdBackProp::UpdateNN ()
 #endif // StdBPE_DEBUG
             }
             psBias[iLayer][iNeuron] = dBias[iLayer][iNeuron];
-            nn.bias[iLayer][iNeuron] += dBias[iLayer][iNeuron];
+
+	    if(!bProhibitBiasChange){
+	      nn.bias[iLayer][iNeuron] += dBias[iLayer][iNeuron];
 #ifdef StdBPE_DEBUG
-            NaPrintLog("    * B= %g\t%+g\t--> %g\n",
-                       old_b[iNeuron], dBias[iLayer][iNeuron],
-                       nn.bias[iLayer][iNeuron]);
+	      NaPrintLog("    * B= %g\t%+g\t--> %g\n",
+			 old_b[iNeuron], dBias[iLayer][iNeuron],
+			 nn.bias[iLayer][iNeuron]);
 #endif // StdBPE_DEBUG
+	    }else{
+#ifdef StdBPE_DEBUG
+	      NaPrintLog("    * prohibited bias change: B= %g\n",
+			 nn.bias[iLayer][iNeuron]);
+#endif // StdBPE_DEBUG
+	      ;
+	    }
         }
     }
 
@@ -334,6 +344,33 @@ NaStdBackProp::DeltaBias (unsigned iLayer, unsigned iNeuron)
 {
     return - delta[iLayer][iNeuron] * LearningRate(iLayer) +
         Momentum(iLayer) * psBias[iLayer][iNeuron];
+}
+
+
+//---------------------------------------------------------------------------
+// Return true if there is a need to prohibit bias change.
+bool
+NaStdBackProp::DontTouchBias ()
+{
+  bool		bAllZero = true;
+  unsigned	iNeuron, iLayer;
+
+  // Find out zero biases
+  for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer)
+    {
+      for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron)
+	{
+	  if(0.0 != nn.bias[iLayer][iNeuron])
+	    {
+	      bAllZero = false;
+	      break;
+	    }
+	}
+      if(!bAllZero)
+	break;
+    }
+
+  return bAllZero;
 }
 
 
