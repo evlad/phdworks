@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
   try{
     NaNeuralNetDescr    nnd;    // Default NN description 
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
 
     printf("Neural network maker %s\n", nnfile.Magic());
     printf("Usage: %s [File.nn [NameOfNN [InDim [InRep [OutDim\n"
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	printf("Name of NN instance: %s\n", nname);
       }
     else
-      nname = ask_user_name("Name of NN instance", argn > 1? args[1]: defnname);
+      nname = ask_user_name("Name of NN instance", defnname);
 
     nnu.SetInstance(nname);
 
@@ -164,9 +164,9 @@ int main(int argc, char **argv)
       nnd.nHidLayers = ask_user_int("Number of hidden layers (0-3)",
 				    nnd.nHidLayers);
 
-    if(nnd.nHidLayers > MAX_HIDDEN){
-        printf("Not more than %u layers are allowed.\n", MAX_HIDDEN);
-        nnd.nHidLayers = MAX_HIDDEN;
+    if(nnd.nHidLayers > NaMAX_HIDDEN){
+        printf("Not more than %u layers are allowed.\n", NaMAX_HIDDEN);
+        nnd.nHidLayers = NaMAX_HIDDEN;
     }
 
     unsigned    iLayer;

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
   try{
     NaNeuralNetDescr    nnd;    // Default NN description 
-    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
+    NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 1);
 
     if(argc != 2 && argc != 3)
       {

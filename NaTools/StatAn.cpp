@@ -55,8 +55,6 @@ int main(int argc, char **argv)
         // Link the network
 	if(3 == argc)
 	  {
-	    compare.set_starter(false);
-
 	    net.link(&series1.out, &compare.main);
 	    net.link(&series2.out, &compare.aux);
 	    net.link(&compare.cmp, &statan.signal);
