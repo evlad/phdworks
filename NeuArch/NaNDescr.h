@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNDescr.h */
-/* $Id: NaNDescr.h,v 1.7 2001-05-30 18:14:23 vlad Exp $ */
+/* $Id: NaNDescr.h,v 1.8 2001-06-17 20:55:48 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNDescrH
 #define NaNDescrH
@@ -19,7 +19,8 @@ enum NaControllerKind
 {
   NaLinearContr,
   NaNeuralContrDelayedE,
-  NaNeuralContrER
+  NaNeuralContrER,
+  NaNeuralContrEdE
 };
 
 
