@@ -1,5 +1,5 @@
 /* NaPNQOut.cpp */
-static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.3 2001-07-02 20:00:41 vlad Exp $";
+static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.4 2001-12-13 14:33:25 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNQOut.h"
@@ -45,13 +45,10 @@ NaPNQueueOutput::get_data_dim ()
 
 
 //---------------------------------------------------------------------------
-// Set maximum number of stored items
+// Set maximum number of stored items or only last one (n=0)
 void
 NaPNQueueOutput::set_queue_limit (unsigned n)
 {
-  if(n <= 0)
-    throw(na_bad_value);
-
   nQLimit = n;
 }
 
@@ -63,19 +60,20 @@ NaPNQueueOutput::get_data (NaReal* pPortion)
 {
   unsigned	i;
 
-  if(NULL != pPortion)
-    {
+    if(NULL != pPortion){
       // Get data from the queue
-      for(i = 0; i < get_data_dim(); ++i){
+      for(i = 0; i < in.data().dim(); ++i){
 	pPortion[i] = vQueue(i);
       }
     }
-  // else
-  //   remove
+    // else
+    //   remove
 
-  // Remove data portion
-  vQueue.shift(- (int)get_data_dim());
-  vQueue.new_dim(vQueue.dim() - get_data_dim());
+  if(nQLimit > 0){
+    // Remove data portion
+    vQueue.shift(- (int)get_data_dim());
+    vQueue.new_dim(vQueue.dim() - get_data_dim());
+  }
 }
 
 
@@ -90,8 +88,13 @@ NaPNQueueOutput::get_data (NaReal* pPortion)
 void
 NaPNQueueOutput::initialize (bool& starter)
 {
-  // Make empty queue
-  vQueue.new_dim(0);
+  if(nQLimit > 0){
+    // Make empty queue
+    vQueue.new_dim(0);
+  }else{
+    // Make queue for the only data portion
+    vQueue.new_dim(get_data_dim());
+  }
 }
 
 
@@ -101,8 +104,10 @@ bool
 NaPNQueueOutput::activate ()
 {
   // Check the limit of queue length is not reached
-  return NaPetriNode::activate()
-    && (vQueue.dim() < get_data_dim() * nQLimit);
+  if(nQLimit > 0)
+    return NaPetriNode::activate() && (vQueue.dim() < get_data_dim()*nQLimit);
+  else
+    return NaPetriNode::activate();
 }
 
 
@@ -113,10 +118,14 @@ NaPNQueueOutput::action ()
 {
   unsigned	i;
 
-  vQueue.new_dim(vQueue.dim() + get_data_dim());
+  if(nQLimit > 0){
+    vQueue.new_dim(vQueue.dim() + get_data_dim());
 
-  for(i = 0; i < get_data_dim(); ++i){
-    vQueue[vQueue.dim() + i - get_data_dim()] = in.data()[i];
+    for(i = 0; i < get_data_dim(); ++i){
+      vQueue[vQueue.dim() + i - get_data_dim()] = in.data()[i];
+    }
+  }else for(i = 0; i < get_data_dim(); ++i){
+    vQueue[i] = in.data()[i];
   }
 }
 

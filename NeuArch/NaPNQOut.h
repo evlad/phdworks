@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNQOut.h */
-/* $Id: NaPNQOut.h,v 1.1 2001-06-23 08:59:57 vlad Exp $ */
+/* $Id: NaPNQOut.h,v 1.2 2001-12-13 14:33:25 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNQOutH
 #define NaPNQOutH
@@ -40,7 +40,7 @@ public:
   // Get dimension of output data
   virtual unsigned	get_data_dim ();
 
-  // Set maximum number of stored items
+  // Set maximum number of stored items or only last one (n=0)
   virtual void		set_queue_limit (unsigned n);
 
   // Get data from the queue
