@@ -1,5 +1,5 @@
 /* NaPNDely.cpp */
-static char rcsid[] = "$Id: NaPNDely.cpp,v 1.4 2001-06-03 21:29:36 vlad Exp $";
+static char rcsid[] = "$Id: NaPNDely.cpp,v 1.5 2001-10-01 18:03:05 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNDely.h"
@@ -32,6 +32,23 @@ NaPNDelay::NaPNDelay (const char* szNodeName)
 ///////////////////
 // Node specific //
 ///////////////////
+
+//---------------------------------------------------------------------------
+// Add delay
+void
+NaPNDelay::add_delay (unsigned iShift)
+{
+    check_tunable();
+
+    if(NULL == piOutMap || 0 == nOutDim)
+      throw(na_null_pointer);
+
+    unsigned	i;
+    for(i = 0; i < nOutDim; ++i)
+      piOutMap[i] += iShift;
+    nDelay += iShift;
+}
+
 
 //---------------------------------------------------------------------------
 // Set delay (0 - no delay, 1 - one delayed step, etc)

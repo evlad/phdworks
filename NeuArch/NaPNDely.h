@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNDely.h */
-/* $Id: NaPNDely.h,v 1.3 2001-06-03 21:29:36 vlad Exp $ */
+/* $Id: NaPNDely.h,v 1.4 2001-10-01 18:03:05 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
@@ -54,6 +54,9 @@ public:
 
     // Set delay encoded in piMap[nDim]
     void                set_delay (unsigned nDim, unsigned* piMap);
+
+    // Add delay
+    void                add_delay (unsigned iShift);
 
     // Set value to substitute output in sleep time
     void                set_sleep_value (NaReal fValue);

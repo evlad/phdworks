@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.9 2001-09-30 16:10:31 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.10 2001-10-01 18:03:05 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -521,7 +521,42 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 	  if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
 	    NaPrintLog("node '%s' action.\n", pnaNet[iNode]->name());
 	  }
+
+	  // Print contents of linked inputs
+	  if(pnaNet[iNode]->is_verbose()){
+            int	iCn;
+            NaPetriNode &node = *pnaNet[iNode];
+
+            NaPrintLog("node '%s', input data:\n", node.name());
+            for(iCn = 0; iCn < node.connectors(); ++iCn){
+	      if(node.connector(iCn)->links() > 0 &&
+		 node.connector(iCn)->kind() == pckInput){
+		// Only used input connectors
+                NaPrintLog("  #%d '%s': ",
+			   iCn + 1, node.connector(iCn)->name());
+		node.connector(iCn)->data().print_contents();
+	      }
+            }
+	  }
+
 	  pnaNet[iNode]->action();
+
+	  // Print contents of linked outputs
+	  if(pnaNet[iNode]->is_verbose()){
+            int	iCn;
+            NaPetriNode &node = *pnaNet[iNode];
+
+            NaPrintLog("node '%s', output data:\n", node.name());
+            for(iCn = 0; iCn < node.connectors(); ++iCn){
+	      if(node.connector(iCn)->links() > 0 &&
+		 node.connector(iCn)->kind() == pckOutput){
+		// Only used output connectors
+                NaPrintLog("  #%d '%s': ",
+			   iCn + 1, node.connector(iCn)->name());
+		node.connector(iCn)->data().print_contents();
+	      }
+            }
+	  }
 
 	  // Count activations
 	  ++pnaNet[iNode]->nActivations;
