@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "NaRandom.h"
 
@@ -224,10 +225,23 @@ void
 NaNNUnit::Initialize ()
 {
     unsigned    iLayer;
+    float	fMax = 0.2;	/* default version */
+
+    if(NULL != getenv("NA_WEIGHT_INIT_MAX"))
+      {
+	float	fUserMax = atof(getenv("NA_WEIGHT_INIT_MAX"));
+	if(0 == fUserMax)
+	  NaPrintLog("Zero value of NA_WEIGHT_INIT_MAX!\n");
+	else if(fUserMax < 0)
+	  NaPrintLog("Negative value of NA_WEIGHT_INIT_MAX!\n");
+	else
+	  fMax = fUserMax;
+      }
+    NaPrintLog("Network weight init in range %g..%g\n", -fMax, fMax);
 
     for(iLayer = 0; iLayer < Layers(); ++iLayer){
-        weight[iLayer].init_random(-0.2, 0.2);
-        bias[iLayer].init_random(-0.2, 0.2);
+        weight[iLayer].init_random(-fMax, fMax);
+        bias[iLayer].init_random(-fMax, fMax);
     }// for layers
 }
 
