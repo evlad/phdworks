@@ -1,13 +1,13 @@
 # dplantid parameters
-# $Id: dplantid_mobot.par,v 1.1 2001-06-07 19:38:40 vlad Exp $
+# $Id: dplantid_mobot.par,v 1.2 2001-06-07 20:53:31 vlad Exp $
 
 # NNP TEACHING
 # Input files
-in_u = exdat/u_0.bis exdat/u_2.bis exdat/u_6.bis exdat/u_7.bis exdat/u_9.bis
-in_y = exdat/x_0.bis exdat/x_2.bis exdat/x_6.bis exdat/x_7.bis exdat/x_9.bis
+in_u = exdat/u_0.bis
+in_y = exdat/x_0.bis
 
 # Output files
-nn_y = exdat/x_0nn.dat exdat/x_2nn.dat exdat/x_6nn.dat exdat/x_7nn.dat exdat/x_9nn.bis
+nn_y = exdat/x_0nn.dat
 
 # NNP TESTING
 # Input files
@@ -15,7 +15,7 @@ test_in_u = exdat/u_8.bis
 test_in_y = exdat/x_8.bis
 
 # Output files
-test_nn_y = exdat/x_8by02679.dat
+test_nn_y = exdat/x_8by0.dat
 
 # Neural net file
 in_nnp_file = mobot_in.nn
@@ -28,9 +28,9 @@ trace_file = nnp_trace.dat
 # Stop learning if...
 finish_on_value=0.001
 finish_on_grow=20
-finish_max_epoch=10
+finish_max_epoch=500
 
 # Learning algorithm setup
-eta = 0.01
-eta_output = 0.001
+eta = 0.03
+eta_output = 0.003
 alpha = 0.0
