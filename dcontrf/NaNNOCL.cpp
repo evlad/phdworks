@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.5 2001-12-13 12:35:20 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.6 2001-12-13 14:33:03 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -45,8 +45,10 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
     delay_u("delay_u"),
     delay_y("delay_y"),
     errfetch("errfetch"),
-    cerrst_out("cerrst_out"),
-    iderrst_out("iderrst_out")
+    cerr_fout("cerr_fout"),
+    iderr_fout("iderr_fout"),
+    cerr_qout("cerr_qout"),
+    iderr_qout("iderr_qout")
 {
   // Nothing to do
 }
@@ -153,8 +155,14 @@ NaNNOptimContrLearn::link_net ()
     net.link(&on_y.out, &cerrcomp.aux);
     net.link(&cerrcomp.cmp, &cerrstat.signal);
 
-    net.link(&cerrstat.stat, &cerrst_out.in);
-    net.link(&iderrstat.stat, &iderrst_out.in);
+    if(0 == nSeriesLen){
+      net.link(&cerrstat.stat, &cerr_qout.in);
+      net.link(&iderrstat.stat, &iderr_qout.in);
+    }
+    else{
+      net.link(&cerrstat.stat, &cerr_fout.in);
+      net.link(&iderrstat.stat, &iderr_fout.in);
+    }
 
   }catch(NaException ex){
     NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));

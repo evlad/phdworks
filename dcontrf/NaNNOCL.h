@@ -22,6 +22,7 @@
 #include <NaPNFetc.h>
 #include <NaPNDerv.h>
 #include <NaPNLAnd.h>
+#include <NaPNQOut.h>
 
 
 //---------------------------------------------------------------------------
@@ -96,8 +97,10 @@ public:/* data */
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
     NaPNFetcher     errfetch;   // fetch control error 
     NaPNLogicalAND  land;       // activate just after delay units are ready
-    NaPNFileOutput  cerrst_out; // output statistics of control error
-    NaPNFileOutput  iderrst_out;// output statistics of identification error
+    NaPNFileOutput  cerr_fout;  // output statistics of control error (file)
+    NaPNQueueOutput cerr_qout;  // output statistics of control error (queue)
+    NaPNFileOutput  iderr_fout; // output statistics of identif. error (file)
+    NaPNQueueOutput iderr_qout; // output statistics of identif. error (queue)
 
 private:/* data */
 

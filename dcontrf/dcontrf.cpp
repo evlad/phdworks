@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.8 2001-12-13 12:35:20 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.9 2001-12-13 14:33:03 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
 	iDelay_u = 0;
       }
 
-    // Provide equalization
+    // Provide delay equalization on plant input
     nnocl.delay_y.add_delay(iDelay_y);
     nnocl.delay_u.add_delay(iDelay_u);
 
@@ -281,6 +281,14 @@ int main(int argc, char **argv)
 
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
+
+    // Log files with statistics (file_mode)
+    NaDataFile	*dfCErr = NULL, *dfIdErr = NULL;
+
+    printf("Writing control error statistics to '%s' file.\n",
+	   par("cerr_trace_file"));
+    printf("Writing identification error statistics to '%s' file.\n",
+	   par("iderr_trace_file"));
 
     switch(inp_data_mode)
       {
@@ -296,21 +304,25 @@ int main(int argc, char **argv)
 
 	nnocl.noise_out.set_output_filename(par("out_n"));
 	printf("Writing pure noise signal to '%s' file.\n", par("out_n"));
+
+	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
+	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
 	break;
 
       case file_mode:
 	nnocl.setpnt_inp.set_input_filename(par("in_r"));
 	nnocl.noise_inp.set_input_filename(par("in_n"));
+
+	dfCErr = OpenOutputDataFile(par("cerr_trace_file"),
+				    bdtAuto, NaSI_number);
+	dfIdErr = OpenOutputDataFile(par("iderr_trace_file"),
+				     bdtAuto, NaSI_number);
+
+	// Need only the last data portion; all previous must be skipped
+	nnocl.cerr_qout.set_queue_limit(0);
+	nnocl.iderr_qout.set_queue_limit(0);
 	break;
       }
-
-    nnocl.cerrst_out.set_output_filename(par("cerr_trace_file"));
-    printf("Writing control error statistics to '%s' file.\n",
-	   par("cerr_trace_file"));
-
-    nnocl.iderrst_out.set_output_filename(par("iderr_trace_file"));
-    printf("Writing identification error statistics to '%s' file.\n",
-	   par("iderr_trace_file"));
 
     nnocl.nn_u.set_output_filename(par("out_u"));
     printf("Writing NNC control force to '%s' file.\n", par("out_u"));
@@ -370,14 +382,13 @@ int main(int argc, char **argv)
       case stream_mode:
 	// Set autoupdate facility
 	auf = atoi(par("nnc_auf"));
+
 	nnocl.nnteacher.set_auto_update_freq(auf);
 	nnocl.cerrstat.set_floating_gap(auf);
 	nnocl.iderrstat.set_floating_gap(auf);
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
 	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
-	//nnocl.cerrstat.halt_condition(NaSI_ABSMEAN, GREATER_THAN, 1.0);
-	//nnocl.iderrstat.halt_condition(NaSI_RMS, GREATER_THAN, 5.0);
 
 	nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
 
@@ -400,6 +411,20 @@ int main(int argc, char **argv)
 	  NaPrintLog("__Iteration_%d__\n", iIter);
 
 	  pnev = nnocl.run_net();
+
+	  // Store error statistics
+	  int	i;
+	  NaReal	buf[NaSI_number] = {10., 20., 30.};
+
+	  dfCErr->AppendRecord();
+	  nnocl.cerr_qout.get_data(buf);
+	  for(i = 0; i < NaSI_number; ++i)
+	    dfCErr->SetValue(buf[i], i);
+
+	  dfIdErr->AppendRecord();
+	  nnocl.iderr_qout.get_data(buf);
+	  for(i = 0; i < NaSI_number; ++i)
+	    dfIdErr->SetValue(buf[i], i);
 
 	  if(pneError == pnev)
 	    break;
@@ -466,6 +491,9 @@ int main(int argc, char **argv)
       NaPrintLog("unknown reason.\n");
       break;
     }
+
+    delete dfCErr;
+    delete dfIdErr;
 
     nncfile.SaveToFile(par("out_nnc_file"));
   }
