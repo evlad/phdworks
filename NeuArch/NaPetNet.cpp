@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.14 2002-02-28 20:19:42 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.15 2004-02-29 09:08:16 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -147,7 +147,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
 
     /* Create activation map file */
     if(bMapPrintout){
-      char	szMapName[100/*strlen(name()) + 5*/];
+      char	*szMapName = new char[strlen(name()) + sizeof(".map")];
       sprintf(szMapName, "%s.map", name());
       fpMap = fopen(szMapName, "w");
       if(NULL == fpMap){
@@ -155,6 +155,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
       }else{
 	NaPrintLog("Activation map will be put to '%s'\n", szMapName);
       }
+      delete[] szMapName;
     }
 
     // Do preparation phases
@@ -166,7 +167,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
     iPrevIndex = -1;
     dfTimeChart = NULL;
     if(bTimeChart){
-        char    fname[80];
+        char    *fname = new char[strlen(name()) + sizeof(".grf")];
         sprintf(fname, "%s.grf", name());
 
         if(bDoPrintouts){
@@ -177,10 +178,14 @@ NaPetriNet::prepare (bool bDoPrintouts)
         if(NULL == dfTimeChart){
             NaPrintLog("time chart file opening failed.\n");
         }else{
-            char    title[80];
-            sprintf(title, "Time chart for petri network '%s'", name());
+	    char    *msg = "Time chart for petri network '%s'";
+            char    *title = new char[strlen(msg) + strlen(name())];
+            sprintf(title, msg, name());
             dfTimeChart->SetVarName(0, "*TIME*");
+	    delete[] title;
         }
+
+	delete[] fname;
     }
 
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
@@ -420,10 +425,35 @@ NaPetriNet::initialize (bool bDoPrintouts)
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
         try{
             bool    bStarter = false;
+	    bool    bVerbose = false;
+
+	    if(NULL == pnaNet[iNode])
+	      throw(na_null_pointer);
+
+	    // Check for verbosity set in env. variable
+	    if(strlen(pnaNet[iNode]->name()) > 0){
+	      char	*szNodeVerbose = new char[strlen(pnaNet[iNode]->name())
+						 + sizeof("_verbose")];
+	      strcat(strcpy(szNodeVerbose, pnaNet[iNode]->name()), "_verbose");
+	      if(NULL != getenv(szNodeVerbose))
+		if(strlen(getenv(szNodeVerbose)) > 0)
+		  bVerbose = true;
+	      delete[] szNodeVerbose;
+	    }
 
             if(bDoPrintouts){
                 NaPrintLog("node '%s'\n", pnaNet[iNode]->name());
             }
+
+	    // Don't touch verbosity in case of direct setting from
+	    // the program...
+	    if(bVerbose)
+	      pnaNet[iNode]->verbose(bVerbose);
+
+	    // ...but inform an user in log file anyway
+	    if(pnaNet[iNode]->is_verbose())
+	      NaPrintLog("node '%s' is VERBOSE\n", pnaNet[iNode]->name());
+
             pnaNet[iNode]->initialize(bStarter);
 
             if(bStarter){
