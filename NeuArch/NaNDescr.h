@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNDescr.h */
-/* $Id: NaNDescr.h,v 1.6 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaNDescr.h,v 1.7 2001-05-30 18:14:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNDescrH
 #define NaNDescrH
@@ -88,6 +88,9 @@ public:/* methods */
     NaNeuralNetDescr (unsigned nIn = 1, unsigned nOut = 1);
     NaNeuralNetDescr (const NaNeuralNetDescr& rDescr);
     virtual ~NaNeuralNetDescr ();
+
+    // Default delays
+    void	MakeDefaultDelays ();
 
     unsigned    InputsNumber () const{
         return nInputsNumber * nInputsRepeat + nOutNeurons * nOutputsRepeat;

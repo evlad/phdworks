@@ -1,5 +1,5 @@
 /* NaNDescr.cpp */
-static char rcsid[] = "$Id: NaNDescr.cpp,v 1.5 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaNDescr.cpp,v 1.6 2001-05-30 18:14:23 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>
@@ -99,6 +99,24 @@ NaNeuralNetDescr::NaNeuralNetDescr (unsigned nIn, unsigned nOut)
       vOutputDelays[i] = i;
 }
 
+
+//---------------------------------------------------------------------------
+// Default delays
+void
+NaNeuralNetDescr::MakeDefaultDelays ()
+{
+    vInputDelays.new_dim(nInputsRepeat);
+    vOutputDelays.new_dim(nOutputsRepeat);
+
+    /* default delays */
+    unsigned	i;
+    for(i = 0; i < nInputsRepeat; ++i)
+      vInputDelays[i] = i;
+    for(i = 0; i < nOutputsRepeat; ++i)
+      vOutputDelays[i] = i;
+}
+
+
 //---------------------------------------------------------------------------
 NaNeuralNetDescr::NaNeuralNetDescr (const NaNeuralNetDescr& rDescr)
 :   NaConfigPart(rDescr)
@@ -119,8 +137,12 @@ NaNeuralNetDescr::NaNeuralNetDescr (const NaNeuralNetDescr& rDescr)
     nFeedbackDepth = rDescr.nFeedbackDepth;
     eLastActFunc = rDescr.eLastActFunc;
 
-    vInputDelays = rDescr.vInputDelays;
-    vOutputDelays = rDescr.vOutputDelays;
+    MakeDefaultDelays();
+
+    if(rDescr.vInputDelays.dim() == nInputsRepeat)
+      vInputDelays = rDescr.vInputDelays;
+    if(rDescr.vOutputDelays.dim() == nOutputsRepeat)
+      vOutputDelays = rDescr.vOutputDelays;
 }
 
 //---------------------------------------------------------------------------
@@ -159,11 +181,11 @@ void    NaNeuralNetDescr::Save (NaDataStream& ds)
       {
 	ds.PutComment("Input delays:");
 	for(i = 0; i < nInputsRepeat; ++i)
-	  ds.PutF("", "%u", vInputDelays(i));
+	  ds.PutF(NULL, "%u", (int)vInputDelays(i));
 
 	ds.PutComment("Output delays:");
 	for(i = 0; i < nOutputsRepeat; ++i)
-	  ds.PutF("", "%u", vOutputDelays(i));
+	  ds.PutF(NULL, "%u", (int)vOutputDelays(i));
       }
 }
 
@@ -212,10 +234,10 @@ void    NaNeuralNetDescr::Load (NaDataStream& ds)
     else /* Version 1.1 and newer */
       {
 	for(i = 0; i < nInputsRepeat; ++i)
-	  ds.GetF("%u", &vInputDelays[i]);
+	  ds.GetF("%g", &vInputDelays[i]);
 
 	for(i = 0; i < nOutputsRepeat; ++i)
-	  ds.GetF("%u", &vOutputDelays[i]);
+	  ds.GetF("%g", &vOutputDelays[i]);
       }
 }
 
@@ -239,8 +261,12 @@ NaNeuralNetDescr::operator= (const NaNeuralNetDescr& rDescr)
     nFeedbackDepth = rDescr.nFeedbackDepth;
     eLastActFunc = rDescr.eLastActFunc;
 
-    vInputDelays = rDescr.vInputDelays;
-    vOutputDelays = rDescr.vOutputDelays;
+    MakeDefaultDelays();
+
+    if(rDescr.vInputDelays.dim() == nInputsRepeat)
+      vInputDelays = rDescr.vInputDelays;
+    if(rDescr.vOutputDelays.dim() == nOutputsRepeat)
+      vOutputDelays = rDescr.vOutputDelays;
 
     return *this;
 }
