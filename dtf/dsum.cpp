@@ -1,5 +1,5 @@
 /* dsum.cpp */
-static char rcsid[] = "$Id: dsum.cpp,v 1.1 2001-04-04 18:41:45 vlad Exp $";
+static char rcsid[] = "$Id: dsum.cpp,v 1.2 2001-05-05 18:31:26 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -11,7 +11,6 @@ static char rcsid[] = "$Id: dsum.cpp,v 1.1 2001-04-04 18:41:45 vlad Exp $";
 #include <NaGenerl.h>
 #include <NaExcept.h>
 
-#include <NaConfig.h>
 #include <NaDataIO.h>
 
 
