@@ -27,7 +27,7 @@ NaPNFetcher::NaPNFetcher (const char* szNodeName)
 //---------------------------------------------------------------------------
 // Set output dimension and position of input
 void
-NaPNFetcher::set_output (int iPos, int nDim)
+NaPNFetcher::set_output (unsigned iPos, int nDim)
 {
   check_tunable();
 
@@ -38,8 +38,8 @@ NaPNFetcher::set_output (int iPos, int nDim)
     piOutMap = NULL;
   else
     {
-      int	i;
-      piOutMap = new int[nOutDim];
+      unsigned	i;
+      piOutMap = new unsigned[nOutDim];
       for(i = 0; i < nOutDim; ++i)
 	piOutMap[i] = iPos + i;
     }
@@ -49,7 +49,7 @@ NaPNFetcher::set_output (int iPos, int nDim)
 //---------------------------------------------------------------------------
 // Set output dimension and positions of input (0,1...)
 void
-NaPNFetcher::set_output (int nDim, int* piMap)
+NaPNFetcher::set_output (int nDim, unsigned* piMap)
 {
   check_tunable();
 
@@ -62,8 +62,8 @@ NaPNFetcher::set_output (int nDim, int* piMap)
     throw(na_null_pointer);
   else
     {
-      int	i;
-      piOutMap = new int[nOutDim];
+      unsigned	i;
+      piOutMap = new unsigned[nOutDim];
       for(i = 0; i < nOutDim; ++i)
 	piOutMap[i] = piMap[i];
     }
@@ -97,7 +97,7 @@ NaPNFetcher::verify ()
     return false;
   }
 
-  int	i, iMaxPos = 0;
+  unsigned	i, iMaxPos = 0;
   for(i = 0; i < nOutDim; ++i){
     if(iMaxPos < piOutMap[i])
       iMaxPos = piOutMap[i];
@@ -117,7 +117,7 @@ NaPNFetcher::verify ()
 void
 NaPNFetcher::action ()
 {
-  int	i;
+  unsigned	i;
   for(i = 0; i < nOutDim; ++i){
     out.data()[i] = in.data()[piOutMap[i]];
   }

@@ -8,7 +8,7 @@
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: make bus narrower
-// Fetch [iPos..iPos+nDim] line to output bus.
+// Fetch [iPos..iPos+nDim] or [piMap(i)] lines to output bus.
 
 //---------------------------------------------------------------------------
 class NaPNFetcher : public NaPetriNode
@@ -35,10 +35,10 @@ public:
     ///////////////////
 
     // Set output dimension and position of input
-    virtual void        set_output (int iPos, int nDim = 1);
+    virtual void        set_output (unsigned iPos, int nDim = 1);
 
     // Set output dimension and positions of input (0,1...)
-    virtual void        set_output (int nDim, int* piMap);
+    virtual void        set_output (int nDim, unsigned* piMap);
 
 
     ///////////////////////
@@ -57,10 +57,10 @@ public:
 protected:
 
     // Position of input vector in output
-    int                 *piOutMap;
+    unsigned	*piOutMap;
 
     // Output dimension
-    int                 nOutDim;
+    int		nOutDim;
 
 };
 

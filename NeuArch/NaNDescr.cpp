@@ -296,3 +296,27 @@ NaNeuralNetDescr::MaxOutputDelay () const
 }
 
 //---------------------------------------------------------------------------
+unsigned*
+NaNeuralNetDescr::InputDelays () const
+{
+  unsigned	i, *nDelays = new unsigned[nInputsRepeat];
+
+  for(i = 0; i < nInputsRepeat; ++i)
+    nDelays[i] = (unsigned)vInputDelays(i);
+
+  return nDelays;
+}
+
+//---------------------------------------------------------------------------
+unsigned*
+NaNeuralNetDescr::OutputDelays () const
+{
+  unsigned	i, *nDelays = new unsigned[nOutputsRepeat];
+
+  for(i = 0; i < nOutputsRepeat; ++i)
+    nDelays[i] = (unsigned)vOutputDelays(i);
+
+  return nDelays;
+}
+
+//---------------------------------------------------------------------------

@@ -94,6 +94,9 @@ public:/* methods */
     unsigned	MaxInputDelay () const;
     unsigned	MaxOutputDelay () const;
 
+    unsigned*	InputDelays () const;
+    unsigned*	OutputDelays () const;
+
 
     NaNeuralNetDescr&   operator= (const NaNeuralNetDescr& rDescr);
 
