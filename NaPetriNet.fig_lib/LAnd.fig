@@ -7,7 +7,7 @@ Letter
 Single
 -2
 # Logical "AND" over true (>0) and false (<=0) inputs
-# File: <NaPNLAnd.h> Class: NaPNLogicalAND  Parent: NaPetriNode
+# File: <NaPNLAnd.h> Class: NaPNLogicalAND Parent: NaPetriNode
 # Inputs: in1(m) in2  Outputs: out(m)
 1200 2
 6 450 450 810 810

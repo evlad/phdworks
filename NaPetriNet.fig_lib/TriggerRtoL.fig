@@ -6,8 +6,8 @@ Letter
 100.00
 Single
 -2
-# Transfer input to output if turn is true (>0) and skip it else
-# File: <NaPNTrig.h>  Class: NaPNTrigger  Parent: NaPetriNode
+# Transfer input to output if turn is true (>0) or skip it
+# File: <NaPNTrig.h> Class: NaPNTrigger Parent: NaPetriNode
 # Inputs: in(m) turn  Outputs: out(m)
 1200 2
 6 450 450 810 810

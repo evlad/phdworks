@@ -7,7 +7,7 @@ Letter
 Single
 -2
 # NaNNUnit is inside usual common transfer function
-# File: <NaPNTran.h>  Class: NaPNTransfer  Parent: NaPetriNode
+# File: <NaPNTran.h> Class: NaPNTransfer Parent: NaPetriNode
 # Inputs: x(m) time  Outputs: y(m)
 1200 2
 6 450 450 990 990

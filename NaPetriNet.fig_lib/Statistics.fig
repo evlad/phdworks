@@ -6,9 +6,9 @@ Letter
 100.00
 Single
 -2
-# Computes statistics for vector signal (mean, std.dev, rms, min, max)
-# File: <NaPNStat.h>  Class: NaPNStatistics  Parent: NaPetriNode
-# Inputs: signal(m)  Outputs: -
+# Computes statistics for vector signal
+# File: <NaPNStat.h> Class: NaPNStatistics Parent: NaPetriNode
+# Inputs: signal(m)  Outputs: stat
 1200 2
 6 450 360 810 720
 2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5

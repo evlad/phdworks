@@ -7,9 +7,9 @@ Letter
 Single
 -2
 # Provides queue input/output operations
-# File: <NaPNQIn.h>  Class: NaPNQueueInput  Parent: NaPetriNode
+# File: <NaPNQIn.h> Class: NaPNQueueInput Parent: NaPetriNode
 # Inputs: -  Outputs: out(m)
-# File: <NaPNQOut.h>  Class: NaPNQueueOutput  Parent: NaPetriNode
+# File: <NaPNQOut.h> Class: NaPNQueueOutput Parent: NaPetriNode
 # Inputs: in(m)  Outputs: -
 1200 2
 0 32 #444444

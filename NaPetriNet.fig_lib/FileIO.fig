@@ -7,9 +7,9 @@ Letter
 Single
 -2
 # Provides file input/output operations
-# File: <NaPNFIn.h>  Class: NaPNFileInput  Parent: NaPetriNode
+# File: <NaPNFIn.h> Class: NaPNFileInput Parent: NaPetriNode
 # Inputs: -  Outputs: out(m)
-# File: <NaPNFOut.h>  Class: NaPNFileOutput  Parent: NaPetriNode
+# File: <NaPNFOut.h> Class: NaPNFileOutput Parent: NaPetriNode
 # Inputs: in(m)  Outputs: -
 1200 2
 6 450 360 990 1170

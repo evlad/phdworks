@@ -7,7 +7,7 @@ Letter
 Single
 -2
 # Vector random series generator in rdUniform mode
-# File: <NaPNRand.h>  Class: NaPNRandomGen  Parent: NaPNGenerator
+# File: <NaPNRand.h> Class: NaPNRandomGen Parent: NaPNGenerator
 # Inputs: time  Outputs: y(m)
 1200 2
 6 450 450 810 810
