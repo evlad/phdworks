@@ -1,5 +1,5 @@
 PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat djacob \
-		dsin dmean
+		dsin dmean dstddev
 
 all:	$(PROGRAMS)
 
@@ -21,12 +21,13 @@ SRCS	=dtf.cpp \
 	dsum.cpp \
 	dstat.cpp \
 	djacob.cpp \
+	dstddev.cpp \
 	dsin.cpp \
 	dmean.cpp
 
 OBJS	=$(dtf_OBJS) $(d2ts_OBJS) $(drand_OBJS) $(dwtest_OBJS) \
 	$(dmse_OBJS) $(dcorr_OBJS) $(dsum_OBJS) $(dstat_OBJS) \
-	$(djacob_OBJS) $(dsin_OBJS) $(dmean_OBJS)
+	$(djacob_OBJS) $(dsin_OBJS) $(dmean_OBJS) $(dstddev_OBJS)
 
 dtf_OBJS	=dtf.o
 dtf:	$(dtf_OBJS) $(LIBS)
@@ -75,6 +76,10 @@ dsin:	$(dsin_OBJS) $(LIBS)
 dmean_OBJS	=dmean.o
 dmean:	$(dmean_OBJS) $(LIBS)
 	g++ -o $@ $(dmean_OBJS) $(LIBS) -lm
+
+dstddev_OBJS	=dstddev.o
+dstddev:	$(dstddev_OBJS) $(LIBS)
+	g++ -o $@ $(dstddev_OBJS) $(LIBS) -lm
 
 clean:
 	-@rm -f $(OBJS) $(PROGRAMS)
