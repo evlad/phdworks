@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.2 2001-04-03 16:45:00 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.3 2001-04-05 19:15:12 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -50,7 +50,7 @@ main (int argc, char* argv[])
     nnfile.LoadFromFile(par("in_nno_file"));
 
     // Additional log files
-    NaDataFile  *nnllog = OpenOutputDataFile("nno_track.dat");
+    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"));
 
     nnllog->SetTitle("NN regression object learning");
 
@@ -96,7 +96,7 @@ main (int argc, char* argv[])
 
     // Teach the network iteratively
     NaPNEvent   pnev, pnev_test;
-    int         iIter = 0;
+    int         iIter = 0, iEpoch = 0;
 
 #if defined(__MSDOS__) || defined(__WIN32__)
     printf("Press 'q' or 'x' for exit\n");
@@ -109,6 +109,16 @@ main (int argc, char* argv[])
     int		nGrowingMSE = 0;
     NaNNUnit	rPrevNN(au_nn);
     bool	bTeach;
+
+    /* number of epochs when MSE on test set grows to finish the
+       learning */
+    int		nFinishOnGrowMSE = atoi(par("finish_on_grow"));
+
+    /* number of epochs to stop learning anyway */
+    int		nFinishOnMaxEpoch = atoi(par("finish_max_epoch"));
+
+    /* absolute value of MSE to stop learning if reached */
+    NaReal	fFinishOnReachMSE = atof(par("finish_on_value"));
 
     // Time chart
     //nnrol.net.time_chart(true);
@@ -140,7 +150,7 @@ main (int argc, char* argv[])
 	  /* next passes */
 	  if(fLastMSE < nnrol.statan.RMS[0])
 	    {
-	      /* growing MSE */
+	      /* growing MSE on learning set */
 	      nnrol.nnteacher.lpar.eta /= 2;
 	      nnrol.nnteacher.lpar.eta_output /= 2;
 	      nnrol.nnteacher.lpar.alpha /= 2;
@@ -176,6 +186,8 @@ main (int argc, char* argv[])
 
       if(bTeach)
 	{
+	  ++iEpoch;
+
 	  nnllog->AppendRecord();
 	  nnllog->SetValue(nnrol.statan.Mean[0], 0);
 	  nnllog->SetValue(nnrol.statan.StdDev[0], 1);
@@ -196,19 +208,33 @@ main (int argc, char* argv[])
 	  nnllog->SetValue(nnroe.statan.StdDev[0], 4);
 	  nnllog->SetValue(nnroe.statan.RMS[0], 5);
 
+	  if(nnroe.statan.RMS[0] < fFinishOnReachMSE)
+	    {
+	      NaPrintLog("Test MSE reached preset value %g -> stop\n",
+			 fFinishOnReachMSE);
+	      break;
+	    }
 	  if(fPrevTestMSE < nnroe.statan.RMS[0])
 	    {
 	      /* Start growing */
 	      ++nGrowingMSE;
-	      if(nGrowingMSE > 3)
+	      if(nGrowingMSE > nFinishOnGrowMSE && nFinishOnGrowMSE > 0)
 		{
-		  NaPrintLog("Test MSE start growing -> stop\n");
+		  NaPrintLog("Test MSE was growing for %d epoch -> stop\n",
+			     nFinishOnGrowMSE);
 		  break;
 		}
 	    }
 	  else
 	    /* Reset counter */
 	    nGrowingMSE = 0;
+
+	  if(nFinishOnMaxEpoch != 0 && iEpoch >= nFinishOnMaxEpoch)
+	    {
+	      NaPrintLog("Max number of epoch %d is reached -> stop\n",
+			 nFinishOnMaxEpoch);
+	      break;
+	    }
 
 	  fPrevTestMSE = nnroe.statan.RMS[0];
 	}
