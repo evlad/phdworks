@@ -5,6 +5,7 @@
 
 #include <matrix.h>
 
+#include "NaMath.h"
 #include "NaMatrix.h"
 #include "NaLogFil.h"
 
@@ -185,13 +186,8 @@ void        NaMatrix::init_value (NaReal v)
 void        NaMatrix::init_random (NaReal vMin, NaReal vMax)
 {
     unsigned    i;
-    NaReal      vGap = vMax - vMin;
     for(i = 0; i < nDimRow * nDimCol; ++i)
-#ifdef unix
-        pMatr[i] = vMin + vGap * (NaReal) rand() / RAND_MAX;
-#else
-        pMatr[i] = vMin + vGap * (NaReal) random(10000) / 10000;
-#endif /* unix */
+      pMatr[i] = rand_unified(vMin, vMax);
 }
 
 

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "NaMath.h"
 #include "NaVector.h"
 #include "NaLogFil.h"
 #include "NaDataIO.h"
@@ -188,13 +189,8 @@ void
 NaVector::init_random (NaReal vMin, NaReal vMax)
 {
     unsigned    i;
-    NaReal      vGap = vMax - vMin;
     for(i = 0; i < dim(); ++i)
-#ifdef unix
-        pVect[i] = vMin + vGap * (NaReal) rand() / RAND_MAX;
-#else
-        pVect[i] = vMin + vGap * (NaReal) random(10000) / 10000;
-#endif /* unix */
+      pVect[i] = rand_unified(vMin, vMax);
 }
 
 //---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /* kbdif.cpp */
-static char rcsid[] = "$Id: kbdif.cpp,v 1.1 2001-04-01 08:15:56 vlad Exp $";
+static char rcsid[] = "$Id: kbdif.cpp,v 1.2 2001-04-05 18:38:33 vlad Exp $";
 
 #include <ctype.h>
 #include <stdio.h>
@@ -16,7 +16,7 @@ char*
 ask_user_string (const char* szPrompt, const char* szDefault)
 {
     char    *szResult;
-    char    enter[1024];
+    char    enter[1024] = "";
  repeat_enter:
     if(NULL != szDefault)
       printf("%s <%s>: ", szPrompt, szDefault);
@@ -76,7 +76,7 @@ ask_user_name (const char* szPrompt, const char* szDefault)
 NaReal
 ask_user_real (const char* szPrompt, NaReal fDefault)
 {
-    char    enter[30];
+    char    enter[30] = "";
     printf("%s <%g>: ", szPrompt, fDefault);
     fgets(enter, sizeof(enter)-1, stdin);
     if('\0' == enter[0] || '\n' == enter[0])
@@ -90,7 +90,7 @@ ask_user_real (const char* szPrompt, NaReal fDefault)
 int
 ask_user_int (const char* szPrompt, int iDefault)
 {
-    char    enter[30];
+    char    enter[30] = "";
     printf("%s <%d>: ", szPrompt, iDefault);
     fgets(enter, sizeof(enter)-1, stdin);
     if('\0' == enter[0] || '\n' == enter[0])
