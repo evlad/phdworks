@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.5 2001-05-13 20:47:54 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.6 2001-06-07 18:55:04 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -63,31 +63,44 @@ main (int argc, char* argv[])
     // Configure nodes
     nnrol.nnteacher.set_nn(&au_nn);
 
+    unsigned	*input_delays = au_nn.descr.InputDelays();
+    unsigned	*output_delays = au_nn.descr.OutputDelays();
+
+    int		nLearn, nList_in_u, nList_in_y, nList_nn_y;
+    char	**szList_in_u = par("in_u", nList_in_u);
+    char	**szList_in_y = par("in_y", nList_in_y);
+    char	**szList_nn_y = par("nn_y", nList_nn_y);
+
+    /* nLearn=MAX3(x,y,z) */
+    nLearn = nList_in_u;
+    if(nLearn < nList_in_y)
+      nLearn = nList_in_y;
+    if(nLearn < nList_nn_y)
+      nLearn = nList_nn_y;
+
+    NaPrintLog("Total %d learning data files\n", nLearn);
+
+    int		nTest, nList_test_in_u, nList_test_in_y, nList_test_nn_y;
+    char	**szList_test_in_u = par("test_in_u", nList_test_in_u);
+    char	**szList_test_in_y = par("test_in_y", nList_test_in_y);
+    char	**szList_test_nn_y = par("test_nn_y", nList_test_nn_y);
+
+    /* nTest=MAX3(x,y,z) */
+    nTest = nList_test_in_u;
+    if(nTest < nList_test_in_y)
+      nTest = nList_test_in_y;
+    if(nTest < nList_test_nn_y)
+      nTest = nList_test_nn_y;
+
+    NaPrintLog("Total %d testing data files\n", nTest);
+
     nnrol.nnplant.set_transfer_func(&au_nn);
-    nnrol.in_u.set_input_filename(par("in_u"));
-    nnrol.in_y.set_input_filename(par("in_y"));
-    nnrol.nn_y.set_output_filename(par("nn_y"));
-    nnrol.fetch_u.set_output(au_nn.descr.nInputsRepeat,
-			     au_nn.descr.InputDelays());
-    nnrol.fetch_y.set_output(au_nn.descr.nOutputsRepeat,
-			     au_nn.descr.OutputDelays());
-    nnrol.delay_u.set_delay(au_nn.descr.MaxInputDelay());
-    nnrol.delay_y.set_delay(au_nn.descr.MaxOutputDelay());
+    nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
+    nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
     nnroe.nnplant.set_transfer_func(&au_nn);
-    nnroe.in_u.set_input_filename(par("test_in_u"));
-    nnroe.in_y.set_input_filename(par("test_in_y"));
-    nnroe.nn_y.set_output_filename(par("test_nn_y"));
-    nnroe.fetch_u.set_output(au_nn.descr.nInputsRepeat,
-			     au_nn.descr.InputDelays());
-    nnroe.fetch_y.set_output(au_nn.descr.nOutputsRepeat,
-			     au_nn.descr.OutputDelays());
-    nnroe.delay_u.set_delay(au_nn.descr.MaxInputDelay());
-    nnroe.delay_y.set_delay(au_nn.descr.MaxOutputDelay());
-
-    // Link the network
-    nnrol.link_net();
-    nnroe.link_net();
+    nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
+    nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
     // Configure learning parameters
     nnrol.nnteacher.lpar.eta = atof(par("eta"));
@@ -99,7 +112,7 @@ main (int argc, char* argv[])
 
     // Teach the network iteratively
     NaPNEvent   pnev, pnev_test;
-    int         iIter = 0, iEpoch = 0;
+    int         iIter = 0, iEpoch = 0, iData;
 
 #if defined(__MSDOS__) || defined(__WIN32__)
     printf("Press 'q' or 'x' for exit\n");
@@ -112,7 +125,7 @@ main (int argc, char* argv[])
     NaReal	fPrevTestMSE = 0.0;
     int		nGrowingMSE = 0;
     NaNNUnit	rPrevNN(au_nn);
-    bool	bTeach;
+    bool	bTeach, bTeachLinkage = false, bTestLinkage = false;
 
     /* number of epochs when MSE on test set grows to finish the
        learning */
@@ -131,12 +144,32 @@ main (int argc, char* argv[])
       ++iIter;
 
       // teach pass
-      pnev = nnrol.run_net();
+      for(iData = 0; iData < nLearn; ++iData)
+	{
+	  NaPrintLog("*** Teach pass: '%s' '%s' '%s' ***\n",
+		     szList_in_u[iData],
+		     szList_in_y[iData],
+		     szList_nn_y[iData]);
+
+	  nnrol.in_u.set_input_filename(szList_in_u[iData]);
+	  nnrol.in_y.set_input_filename(szList_in_y[iData]);
+	  nnrol.nn_y.set_output_filename(szList_nn_y[iData]);
+
+	  if(!bTeachLinkage)
+	    {
+	      nnrol.link_net();
+	      bTeachLinkage = true;
+	    }
+	  pnev = nnrol.run_net();
+
+	  if(pneError == pnev || pneTerminate == pnev)
+	    break;
+	}
 
       if(pneError == pnev || pneTerminate == pnev)
 	break;
 
-      NaPrintLog("*** Teach pass ***\n");
+      NaPrintLog("*** Teach passed ***\n");
       nnrol.statan.print_stat();
 
       fNormMSE = nnrol.statan.RMS[0] / nnrol.statan_y.RMS[0];
@@ -201,7 +234,27 @@ main (int argc, char* argv[])
 	  nnllog->SetValue(nnrol.statan.RMS[0], 2);
 
 	  // test pass
-	  pnev_test = nnroe.run_net();
+	  for(iData = 0; iData < nTest; ++iData)
+	    {
+	      NaPrintLog("*** Test pass: '%s' '%s' '%s' ***\n",
+			 szList_test_in_u[iData],
+			 szList_test_in_y[iData],
+			 szList_test_nn_y[iData]);
+
+	      nnroe.in_u.set_input_filename(szList_test_in_u[iData]);
+	      nnroe.in_y.set_input_filename(szList_test_in_y[iData]);
+	      nnroe.nn_y.set_output_filename(szList_test_nn_y[iData]);
+
+	      if(!bTestLinkage)
+		{
+		  nnroe.link_net();
+		  bTestLinkage = true;
+		}
+	      pnev_test = nnroe.run_net();
+
+	      if(pneError == pnev_test || pneTerminate == pnev_test)
+		break;
+	    }
 
 	  if(pneError == pnev_test || pneTerminate == pnev_test)
 	    break;
@@ -211,7 +264,7 @@ main (int argc, char* argv[])
 	  printf("          Test: MSE=%g (%g)\n", nnroe.statan.RMS[0],
 		 nnroe.statan.RMS[0] / nnroe.statan_y.RMS[0]);
 
-	  NaPrintLog("*** Test pass ***\n");
+	  NaPrintLog("*** Test passed ***\n");
 	  nnroe.statan.print_stat();
 
 	  nnllog->SetValue(nnroe.statan.Mean[0], 3);

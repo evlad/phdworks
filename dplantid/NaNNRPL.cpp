@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.3 2001-05-13 20:47:54 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.4 2001-06-07 18:55:04 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -26,8 +26,6 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind)
   trig_y("trig_y"),
   delay_u("delay_u"),
   delay_y("delay_y"),
-  fetch_u("fetch_u"),
-  fetch_y("fetch_y"),
   statan("statan"),
   statan_y("statan_y"),
   and("and")
@@ -60,11 +58,8 @@ NaNNRegrPlantLearn::link_net ()
         net.link(&in_u.out, &delay_u.in);
         net.link(&in_y.out, &delay_y.in);
 
-        net.link(&delay_u.dout, &fetch_u.in);
-        net.link(&delay_y.dout, &fetch_y.in);
-
-        net.link(&fetch_u.out, &bus.in1);
-        net.link(&fetch_y.out, &bus.in2);
+        net.link(&delay_u.dout, &bus.in1);
+        net.link(&delay_y.dout, &bus.in2);
         net.link(&bus.out, &nnplant.x);
 
         net.link(&in_y.out, &statan_y.signal);
