@@ -1,0 +1,23 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(2724,1422)(0,-10)
+\path(762,1062)(12,1062)
+\path(762,612)(12,612)
+\path(762,162)(12,162)
+\path(762,1212)(1962,1212)(1962,12)
+	(762,12)(762,1212)
+\path(1962,612)(2712,612)
+\put(12,1212){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$x_k$}}}}}
+\put(12,762){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$x_{k-1}$}}}}}
+\put(12,312){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$x_{k-2}$}}}}}
+\put(1362,537){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$\NN_{3,\ldots,1}$}}}}}
+\put(2712,762){\makebox(0,0)[rb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$y_{k+1}$}}}}}
+\end{picture}
+}
