@@ -1,6 +1,10 @@
 /* NaPetNod.cpp */
-static char rcsid[] = "$Id: NaPetNod.cpp,v 1.4 2001-06-23 08:59:57 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNod.cpp,v 1.5 2001-11-29 18:52:58 vlad Exp $";
 //---------------------------------------------------------------------------
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "NaStrOps.h"
 #include "NaPetNod.h"
 #include "NaPCnInp.h"
@@ -18,11 +22,18 @@ NaPetriNode::NaPetriNode (const char* szNodeName)
 {
     bHalt = false;
     bTunable = true;
-    bVerbose = false;
     if(NULL == szNodeName)
         szName = autoname("node", iNodeNumber);
     else
         szName = newstr(szNodeName);
+
+    /* setup verbose from program environment */
+    char	szEnvName[1024];
+    sprintf(szEnvName, "%s_verbose", szName);
+    if(NULL == getenv(szEnvName))
+      bVerbose = false;
+    else
+      bVerbose = !!atoi(getenv(szEnvName));
 }
 
 

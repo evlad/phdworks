@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.5 2001-07-02 20:00:41 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.6 2001-11-29 18:52:58 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -119,6 +119,11 @@ protected:/* data */
 
     // Name of the network
     char                *szName;
+
+    // External printout hints
+    bool		bInitPrintout;	// initialize(true)
+    bool		bPrepPrintout;	// prepare(true)
+    bool		bStepPrintout;	// step_alive(true)
 
     // Array of nodes
     NaPNodePtrAr        pnaNet;

@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.10 2001-10-01 18:03:05 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.11 2001-11-29 18:52:58 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -57,6 +57,24 @@ NaPetriNet::NaPetriNet (const char* szNetName)
         szName = autoname("pnet", iNetNumber);
     else
         szName = newstr(szNetName);
+
+
+    /* setup verbose from program environment */
+    char	szEnvName[1024];
+    sprintf(szEnvName, "%s_printout", szName);
+    if(NULL == getenv(szEnvName))
+      {
+	bInitPrintout = false;				// initialize(???)
+	bPrepPrintout = false;				// prepare(???)
+	bStepPrintout = false;				// step_alive(???)
+      }
+    else
+      {
+	char	*szEnvValue = getenv(szEnvName);
+	bInitPrintout = !!strchr(szEnvValue, 'i');	// initialize(true)
+	bPrepPrintout = !!strchr(szEnvValue, 'p');	// prepare(true)
+	bStepPrintout = !!strchr(szEnvValue, 's');	// step_alive(true)
+      }
 }
 
 
@@ -119,6 +137,9 @@ NaPetriNet::prepare (bool bDoPrintouts)
 {
     int     iNode;
     bool    bFailed;
+
+    if(bPrepPrintout)
+      bDoPrintouts = bPrepPrintout;
 
     /* Create activation map file */
     if(bDoPrintouts){
@@ -371,6 +392,9 @@ NaPetriNet::initialize (bool bDoPrintouts)
 {
     int     iNode;
 
+    if(bInitPrintout)
+      bDoPrintouts = bInitPrintout;
+
     // 6. Initialize node activity and setup starter flag if needed
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
         try{
@@ -411,6 +435,9 @@ NaPetriNet::step_alive (bool bDoPrintouts)
     int     iNode;
     int     nHalted = 0;
     int     iActive = 0;
+
+    if(bStepPrintout)
+      bDoPrintouts = bStepPrintout;
 
     if(bDoPrintouts){
         NaPrintLog("# net '%s', step phases 7, 8, 9.\n", name());
