@@ -122,6 +122,20 @@ NaVector::dim () const
 }
 
 //---------------------------------------------------------------------------
+// Check for equivalence
+bool
+NaVector::operator== (const NaVector& rVect) const
+{
+  unsigned	i;
+  if(dim() != rVect.dim())
+    return false;
+  for(i = 0; i < dim(); ++i)
+    if(get(i) != rVect.get(i))
+      return false;
+  return true;
+}
+
+//---------------------------------------------------------------------------
 // Access to the item
 NaReal&
 NaVector::fetch (unsigned i)

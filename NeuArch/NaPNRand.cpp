@@ -8,14 +8,14 @@
 // Create node for Petri network
 NaPNRandomGen::NaPNRandomGen (const char* szNodeName)
 : NaPNGenerator(szNodeName),
-  pRandAr(NULL)
+  pRandGenAr(NULL),
+  pRandNums(NULL)
   ////////////////
   // Connectors //
   ////////////////
   /* inherited */
 {
-    // Register itself as a generator unit
-    set_generator_func(this);
+  // dummy
 }
 
 
@@ -23,7 +23,8 @@ NaPNRandomGen::NaPNRandomGen (const char* szNodeName)
 // Destroy node
 NaPNRandomGen::~NaPNRandomGen ()
 {
-    delete[] pRandAr;
+  delete[] pRandGenAr;
+  delete[] pRandNums;
 }
 
 
@@ -34,30 +35,52 @@ NaPNRandomGen::~NaPNRandomGen ()
 ///////////////////
 
 //---------------------------------------------------------------------------
+// Assign new generator function y=f() (overloaded NaPNGenerator's)
+void
+NaPNRandomGen::set_generator_func (NaUnit* pFunc)
+{
+  NaPNGenerator::set_generator_func(pFunc);
+
+  // Destroy previous RandomSequence objects
+  delete[] pRandGenAr;
+  pRandGenAr = NULL;
+
+  // Destroy previous buffer for random numbers
+  delete[] pRandNums;
+
+  // Create new set of RandomSequence objects
+  pRandGenAr = new NaRandomSequence[pUnit->OutputDim()];
+
+  // Create new buffer for random numbers
+  pRandNums = new NaReal[pUnit->OutputDim()];
+
+  // Setup distribution parameters
+  unsigned    i;
+  for(i = 0; i < pUnit->OutputDim(); ++i)
+    {
+      // Gaussian distribution by default
+      pRandGenAr[i].SetDistribution(rdGaussNormal);
+      pRandGenAr[i].SetUniformParams(0.0, 1.0);
+    }
+}
+
+//---------------------------------------------------------------------------
 // Setup random generation with normal (Gauss) distribution
 // with given output dimension
 void
-NaPNRandomGen::set_gauss_distrib (unsigned nDim,
-                                  const NaReal* fMean, const NaReal* fStdDev)
+NaPNRandomGen::set_gauss_distrib (const NaReal* fMean, const NaReal* fStdDev)
 {
-    if(0 == nDim || NULL == fMean || NULL == fStdDev)
-        throw(na_null_pointer);
+  check_tunable();
 
-    // Destroy previous RandomSequence objects
-    delete[] pRandAr;
-    pRandAr = NULL;
+  if(NULL == pUnit || NULL == fMean || NULL == fStdDev)
+    throw(na_null_pointer);
 
-    // Change input-output dimension of the unit
-    Assign(1, nDim, 0);
-
-    // Setup distribution parameters
-    pRandAr = new NaRandomSequence[nDim];
-
-    // Setup distribution parameters
-    unsigned    i;
-    for(i = 0; i < nDim; ++i){
-        pRandAr[i].SetDistribution(rdGaussNormal);
-        pRandAr[i].SetGaussianParams(fMean[i], fStdDev[i]);
+  // Setup distribution parameters
+  unsigned    i;
+  for(i = 0; i < pUnit->OutputDim(); ++i)
+    {
+      pRandGenAr[i].SetDistribution(rdGaussNormal);
+      pRandGenAr[i].SetGaussianParams(fMean[i], fStdDev[i]);
     }
 }
 
@@ -66,27 +89,19 @@ NaPNRandomGen::set_gauss_distrib (unsigned nDim,
 // Setup random generation with uniform distribution
 // with given output dimension
 void
-NaPNRandomGen::set_uniform_distrib (unsigned nDim,
-                                    const NaReal* fMin, const NaReal* fMax)
+NaPNRandomGen::set_uniform_distrib (const NaReal* fMin, const NaReal* fMax)
 {
-    if(0 == nDim || NULL == fMin || NULL == fMax)
-        throw(na_null_pointer);
+  check_tunable();
 
-    // Destroy previous RandomSequence objects
-    delete[] pRandAr;
-    pRandAr = NULL;
+  if(NULL == pUnit || NULL == fMin || NULL == fMax)
+    throw(na_null_pointer);
 
-    // Change input-output dimension of the unit
-    Assign(1, nDim, 0);
-
-    // Setup distribution parameters
-    pRandAr = new NaRandomSequence[nDim];
-
-    // Setup distribution parameters
-    unsigned    i;
-    for(i = 0; i < nDim; ++i){
-        pRandAr[i].SetDistribution(rdUniform);
-        pRandAr[i].SetUniformParams(fMin[i], fMax[i]);
+  // Setup distribution parameters
+  unsigned    i;
+  for(i = 0; i < pUnit->OutputDim(); ++i)
+    {
+      pRandGenAr[i].SetDistribution(rdUniform);
+      pRandGenAr[i].SetUniformParams(fMin[i], fMax[i]);
     }
 }
 
@@ -97,40 +112,44 @@ NaPNRandomGen::set_uniform_distrib (unsigned nDim,
 // Phases of network //
 ///////////////////////
 
-/* inherited */
 
 //---------------------------------------------------------------------------
-
-///////////////////////////
-// Inherited from NaUnit //
-///////////////////////////
-
-//---------------------------------------------------------------------------
-// Reset operations, that must be done before new modelling
-// will start
-void
-NaPNRandomGen::Reset ()
+// 5. Verification to be sure all is OK (true)
+bool
+NaPNRandomGen::verify ()
 {
-    if(NULL != pRandAr){
-        unsigned    i;
-        for(i = 0; i < OutputDim(); ++i){
-            pRandAr[i].Reset();
-        }
-    }
+  if(!NaPNGenerator::verify())
+    return false;
+
+  return (NULL != pRandGenAr) && (NULL != pRandNums);
 }
 
 
 //---------------------------------------------------------------------------
-// Compute pseudo-random output that depends on described
-// random sequence law.  Input x does not matter.
+// 6. Initialize node activity and setup starter flag if needed
 void
-NaPNRandomGen::Function (NaReal* x, NaReal* y)
+NaPNRandomGen::initialize (bool& starter)
 {
-    if(NULL != pRandAr){
-        unsigned    i;
-        for(i = 0; i < OutputDim(); ++i){
-            pRandAr[i].Function(x, y + i);
-        }
+  NaPNGenerator::initialize(starter);
+
+  unsigned    i;
+  for(i = 0; i < pUnit->OutputDim(); ++i)
+    pRandGenAr[i].Reset();
+}
+
+
+//---------------------------------------------------------------------------
+// 8. True action of the node (if activate returned true)
+void
+NaPNRandomGen::action ()
+{
+  NaReal	dummy;
+
+  unsigned	i;
+  for(i = 0; i < pUnit->OutputDim(); ++i)
+    {
+      pRandGenAr[i].Function(&dummy, pRandNums + i);
+      pUnit->Function(pRandNums + i, &y.data()[i]);
     }
 }
 

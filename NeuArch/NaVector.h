@@ -54,6 +54,12 @@ public:
     virtual NaReal      get (unsigned i) const;
     virtual NaReal      operator() (unsigned i) const;
 
+    // Check for equivalence
+    virtual bool	operator== (const NaVector& rVect) const;
+    virtual bool	operator!= (const NaVector& rVect) const{
+      return !operator==(rVect);
+    };
+
     /*=======================================*
      *    GROUP OPERATIONS AND METHODS       *
      *=======================================*/
