@@ -1,6 +1,6 @@
 PROGRAM	=dcontrf
 
-all:	$(PROGRAM)
+all:	$(PROGRAM) NaNNOCL2.o
 
 install:	$(PROGRAM)
 	cp $(PROGRAM) $(HOME)/bin
@@ -11,10 +11,13 @@ LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
 
 
 SRCS	=dcontrf.cpp \
-	NaNNOCL.cpp
+	NaNNOCL.cpp \
+	NaNNOCL2.cpp
 
 OBJS	=dcontrf.o \
 	NaNNOCL.o
+
+NaNNOCL2.o: NaNNOCL2.h
 
 $(PROGRAM):	$(OBJS) $(LIBS)
 	g++ -o $@ $(OBJS) $(LIBS) -lm
