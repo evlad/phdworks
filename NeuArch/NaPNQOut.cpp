@@ -1,5 +1,5 @@
 /* NaPNQOut.cpp */
-static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.2 2001-06-23 17:46:30 vlad Exp $";
+static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.3 2001-07-02 20:00:41 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNQOut.h"
@@ -101,7 +101,8 @@ bool
 NaPNQueueOutput::activate ()
 {
   // Check the limit of queue length is not reached
-  return (vQueue.dim() < get_data_dim() * nQLimit);
+  return NaPetriNode::activate()
+    && (vQueue.dim() < get_data_dim() * nQLimit);
 }
 
 

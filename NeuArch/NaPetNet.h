@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.4 2001-06-25 20:17:27 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.5 2001-07-02 20:00:41 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -133,6 +133,9 @@ protected:/* data */
     bool                bTimeChart;
     NaDataFile          *dfTimeChart;
     int                 iPrevIndex;
+
+    // Activation map
+    FILE		*fpMap;
 
     // Autoname facility counter
     static int          iNetNumber;

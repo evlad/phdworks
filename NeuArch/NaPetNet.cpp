@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.6 2001-07-01 17:19:56 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.7 2001-07-02 20:00:41 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -54,6 +54,15 @@ NaPetriNet::NaPetriNet (const char* szNetName)
         szName = autoname("pnet", iNetNumber);
     else
         szName = newstr(szNetName);
+
+    char	szMapName[strlen(name()) + 5];
+    sprintf(szMapName, "%s.map", name());
+    fpMap = fopen(szMapName, "w");
+    if(NULL == fpMap){
+      NaPrintLog("Failed to write activation map\n");
+    }else{
+      NaPrintLog("Activation map will be put to '%s'\n", szMapName);
+    }
 }
 
 
@@ -63,6 +72,8 @@ NaPetriNet::~NaPetriNet ()
 {
     delete dfTimeChart;
     delete[] szName;
+    if(NULL != fpMap)
+      fclose(fpMap);
 }
 
 
@@ -416,91 +427,148 @@ NaPetriNet::step_alive (bool bDoPrintouts)
     if(bDoPrintouts)
       NaPrintLog("----------------------------------------\n");
 
+    if(NULL != fpMap){
+      if(0 == ftell(fpMap)){
+
+	/* print line */
+	for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+	  fprintf(fpMap, "==");
+	}/* iNode */
+	fputc('\n', fpMap);
+
+	/* compute max length among names */
+	int	nMaxLen = 0;
+
+	for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+	  if(strlen(pnaNet[iNode]->name()) > nMaxLen){
+	    nMaxLen = strlen(pnaNet[iNode]->name());
+	  }
+	}/* iNode */
+
+	int	iLine;
+
+	/* print header */
+	for(iLine = 0; iLine < nMaxLen; ++iLine){
+	  for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+	    int	iNameLen = strlen(pnaNet[iNode]->name());
+	    if(iNameLen + iLine >= nMaxLen){
+	      fprintf(fpMap, " %c",
+		      pnaNet[iNode]->name()[iLine - (nMaxLen - iNameLen)]);
+	    }else{
+	      fprintf(fpMap, "  ");
+	    }
+	  }/* iNode */
+	  fputc('\n', fpMap);
+	}/* iLine */
+
+	/* print line */
+	for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+	  fprintf(fpMap, "--");
+	}/* iNode */
+	fputc('\n', fpMap);
+
+      }/* for the first time */
+    }/* activation map */
+
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
-        bool    bActivate = false;
+      bool    bActivate = false;
 
-        try{
-            // 7. Do one step of node activity and return true if succeeded
-            if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-                NaPrintLog("node '%s' try to activate.\n",
-                           pnaNet[iNode]->name());
-            }
-            bActivate = pnaNet[iNode]->activate();
+      try{
+	// 7. Do one step of node activity and return true if succeeded
+	if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	  NaPrintLog("node '%s' try to activate.\n",
+		     pnaNet[iNode]->name());
+	}
+	bActivate = pnaNet[iNode]->activate();
 
-            // Count calls
-            ++pnaNet[iNode]->nCalls;
+	// Count calls
+	++pnaNet[iNode]->nCalls;
 
-            if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-                NaPrintLog("node '%s' is %sactivated.\n",
-                           pnaNet[iNode]->name(), bActivate?"" :"not ");
-            }
+	if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	  NaPrintLog("node '%s' is %sactivated.\n",
+		     pnaNet[iNode]->name(), bActivate?"" :"not ");
+	}
 
-	    // Node is timing one
-	    if(bActivate && pnaNet[iNode] == pTimingNode)
-	      timer().GoNextTime();
+	// Node is timing one
+	if(bActivate && pnaNet[iNode] == pTimingNode)
+	  timer().GoNextTime();
 
-        }catch(NaException exCode){
-            NaPrintLog("Step of node activity phase (#7): node '%s' fault.\n"
-                       "Caused by exception: %s\n",
-                       pnaNet[iNode]->name(), NaExceptionMsg(exCode));
-            bActivate = false;
-        }
+      }catch(NaException exCode){
+	NaPrintLog("Step of node activity phase (#7): node '%s' fault.\n"
+		   "Caused by exception: %s\n",
+		   pnaNet[iNode]->name(), NaExceptionMsg(exCode));
+	bActivate = false;
+      }
 
-        if(bActivate){
-            ++iActive;
+      /* activation map */
+      if(NULL != fpMap){
+	if(bActivate){
+	  fprintf(fpMap, " a");
+	}else{
+	  fprintf(fpMap, "  ");
+	}
+      }/* activation map */
 
-            try{
-                // 8. True action of the node (if activate returned true)
-                if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-                    NaPrintLog("node '%s' action.\n", pnaNet[iNode]->name());
-                }
-                pnaNet[iNode]->action();
+      if(bActivate){
+	++iActive;
 
-                // Count activations
-                ++pnaNet[iNode]->nActivations;
+	try{
+	  // 8. True action of the node (if activate returned true)
+	  if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	    NaPrintLog("node '%s' action.\n", pnaNet[iNode]->name());
+	  }
+	  pnaNet[iNode]->action();
 
-            }catch(NaException exCode){
-                NaPrintLog("True action phase (#8): node '%s' fault.\n"
-                           "Caused by exception: %s\n",
-                           pnaNet[iNode]->name(), NaExceptionMsg(exCode));
-            }
+	  // Count activations
+	  ++pnaNet[iNode]->nActivations;
 
-            try{
-                // 9. Finish data processing by the node (if activate
-                //    returned true)
-                if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-                    NaPrintLog("node '%s' post action.\n",
-                               pnaNet[iNode]->name());
-                }
-                pnaNet[iNode]->post_action();
-            }catch(NaException exCode){
-                NaPrintLog("Postaction phase (#9): node '%s' fault.\n"
-                           "Caused by exception: %s\n",
-                           pnaNet[iNode]->name(), NaExceptionMsg(exCode));
-            }
+	}catch(NaException exCode){
+	  NaPrintLog("True action phase (#8): node '%s' fault.\n"
+		     "Caused by exception: %s\n",
+		     pnaNet[iNode]->name(), NaExceptionMsg(exCode));
+	}
 
-            // Check for internal halt
-            if(pnaNet[iNode]->bHalt){
-                ++nHalted;
-            }
-        }
+	try{
+	  // 9. Finish data processing by the node (if activate
+	  //    returned true)
+	  if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	    NaPrintLog("node '%s' post action.\n",
+		       pnaNet[iNode]->name());
+	  }
+	  pnaNet[iNode]->post_action();
+	}catch(NaException exCode){
+	  NaPrintLog("Postaction phase (#9): node '%s' fault.\n"
+		     "Caused by exception: %s\n",
+		     pnaNet[iNode]->name(), NaExceptionMsg(exCode));
+	}
 
-        try{
-            if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-                pnaNet[iNode]->describe();
-            }
-        }catch(NaException exCode){
-            // Skip...
-        }
+	// Check for internal halt
+	if(pnaNet[iNode]->bHalt){
+	  ++nHalted;
+	}
+      }
 
-        // Add node point to time chart
-        if(NULL != dfTimeChart){
-            if(bActivate){
-                dfTimeChart->SetValue(-(1 + iNode) + 0.8/* active */, 1+iNode);
-            }else{
-                dfTimeChart->SetValue(-(1 + iNode)/* passive */, 1+iNode);
-            }
-        }
+      try{
+	if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	  pnaNet[iNode]->describe();
+	}
+      }catch(NaException exCode){
+	// Skip...
+      }
+
+      // Add node point to time chart
+      if(NULL != dfTimeChart){
+	if(bActivate){
+	  dfTimeChart->SetValue(-(1 + iNode) + 0.8/* active */, 1+iNode);
+	}else{
+	  dfTimeChart->SetValue(-(1 + iNode)/* passive */, 1+iNode);
+	}
+      }
+    }
+
+    /* activation map */
+    if(NULL != fpMap){
+      fputc('\n', fpMap);
     }
 
     //// Add point to timechart
