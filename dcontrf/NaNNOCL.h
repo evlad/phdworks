@@ -14,17 +14,15 @@
 #include <NaPNStat.h>
 #include <NaPNTchr.h>
 #include <NaPNBu21.h>
-#include <NaPNSwit.h>
-#include <NaPNTrig.h>
 #include <NaPNDely.h>
 #include <NaPNTime.h>
 #include <NaPNChPt.h>
 #include <NaPNFetc.h>
 #include <NaPNDerv.h>
-#include <NaPNLAnd.h>
 #include <NaPNQOut.h>
-#include <NaPNSkip.h>
 #include <NaPNNNUn.h>
+#include <NaPNSkip.h>
+#include <NaPNFill.h>
 
 
 //---------------------------------------------------------------------------
@@ -93,7 +91,6 @@ public:/* data */
   NaPNStatistics  iderrstat;  // identification error statistics
   NaPNComparator  cerrcomp;   // control error computer
   NaPNStatistics  cerrstat;   // control error statistics
-  NaPNSwitcher    switch_y;   // (nnp,y)->(y_nn) 
   NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
   NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
   NaPNFetcher     errfetch;   // fetch control error 
@@ -103,11 +100,9 @@ public:/* data */
   NaPNQueueOutput iderr_qout; // output statistics of identif. error (queue)
   NaPNSkip        skip_y;     // skip some y due to u isn't available
   NaPNSkip        skip_u;     // skip some u due to y isn't available
-  NaPNLogicalAND  land_uy;    // activate just after delay units are ready
-  NaPNTrigger     trig_e;     // pre-teacher e delayer
   NaPNSkip        skip_e;     // pre-teacher e delayer
-  NaPNDelay       delay_e;    // ...
-  NaPNSkip        skip_r;     // ...
+  NaPNSkip        skip_ny;    // skip some not meaning n+y values
+  NaPNFill        fill_nn_y;  // fill by zeros nn_y output to fit on_y
 
   NaPNFileOutput  c_in;       // logging controller input
   NaPNFileOutput  p_in;       // logging plant input

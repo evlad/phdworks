@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.1 2002-01-13 15:04:28 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.2 2002-01-13 17:34:59 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -42,7 +42,6 @@ NaReal	fPrevMSEc = 0.0, fPrevMSEi = 0.0;
 void
 PrintLog (int iAct, void* pData)
 {
-#if 0
   NaNNOptimContrLearn	&nnocl = *(NaNNOptimContrLearn*)pData;
 
   printf("%4d: Control MSE=%7.4f delta=%+9.7f"\
@@ -52,14 +51,6 @@ PrintLog (int iAct, void* pData)
 
   fPrevMSEc = nnocl.cerrstat.RMS[0];
   fPrevMSEi = nnocl.iderrstat.RMS[0];
-#else
-  NaNNOptimContrLearn	&nnocl = *(NaNNOptimContrLearn*)pData;
-
-  printf("%4d: Control MSE=%7.4f delta=%+9.7f\n", iAct,
-	 nnocl.cerrstat.RMS[0], nnocl.cerrstat.RMS[0] - fPrevMSEc);
-
-  fPrevMSEc = nnocl.cerrstat.RMS[0];
-#endif
 }
 
 
@@ -278,28 +269,19 @@ int main(int argc, char **argv)
 
     // Additional delay for target value
     nnocl.skip_e.set_skip_number(1 + iSkip_e);
-    nnocl.delay_e.set_delay(0);
-    //nnocl.delay_e.add_delay(1);
+
+    nnocl.skip_ny.set_skip_number(1 + iSkip_e);
+    nnocl.fill_nn_y.set_fill_number(iSkip_e);
 
     printf("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
     printf("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
     printf("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
 
-#if 0
-    printf("skip_u=%u  skip_y=%u  ->  skip_e=%u\n",
-	   iSkip_u, iSkip_y, iSkip_e);
-
-    printf("delay_u=%u  delay_y=%u  ->  delay_e=%u\n",
-	   iDelay_u, iDelay_y, iDelay_e);
-#endif
-
     nnocl.plant.set_transfer_func(&au_linplant);
     nnocl.nncontr.set_nn_unit(&au_nnc);
     nnocl.nnteacher.set_nn(&nnocl.nncontr, iSkip_e);
-    /*nnocl.nnteacher.set_nn(&au_nnc);*/
     nnocl.nnplant.set_nn_unit(&au_nnp);
     nnocl.errbackprop.set_nn(&nnocl.nnplant);
-    /*nnocl.errbackprop.set_nn(&au_nnp);*/
 
     // u[0] - actual controller force
     nnocl.errfetch.set_output(0);
@@ -450,7 +432,7 @@ int main(int argc, char **argv)
 	    dfCErr->SetValue(buf[i], i);
 
 	  dfIdErr->AppendRecord();
-	  //nnocl.iderr_qout.get_data(buf);
+	  nnocl.iderr_qout.get_data(buf);
 	  for(i = 0; i < NaSI_number; ++i)
 	    dfIdErr->SetValue(buf[i], i);
 

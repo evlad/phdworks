@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.1 2002-01-13 15:04:28 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.2 2002-01-13 17:34:59 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -40,15 +40,13 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
     iderrstat("iderrstat"),
     cerrcomp("cerrcomp"),
     cerrstat("cerrstat"),
-    switch_y("switch_y"),
-    //trig_e("trig_e"),
-    delay_e("delay_e"),
     skip_e("skip_e"),
     skip_u("skip_u"),
     skip_y("skip_y"),
+    skip_ny("skip_ny"),
+    fill_nn_y("fill_nn_y"),
     delay_u("delay_u"),
     delay_y("delay_y"),
-    land_uy("land_uy"),
     errfetch("errfetch"),
     cerr_fout("cerr_fout"),
     iderr_fout("iderr_fout"),
@@ -149,43 +147,30 @@ NaNNOptimContrLearn::link_net ()
 
     net.link(&bus_p.out, &p_in.in);
 
-    //net.link(&delay_u.sync, &land_uy.in1);
-    //net.link(&delay_y.sync, &land_uy.in2);
-
-    //net.link(&land_uy.out, &trig_e.turn);
-    //net.link(&cerrcomp.cmp, &trig_e.in);
-
     net.link(&cerrcomp.cmp, &skip_e.in);
-    //net.link(&skip_e.out, &delay_e.in);
-    //net.link(&delay_e.dout, &errbackprop.errout);
     net.link(&skip_e.out, &errbackprop.errout);
-
-    //net.link(&trig_e.out, &skip_e.in);
 
     net.link(&errbackprop.errinp, &errfetch.in);
     net.link(&errfetch.out, &nnteacher.errout);
 
-    //!!!net.link(&skip_e.sync, &switch_y.turn);
-    //!!!net.link(&nnplant.y, &switch_y.in1);
-    //!!!net.link(&on_y.out, &switch_y.in2);
-    //!!!net.link(&switch_y.out, &nn_y.in);
-    //net.link(&nnplant.y, &nn_y.in);
+    net.link(&on_y.out, &skip_ny.in);
+    net.link(&skip_ny.out, &iderrcomp.main);
+    net.link(&nnplant.y, &iderrcomp.aux);
+    net.link(&iderrcomp.cmp, &iderrstat.signal);
 
-    //!!!net.link(&on_y.out, &iderrcomp.main);
-    //net.link(&switch_y.out, &iderrcomp.aux);
-    //!!!net.link(&nnplant.y, &iderrcomp.aux);
-    //!!!net.link(&iderrcomp.cmp, &iderrstat.signal);
+    net.link(&nnplant.y, &fill_nn_y.in);
+    net.link(&fill_nn_y.out, &nn_y.in);
 
     net.link(&on_y.out, &cerrcomp.aux);
     net.link(&cerrcomp.cmp, &cerrstat.signal);
 
     if(0 == nSeriesLen){
       net.link(&cerrstat.stat, &cerr_qout.in);
-      //!!!net.link(&iderrstat.stat, &iderr_qout.in);
+      net.link(&iderrstat.stat, &iderr_qout.in);
     }
     else{
       net.link(&cerrstat.stat, &cerr_fout.in);
-      //!!!net.link(&iderrstat.stat, &iderr_fout.in);
+      net.link(&iderrstat.stat, &iderr_fout.in);
     }
 
   }catch(NaException ex){
@@ -206,16 +191,14 @@ NaNNOptimContrLearn::run_net ()
     rMain.init_value(1.);
     rAux.init_value(-1.);
 
-    //on_y.out.set_starter(rZero);
     cerrcomp.cmp.set_starter(rZero);
-    //sum_on.sum.set_starter(rZero);
     sum_on.set_gain(rMain, rAux);
 
     net.set_timing_node((0==nSeriesLen)
 			? (NaPetriNode*)&setpnt_inp
 			: (NaPetriNode*)&setpnt_gen);
 
-   // Prepare petri net engine
+    // Prepare petri net engine
     if(!net.prepare()){
       NaPrintLog("IMPORTANT: verification is failed!\n");
     }
