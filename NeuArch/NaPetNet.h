@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPetNet.h */
-/* $Id: NaPetNet.h,v 1.7 2001-12-03 21:20:53 vlad Exp $ */
+/* $Id: NaPetNet.h,v 1.8 2002-02-28 20:19:43 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -91,6 +91,10 @@ public:
     // Link Src->Dst connection chain
     virtual void        link (NaPetriConnector* pcSrc,
                               NaPetriConnector* pcDst);
+
+    // Link Src->Dst1,..DstN connection chains
+    virtual void        link_1n (NaPetriConnector* pcSrc,
+				 NaPetriConnector* pcDst1, ...);
 
     // Link mainstream chain of nodes
     virtual void        link_nodes (NaPetriNode* pNode0, ...);

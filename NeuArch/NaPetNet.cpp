@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.13 2001-12-23 21:41:00 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.14 2002-02-28 20:19:42 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -810,6 +810,37 @@ NaPetriNet::link (NaPetriConnector* pcSrc, NaPetriConnector* pcDst)
     NaPrintLog("Link %s.%s & %s.%s\n",
                pcSrc->host()->name(), pcSrc->name(),
                pcDst->host()->name(), pcDst->name());
+}
+
+
+//---------------------------------------------------------------------------
+// Link Src->Dst1,..DstN connection chains
+void
+NaPetriNet::link_1n (NaPetriConnector* pcSrc, NaPetriConnector* pcDst1, ...)
+{
+  NaPetriConnector	*pcDst;
+  va_list		val;
+  const char		*szExMsg =
+    "Broken link from '%s.%s' to '%s.%s'.\n"
+    "Caused by exception: %s\n";
+
+  if(NULL == pcSrc)
+    throw(na_null_pointer);
+
+  for(pcDst = pcDst1, va_start(val, pcDst1);
+      NULL != pcDst;
+      pcDst = va_arg(val, NaPetriConnector*)){
+    try{
+      link(pcSrc, pcDst);
+    }catch(NaException exCode){
+      NaPrintLog(szExMsg,
+		 pcSrc->host()->name(), pcSrc->name(),
+		 pcDst->host()->name(), pcDst->name(),
+		 NaExceptionMsg(exCode));
+    }
+  }
+
+  va_end(val);
 }
 
 
