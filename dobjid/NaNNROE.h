@@ -64,6 +64,7 @@ public:/* data */
     NaPNBus2i1o     bus;        // ((x,y),e)->NN former
     NaPNComparator  errcomp;    // error computer
     NaPNStatistics  statan;     // error estimator
+    NaPNStatistics  statan_y;   // target object output analyzer
     NaPNSwitcher    switcher;   // (nno,y)->(y_nn)
     NaPNTrigger     trig_x;     // pre-bus x delayer
     NaPNTrigger     trig_y;     // pre-teacher y delayer

@@ -24,7 +24,8 @@ NaNNRegrObjectLearn::NaNNRegrObjectLearn ()
   trig_x("trig_x"),
   trig_y("trig_y"),
   delay("delay"),
-  statan("statan")
+  statan("statan"),
+  statan_y("statan_y")
 {
     // Nothing to do
 }
@@ -59,6 +60,7 @@ NaNNRegrObjectLearn::link_net ()
 
         net.link(&in_y.out, &delay.in);
 
+        net.link(&in_y.out, &statan_y.signal);
         net.link(&in_y.out, &trig_y.in);
         net.link(&trig_y.out, &nnteacher.desout);
         net.link(&nnobject.y, &nnteacher.nnout);

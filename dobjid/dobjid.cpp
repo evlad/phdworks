@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.3 2001-04-05 19:15:12 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.4 2001-04-10 21:40:06 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -93,6 +93,7 @@ main (int argc, char* argv[])
     nnrol.nnteacher.lpar.alpha = atof(par("alpha"));
 
     ask_user_lpar(nnrol.nnteacher.lpar);
+    putchar('\n');
 
     // Teach the network iteratively
     NaPNEvent   pnev, pnev_test;
@@ -104,6 +105,7 @@ main (int argc, char* argv[])
 
     au_nn.Initialize();
 
+    NaReal	fNormMSE, fNormTestMSE;
     NaReal	fPrevMSE = 0.0, fLastMSE = 0.0;
     NaReal	fPrevTestMSE = 0.0;
     int		nGrowingMSE = 0;
@@ -135,11 +137,14 @@ main (int argc, char* argv[])
       NaPrintLog("*** Teach pass ***\n");
       nnrol.statan.print_stat();
 
-      printf("Iteration %-4d, MSE=%g", iIter, nnrol.statan.RMS[0]);
+      fNormMSE = nnrol.statan.RMS[0] / nnrol.statan_y.RMS[0];
+
+      printf("Iteration %-4d, MSE=%g (%g)", iIter, nnrol.statan.RMS[0],
+	     fNormMSE);
 
       if(1 == iIter)
 	{
-	  fLastMSE = fPrevMSE = nnrol.statan.RMS[0];
+	  fLastMSE = fPrevMSE = fNormMSE;
 	  rPrevNN = au_nn;
 	  nnrol.nnteacher.update_nn();
 	  printf(" -> teach NN\n");
@@ -148,7 +153,7 @@ main (int argc, char* argv[])
       else
 	{
 	  /* next passes */
-	  if(fLastMSE < nnrol.statan.RMS[0])
+	  if(fLastMSE < fNormMSE)
 	    {
 	      /* growing MSE on learning set */
 	      nnrol.nnteacher.lpar.eta /= 2;
@@ -162,7 +167,7 @@ main (int argc, char* argv[])
 			 nnrol.nnteacher.lpar.alpha);
 
 	      au_nn = rPrevNN;
-	      fLastMSE = nnrol.statan.RMS[0];
+	      fLastMSE = fNormMSE;
 	      nnrol.nnobject.set_transfer_func(&au_nn);
 	      nnrol.nnteacher.reset_nn();
 
@@ -176,7 +181,7 @@ main (int argc, char* argv[])
 	  else
 	    {
 	      /* MSE became less */
-	      fLastMSE = fPrevMSE = nnrol.statan.RMS[0];
+	      fLastMSE = fPrevMSE = fNormMSE;
 	      rPrevNN = au_nn;
 	      nnrol.nnteacher.update_nn();
 	      printf(" -> teach NN\n");
@@ -199,7 +204,10 @@ main (int argc, char* argv[])
 	  if(pneError == pnev_test || pneTerminate == pnev_test)
 	    break;
 
-	  printf("          Test: MSE=%g\n", nnroe.statan.RMS[0]);
+	  fNormTestMSE = nnroe.statan.RMS[0] / nnroe.statan_y.RMS[0];
+
+	  printf("          Test: MSE=%g (%g)\n", nnroe.statan.RMS[0],
+		 nnroe.statan.RMS[0] / nnroe.statan_y.RMS[0]);
 
 	  NaPrintLog("*** Test pass ***\n");
 	  nnroe.statan.print_stat();
@@ -208,13 +216,16 @@ main (int argc, char* argv[])
 	  nnllog->SetValue(nnroe.statan.StdDev[0], 4);
 	  nnllog->SetValue(nnroe.statan.RMS[0], 5);
 
-	  if(nnroe.statan.RMS[0] < fFinishOnReachMSE)
+	  nnllog->SetValue(fNormMSE, 6);
+	  nnllog->SetValue(fNormTestMSE, 7);
+
+	  if(fNormTestMSE < fFinishOnReachMSE)
 	    {
 	      NaPrintLog("Test MSE reached preset value %g -> stop\n",
 			 fFinishOnReachMSE);
 	      break;
 	    }
-	  if(fPrevTestMSE < nnroe.statan.RMS[0])
+	  if(fPrevTestMSE < fNormTestMSE)
 	    {
 	      /* Start growing */
 	      ++nGrowingMSE;
@@ -236,7 +247,7 @@ main (int argc, char* argv[])
 	      break;
 	    }
 
-	  fPrevTestMSE = nnroe.statan.RMS[0];
+	  fPrevTestMSE = fNormTestMSE;
 	}
 
     }while(pneDead == pnev);
