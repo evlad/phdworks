@@ -1,5 +1,5 @@
 /* dwtest2.cpp */
-static char rcsid[] = "$Id: dwtest2.cpp,v 1.1 2001-04-20 17:57:12 vlad Exp $";
+static char rcsid[] = "$Id: dwtest2.cpp,v 1.2 2001-04-20 18:10:02 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ static char rcsid[] = "$Id: dwtest2.cpp,v 1.1 2001-04-20 17:57:12 vlad Exp $";
  ***********************************************************************/
 main (int argc, char* argv[])
 {
-  if(argc != 5 && argc != 6)
+  if(argc != 6 && argc != 7)
     {
       fprintf(stderr, "Error: need 5 or 6 arguments\n");
       printf("Usage: dwtest2 ContrTrFunc PlantTrFunc SignalSeries NoiseSeries"\
@@ -37,7 +37,7 @@ main (int argc, char* argv[])
   char	*out_file = argv[5];
   char	*in_file = NULL;
 
-  if(argc == 6)
+  if(argc == 7)
     in_file = argv[6];
 
   NaOpenLogFile("dwtest.log");
