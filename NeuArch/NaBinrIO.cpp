@@ -1,5 +1,5 @@
 /* NaBinrIO.cpp */
-static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.3 2001-11-25 21:35:22 vlad Exp $";
+static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.4 2001-12-23 14:20:28 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -33,6 +33,17 @@ NaBinaryStreamFile::NaBinaryStreamFile (const char* fname,
     {
     case fmReadOnly:
       fp = fopen(szFileName, "r");
+      break;
+    case fmCreateEmpty:
+      fp = fopen(szFileName, "w");
+      break;
+    }
+  if(NULL == fp)
+    throw(na_cant_open_file);
+
+  switch(eFileMode)
+    {
+    case fmReadOnly:
       try{
 	ReadHeader();
 	GoStartRecord();
@@ -40,13 +51,10 @@ NaBinaryStreamFile::NaBinaryStreamFile (const char* fname,
       break;
     case fmCreateEmpty:
       try{
-	fp = fopen(szFileName, "w");
 	WriteHeader();
       }catch(...){}
       break;
     }
-  if(NULL == fp)
-    throw(na_cant_open_file);
 
   iCurLine = -1;
 }
