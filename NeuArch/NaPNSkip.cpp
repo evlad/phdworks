@@ -1,5 +1,5 @@
 /* NaPNSkip.cpp */
-static char rcsid[] = "$Id: NaPNSkip.cpp,v 1.1 2001-12-15 16:07:35 vlad Exp $";
+static char rcsid[] = "$Id: NaPNSkip.cpp,v 1.2 2001-12-17 21:48:33 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNSkip.h"
@@ -9,13 +9,29 @@ static char rcsid[] = "$Id: NaPNSkip.cpp,v 1.1 2001-12-15 16:07:35 vlad Exp $";
 // Create node for Petri network
 NaPNSkip::NaPNSkip (const char* szNodeName)
   : NaPetriNode(szNodeName), nSkip(0),
-  ////////////////
-  // Connectors //
-  ////////////////
-  in(this, "in"),
-  out(this, "out")
+    ////////////////
+    // Connectors //
+    ////////////////
+    in(this, "in"),
+    out(this, "out"),
+    sync(this, "sync")
 {
   // Nothing to do
+}
+
+
+//---------------------------------------------------------------------------
+
+///////////////////
+// Quick linkage //
+///////////////////
+
+//---------------------------------------------------------------------------
+// Return mainstream output connector (the only output or NULL)
+NaPetriConnector*
+NaPNSkip::main_output_cn ()
+{
+  return &out;
 }
 
 
@@ -48,6 +64,7 @@ void
 NaPNSkip::relate_connectors ()
 {
   out.data().new_dim(in.data().dim());
+  sync.data().new_dim(1);
 }
 
 
@@ -56,7 +73,8 @@ NaPNSkip::relate_connectors ()
 bool
 NaPNSkip::verify ()
 {
-  return out.data().dim() == in.data().dim();
+  return out.data().dim() == in.data().dim()
+    && 1 == sync.data().dim();
 }
 
 
@@ -81,4 +99,12 @@ NaPNSkip::post_action ()
   if(activations() > nSkip)
     // Commit output only if given number of portions were skipped
     out.commit_data();
+
+  if(activations() > nSkip)
+    sync.data()[0] = 1;
+  else
+    sync.data()[0] = -1;
+
+  // Commit synchronization
+  sync.commit_data();
 }

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNSkip.h */
-/* $Id: NaPNSkip.h,v 1.1 2001-12-15 16:07:35 vlad Exp $ */
+/* $Id: NaPNSkip.h,v 1.2 2001-12-17 21:48:33 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNSkipH
 #define NaPNSkipH
@@ -30,6 +30,17 @@ public:
 
   // Output (mainstream)
   NaPetriCnOutput	out;
+
+  // Synchronize other nodes (-1 while skipping and +1 another time)
+  NaPetriCnOutput	sync;
+
+
+  ///////////////////
+  // Quick linkage //
+  ///////////////////
+
+  // Return mainstream output connector (the only output or NULL)
+  virtual NaPetriConnector*	main_output_cn ();
 
 
   ///////////////////
