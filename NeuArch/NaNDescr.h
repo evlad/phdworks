@@ -8,6 +8,7 @@
 #include "NaExcept.h"
 #include "NaLogFil.h"
 #include "NaConfig.h"
+#include "NaVector.h"
 
 #define MAX_HIDDEN      NaMAX_HIDDEN
 
@@ -75,6 +76,12 @@ public:/* data */
 
     // Activation function in the last layer
     NaActFuncKind   eLastActFunc;
+
+    // Values of delays for input memory
+    NaVector	vInputDelays;
+
+    // Values of delays for output memory
+    NaVector	vOutputDelays;
 
 public:/* methods */
 

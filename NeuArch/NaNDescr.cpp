@@ -45,6 +45,26 @@ void    NaNeuralNetDescr::PrintLog () const
 
     for(unsigned i = 0; i < nHidLayers; ++i)
         NaPrintLog("  * layer #%d has %d neurons\n", i, nHidNeurons[i]);
+
+    unsigned	j;
+
+    NaPrintLog("  Input delays:\n");
+    if(1 == nInputsNumber)
+      for(j = 0; j < nInputsRepeat; ++j)
+        NaPrintLog("  * input #%u delayed by %u\n", j, vInputDelays(j));
+    else
+      for(j = 0; j < nInputsRepeat; ++j)
+        NaPrintLog("  * inputs #%u..%u delayed by %u\n",
+		   j*nInputsNumber, (j+1)*nInputsNumber-1, vInputDelays(j));
+
+    NaPrintLog("  Output delays:\n");
+    if(1 == nOutNeurons)
+      for(j = 0; j < nOutputsRepeat; ++j)
+        NaPrintLog("  * output #%u delayed by %u\n", j, vOutputDelays(j));
+    else
+      for(j = 0; j < nOutputsRepeat; ++j)
+        NaPrintLog("  * outputs #%u..%u delayed by %u\n",
+		   j*nOutNeurons, (j+1)*nOutNeurons-1, vOutputDelays(j));
 }
 
 //---------------------------------------------------------------------------
@@ -66,6 +86,9 @@ NaNeuralNetDescr::NaNeuralNetDescr (unsigned nIn, unsigned nOut)
     nOutputsRepeat = 0;
     nFeedbackDepth = 0;
     eLastActFunc = afkLinear;
+
+    vInputDelays.new_dim(nInputsRepeat);
+    vOutputDelays.new_dim(nOutputsRepeat);
 }
 
 //---------------------------------------------------------------------------
@@ -87,6 +110,9 @@ NaNeuralNetDescr::NaNeuralNetDescr (const NaNeuralNetDescr& rDescr)
     nOutputsRepeat = rDescr.nOutputsRepeat;
     nFeedbackDepth = rDescr.nFeedbackDepth;
     eLastActFunc = rDescr.eLastActFunc;
+
+    vInputDelays = rDescr.vInputDelays;
+    vOutputDelays = rDescr.vOutputDelays;
 }
 
 //---------------------------------------------------------------------------
@@ -115,6 +141,16 @@ void    NaNeuralNetDescr::Save (NaDataStream& ds)
 
     ds.PutF("Output layer", "%s %u",
             NaActFuncToStrIO(eLastActFunc), nOutNeurons);
+
+    unsigned	j;
+
+    ds.PutComment("Input delays:");
+    for(j = 0; j < nInputsRepeat; ++j)
+        ds.PutF("", "%u", vInputDelays(j));
+
+    ds.PutComment("Output delays:");
+    for(j = 0; j < nOutputsRepeat; ++j)
+        ds.PutF("", "%u", vOutputDelays(j));
 }
 
 //---------------------------------------------------------------------------
@@ -142,6 +178,17 @@ void    NaNeuralNetDescr::Load (NaDataStream& ds)
 
     ds.GetF("%s %u", szBuf, &nOutNeurons);
     eLastActFunc = NaStrToActFuncIO(szBuf);
+
+    unsigned	j;
+
+    vInputDelays.new_dim(nInputsRepeat);
+    vOutputDelays.new_dim(nOutputsRepeat);
+
+    for(j = 0; j < nInputsRepeat; ++j)
+        ds.GetF("%u", &vInputDelays[j]);
+
+    for(j = 0; j < nOutputsRepeat; ++j)
+        ds.GetF("%u", &vOutputDelays[j]);
 }
 
 //---------------------------------------------------------------------------
@@ -163,6 +210,9 @@ NaNeuralNetDescr::operator= (const NaNeuralNetDescr& rDescr)
     nOutputsRepeat = rDescr.nOutputsRepeat;
     nFeedbackDepth = rDescr.nFeedbackDepth;
     eLastActFunc = rDescr.eLastActFunc;
+
+    vInputDelays = rDescr.vInputDelays;
+    vOutputDelays = rDescr.vOutputDelays;
 
     return *this;
 }
@@ -186,6 +236,8 @@ NaNeuralNetDescr::operator== (const NaNeuralNetDescr& rDescr) const
     r = r && (nOutputsRepeat == rDescr.nOutputsRepeat);
     r = r && (nFeedbackDepth == rDescr.nFeedbackDepth);
     r = r && (eLastActFunc == rDescr.eLastActFunc);
+    r = r && (vInputDelays == rDescr.vInputDelays);
+    r = r && (vOutputDelays == rDescr.vOutputDelays);
 
     return r;
 }

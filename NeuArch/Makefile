@@ -132,6 +132,10 @@ OBJS	=NaConLaw.o \
 	NaParams.o \
 	kbdif.o
 
+TestNN:	TestNN.o libpnna.a
+	$(LINK.cpp) -o $@ TestNN.o libpnna.a -lm
+
+
 clean:
 	-@rm -f $(OBJS)
 

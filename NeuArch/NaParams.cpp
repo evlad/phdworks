@@ -160,10 +160,16 @@ NaParams::GetParam (const char* szParamName) const
   it.name = (char*)szParamName;
   it.value = NULL;
 
+  char	*szParamValue = "?not found";
+
   pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
-  if(NULL == pit)
-    return "?not found";
-  return pit->value;
+  if(NULL != pit)
+    szParamValue = pit->value;
+
+  NaPrintLog("Query for parameter '%s' gives value '%s'\n",
+	     szParamName, szParamValue);
+
+  return szParamValue;
 }
 
 
