@@ -16,7 +16,6 @@
 равен $p=2\phi\rho$.  При вращении с постоянными угловыми скоростями
 $\omega_L$, $\omega_R$ в течение кванта времени $\dt$ колеса
 пройдут пути:
-
 \begin{equation}\label{eq:moby-path1}
 \left\{
 \begin{array}{rcl}
@@ -41,6 +40,14 @@ $t_{k+1}=t_k+\dt$.
 \label{fig:moby_rotate}
 \end{figure}
 
+Отметим, что точки $O_k$ и $E_k$ на \figref{fig:moby_rotate} имеют
+иной смысл, чем в главе~\ref{mobile-robot}.  В настоящем приложении
+$O_k$ --- это точка посередине воображаемой оси вращения колес, а
+$E_k$ --- место нахождения видеокамеры в момент времени $t_k$.  Таким
+образом, мобильный робот рассматривается как абсолютно твердое тело с
+характерными точками $O_k$, $E_k$, $L_k$ (левое колесо), $R_k$ (правое
+колесо).
+
 Известно, что при постоянных скоростях вращения колес движение вокруг
 точки $C$ тоже будет проходить с постоянной угловой скоростью
 $\omega$.  Радиус-вектор длины $r$, исходящий из точки $C$ $O_k$, за
@@ -48,7 +55,6 @@ $\omega$.  Радиус-вектор длины $r$, исходящий из точки $C$ $O_k$, за
 $O_{k+1}$.
 
 Точки $L_k$ и $R_k$ пройдут следующий путь:
-
 \begin{equation}\label{eq:moby-path2}
 \left\{
 \begin{array}{rcl}
@@ -61,7 +67,6 @@ p_R & = & 2(r-b/2)\omega\dt
 Считая $\omega_L$, $\omega_R$ и геометрические параметры робота
 заданными, из \eqref{eq:moby-path1} и \eqref{eq:moby-path2} получим
 выражения для $\omega$ и $r$:
-
 \begin{equation}\label{eq:moby-wheel-to-move}
 \begin{array}{rcl}
 r & = & b\,\displaystyle\frac{\omega_L+\omega_R}{\omega_L-\omega_R} \\
@@ -102,16 +107,15 @@ $\omega_L$ и $\omega_R$ на движение маяка в поле зрения робота
 
 В начале рассматриваемого кванта времени проекцией маяка $A$ на ось
 нулевого углового отклонения $E_kS$ является точка $D_k$.  Обозначим
-расстояние расстояние от оси колес до точки $D_k$ (отрезок $O_kD_k$)
-через $d_k$, а расстояние от видеокамеры до оси колес (отрезок
-$O_kE_k$) --- через $f$.  Введем аналогичные обозначения в конце
-кванта времени, применив индекс $k+1$.  Применяя обозначения имеем
-длину отрезков $E_kD_k$ и $E_{k+1}D_{k+1}$:
-
+расстояние от оси колес до точки $D_k$ (отрезок $O_kD_k$) через $d_k$,
+а расстояние от видеокамеры до оси колес (отрезок $O_kE_k$) --- через
+$f$.  Введем аналогичные обозначения в конце кванта времени, применив
+индекс $k+1$.  Применяя обозначения имеем длину отрезков $D_kE_k$ и
+$D_{k+1}E_{k+1}$:
 $$
 \begin{array}{rcl}
-E_kD_k & = & d_k+f\\
-E_{k+1}D_{k+1} & = & d_{k+1}+f
+D_kE_k & = & f+d_k\\
+D_{k+1}E_{k+1} & = & f+d_{k+1}
 \end{array}
 $$
 
@@ -124,7 +128,6 @@ $Q$, лежащей на биссектрисе угла поворота $\angle O_kCO_{k+1}=\phi$.
 
 Поскольку угол между осью нулевого отклонения и осью вращения колес
 $L_kR_k$ прямой, то
-
 \begin{equation}\label{eq:g-computation}
 g=O_kQ=QO_{k+1}=r\tan\frac{\phi}{2}
 \end{equation} где $r$ --- длина радиус-вектора
@@ -138,49 +141,44 @@ g=O_kQ=QO_{k+1}=r\tan\frac{\phi}{2}
 \end{figure}
 
 Рассмотрим прямоугольный треугольник $\triangle D_kE_kA$.  В нем
-$D_kA=D_kE_k\tan\alpha_k=(d_k+f)\tan\alpha_k$.
+$D_kA=D_kE_k\tan\alpha_k=(f+d_k)\tan\alpha_k$.
 
 В прямоугольном треугольнике $\triangle SD_kA$ сторона
 $SD_k=D_kA\tan\phi \quad\Rightarrow\quad
-SD_k=(d_k+f)\tan\alpha_k\tan\phi$.
+SD_k=(f+d_k)\tan\alpha_k\tan\phi$.
 
 Найдем $SQ$ --- гипотенузу $\triangle SD_{k+1}Q$:
-
 $$
 \begin{array}{rcl}
 SQ & = & SD_k+D_kQ\\
 D_kQ & = & D_kO_k-O_kQ=d_k-g\\
-SQ & = & (d_k+f)\tan\alpha_k\tan\phi+d_k-g
+SQ & = & (f+d_k)\tan\alpha_k\tan\phi+d_k-g
 \end{array}
 $$
 
 Катет $D_{k+1}Q$ этого треугольника образуется суммой $d_{k+1}+g$ из
 которой надо найти $d_{k+1}$ --- расстояние от маяка до оси вращения
 колес:
-
 $$
 d_{k+1}=D_{k+1}Q-g=SQ\sin\phi-g
 $$
 
 Подставляем значение $SQ$:
-
 \begin{equation}\label{dk+1-computation}
-d_{k+1}=\Bigl((d_k+f)\tan\alpha_k\tan\phi+d_k-g\Bigr)\sin\phi-g
+d_{k+1}=\Bigl((f+d_k)\tan\alpha_k\tan\phi+d_k-g\Bigr)\sin\phi-g
 \end{equation}
 
 Рассмотри прямоугольный $\triangle D_{k+1}AP$.  Его гипотенуза
 $PA=D_kA-D_kP$, где $D_kA$ --- катет $\triangle D_kAE_k$, а $D_kP$ ---
 катет $\triangle D_kPQ$.  Вычисляя длины этих катетов и подставляя в
 выражение для гипотенузы $\triangle D_{k+1}AP$ получим:
-
 $$
-PA=(d_k+f)\tan\alpha_k+(d_k-g)\tan\phi
+PA=(f+d_k)\tan\alpha_k+(d_k-g)\tan\phi
 $$
 
 Соответственно, катет $D_{k+1}A$ этого треугольника:
-
 $$
-D_{k+1}A=\Bigl((d_k+f)\tan\alpha_k+(d_k-g)\tan\phi\Bigr)\cos\phi
+D_{k+1}A=\Bigl((f+d_k)\tan\alpha_k+(d_k-g)\tan\phi\Bigr)\cos\phi
 $$
 
 Наконец, рассмотрим прямоугольный $\triangle D_{k+1}E_{k+1}A$.  Имеет
@@ -190,36 +188,181 @@ $$
 \tan\alpha_{k+1}=\frac{D_{k+1}A}{D_{k+1}E_{k+1}}
 $$ где $D_{k+1}E_{k+1}=d_{k+1}+f$.  Подставляя рассчитанные величины,
 получаем:
-
 \begin{equation}\label{eq:tan-alpha-far}
 \tan\alpha_{k+1}=\displaystyle\frac{
-\Bigl((d_k+f)\tan\alpha_k+(d_k-g)\tan\phi\Bigr)\cos\phi
+\Bigl((f+d_k)\tan\alpha_k+(d_k-g)\tan\phi\Bigr)\cos\phi
 }{
-\Bigl((d_k+f)\tan\alpha_k\tan\phi+d_k-g\Bigr)\sin\phi-g+f
+\Bigl((f+d_k)\tan\alpha_k\tan\phi+d_k-g\Bigr)\sin\phi-g+f
 }
 \end{equation}
 
-Окончательное выражение зависимости угловой координаты ``далекого''
-маяка в поле зрения робота при заданной постоянной скорости вращения
-колес получим, подставляя в~\eqref{eq:tan-alpha-far} значение
-\eqref{eq:g-computation} и заменяя $\phi=\omega\dt$:
-
+Подставляя вместо $g$ выражение \eqref{eq:g-computation} получим
+окончательную формулу зависимости угловой координаты маяка от угла
+$\phi$ и радиуса поворота $r$ робота:
 \begin{equation}\label{eq:alpha-far}
 \alpha_{k+1}=\arctan\displaystyle\frac{
-\Bigl((d_k+f)\tan\alpha_k+
-      (d_k-r\tan\frac{\omega\dt}{2})\tan\omega\dt\Bigr)
-     \cos\omega\dt
+\Bigl((f+d_k)\tan\alpha_k+
+      (d_k-r\tan\frac{\phi}{2})\tan\phi\Bigr)
+     \cos\phi
 }{
-\Bigl((d_k+f)\tan\alpha_k\tan\omega\dt+
-      d_k-r\tan\frac{\omega\dt}{2}\Bigr)\sin\omega\dt-
-      r\tan\frac{\omega\dt}{2}+f
+\Bigl((f+d_k)\tan\alpha_k\tan\phi+
+      d_k-r\tan\frac{\phi}{2}\Bigr)\sin\phi-
+      r\tan\frac{\phi}{2}+f
 }
 \end{equation}
 
-Выражение зависимости $\omega$ и $r$ от $\omega_L$ и $\omega_R$
-представлено в~\eqref{eq:moby-wheel-to-move}.
+Угол поворота $\phi$ с постоянной угловой скоростью выражается через
+не\"е и время как $\omega\dt$.  Выражение зависимости $\omega$ и $r$
+от $\omega_L$ и $\omega_R$ представлено
+в~\eqref{eq:moby-wheel-to-move}.
 
 \subsection{Случай ``близкого'' расположения маяка}
 
+Схема движения в случае исходного расположения маяка между осью колес
+и видеокамерой представлена на~\figref{fig:moby_eye_move_near}.
+
+\begin{figure}[t]
+\centerline{\hbox{\psfig{figure=moby_eye_move_near.eps}}}
+\caption{Изменение угловой координаты маяка при движении робота ``близко'' к
+         маяку}
+\label{fig:moby_eye_move_near}
+\end{figure}
+
+Проекциями маяка на ось нулевого отклонения в моменты $t_k$ и
+$t_{k+1}$ являются точки $D_k$ и $D_{k+1}$ соответственно.  Расстояния
+от этих точек до оси колес обозначим $d_k$ и $d_{k+1}$.
+Следовательно, расстояние от точек $D_k$ и $D_{k+1}$ до видеокамеры
+равно:
+$$
+\begin{array}{rcl}
+D_kE_k & = & f-d_k\\
+D_{k+1}E_{k+1} & = & f-d_{k+1}
+\end{array}
+$$
+
+В $\triangle D_kAE_k$ катет $D_kA=(f-d_k)\tan\alpha_k$.
+Следовательно, в соседнем $\triangle D_kAP$ гипотенуза
+$$
+PA=D_kA/\cos\phi=(f-d_k)\tan\alpha_k/\cos\phi
+$$ и катет
+$$
+D_kP=(f-d_k)\tan\alpha_k\tan\phi
+$$
+
+Точка $Q$ определяется аналогично случаю с ``дальним'' расположением
+маяка, поэтому справедливо~\eqref{eq:g-computation}.  Используем
+обозначение $g$, введенное в предыдущем параграфе как длина $QO_k$ и
+$QO_{k+1}$.
+
+Длина составного отрезка $QP=QO_k+O_kP$.  В свою очередь
+$O_kP=D_kO_k-D_kP$ или:
+$$
+O_kP=d_k-(f-d_k)\tan\alpha_k\tan\phi
+$$
+$$
+QP=g+d_k-(f-d_k)\tan\alpha_k\tan\phi
+$$
+
+Рассмотрим составной отрезок $D_{k+1}O_{k+1}$.  По определению
+$D_{k+1}K_{k+1}=d_{k+1}$.  Для отрезка справедливо тождество:
+$$
+D_{k+1}O_{k+1}=D_{k+1}Q+QO_{k+1}
+$$ или, подставляя обозначения длин отрезков, имеем:
+\begin{equation}\label{eq:d_k+1_origin-near}
+d_{k+1}=D_{k+1}Q+g
+\end{equation}
+
+Длина катетов $D_{k+1}Q$ и $D_{k+1}P$ в прямоугольном $\triangle
+D_{k+1}QP$ равна:
+$$
+D_{k+1}Q=\Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\cos\phi
+$$
+$$
+D_{k+1}P=\Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\sin\phi
+$$
+
+Выражаем $d_{k+1}$ из~\eqref{eq:d_k+1_origin-near}:
+\begin{equation}\label{eq:d_k+1-computation-near}
+d_{k+1}=g+\Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\cos\phi
+\end{equation}
+
+Искомую зависимость угла $\alpha_{k+1}$ от управляемых параметров и
+начальных условий получим из прямоугольного $\triangle
+D_{k+1}E_{k+1}A$.  Катеты треугольника вычисляются как длины составных
+отрезков:
+$$
+\begin{array}{rcl}
+D_{k+1}A & = & D_{k+1}P+PA\\
+         & = & \Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\sin\phi
+               + (f-d_k)\tan\alpha_k/\cos\phi
+\end{array}
+$$
+$$
+\begin{array}{rcl}
+D_{k+1}E_{k+1} & = & E_{k+1}O_{k+1}-D_{k+1}O_{k+1}\\
+               & = & f-d_{k+1}
+\end{array}
+$$
+
+Отношение длин катетов есть тангенс искомого угла:
+\begin{equation}\label{eq:tan-alpha-near}
+\tan\alpha_{k+1}=\displaystyle\frac{
+\Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\sin\phi
++(f-d_k)\tan\alpha_k/\cos\phi
+}{
+f-g-\Bigl(g+d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\cos\phi
+}
+\end{equation}
+
+Сделаем подстановку $g$ из~\eqref{eq:g-computation} и выразим угол в
+явном виде:
+\begin{equation}\label{eq:alpha-near}
+\alpha_{k+1}=\arctan\displaystyle\frac{
+\Bigl(r\tan\frac{\phi}{2}+d_k-
+      (f-d_k)\tan\alpha_k\tan\phi\Bigr)\sin\phi
++(f-d_k)\tan\alpha_k/\cos\phi
+}{
+f-r\tan\frac{\phi}{2}-\Bigl(r\tan\frac{\phi}{2}
+                            +d_k-(f-d_k)\tan\alpha_k\tan\phi\Bigr)\cos\phi
+}
+\end{equation}
+
+Сравнивая полученную зависимость с выражением для случая ``далекого''
+маяка~\eqref{eq:alpha-far}, отмечаем качественную разницу выведенных
+законов движения.
+
+\subsection{Сравнительный пример обоих случаев расположения маяка}
+
+Исследуем характер выявленных зависимостей (уравнения
+\eqref{eq:alpha-far} и \eqref{eq:alpha-near}), представив их на графике.
+Геометрические размеры робота таковы:
+\begin{itemize}
+\item Колесная база $b=0.46$ м
+\item Радиус колеса $\rho=0.16$ м
+\item Расстояние от мачты видеокамеры до осей колес $f=0.55$ м
+\end{itemize}
+
+Положим угловую скорость при нейтральном приложенном напряжении на
+приводы равной $\omega_0=1\:c^{-1}$.  Возьмем значение разницы
+напряжения на приводах $\Delta\omega=-0.2\omega_0$, то есть,
+$\omega_L=\omega_0-\Delta\omega=1.2:c^{-1}$, а
+$\omega_R=\omega_0-\Delta\omega=0.8:c^{-1}$.  То есть, робот будет
+разворачиваться по часовой стрелке.
+
+Воспользовавшись формулами~\eqref{eq:moby-wheel-to-move}, получим
+радиус разворота $r=2.3$ м при угловой скорости разворота
+$\omega=0.035\:c^{-1}$.  Учитывая типичный квант времени в системе
+управления $\dt=0.25$ получим угол разворота $\phi=0.09\approx
+5^\circ$
+
+В качестве начальных условий положим $\alpha_k=0.18\approx 10^\circ$
+
+Учитывая важность всех участков траектории движения мобильного робота,
+приведем количественный пример зависимости угловой координаты маяка от
+угла поворота.  Подставляемые в формулы геометрические размеры
+соответствуют реальному мобильному роботу.  Количественный расчет
+зависимостей проводится для разных начальных условий.
+
+...графики...
 
 % Конец Приложения

@@ -1,0 +1,50 @@
+\setlength{\unitlength}{0.00087489in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(5598,2514)(0,-10)
+\path(675,2262)(2025,2262)
+\blacken\path(1905.000,2232.000)(2025.000,2262.000)(1905.000,2292.000)(1941.000,2262.000)(1905.000,2232.000)
+\path(3375,2037)(3600,2037)(3825,2037)
+	(4050,2037)(4275,2037)(4500,2037)(4725,2037)
+\blacken\path(4605.000,2007.000)(4725.000,2037.000)(4605.000,2067.000)(4641.000,2037.000)(4605.000,2007.000)
+\path(2025,687)(3375,687)(3375,12)
+	(2025,12)(2025,687)
+\path(3375,327)(4725,327)
+\blacken\path(4605.000,297.000)(4725.000,327.000)(4605.000,357.000)(4641.000,327.000)(4605.000,297.000)
+\path(675,327)(2025,327)
+\blacken\path(1905.000,297.000)(2025.000,327.000)(1905.000,357.000)(1941.000,327.000)(1905.000,297.000)
+\path(45,1227)(675,1227)
+\blacken\path(555.000,1197.000)(675.000,1227.000)(555.000,1257.000)(591.000,1227.000)(555.000,1197.000)
+\path(675,2262)(675,327)
+\path(2025,2487)(3375,2487)(3375,1137)
+	(2025,1137)(2025,2487)
+\path(1575,1857)(2025,1857)
+\blacken\path(1905.000,1827.000)(2025.000,1857.000)(1905.000,1887.000)(1941.000,1857.000)(1905.000,1827.000)
+\path(1575,1317)(2025,1317)
+\blacken\path(1905.000,1287.000)(2025.000,1317.000)(1905.000,1347.000)(1941.000,1317.000)(1905.000,1287.000)
+\path(2745,867)(945,867)(945,1857)
+\path(945,1857)(1125,1857)
+\path(4050,2037)(4050,867)(2700,867)
+\blacken\path(2820.000,897.000)(2700.000,867.000)(2820.000,837.000)(2784.000,867.000)(2820.000,897.000)
+\path(945,1317)(1125,1317)
+\path(1575,2037)(1125,2037)(1125,1677)
+	(1575,1677)(1575,2037)
+\path(1575,1497)(1125,1497)(1125,1137)
+	(1575,1137)(1575,1497)
+\put(0,1362){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$u\_k\$}}}}}
+\put(4275,507){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$y\_$\{$k+1$\}$\$}}}}}
+\put(4275,2217){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$$\backslash$hat$\{$y$\}$\_$\{$k+1$\}$\$}}}}}
+\put(2700,282){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$\backslash$CYRO$\backslash$cyrb$\backslash$cyrhrdsn$\backslash$cyre$\backslash$cyrk$\backslash$cyrt}}}}}
+\put(2700,1767){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}$\backslash$CYRN$\backslash$CYRS--$\backslash$CYRO}}}}}
+\put(1620,1992){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$$\backslash$hat$\{$y$\}$\_k\$}}}}}
+\put(1620,1452){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$$\backslash$hat$\{$y$\}$\_$\{$k-1$\}$\$}}}}}
+\put(1350,1272){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$z\^{}$\{$-2$\}$\$}}}}}
+\put(1350,1812){\makebox(0,0)[b]{\smash{{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}\$z\^{}$\{$-1$\}$\$}}}}}
+\end{picture}
+}
