@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNTchr.h */
-/* $Id: NaPNTchr.h,v 1.7 2001-12-16 17:23:40 vlad Exp $ */
+/* $Id: NaPNTchr.h,v 1.8 2001-12-23 14:19:35 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTchrH
 #define NaPNTchrH
@@ -62,9 +62,9 @@ public:
     // Set link with neural net unit to teach it
     virtual void        set_nn (NaNNUnit* pNN);
 
-    // Set link with petri node neural net unit to teach it (with
-    // state stored in FIFO)
-    virtual void        set_nn (NaPNNNUnit* pnNN);
+    // Set link with Petri node neural net unit to teach it (with
+    // state stored in FIFO, skipping few first states)
+    virtual void        set_nn (NaPNNNUnit* pnNN, unsigned nSkipFirst = 0);
 
     // Reset NN weight changes
     virtual void        reset_nn ();

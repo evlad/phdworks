@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.10 2001-12-17 21:16:51 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.11 2001-12-23 14:19:35 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -63,7 +63,7 @@ NaPNTeacher::set_auto_update_freq (int nFreq)
 // Set link with petri node neural net unit to teach it (with state
 // stored in FIFO)
 void
-NaPNTeacher::set_nn (NaPNNNUnit* pnNN)
+NaPNTeacher::set_nn (NaPNNNUnit* pnNN, unsigned nSkipFirst)
 {
   check_tunable();
 
@@ -71,7 +71,7 @@ NaPNTeacher::set_nn (NaPNNNUnit* pnNN)
     throw(na_null_pointer);
 
   pnn = pnNN;
-  pnn->need_nn_deck(true);
+  pnn->need_nn_deck(true, nSkipFirst);
 
   set_nn(pnn->get_nn_unit());
 }
@@ -223,7 +223,7 @@ NaPNTeacher::action ()
 	for(i = 0; i < desout.data().dim(); ++i)
 	  NaPrintLog(" %g", desout.data()[i]);
       }else{
-	NaPrintLog("\n  NN target: ");
+	NaPrintLog("\n  NN error: ");
 	for(i = 0; i < errout.data().dim(); ++i)
 	  NaPrintLog(" %g", errout.data()[i]);
       }
@@ -254,6 +254,7 @@ NaPNTeacher::action ()
 
         einp.init_zero();
         for(iInput = 0; iInput < einp.dim(); ++iInput){
+	    // Or may be += ???  I didn't recognize the difference...
             einp[iInput] -= bpe->PartOfDeltaRule(iInpLayer, iInput);
         }
     }
