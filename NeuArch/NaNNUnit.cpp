@@ -1,5 +1,5 @@
 /* NaNNUnit.cpp */
-static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
+static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.5 2001-09-30 16:04:07 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -51,6 +51,13 @@ NaNNUnit::operator= (const NaNNUnit& rUnit)
 {
     NaUnit::operator=((const NaUnit&)rUnit);
     AssignDescr(rUnit.descr);
+
+    // Copy scaler
+    InputScaler.min = rUnit.InputScaler.min;
+    InputScaler.max = rUnit.InputScaler.max;
+    OutputScaler.min = rUnit.OutputScaler.min;
+    OutputScaler.max = rUnit.OutputScaler.max;
+
     return *this;
 }
 
@@ -126,6 +133,7 @@ NaNNUnit::AssignDescr (const NaNeuralNetDescr& rDescr)
     StdOutputRange.min.init_value(-1.0);
     StdOutputRange.max.init_value(1.0);
 
+#if 0
     if(descr.eLastActFunc == afkLinear){
         unsigned    i, j, base = descr.nInputsNumber * descr.nInputsRepeat;
         // No squashing
@@ -144,6 +152,7 @@ NaNNUnit::AssignDescr (const NaNeuralNetDescr& rDescr)
             StdOutputRange.max[j] = 0;
         }
     }
+#endif
 }
 
 
@@ -313,27 +322,27 @@ NaNNUnit::Function (NaReal* x, NaReal* y)
 
     /***** Direct part *****/
 
-#ifdef NNUnit_DEBUG
+#if defined(NNUnit_DEBUG) || defined(NNUnit_SCALE)
     NaPrintLog("NN function:\n");
-#endif // NNUnit_DEBUG
+#endif // NNUnit_DEBUG || NNUnit_SCALE
 
     // Store x for input layer...
     for(i = 0; i < InputDim(); ++i){
         Xinp0[i] = x[i];
-#ifdef NNUnit_DEBUG
+#if defined(NNUnit_DEBUG) || defined(NNUnit_SCALE)
         NaPrintLog("  * direct   in[%u] = %g\n", i, Xinp0[i]);
-#endif // NNUnit_DEBUG
+#endif // NNUnit_DEBUG || NNUnit_SCALE
     }
 
     // Scale input vector
     ScaleData(InputScaler, StdInputRange, &Xinp0[0], &Xinp0[0],
               InputDim());
 
-#ifdef NNUnit_DEBUG
+#if defined(NNUnit_DEBUG) || defined(NNUnit_SCALE)
     for(i = 0; i < InputDim(); ++i){
         NaPrintLog("  * scaled   in[%u] = %g\n", i, Xinp0[i]);
     }
-#endif // NNUnit_DEBUG
+#endif // NNUnit_DEBUG || NNUnit_SCALE
 
     // ...plus stored (and scaled) feedback values
     for(i = 0; i < feedback.dim(); ++i){
@@ -412,14 +421,19 @@ NaNNUnit::Function (NaReal* x, NaReal* y)
                   y, &feedback[i * OutputDim()], OutputDim());
     }
 
+#if defined(NNUnit_SCALE)
+    for(i = 0; i < OutputDim(); ++i)
+        NaPrintLog("  * scaled  out[%u] = %g\n", i, y[i]);
+#endif // NNUnit_SCALE
+
     // Scale output vector
     ScaleData(StdOutputRange, OutputScaler, y, y, OutputDim());
 
-#ifdef NNUnit_DEBUG
+#if defined(NNUnit_DEBUG) || defined(NNUnit_SCALE)
     // Print resulting output
     for(i = 0; i < OutputDim(); ++i)
         NaPrintLog("  * direct  out[%u] = %g\n", i, y[i]);
-#endif // NNUnit_DEBUG
+#endif // NNUnit_DEBUG || NNUnit_SCALE
 }
 
 
@@ -556,36 +570,16 @@ NaNNUnit::SetOutputScale (const NaReal* yMin, const NaReal* yMax)
 
     unsigned    i, j, base = descr.nInputsNumber * descr.nInputsRepeat;
 
-    if(descr.eLastActFunc == afkLinear){
-        // No squashing but forcing to change around zero
-        NaReal  yAvg;
-        for(i = 0; i < descr.nOutputsRepeat; ++i){
-            for(j = 0; j < descr.nOutNeurons; ++j){
-                yAvg = 0.5 * (yMin[j] + yMax[j]);
-                InputScaler.min[base + i * descr.nOutNeurons + j] =
-                    yMin[j] - yAvg;
-                InputScaler.max[base + i * descr.nOutNeurons + j] =
-                    yMax[j] - yAvg;
-            }
-        }
+    // Squashing
+    for(i = 0; i < descr.nOutputsRepeat; ++i){
         for(j = 0; j < descr.nOutNeurons; ++j){
-            yAvg = 0.5 * (yMin[j] + yMax[j]);
-            OutputScaler.min[j] = yMin[j] - yAvg;
-            OutputScaler.max[j] = yMax[j] - yAvg;
+            InputScaler.min[base + i * descr.nOutNeurons + j] = yMin[j];
+            InputScaler.max[base + i * descr.nOutNeurons + j] = yMax[j];
         }
     }
-    else{
-        // Squashing
-        for(i = 0; i < descr.nOutputsRepeat; ++i){
-            for(j = 0; j < descr.nOutNeurons; ++j){
-                InputScaler.min[base + i * descr.nOutNeurons + j] = yMin[j];
-                InputScaler.max[base + i * descr.nOutNeurons + j] = yMax[j];
-            }
-        }
-        for(j = 0; j < descr.nOutNeurons; ++j){
-            OutputScaler.min[j] = yMin[j];
-            OutputScaler.max[j] = yMax[j];
-        }
+    for(j = 0; j < descr.nOutNeurons; ++j){
+        OutputScaler.min[j] = yMin[j];
+        OutputScaler.max[j] = yMax[j];
     }
 }
 
@@ -624,15 +618,27 @@ NaNNUnit::ScaleData (const NaNNUnit::NaScaler& rSrcScaler,
     for(i = 0; i < nDim; ++i){
         NaReal  fDstDiff = rDstScaler.max(i) - rDstScaler.min(i);
         NaReal  fSrcDiff = rSrcScaler.max(i) - rSrcScaler.min(i);
+	NaReal	fSrcVal = pSrcVect[i];
 
         // Preveint scaling if some difference is zero
-        if(0 == fDstDiff)
+        if(0 == fDstDiff || 0 == fSrcDiff)
+	  {
+	    pDstVect[i] = pSrcVect[i];
             fDstDiff = 1.;
-        if(0 == fSrcDiff)
             fSrcDiff = 1.;
+	  }
+	else
+	  {
+	    pDstVect[i] = rDstScaler.min(i)
+	      + (pSrcVect[i] - rSrcScaler.min(i)) * fDstDiff / fSrcDiff;
+	  }
 
-        pDstVect[i] = rDstScaler.min(i) + (pSrcVect[i] - rSrcScaler.min(i)) *
-            fDstDiff / fSrcDiff;
+#if defined(NNUnit_SCALE)
+	NaPrintLog("ScaleData(%d) [%g,%g]->[%g,%g] ==> %g -> %g\n", i,
+		   rSrcScaler.min(i), rSrcScaler.max(i),
+		   rDstScaler.min(i), rDstScaler.max(i),
+		   fSrcVal, pDstVect[i]);
+#endif // NNUnit_SCALE
     }
 }
 
