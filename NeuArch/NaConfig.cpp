@@ -1,6 +1,8 @@
 /* NaConfig.cpp */
-static char rcsid[] = "$Id: NaConfig.cpp,v 1.4 2001-05-22 18:18:42 vlad Exp $";
+static char rcsid[] = "$Id: NaConfig.cpp,v 1.5 2001-11-25 21:35:22 vlad Exp $";
 //---------------------------------------------------------------------------
+
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>

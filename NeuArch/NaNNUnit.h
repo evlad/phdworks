@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNNUnit.h */
-/* $Id: NaNNUnit.h,v 1.3 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaNNUnit.h,v 1.4 2001-11-25 21:35:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNUnitH
 #define NaNNUnitH
@@ -38,9 +38,9 @@ public:
     // Retrieve configuration data in internal order from given stream
     virtual void    Load (NaDataStream& ds);
 
-    //==================\\
-    // NaUnit inherited \\
-    //==================\\
+    //==================
+    // NaUnit inherited 
+    //==================
 
     // Reset operations, that must be done before new modelling
     // will start
@@ -54,15 +54,15 @@ public:
     // unit perfomance.  All needed feedback values are stored.
     virtual void    FeedbackValues (NaReal* fb);
 
-    //=====================\\
-    // NaLogging inherited \\
-    //=====================\\
+    //=====================
+    // NaLogging inherited 
+    //=====================
 
     virtual void    PrintLog () const;
 
-    //====================\\
-    // New data & methods \\
-    //====================\\
+    //====================
+    // New data & methods 
+    //====================
 
     // Return number of parameter records (see layers)
     unsigned        Layers () const;

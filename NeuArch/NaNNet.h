@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNNet.h */
-/* $Id: NaNNet.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id: NaNNet.h,v 1.3 2001-11-25 21:35:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNetH
 #define NaNNetH
@@ -50,9 +50,9 @@ public:
     // Retrieve configuration data in internal order from given stream
     virtual void    Load (NaDataStream& ds);
 
-    //==================\\
-    // NaUnit inherited \\
-    //==================\\
+    //==================
+    // NaUnit inherited 
+    //==================
 
     // Reset operations, that must be done before new modelling
     // will start
@@ -66,15 +66,15 @@ public:
     // unit perfomance.  All needed feedback values are stored.
     virtual void    FeedbackValues (NaReal* fb);
 
-    //=====================\\
-    // NaLogging inherited \\
-    //=====================\\
+    //=====================
+    // NaLogging inherited 
+    //=====================
 
     virtual void    PrintLog () const;
 
-    //====================\\
-    // New data & methods \\
-    //====================\\
+    //====================
+    // New data & methods 
+    //====================
 
     // Return number of parameter records (see layers)
     unsigned        Layers () const;
@@ -92,9 +92,9 @@ public:
     // Index of the last (output) NN layer
     unsigned        OutputLayer () const;
 
-    //================\\
-    // NN description \\
-    //================\\
+    //================
+    // NN description 
+    //================
 
     // Number of hidden layers (0..NaMAX_HIDDEN)
     unsigned        hidlayers;
@@ -128,9 +128,9 @@ public:
     // Jog weights and biases
     virtual void	JogNetwork (NaReal mm);
 
-    //==================\\
-    // I/O data scaling \\
-    //==================\\
+    //==================
+    // I/O data scaling 
+    //==================
 
     // Scaler of the output layer
     struct NaScaler {

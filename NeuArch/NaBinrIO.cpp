@@ -1,5 +1,5 @@
 /* NaBinrIO.cpp */
-static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.2 2001-05-19 21:29:40 vlad Exp $";
+static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.3 2001-11-25 21:35:22 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -62,7 +62,7 @@ NaBinaryStreamFile::~NaBinaryStreamFile ()
       fflush(fp);
     }
   fclose(fp);
-  delete[] vCurLine;
+  delete[] (char*)vCurLine;
 }
 
 

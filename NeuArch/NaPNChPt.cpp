@@ -1,5 +1,5 @@
 /* NaPNChPt.cpp */
-static char rcsid[] = "$Id: NaPNChPt.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNChPt.cpp,v 1.3 2001-11-25 21:35:22 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNChPt.h"
@@ -97,4 +97,3 @@ NaPNCheckPoint::action ()
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
- 

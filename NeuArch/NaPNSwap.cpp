@@ -1,5 +1,5 @@
 /* NaPNSwap.cpp */
-static char rcsid[] = "$Id: NaPNSwap.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNSwap.cpp,v 1.3 2001-11-25 21:35:22 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNSwap.h"
@@ -144,4 +144,3 @@ NaPNSwapper::post_action ()
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
- 
