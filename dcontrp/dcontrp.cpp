@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.1 2001-04-21 14:46:19 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.2 2001-04-21 16:11:05 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -24,7 +24,6 @@ static char rcsid[] = "$Id: dcontrp.cpp,v 1.1 2001-04-21 14:46:19 vlad Exp $";
 #include <kbdif.h>
 
 #include "NaNNCPL.h"
-#include "NaNNCPE.h"
 
 
 //---------------------------------------------------------------------------

@@ -1,3 +1,5 @@
+/* NaNNCPL.cpp */
+static char rcsid[] = "$Id: NaNNCPL.cpp,v 1.2 2001-04-21 16:11:05 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <NaExcept.h>
