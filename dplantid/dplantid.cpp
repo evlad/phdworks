@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.1 2001-05-08 11:42:21 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.2 2001-05-08 11:42:59 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -17,8 +17,7 @@ static char rcsid[] = "$Id: dplantid.cpp,v 1.1 2001-05-08 11:42:21 vlad Exp $";
 #include <NaParams.h>
 #include <kbdif.h>
 
-#include "NaNNROL.h"
-#include "NaNNROE.h"
+#include "NaNNRPL.h"
 
 
 /***********************************************************************
