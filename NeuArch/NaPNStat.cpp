@@ -1,5 +1,5 @@
 /* NaPNStat.cpp */
-static char rcsid[] = "$Id: NaPNStat.cpp,v 1.5 2001-12-13 12:27:49 vlad Exp $";
+static char rcsid[] = "$Id: NaPNStat.cpp,v 1.6 2002-02-28 18:45:15 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -124,17 +124,15 @@ void
 NaPNStatistics::print_stat (const char* szTitle)
 {
     if(NULL == szTitle){
-        NaPrintLog("Statistics of '%s':\n", name());
+        NaPrintLog("Statistics of node '%s':\n", name());
     }else{
         NaPrintLog("%s\n", szTitle);
     }
-    NaPrintLog("\tMin\tMax\tMean\tStdDev\tRMS\tVolume\n");
-    if(Mean.dim() == 1){
-        NaPrintLog("%s:\t%g\t%g\t%g\t%g\t%g\t%u\n", name(),
-		   Min[0], Max[0], Mean[0], StdDev[0], RMS[0], activations());
-    }else for(unsigned i = 0; i < Mean.dim(); ++i){
-      NaPrintLog("%s%u:\t%g\t%g\t%g\t%g\t%g\t%u\n", name(), i+1,
-		 Min[i], Max[i], Mean[i], StdDev[i], RMS[i], activations());
+    NaPrintLog("         Min           Max          Mean        StdDev  "\
+	       "         RMS  Volume\n");
+    for(unsigned i = 0; i < Mean.dim(); ++i){
+      NaPrintLog("%12g  %12g  %12g  %12g  %12g  %u\n",
+		 Min[0], Max[0], Mean[0], StdDev[0], RMS[0], activations());
     }
 }
 
