@@ -1,0 +1,80 @@
+% Главный файл
+\documentclass[12pt,a4paper,draft]{article}
+\usepackage[T2A]{fontenc}
+%\usepackage[cp1251]{inputenc}
+\usepackage[iso88595]{inputenc}
+\usepackage{graphics}
+\usepackage{latexcad}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{eepic}
+%texdraw \usepackage{texdraw}
+%\pagestyle{plain}
+\bibliographystyle{plain}
+
+%\language=1 %cp1251
+\language=6 %iso88595
+
+% My macros
+\newcommand\figref[1]{\cyrr\cyri\cyrs.~\ref{#1}}
+%\newcommand\eqref[1]{(\ref{#1})}
+
+\renewcommand\tanh{\mathop{\rm th}}
+\newcommand\DEF{\mathrel{\mathop=^{\rm def}}}
+\newcommand\SE{\overline{\varepsilon^2}}
+\newcommand\hatSE{\overline{\hat{\varepsilon}^2}}
+\newcommand\MSE{\overline{\varepsilon^2}_{\rm min}}
+
+% Позволить переносы двух последних букв слова
+\righthyphenmin=2
+
+% Дополнительные переносы
+\hyphenation{ошиб-ки обыч-но сис-тем не-по-сред-ствен-но-го
+ус-пеш-но back-pro-pa-ga-tion}
+
+\input{RusDoc.tex}
+\input{RusStyle.tex}
+
+% Для макросов texdraw установить умолчательной единицей измерения миллиметры
+%texdraw \everytexdraw{\drawdim mm}
+
+\title{Стохастический квазиоптимальный нейросетевой регулятор}
+
+\author{Елисеев Владимир Леонидович}
+
+\begin{document}
+
+% Титульные страницы
+\maketitle
+
+% Оглавление
+\setcounter{tocdepth}{3}\tableofcontents
+%\newpage
+
+% Введение
+% \part*{Введение}
+% \addcontentsline{toc}{part}{Введение}
+% \input{Introd.tex}
+
+% Глава 1 - Обзор литературы
+% \part{Обзор литературы по теме диссертации}
+% \input{Part1.tex}
+
+% Глава 2 - Стохастическое оптимальное управление
+%\part{Стохастическое квазиоптимальное управление}
+\input{Part2.tex}
+
+% Глава 3 - Адаптивное управление
+% \part{Адаптивное управление}
+% \input{Part3.tex}
+
+% Глава 4 - Инструментальные программные средства
+% \part{Инструментальные программные средства}
+% \input{Part4.tex}
+
+% Библиография
+\bibliography{Bibliogr}
+
+\end{document}
+
+% Конец главного файла
