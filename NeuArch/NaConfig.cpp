@@ -1,5 +1,5 @@
 /* NaConfig.cpp */
-static char rcsid[] = "$Id: NaConfig.cpp,v 1.6 2002-02-16 21:34:41 vlad Exp $";
+static char rcsid[] = "$Id: NaConfig.cpp,v 1.7 2003-01-12 12:22:45 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #define _GNU_SOURCE
@@ -451,6 +451,7 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
         throw(na_cant_open_file);
 
     NaPrintLog("Open file '%s' for loading configuration data\n", szFilePath);
+    bUndo = false;
 
     // Load magic line
     if(NULL == fgets(szLineBuf, MaxConfigFileLine, fp))
@@ -482,7 +483,7 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
     NaConfigLineKind    eLineKind;
 
     // Trying to load partitions
-    while(clkEOF != (eLineKind = GetLine(szLineBuf))){
+    while(clkEOF != (eLineKind = GetLine())){
 
         if(clkPartitionTitle != eLineKind)
             continue;
@@ -661,48 +662,72 @@ NaConfigFile::PutData (const char* szData, const char* szComment)
 //***********************************************************************
 
 //---------------------------------------------------------------------------
+// Undo the whole line reading from file (only one step of undo is provided)
+void
+NaConfigFile::UndoLine ()
+{
+  if(bUndo){
+    // Only one step of undo can be performed
+    throw(na_not_implemented);
+  }else{
+    bUndo = true;
+  }
+}
+
+
+//---------------------------------------------------------------------------
 // Get the whole line from file and returns type of the line
 NaConfigLineKind
-NaConfigFile::GetLine (char* szLine)
+NaConfigFile::GetLine ()
 {
-    char    szBuf[MaxConfigFileLine];
     NaConfigLineKind    eLineKind;
 
-    if(NULL == fgets(szBuf, MaxConfigFileLine, fp)){
+    if(false == bUndo){
+      // it's needed to read line from file
+      char    szBuf[MaxConfigFileLine];
+
+      if(NULL == fgets(szBuf, MaxConfigFileLine, fp)){
         /* error or end of file */
         eLineKind = clkEOF;
-        szLine[0] = '\0';
-    }
-    else{
+        szLineBuf[0] = '\0';
+
+	return eLineKind;
+      }
+      else{
         if(szBuf[strlen(szBuf) - 1] == '\n'){
             szBuf[strlen(szBuf) - 1] = '\0';
         }
         else if(strlen(szBuf) >= MaxConfigFileLine - 1){
-            /* possibly only head of line was read from file... */
-            char    szHead[25];
-            strncpy(szHead, szBuf, 24);
-            NaPrintLog("Very long line '%s...' encountered!  Be careful!\n",
-                       szHead);
+	  /* possibly only head of line was read from file... */
+	  char    szHead[25];
+	  strncpy(szHead, szBuf, 24);
+	  NaPrintLog("Very long line '%s...' encountered!  Be careful!\n",
+		     szHead);
         }
 
         /* normal line processing */
-        strcpy(szLine, szBuf);
-
-        /* check for empty line */
-        unsigned i = 0;
-        //buggy!? while(isspace(szBuf[i]))
-        while(' ' == szBuf[i] || '\t' == szBuf[i])
-            ++i;
-        if(szBuf[i] == '\0')
-            // empty line
-            eLineKind = clkComment;
-        else if(0 == strncmp(szBuf, TitleStartMark(), strlen(TitleStartMark())))
-            eLineKind = clkPartitionTitle;
-        else if(0 == strncmp(szBuf, CommentMark(), strlen(CommentMark())))
-            eLineKind = clkComment;
-        else
-            eLineKind = clkData;
+        strcpy(szLineBuf, szBuf);
+      }
+    }else{
+      // szLineBuf has already contents of the line
+      bUndo = false;
     }
+
+    /* check for empty line */
+    unsigned i = 0;
+    //buggy!? while(isspace(szBuf[i]))
+    while(' ' == szLineBuf[i] || '\t' == szLineBuf[i])
+      ++i;
+    if(szLineBuf[i] == '\0')
+      // empty line
+      eLineKind = clkComment;
+    else if(0 == strncmp(szLineBuf, TitleStartMark(), strlen(TitleStartMark())))
+      eLineKind = clkPartitionTitle;
+    else if(0 == strncmp(szLineBuf, CommentMark(), strlen(CommentMark())))
+      eLineKind = clkComment;
+    else
+      eLineKind = clkData;
+
     return eLineKind;
 }
 
@@ -791,7 +816,7 @@ NaConfigFile::GetData ()
     NaConfigLineKind    eLineKind;
 
     do{
-        eLineKind = GetLine(szLineBuf);
+        eLineKind = GetLine();
 #ifdef CONFIG_DEBUG
         NaPrintLog(">>>>> %s\n", szLineBuf);
 #endif /* CONFIG_DEBUG */
@@ -799,10 +824,14 @@ NaConfigFile::GetData ()
         switch(eLineKind){
 
         case clkPartitionTitle:
-            throw(na_end_of_partition);
+	  UndoLine();
+#ifdef CONFIG_DEBUG
+	  NaPrintLog(">>> undo line due to new partition starts here\n");
+#endif /* CONFIG_DEBUG */
+	  throw(na_end_of_partition);
 
         case clkData:
-            return szLineBuf;
+	  return szLineBuf;
         }
     }while(eLineKind != clkEOF);
 

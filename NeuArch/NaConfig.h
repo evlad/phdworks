@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaConfig.h */
-/* $Id: NaConfig.h,v 1.4 2002-02-16 21:34:41 vlad Exp $ */
+/* $Id: NaConfig.h,v 1.5 2003-01-12 12:22:45 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaConfigH
 #define NaConfigH
@@ -245,9 +245,6 @@ public:
     // Inside file operations while loading
     //***********************************************************************
 
-    // Get the whole line from file and returns type of the line
-    NaConfigLineKind    GetLine (char* szLine);
-
     // Extract partition type from the line
     void        ParseTitle (const char* szLine,
                             char*& szType, char*& szInstance);
@@ -256,6 +253,15 @@ public:
     virtual char*   GetData ();
 
 private:
+
+    // Get the whole line from file, put it to szLineBuf and returns
+    // type of the line
+    NaConfigLineKind    GetLine ();
+
+    // Undo the whole szLineBuf reading from file (only one step of
+    // undo is provided)
+    void		UndoLine ();
+
 
     // Delimiters and special strings
     char    *szMagicString;     // Magic string in the beginning of the file
@@ -280,6 +286,7 @@ private:
     // During save/load operations
     FILE    *fp;
     char    szLineBuf[MaxConfigFileLine + 1];
+    bool    bUndo;	// just one step of undo can be performed
 
 };
 

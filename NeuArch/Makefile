@@ -160,6 +160,9 @@ TestNN:	TestNN.o libpnna.a
 TestTF:	TestTF.o libpnna.a
 	$(LINK.cpp) -o $@ TestTF.o libpnna.a ../Matrix.041/libmatrix.a -lm
 
+TestCF:	TestCF.o libpnna.a
+	$(LINK.cpp) -o $@ TestCF.o libpnna.a ../Matrix.041/libmatrix.a -ldl -lm
+
 TestQIO:	TestQIO.o libpnna.a
 	$(LINK.cpp) -o $@ TestQIO.o libpnna.a ../Matrix.041/libmatrix.a -lm
 
