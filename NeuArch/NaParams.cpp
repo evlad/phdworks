@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.6 2001-06-05 20:44:36 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.7 2004-02-22 14:17:29 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -18,40 +18,52 @@ static char rcsid[] = "$Id: NaParams.cpp,v 1.6 2001-06-05 20:44:36 vlad Exp $";
 //---------------------------------------------------------------------------
 // Open file with parameters
 NaParams::NaParams (const char* szFileName,
+		    /* Extra values in format argv[i]=" name = value " */
+		    int argc, char** argv,
 		    const char szSpecChar[2])
 {
-  if(NULL == szSpecChar || NULL == szFileName)
+  if(NULL == szSpecChar)
     throw(na_null_pointer);
 
   spec[COMMENT] = szSpecChar[COMMENT];
   spec[ASSIGN] = szSpecChar[ASSIGN];
 
-  // open file
-  FILE	*fp = fopen(szFileName, "r");
-  if(NULL == fp)
-    throw(na_cant_open_file);
-
-  // read file to get number of lines in it
+  FILE	*fp;
   stored_n = 0;
 
-  while(NULL != fgets(buf, NaPARAM_LINE_MAX_LEN, fp))
+  if(NULL != szFileName)
     {
-      // skip leading spaces
-      char	*p;
+      // open file
+      fp = fopen(szFileName, "r");
+      if(NULL == fp)
+	throw(na_cant_open_file);
 
-      // skip leading spaces before name
-      p = buf;
-      while(isspace(*p) && *p != '\0')
-	++p;
-      if(*p != '\0' && *p != spec[COMMENT])
-	// non-empty line
-	++stored_n;
-      // else
-      //   no name in this line due to empty line
+      // read file to get high estimation for number of lines in it
+      while(NULL != fgets(buf, NaPARAM_LINE_MAX_LEN, fp))
+	{
+	  // skip leading spaces
+	  char	*p;
+
+	  // skip leading spaces before name
+	  p = buf;
+	  while(isspace(*p) && *p != '\0')
+	    ++p;
+	  if(*p != '\0' && *p != spec[COMMENT])
+	    // non-empty line
+	    ++stored_n;
+	  // else
+	  //   no name in this line due to empty line
+	}
+
+      // rewind file
+      rewind(fp);
     }
 
-  // rewind file
-  rewind(fp);
+  if(argc > 0 && argv != NULL)
+    {
+      // add lines for additional arguments in command line
+      stored_n += argc;
+    }
 
   // allocate storage
   if(0 == stored_n)
@@ -62,82 +74,99 @@ NaParams::NaParams (const char* szFileName,
     }
   else
     {
-      int	item_i = 0;
+      char	*name, *value;
       char	szAbsent[] = "?absent";
       storage = new item_t[stored_n];
+
+      //int	item_i = 0;
+      stored_n = 0;
 
       // read file to the storage
       while(NULL != fgets(buf, NaPARAM_LINE_MAX_LEN, fp))
 	{
 	  // parse line of text
-	  char	*name, *value, *eov;
-
-	  // skip leading spaces before name
-	  name = buf;
-	  while(isspace(*name) && *name != '\0')
-	    ++name;
-	  if(*name == '\0' || *name == spec[COMMENT])
-	    // no name in this line due to empty or comment line
-	    continue;
-
-	  // find end of the name
-	  value = name;
-	  while(!isspace(*value) && *value != '\0' &&
-		*value != spec[ASSIGN])
-	    ++value;
-
-	  if(*value == spec[ASSIGN])
+	  if(!parse_line(buf, name, value))
 	    {
-	      // assignment is found just after the name
-	      *value = '\0';	// end of the name
-	      ++value;	// start of the value
+	      if(NULL == name)
+		// comment line
+		continue;
+	      // empty value
+	      value = szAbsent;
 	    }
-	  else
-	    {
-	      // assignment still is not found
-	      *value = '\0';	// end of the name
-	      ++value;	// start of the region to find value
-
-	      if(NULL == (value = strchr(value, spec[ASSIGN])))
-		// no assignment char in the line
-		value = szAbsent;
-	      else
-		++value;
-	    }
-
-	  // skip leading spaces before value
-	  while(isspace(*value) && *value != '\0')
-	    ++value;
-
-	  // skip final spaces after value
-	  eov = value + strlen(value);
-
-	  // twice check due to MS-DOS \r\n 
-	  if('\n' == eov[-1] || '\r' == eov[-1])
-	    --eov;
-	  if('\n' == eov[-1] || '\r' == eov[-1])
-	    --eov;
-	  *eov = '\0';
-
-	  // skip final spaces after value
-	  while(isspace(*eov))
-	    --eov;
-
-	  *eov = '\0';
 
 	  NaPrintLog("name='%s' value='%s'\n", name, value);
 
-	  storage[item_i].name = new char[strlen(name) + 1];
-	  strcpy(storage[item_i].name, name);
+	  if(CheckParam(name))
+	    {
+	      // already exist -> replace value
+	      char*&	value_ref = FetchParam(name);
+	      delete[] value_ref;
 
-	  storage[item_i].value = new char[strlen(value) + 1];
-	  strcpy(storage[item_i].value, value);
+	      value_ref = new char[strlen(value) + 1];
+	      strcpy(value_ref, value);
 
-	  // go to next line and next item
-	  ++item_i;
+	      NaPrintLog("REPLACE\n");
+	    }
+	  else
+	    {
+	      // not exist
+	      storage[stored_n].name = new char[strlen(name) + 1];
+	      strcpy(storage[stored_n].name, name);
+
+	      storage[stored_n].value = new char[strlen(value) + 1];
+	      strcpy(storage[stored_n].value, value);
+
+	      // go to next command line argument and next item
+	      ++stored_n;
+
+	      NaPrintLog("APPEND\n");
+	    }
 	}
 
-      stored_n = item_i;
+      // parse additional arguments from command line
+      int	i;
+      for(i = 0; i < argc; ++i)
+	{
+	  // parse command line argument
+	  if(!parse_line(buf, name, value))
+	    {
+	      if(NULL == name)
+		// comment line
+		continue;
+	      // empty value
+	      value = szAbsent;
+	    }
+
+	  NaPrintLog("cmd.line: name='%s' value='%s' ", name, value);
+
+	  if(CheckParam(name))
+	    {
+	      // already exist -> replace value
+	      char*&	value_ref = FetchParam(name);
+	      delete[] value_ref;
+
+	      value_ref = new char[strlen(value) + 1];
+	      strcpy(value_ref, value);
+
+	      NaPrintLog("REPLACE\n");
+	    }
+	  else
+	    {
+	      // not exist
+	      storage[stored_n].name = new char[strlen(name) + 1];
+	      strcpy(storage[stored_n].name, name);
+
+	      storage[stored_n].value = new char[strlen(value) + 1];
+	      strcpy(storage[stored_n].value, value);
+
+	      // go to next command line argument and next item
+	      ++stored_n;
+
+	      NaPrintLog("APPEND\n");
+	    }
+	}
+
+      //stored_n = item_i;
     }
 
   fclose(fp);
@@ -173,6 +202,40 @@ NaParams::GetParam (const char* szParamName) const
 	     szParamName, szParamValue);
 
   return szParamValue;
+}
+
+
+//---------------------------------------------------------------------------
+// Fetch parameter's value by his name
+char*&
+NaParams::FetchParam (const char* szParamName)
+{
+  item_t	it, *pit;
+  it.name = (char*)szParamName;
+  it.value = NULL;
+
+  char	*szParamValue = "?not found";
+
+  pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
+  if(NULL != pit)
+    return pit->value;
+
+  throw(na_not_found);
+}
+
+
+// Check for parameter existence
+bool
+NaParams::CheckParam (const char* szParamName) const
+{
+  item_t	it, *pit;
+  it.name = (char*)szParamName;
+  it.value = NULL;
+
+  pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
+  if(NULL != pit)
+    return true;
+  return false;
 }
 
 
@@ -237,6 +300,71 @@ NaParams::GetListOfParams (const char* szParamName,
     }
 
   return szResult;
+}
+
+
+//---------------------------------------------------------------------------
+// Parse the line to name and value or return false in case of bad syntax
+bool
+NaParams::parse_line (char* line, char*& name, char*& value)
+{
+  // skip leading spaces before name
+  name = buf;
+  while(isspace(*name) && *name != '\0')
+    ++name;
+  if(*name == '\0' || *name == spec[COMMENT])
+    {
+      // no name in this line due to empty or comment line
+      name = NULL;
+      return false;
+    }
+
+  // find end of the name
+  value = name;
+  while(!isspace(*value) && *value != '\0' &&
+	*value != spec[ASSIGN])
+    ++value;
+
+  if(*value == spec[ASSIGN])
+    {
+      // assignment is found just after the name
+      *value = '\0';	// end of the name
+      ++value;	// start of the value
+    }
+  else
+    {
+      // assignment still is not found
+      *value = '\0';	// end of the name
+      ++value;	// start of the region to find value
+
+      if(NULL == (value = strchr(value, spec[ASSIGN])))
+	// no assignment char in the line
+	return false;
+      else
+	++value;
+    }
+
+  // skip leading spaces before value
+  while(isspace(*value) && *value != '\0')
+    ++value;
+
+  // skip final spaces after value
+  char	*eov = value + strlen(value);
+
+  // twice check due to MS-DOS \r\n 
+  if('\n' == eov[-1] || '\r' == eov[-1])
+    --eov;
+  if('\n' == eov[-1] || '\r' == eov[-1])
+    --eov;
+  *eov = '\0';
+
+  // skip final spaces after value
+  while(isspace(*eov))
+    --eov;
+
+  *eov = '\0';
+
+  return true;
 }
 
 

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaParams.h */
-/* $Id: NaParams.h,v 1.3 2001-06-05 20:44:36 vlad Exp $ */
+/* $Id: NaParams.h,v 1.4 2004-02-22 14:17:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaParamsH
 #define NaParamsH
@@ -23,6 +23,8 @@ public:
 
   // Open file with parameters
   NaParams (const char* szFileName,
+	    /* Extra values in format argv[i]=" name = value " */
+	    int argc = 0, char** argv = NULL,
 	    /* Special char: comment; assignment */
 	    const char szSpecChar[2] = "#=");
 
@@ -33,6 +35,15 @@ public:
   char*		operator() (const char* szParamName) const{
     return GetParam(szParamName);
   }
+
+  // Fetch parameter's value by his name
+  char*&	FetchParam (const char* szParamName);
+  char*&	operator[] (const char* szParamName){
+    return FetchParam(szParamName);
+  }
+
+  // Check for parameter existence
+  bool		CheckParam (const char* szParamName) const;
 
   // Get array of parameters listed in the line
   char**	GetListOfParams (const char* szParamName,
@@ -58,6 +69,10 @@ protected:
 
   // Compare two items
   static int	stored_cmp (const void* p1, const void* p2);
+
+  // Parse the line to name and value (new allocated) or return false
+  // in case of bad suntax
+  bool		parse_line (char* line, char*& name, char*& value);
 
 };
 
