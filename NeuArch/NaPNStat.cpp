@@ -1,5 +1,5 @@
 /* NaPNStat.cpp */
-static char rcsid[] = "$Id: NaPNStat.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNStat.cpp,v 1.3 2001-12-11 21:20:48 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -33,8 +33,6 @@ NaPNStatistics::NaPNStatistics (const char* szNodeName)
 void
 NaPNStatistics::print_stat (const char* szTitle)
 {
-    check_tunable();
-
     if(NULL == szTitle){
         NaPrintLog("Statistics of '%s':\n", name());
     }else{
@@ -67,6 +65,9 @@ NaPNStatistics::allocate_resources ()
     RMS.new_dim(signal.data().dim());
     Min.new_dim(signal.data().dim());
     Max.new_dim(signal.data().dim());
+
+    Sum.new_dim(signal.data().dim());
+    Sum2.new_dim(signal.data().dim());
 }
 
 
@@ -79,7 +80,9 @@ NaPNStatistics::verify ()
         && StdDev.dim() == signal.data().dim()
         && RMS.dim() == signal.data().dim()
         && Min.dim() == signal.data().dim()
-        && Max.dim() == signal.data().dim();
+        && Max.dim() == signal.data().dim()
+        && Sum.dim() == signal.data().dim()
+        && Sum2.dim() == signal.data().dim();
 }
 
 
@@ -93,6 +96,9 @@ NaPNStatistics::initialize (bool& starter)
     StdDev.init_zero();
     Min.init_zero();
     Max.init_zero();
+
+    Sum.init_zero();
+    Sum2.init_zero();
 }
 
 
@@ -105,8 +111,9 @@ NaPNStatistics::action ()
     NaVector    &x = signal.data();
 
     for(i = 0; i < x.dim(); ++i){
-        Mean[i] += x[i];
-        RMS[i] += x[i] * x[i];
+        Sum[i] += x[i];
+        Sum2[i] += x[i] * x[i];
+
         if(activations() == 0){
             Min[i] = x[i];
             Max[i] = x[i];
@@ -118,26 +125,12 @@ NaPNStatistics::action ()
                 Max[i] = x[i];
             }
         }
+
+	Mean[i] = Sum[i] / (1 + activations());
+	RMS[i] = Sum2[i] / (1 + activations());
+	StdDev[i] = sqrt(RMS[i] - Mean[i] * Mean[i]);
+
     }// for each item of input dimension
-}
-
-
-//---------------------------------------------------------------------------
-// 10. Deallocate resources and close external data
-void
-NaPNStatistics::release_and_close ()
-{
-    // Complete computations
-    if(0 != activations()){
-        unsigned    i;
-        NaVector    &x = signal.data();
-
-        for(i = 0; i < x.dim(); ++i){
-            Mean[i] /= activations();
-            RMS[i] /= activations();
-            StdDev[i] = sqrt(RMS[i] - Mean[i] * Mean[i]);
-        }
-    }
 }
 
 

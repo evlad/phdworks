@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNStat.h */
-/* $Id: NaPNStat.h,v 1.3 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNStat.h,v 1.4 2001-12-11 21:20:48 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNStatH
 #define NaPNStatH
@@ -75,8 +75,14 @@ public:
     // 8. True action of the node (if activate returned true)
     virtual void        action ();
 
-    // 10. Deallocate resources and close external data
-    virtual void        release_and_close ();
+private:
+
+    /////////////////////////
+    // Temporal statistics //
+    /////////////////////////
+
+    NaVector            Sum;
+    NaVector            Sum2;
 
 };
 
