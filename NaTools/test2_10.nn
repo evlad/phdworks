@@ -12,18 +12,18 @@ tanh 1	 ; Output layer
 ; Output delays:
 ; Neural network:
 ; Layer #0  (2 inputs, 2 neurons)
--0.143717	 ; Neuron #0 (bias / weights):
--0.0362816
-0.0282443
-0.0551232	 ; Neuron #1 (bias / weights):
--0.156606
-0.0767524
+0.51715	 ; Neuron #0 (bias / weights):
+-1.0948
+1.18633
+-1.20101	 ; Neuron #1 (bias / weights):
+-1.84953
+1.9239
 ; Layer #1  (2 inputs, 1 neurons)
-0.000894407	 ; Neuron #0 (bias / weights):
--0.0404674
--0.151833
+-0.839007	 ; Neuron #0 (bias / weights):
+2.23158
+-2.01485
 ; Input scaler:
 -1 1	 ; min max
 -1 1	 ; min max
 ; Output scaler:
--1 1	 ; min max
+-10 10	 ; min max
