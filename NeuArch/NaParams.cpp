@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.11 2004-02-25 22:01:27 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.12 2004-02-25 22:12:47 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -119,6 +119,9 @@ NaParams::NaParams (const char* szFileName,
 	      // go to next command line argument and next item
 	      ++stored_n;
 
+	      // quick sort the storage to have proper order
+	      qsort(storage, stored_n, sizeof(item_t), stored_cmp);
+
 	      NaPrintLog("APPEND\n");
 	    }
 	}
@@ -161,6 +164,9 @@ NaParams::NaParams (const char* szFileName,
 
 	      // go to next command line argument and next item
 	      ++stored_n;
+
+	      // quick sort the storage to have proper order
+	      qsort(storage, stored_n, sizeof(item_t), stored_cmp);
 
 	      NaPrintLog("APPEND\n");
 	    }
