@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.11 2004-02-22 14:20:56 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.12 2004-02-22 21:02:41 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -147,6 +147,8 @@ int main(int argc, char **argv)
 
     NaPrintLog("Run dcontrf with %s\n", argv[1]);
 
+    par.ListOfParamsToLog();
+
     /*************************************************************/
     enum {
       stream_mode,
@@ -260,8 +262,13 @@ int main(int argc, char **argv)
     nnocl.nnplant.set_nn_unit(&au_nnp);
     nnocl.errbackprop.set_nn(&nnocl.nnplant);
 
-    // u[0] - actual controller force
-    nnocl.errfetch.set_output(0);
+    // u[?] - actual controller force
+    int	iErrFetch = iDelay_u;	// value of u delay by default
+    if(par.CheckParam("errfetch_output"))
+      iErrFetch = atoi(par("errfetch_output"));
+
+    NaPrintLog("errfetch_output=%d\n", iErrFetch);
+    nnocl.errfetch.set_output(iErrFetch);
 
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
