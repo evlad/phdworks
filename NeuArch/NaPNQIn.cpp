@@ -1,5 +1,5 @@
 /* NaPNQIn.cpp */
-static char rcsid[] = "$Id: NaPNQIn.cpp,v 1.1 2001-06-23 08:59:57 vlad Exp $";
+static char rcsid[] = "$Id: NaPNQIn.cpp,v 1.2 2001-06-23 17:46:30 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNQIn.h"
@@ -112,6 +112,7 @@ NaPNQueueInput::action ()
 
   // Remove data portion
   vQueue.shift(- (int)nDataSize);
+  vQueue.new_dim(vQueue.dim() - nDataSize);
 }
 
 

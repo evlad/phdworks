@@ -1,5 +1,5 @@
 /* NaPNQOut.cpp */
-static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.1 2001-06-23 08:59:57 vlad Exp $";
+static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.2 2001-06-23 17:46:30 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNQOut.h"
@@ -75,6 +75,7 @@ NaPNQueueOutput::get_data (NaReal* pPortion)
 
   // Remove data portion
   vQueue.shift(- (int)get_data_dim());
+  vQueue.new_dim(vQueue.dim() - get_data_dim());
 }
 
 

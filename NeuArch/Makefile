@@ -148,6 +148,9 @@ TestNN:	TestNN.o libpnna.a
 TestTF:	TestTF.o libpnna.a
 	$(LINK.cpp) -o $@ TestTF.o libpnna.a ../Matrix.041/libmatrix.a -lm
 
+TestQIO:	TestQIO.o libpnna.a
+	$(LINK.cpp) -o $@ TestQIO.o libpnna.a ../Matrix.041/libmatrix.a -lm
+
 clean:
 	-@rm -f $(OBJS)
 
