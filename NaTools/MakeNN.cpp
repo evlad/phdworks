@@ -14,6 +14,7 @@
 #   endif /* F_OK */
 #endif /* defined(__MSDOS__) || defined(__WIN32__) */
 
+#include <NaMath.h>
 #include <NaLogFil.h>
 #include <NaGenerl.h>
 #include <NaExcept.h>
@@ -33,10 +34,6 @@ USELIB("NeuArch.lib");
 #endif /* unix */
 
 //---------------------------------------------------------------------------
-// Ask for integer parameter
-int     ask_user (const char* szPrompt, int iDefault);
-
-//---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)
 {
@@ -45,15 +42,24 @@ int main(int argc, char **argv)
   char    *fname, deffname[] = "new.nn";
   char    *nname, defnname[] = "Undefined";
 
+  reset_rand();
+
   try{
     NaNeuralNetDescr    nnd;    // Default NN description 
     NaConfigFile        nnfile(";NeuCon NeuralNet", 1, 0);
 
     printf("Neural network maker %s\n", nnfile.Magic());
-    printf("Usage: MakeNN.exe [ File.nn [ NameOfNN ] ]\n");
+    printf("Usage: %s [File.nn [NameOfNN [InDim [InRep [OutDim\n"
+	   "       [OutRep [Feedback [OutAct [HidNum [Hid0 Hid1...]]]]]\n",
+	   argv[0]);
 
-
-    fname = ask_user_name("Target filename", argn > 0? args[0]: deffname);
+    if(argn > 0)
+      {
+	fname = args[0];
+	printf("Target filename: %s\n", fname);
+      }
+    else
+      fname = ask_user_name("Target filename", argn > 0? args[0]: deffname);
 
     // Some default NN description
     NaNNUnit            nnu(nnd);
@@ -73,38 +79,104 @@ int main(int argc, char **argv)
         printf("Creating new NN file '%s'\n", fname);
     }
 
-    nname = ask_user_name("Name of NN instance", argn > 1? args[1]: defnname);
+    if(argn > 1)
+      {
+	nname = args[1];
+	printf("Name of NN instance: %s\n", nname);
+      }
+    else
+      nname = ask_user_name("Name of NN instance", argn > 1? args[1]: defnname);
 
     nnu.SetInstance(nname);
 
     // Ask for NN description
-    nnd.nInputsNumber = ask_user_int("Input dimension",
-				     (int)nnd.nInputsNumber);
-    nnd.nInputsRepeat = ask_user_int("Input repeats",
-				     (int)nnd.nInputsRepeat);
-    nnd.nOutNeurons = ask_user_int("Output dimension",
-				   (int)nnd.nOutNeurons);
-    nnd.nOutputsRepeat = ask_user_int("Output repeats",
-				      (int)nnd.nOutputsRepeat);
-    nnd.nFeedbackDepth = ask_user_int("Feedback depth",
-				      (int)nnd.nFeedbackDepth);
+    if(argn > 2)
+      {
+	nnd.nInputsNumber = atoi(args[2]);
+	printf("Input dimension: %d\n", nnd.nInputsNumber);
+      }
+    else
+      nnd.nInputsNumber = ask_user_int("Input dimension",
+				       nnd.nInputsNumber);
 
-    nnd.eLastActFunc =
+    if(argn > 3)
+      {
+	nnd.nInputsRepeat = atoi(args[3]);
+	printf("Input repeats: %d\n", nnd.nInputsRepeat);
+      }
+    else
+      nnd.nInputsRepeat = ask_user_int("Input repeats",
+				       nnd.nInputsRepeat);
+
+    if(argn > 4)
+      {
+	nnd.nOutNeurons = atoi(args[4]);
+	printf("Output dimension: %d\n", nnd.nOutNeurons);
+      }
+    else
+      nnd.nOutNeurons = ask_user_int("Output dimension",
+				     nnd.nOutNeurons);
+
+    if(argn > 5)
+      {
+	nnd.nOutputsRepeat = atoi(args[5]);
+	printf("Output repeats: %d\n", nnd.nOutputsRepeat);
+      }
+    else
+      nnd.nOutputsRepeat = ask_user_int("Output repeats",
+					nnd.nOutputsRepeat);
+
+    if(argn > 6)
+      {
+	nnd.nFeedbackDepth = atoi(args[6]);
+	printf("Feedback depth: %d\n", nnd.nFeedbackDepth);
+      }
+    else
+      nnd.nFeedbackDepth = ask_user_int("Feedback depth",
+					nnd.nFeedbackDepth);
+
+    if(argn > 7)
+      {
+	nnd.eLastActFunc = (NaActFuncKind) atoi(args[7]);
+	printf("Output activation (0-linear; 1-sigmoid): %d\n",
+	       nnd.eLastActFunc);
+      }
+    else
+      nnd.eLastActFunc =
         (NaActFuncKind) ask_user_int("Output activation (0-linear; 1-sigmoid)",
-				     (int)nnd.eLastActFunc);
-    nnd.nHidLayers = ask_user_int("Number of hidden layers (0-3)",
-				  (int)nnd.nHidLayers);
+				     nnd.eLastActFunc);
+
+    if(argn > 8)
+      {
+	nnd.nHidLayers = atoi(args[8]);
+	printf("Number of hidden layers (0-3): %d\n", nnd.nHidLayers);
+      }
+    else
+      nnd.nHidLayers = ask_user_int("Number of hidden layers (0-3)",
+				    nnd.nHidLayers);
+
     if(nnd.nHidLayers > MAX_HIDDEN){
         printf("Not more than %u layers are allowed.\n", MAX_HIDDEN);
         nnd.nHidLayers = MAX_HIDDEN;
     }
+    argn -= 9;
+    args += 9;
+
     unsigned    iLayer;
     for(iLayer = 0; iLayer < nnd.nHidLayers; ++iLayer){
         // Ask for number of neurons in given layer
-        char    prompt[100];
-        sprintf(prompt, "Hidden layer #%u", iLayer);
-        nnd.nHidNeurons[iLayer] = ask_user_int(prompt,
-					       (int)nnd.nHidNeurons[iLayer]);
+	if(argn > iLayer)
+	  {
+	    nnd.nHidNeurons[iLayer] = atoi(args[iLayer]);
+	    printf("Hidden layer #%u: %d\n", iLayer, nnd.nHidNeurons[iLayer]);
+	  }
+	else
+	  {
+	    char    prompt[100];
+	    sprintf(prompt, "Hidden layer #%u", iLayer);
+	    nnd.nHidNeurons[iLayer] = ask_user_int(prompt,
+						   nnd.nHidNeurons[iLayer]);
+	  }
     }
 
     nnu.AssignDescr(nnd);
