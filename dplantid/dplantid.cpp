@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.10 2001-12-17 21:50:55 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.11 2001-12-20 20:53:47 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -66,31 +66,38 @@ main (int argc, char* argv[])
     unsigned	*input_delays = au_nn.descr.InputDelays();
     unsigned	*output_delays = au_nn.descr.OutputDelays();
 
-    int		nLearn, nList_in_u, nList_in_y, nList_nn_y;
+    int		nLearn, nList_in_u, nList_in_y, nList_nn_y, nList_tr_y;
     char	**szList_in_u = par("in_u", nList_in_u);
     char	**szList_in_y = par("in_y", nList_in_y);
     char	**szList_nn_y = par("nn_y", nList_nn_y);
+    char	**szList_tr_y = par("tr_y", nList_tr_y);
 
-    /* nLearn=MAX3(x,y,z) */
+    /* nLearn=MIN4(a,b,c,d) */
     nLearn = nList_in_u;
-    if(nLearn < nList_in_y)
+    if(nLearn > nList_in_y)
       nLearn = nList_in_y;
-    if(nLearn < nList_nn_y)
+    if(nLearn > nList_nn_y)
       nLearn = nList_nn_y;
+    if(nLearn > nList_tr_y)
+      nLearn = nList_tr_y;
 
     NaPrintLog("Total %d learning data files\n", nLearn);
 
-    int		nTest, nList_test_in_u, nList_test_in_y, nList_test_nn_y;
+    int		nTest, nList_test_in_u, nList_test_in_y, nList_test_nn_y,
+		nList_test_tr_y;
     char	**szList_test_in_u = par("test_in_u", nList_test_in_u);
     char	**szList_test_in_y = par("test_in_y", nList_test_in_y);
     char	**szList_test_nn_y = par("test_nn_y", nList_test_nn_y);
+    char	**szList_test_tr_y = par("test_tr_y", nList_test_tr_y);
 
-    /* nTest=MAX3(x,y,z) */
+    /* nTest=MIN4(a,b,c,d) */
     nTest = nList_test_in_u;
-    if(nTest < nList_test_in_y)
+    if(nTest > nList_test_in_y)
       nTest = nList_test_in_y;
-    if(nTest < nList_test_nn_y)
+    if(nTest > nList_test_nn_y)
       nTest = nList_test_nn_y;
+    if(nTest > nList_test_tr_y)
+      nTest = nList_test_tr_y;
 
     NaPrintLog("Total %d testing data files\n", nTest);
 
@@ -133,6 +140,10 @@ main (int argc, char* argv[])
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
+
+    // Duplicate input y series at the same time ticks as nn_y
+    nnrol.fetch_y.set_output(0);
+    nnroe.fetch_y.set_output(0);
 
     // Configure learning parameters
     nnrol.nnteacher.lpar.eta = atof(par("eta"));
@@ -178,14 +189,16 @@ main (int argc, char* argv[])
       // teach pass
       for(iData = 0; iData < nLearn; ++iData)
 	{
-	  NaPrintLog("*** Teach pass: '%s' '%s' '%s' ***\n",
+	  NaPrintLog("*** Teach pass: '%s' '%s' '%s' '%s' ***\n",
 		     szList_in_u[iData],
 		     szList_in_y[iData],
+		     szList_tr_y[iData],
 		     szList_nn_y[iData]);
 
 	  nnrol.in_u.set_input_filename(szList_in_u[iData]);
 	  nnrol.in_y.set_input_filename(szList_in_y[iData]);
 	  nnrol.nn_y.set_output_filename(szList_nn_y[iData]);
+	  nnrol.tr_y.set_output_filename(szList_tr_y[iData]);
 
 	  if(!bTeachLinkage)
 	    {
@@ -268,14 +281,16 @@ main (int argc, char* argv[])
 	  // test pass
 	  for(iData = 0; iData < nTest; ++iData)
 	    {
-	      NaPrintLog("*** Test pass: '%s' '%s' '%s' ***\n",
+	      NaPrintLog("*** Test pass: '%s' '%s' '%s' '%s' ***\n",
 			 szList_test_in_u[iData],
 			 szList_test_in_y[iData],
+			 szList_test_tr_y[iData],
 			 szList_test_nn_y[iData]);
 
 	      nnroe.in_u.set_input_filename(szList_test_in_u[iData]);
 	      nnroe.in_y.set_input_filename(szList_test_in_y[iData]);
 	      nnroe.nn_y.set_output_filename(szList_test_nn_y[iData]);
+	      nnroe.tr_y.set_output_filename(szList_test_tr_y[iData]);
 
 	      if(!bTestLinkage)
 		{

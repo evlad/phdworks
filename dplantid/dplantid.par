@@ -1,5 +1,5 @@
 # dplantid parameters
-# $Id: dplantid.par,v 1.4 2001-09-10 21:17:46 vlad Exp $
+# $Id: dplantid.par,v 1.5 2001-12-20 20:53:47 vlad Exp $
 
 # NNP TEACHING
 # Input files
@@ -8,6 +8,7 @@ in_y = moby/ex0_x.dat
 
 # Output files
 nn_y = moby/ex0_x_nn.dat
+tr_y = moby/ex0_x_tr.dat
 
 # NNP TESTING
 # Input files
@@ -16,6 +17,7 @@ test_in_y = moby/ex8_x.dat
 
 # Output files
 test_nn_y = moby/ex8_x_nn_test.dat
+test_tr_y = moby/ex8_x_tr_test.dat
 
 # Neural net file
 in_nnp_file = moby_new.nn

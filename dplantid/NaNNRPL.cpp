@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.8 2001-12-17 21:50:55 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.9 2001-12-20 20:53:47 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -31,7 +31,8 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
   skip_u("skip_u"),
   skip_y("skip_y"),
   skip_yt("skip_yt"),
-  switch_y("switch_y")
+  fetch_y("fetch_y"),
+  tr_y("tr_y")
 {
     // Nothing to do
 }
@@ -65,12 +66,13 @@ NaNNRegrPlantLearn::link_net ()
 
         net.link(&delay_u.dout, &bus.in1);
         net.link(&delay_y.dout, &bus.in2);
+	net.link(&delay_y.dout, &fetch_y.in);
+	net.link(&fetch_y.out, &tr_y.in);
         net.link(&bus.out, &nnplant.x);
 
         net.link(&in_y.out, &skip_yt.in);
 	net.link(&skip_yt.out, &delay_yt.in);
 	net.link(&delay_yt.dout, &statan_y.signal);
-	net.link(&skip_yt.sync, &switch_y.turn);
 
 	if(eAlgoKind == NaTrainingAlgorithm)
 	  {
@@ -78,10 +80,7 @@ NaNNRegrPlantLearn::link_net ()
 	    net.link(&nnplant.y, &nnteacher.nnout);
 	  }
 
-	net.link(&in_y.out, &switch_y.in2);
-	net.link(&nnplant.y, &switch_y.in1);
-	net.link(&switch_y.out, &nn_y.in);
-
+	net.link(&nnplant.y, &nn_y.in);
         net.link(&nnplant.y, &errcomp.aux);
         net.link(&delay_yt.dout, &errcomp.main);
         net.link(&errcomp.cmp, &statan.signal);

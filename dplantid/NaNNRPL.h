@@ -4,7 +4,6 @@
 #define NaNNRPLH
 
 #include <NaPetri.h>
-#include <NaPNSum.h>
 #include <NaPNCmp.h>
 #include <NaPNFIn.h>
 #include <NaPNFOut.h>
@@ -12,12 +11,9 @@
 #include <NaPNStat.h>
 #include <NaPNTchr.h>
 #include <NaPNBu21.h>
-#include <NaPNSwit.h>
-#include <NaPNTrig.h>
 #include <NaPNDely.h>
-#include <NaPNLAnd.h>
-#include <NaPNFetc.h>
 #include <NaPNSkip.h>
+#include <NaPNFetc.h>
 
 
 //---------------------------------------------------------------------------
@@ -64,7 +60,9 @@ public:/* data */
   // Functional Petri network nodes
   NaPNFileInput		in_y;		// target plant output
   NaPNFileInput		in_u;		// preset control force
-  NaPNFileOutput	nn_y;		// NN plant output
+  NaPNFetcher		fetch_y;	// fetch y(k+1) used for training
+  NaPNFileOutput	tr_y;		// training input at y(k+1)
+  NaPNFileOutput	nn_y;		// NN plant output at y(k+1)
   NaPNTransfer		nnplant;	// NN plant
   NaPNTeacher		nnteacher;	// NN teacher
   NaPNBus2i1o		bus;		// ((x,y),e)->NN former
@@ -77,7 +75,6 @@ public:/* data */
   NaPNSkip		skip_y;		// skip some y due to u isn't available
   NaPNSkip		skip_u;		// skip some u due to y isn't available
   NaPNSkip		skip_yt;	// skip started target y values
-  NaPNSwitcher		switch_y;	// switch output to nn_y
 
 private:/* data */
 
