@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage{eepic}
 \usepackage{psfig}
+\usepackage{texdraw}
 %texdraw \usepackage{texdraw}
 %\pagestyle{plain}
 \bibliographystyle{plain}
@@ -35,6 +36,9 @@
 
 \input{RusDoc.tex}
 \input{RusStyle.tex}
+
+\input{txdtools.tex}
+\input{blockdiagram.tex}
 
 % Для макросов texdraw установить умолчательной единицей измерения миллиметры
 %texdraw \everytexdraw{\drawdim mm}
@@ -75,6 +79,13 @@
 
 % Библиография
 \bibliography{Bibliogr}
+
+% Приложения
+\appendix
+
+% Приложение 1 - Эксперименты
+% \chapter{Эксперименты }
+\input{Appendix1.tex}
 
 \end{document}
 
