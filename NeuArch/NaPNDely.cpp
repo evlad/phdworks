@@ -1,5 +1,5 @@
 /* NaPNDely.cpp */
-static char rcsid[] = "$Id: NaPNDely.cpp,v 1.6 2001-11-29 20:08:10 vlad Exp $";
+static char rcsid[] = "$Id: NaPNDely.cpp,v 1.7 2001-12-03 21:20:36 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNDely.h"
@@ -19,9 +19,8 @@ NaPNDelay::NaPNDelay (const char* szNodeName)
   sync(this, "sync")
 {
     // No delay by default
-    nDelay = 0;
+    nMaxLag = 0;
     // Sleepy by default
-    bAwaken = false;
     bSleepValue = false;
     fSleepValue = 0.0;
 }
@@ -46,7 +45,7 @@ NaPNDelay::add_delay (unsigned iShift)
     unsigned	i;
     for(i = 0; i < nOutDim; ++i)
       piOutMap[i] += iShift;
-    nDelay += iShift;
+    nMaxLag += iShift;
 }
 
 
@@ -57,14 +56,11 @@ NaPNDelay::set_delay (unsigned nSamples)
 {
     check_tunable();
 
-    nOutDim = nDelay = 1 + nSamples;
+    nOutDim = nMaxLag = 1 + nSamples;
     piOutMap = new unsigned[nOutDim];
     unsigned	i;
     for(i = 0; i < nOutDim; ++i)
       piOutMap[i] = i;
-    bAwaken = false;
-
-  NaPrintLog("\tnDelay=%u\n", nDelay);
 }
 
 
@@ -84,19 +80,15 @@ NaPNDelay::set_delay (unsigned nDim, unsigned* piMap)
     throw(na_null_pointer);
 
   piOutMap = new unsigned[nOutDim];
-  nDelay = 0;
+  nMaxLag = 0;
   unsigned	i;
   for(i = 0; i < nOutDim; ++i)
     {
       piOutMap[i] = piMap[i];
-      if(piOutMap[i] > nDelay)
-	nDelay = piOutMap[i];
+      if(piOutMap[i] > nMaxLag)
+	nMaxLag = piOutMap[i];
     }
-  ++nDelay;
-
-  NaPrintLog("\tnDelay=%u\n", nDelay);
-
-  bAwaken = false;
+  ++nMaxLag;
 }
 
 
@@ -105,8 +97,10 @@ NaPNDelay::set_delay (unsigned nDim, unsigned* piMap)
 void
 NaPNDelay::set_sleep_value (NaReal fValue)
 {
-    bSleepValue = true; // don't sleep for this case
-    fSleepValue = fValue;
+  check_tunable();
+
+  bSleepValue = true; // don't sleep for this case
+  fSleepValue = fValue;
 }
 
 
@@ -115,7 +109,7 @@ NaPNDelay::set_sleep_value (NaReal fValue)
 bool
 NaPNDelay::awake ()
 {
-    return activations() >= nDelay || bSleepValue;
+    return nActiveSleep != 0 || 1 + activations() >= nMaxLag;
 }
 
 
@@ -145,7 +139,7 @@ NaPNDelay::main_output_cn ()
 void
 NaPNDelay::relate_connectors ()
 {
-    // Get nDelay + 1 times input vector
+    // Get nMaxLag + 1 times input vector
     dout.data().new_dim(in.data().dim() * nOutDim);
 
     // Just for synchronization...
@@ -168,9 +162,12 @@ NaPNDelay::verify ()
 void
 NaPNDelay::initialize (bool& starter)
 {
-    bAwaken = bSleepValue;
-    dout.data().init_value(fSleepValue);
-    vBuffer.new_dim(nDelay * in.data().dim());
+  if(bSleepValue)
+    nActiveSleep = nMaxLag;
+  else
+    nActiveSleep = 0;
+  dout.data().init_value(fSleepValue);
+  vBuffer.new_dim(nMaxLag * in.data().dim());
 }
 
 
@@ -179,21 +176,23 @@ NaPNDelay::initialize (bool& starter)
 bool
 NaPNDelay::activate ()
 {
-    bAwaken = awake();
+  // For action() and post_action() only
+  bAwaken = awake();
 
-    if(bAwaken && is_verbose())
-      {
-	unsigned	i;
-	NaPrintLog("node '%s' is awaken: activations=%d, delay=",
-		   name(), activations());
-	for(i = 0; i < nOutDim; ++i)
-	  if(i + 1 == nOutDim)
-	    NaPrintLog("%d\n", piOutMap[i]);
-	  else
-	    NaPrintLog("%d,", piOutMap[i]);
-      }
+  if(bAwaken && is_verbose())
+    {
+      unsigned	i;
+      NaPrintLog("node '%s' is awaken: activations=%d, delay=",
+		 name(), activations());
+      for(i = 0; i < nOutDim; ++i)
+	if(i + 1 == nOutDim)
+	  NaPrintLog("%d\n", piOutMap[i]);
+	else
+	  NaPrintLog("%d,", piOutMap[i]);
+    }
 
-    return !in.is_waiting() && !sync.is_waiting();
+  // Does not depend on bAwaken state
+  return !is_waiting();
 }
 
 
@@ -246,6 +245,11 @@ NaPNDelay::post_action ()
 
     // Manage linked nodes
     sync.commit_data();
+
+    // Decrement number of active sleeping ticks
+    if(nActiveSleep != 0){
+      --nActiveSleep;
+    }
 }
 
 

@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNDely.h */
-/* $Id: NaPNDely.h,v 1.4 2001-10-01 18:03:05 vlad Exp $ */
+/* $Id: NaPNDely.h,v 1.5 2001-12-03 21:20:36 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
@@ -89,8 +89,13 @@ public:
 
 protected:/* data */
 
-    // Number of samples to delay
-    unsigned            nDelay;
+    // Maximum delay that can be provided by given setting
+    unsigned            nMaxLag;
+
+    // Sleeping mode means real input replacement by sleeping value
+    // Decremented each time new input data arrival
+    // When is equal to 0 behaviour of the node is usual delay
+    unsigned		nActiveSleep;
 
     // Awaken flag
     bool                bAwaken;
