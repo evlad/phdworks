@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 2.3 2004-02-05 21:09:30 vlad Exp $
+# $Id: dcontrf.par,v 2.4 2004-02-22 21:09:12 vlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -45,6 +45,10 @@ p_in = p_in.dat
 in_nnp_file = ../nnp_1+1_1res.nn
 in_nnc_file = ../nnc_re_1pre.nn
 out_nnc_file = nnc_re_1fin.nn
+
+# Optional to select exact input of NN-P as a error conductor in
+# backpropagation chain.  Defined automatically by default.
+#errfetch_output=0
 
 # Tracking learning process: ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX
 cerr_trace_file = cerr_trace.dat
