@@ -101,8 +101,7 @@ int main(int argc, char **argv)
                 break;
             }
 
-            statan.print_stat("Statistics:");
-            //NaPrintLog();
+            statan.print_stat(NULL);
         }
     }
     catch(NaException& ex){
