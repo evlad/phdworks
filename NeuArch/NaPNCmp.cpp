@@ -14,7 +14,7 @@ NaPNComparator::NaPNComparator (const char* szNodeName)
   aux(this, "aux"),
   cmp(this, "cmp")
 {
-    set_starter(true);
+  // dummy
 }
 
 
@@ -30,23 +30,6 @@ NaPetriConnector*
 NaPNComparator::main_input_cn ()
 {
     return &main;
-}
-
-
-//---------------------------------------------------------------------------
-
-///////////////////
-// Node specific //
-///////////////////
-
-//---------------------------------------------------------------------------
-// Set starter hint if needed (true by default)
-void
-NaPNComparator::set_starter (bool starter)
-{
-    check_tunable();
-
-    bStarter = starter;
 }
 
 
@@ -72,24 +55,6 @@ NaPNComparator::verify ()
 {
     return main.data().dim() == aux.data().dim()
         && main.data().dim() == cmp.data().dim();
-}
-
-
-//---------------------------------------------------------------------------
-// 6. Initialize node activity and setup starter flag if needed
-void
-NaPNComparator::initialize (bool& starter)
-{
-    starter = bStarter;
-
-    if(starter)
-      {
-	unsigned    i;
-	for(i = 0; i < cmp.data().dim(); ++i){
-	  cmp.data()[i] = 0;
-	}
-	cmp.commit_data();
-      }
 }
 
 

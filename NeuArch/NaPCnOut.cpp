@@ -4,12 +4,13 @@
 #include "NaLogFil.h"
 #include "NaPCnOut.h"
 #include "NaPCnInp.h"
+#include "NaPetNod.h"
 
 
 //---------------------------------------------------------------------------
 // Link to the host node
 NaPetriCnOutput::NaPetriCnOutput (NaPetriNode* pHost, const char* szCnName)
-: NaPetriConnector(pHost, szCnName)
+  : NaPetriConnector(pHost, szCnName), bStarter(false)
 {
     // Nothing to do
 }
@@ -38,6 +39,22 @@ NaPetriCnOutput::adjoint (int iCn)
 //---------------------------------------------------------------------------
 
 ////////////////
+//  Specific  //
+////////////////
+
+//---------------------------------------------------------------------------
+// Say 'generate initial impulse in network'
+void
+NaPetriCnOutput::set_starter (const NaVector& rInitial)
+{
+  bStarter = true;
+  rData0 = rInitial;
+}
+
+
+//---------------------------------------------------------------------------
+
+////////////////
 // Overridden //
 ////////////////
 
@@ -52,6 +69,16 @@ NaPetriCnOutput::init ()
 
     // No adjoint connectors which processed the data
     nPrCnt = links();
+
+    // Initial assignment and commit data
+    if(bStarter)
+      {
+	NaPrintLog("node '%s', connector '%s' is << STARTER >>\n",
+		   host()->name(), name());
+
+	rData = rData0;
+	commit_data();
+      }
 }
 
 
@@ -160,7 +187,8 @@ NaPetriCnOutput::unlink ()
 void
 NaPetriCnOutput::describe ()
 {
-    NaPrintLog("output connector '%s': ", name());
+    NaPrintLog("output%s connector '%s': ",
+	       bStarter?" << STARTER >>": "", name());
     if(NULL == host()){
         NaPrintLog("no host node\n");
     //}else if(0 == links()){

@@ -45,14 +45,6 @@ public:
     NaPetriCnOutput     cmp;
 
 
-    ///////////////////
-    // Node specific //
-    ///////////////////
-
-    // Set starter hint if needed (true by default)
-    virtual void        set_starter (bool starter = true);
-
-
     ///////////////////////
     // Phases of network //
     ///////////////////////
@@ -63,16 +55,9 @@ public:
     // 5. Verification to be sure all is OK (true)
     virtual bool        verify ();
 
-    // 6. Initialize node activity and setup starter flag if needed
-    virtual void        initialize (bool& starter);
-
     // 8. True action of the node (if activate returned true)
     virtual void        action ();
 
-protected:/* data */
-
-    // Is the node a starter or not? 
-    bool                bStarter;
 };
 
 

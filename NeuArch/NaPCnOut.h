@@ -33,6 +33,14 @@ public:
 
 
     ////////////////
+    //  Specific  //
+    ////////////////
+
+    // Say 'generate initial impulse in network'
+    virtual void	set_starter (const NaVector& rInitial);
+
+
+    ////////////////
     // Overridden //
     ////////////////
 
@@ -74,6 +82,10 @@ protected:/* data */
 
     // Data of the connector
     NaVector            rData;
+
+    // Starter flag and data
+    bool		bStarter;
+    NaVector		rData0;
 
 };
 
