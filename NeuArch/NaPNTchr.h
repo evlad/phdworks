@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNTchr.h */
-/* $Id: NaPNTchr.h,v 1.5 2001-12-11 21:21:14 vlad Exp $ */
+/* $Id: NaPNTchr.h,v 1.6 2001-12-13 12:27:15 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTchrH
 #define NaPNTchrH
@@ -55,7 +55,7 @@ public:
 
     // Set up procedure which will be executed each time the updating
     // will take place
-    virtual void	set_auto_update_proc (void (*proc)(void* data),
+    virtual void	set_auto_update_proc (void (*proc)(int, void*),
 					      void* data);
 
     // Set link with neural net unit to teach it
@@ -103,11 +103,14 @@ protected:/* data */
     int			nAutoUpdateFreq;
 
     // Auto update calling procedure
-    void		(*auProc)(void* pData);
+    void		(*auProc)(int iIter, void* pData);
     void		*pData;
 
     // Number of activations since last update
     int			nLastUpdate;
+
+    // Number of updates
+    int			iUpdateCounter;
 
     // Method of teaching
     NaStdBackProp       *bpe;

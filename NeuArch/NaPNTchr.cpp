@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.7 2001-12-11 21:21:14 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.8 2001-12-13 12:27:15 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -41,7 +41,7 @@ NaPNTeacher::~NaPNTeacher ()
 // Set up procedure which will be executed each time the updating
 // will take place
 void
-NaPNTeacher::set_auto_update_proc (void (*proc)(void* data), void* data)
+NaPNTeacher::set_auto_update_proc (void (*proc)(int, void*), void* data)
 {
   auProc = proc;
   pData = data;
@@ -101,6 +101,7 @@ NaPNTeacher::update_nn ()
     if(NULL != bpe){
         bpe->UpdateNN();
 	nLastUpdate = 0;
+	++iUpdateCounter;
     }
 }
 
@@ -150,6 +151,7 @@ void
 NaPNTeacher::initialize (bool& starter)
 {
     starter = false;
+    iUpdateCounter = 0;
 
     // Assign parameters
     *(NaStdBackPropParams*)bpe = lpar;
@@ -215,12 +217,13 @@ NaPNTeacher::action ()
 
     // Autoupdate facility
     if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
-      NaPrintLog("Automatic update of NN (%d sample)\n", activations());
+      NaPrintLog("Automatic update #%d of NN (%d sample)\n",
+		 iUpdateCounter, activations());
       update_nn();
 
       // Call procedure
       if(NULL != auProc)
-	(*auProc)(pData);
+	(*auProc)(iUpdateCounter, pData);
     }
 }
 
