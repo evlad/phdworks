@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.8 2004-02-22 14:36:16 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.9 2004-02-22 20:43:08 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -128,7 +128,7 @@ NaParams::NaParams (const char* szFileName,
       for(i = 0; i < argc; ++i)
 	{
 	  // parse command line argument
-	  if(!parse_line(buf, name, value))
+	  if(!parse_line(argv[i], name, value))
 	    {
 	      if(NULL == name)
 		// comment line
@@ -309,7 +309,7 @@ bool
 NaParams::parse_line (char* line, char*& name, char*& value)
 {
   // skip leading spaces before name
-  name = buf;
+  name = line;
   while(isspace(*name) && *name != '\0')
     ++name;
   if(*name == '\0' || *name == spec[COMMENT])
