@@ -33,8 +33,9 @@ class NaNNOptimContrLearn
 public:/* methods */
 
     // Create NN-C training control system with stream of given length
-    // in input or with with data files if len=0
-    NaNNOptimContrLearn (int len, NaControllerKind ckind);
+    // in input or with data files if len=0
+    NaNNOptimContrLearn (int len, NaControllerKind ckind,
+			 const char* szNetName = "nncp3pn");
 
     // Destroy the object
     virtual ~NaNNOptimContrLearn ();
@@ -68,8 +69,10 @@ public:/* data */
     // Functional Petri network nodes
     NaPNFileInput   setpnt_inp; // target setpoint series (file)
     NaPNRandomGen   setpnt_gen; // target setpoint generator (stream)
+    NaPNFileOutput  setpnt_out; // target setpoint series output from generator
     NaPNFileInput   noise_inp;  // preset noise series (file)
     NaPNRandomGen   noise_gen;  // preset noise generator (stream)
+    NaPNFileOutput  noise_out;  // preset noise series output from generator
     NaPNCheckPoint  on_y;       // plant (free) + noise (fixed) output
     NaPNFileOutput  nn_y;       // NN plant output
     NaPNCheckPoint  nn_u;       // NN controller output
@@ -92,7 +95,9 @@ public:/* data */
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
     NaPNFetcher     errfetch;   // fetch control error 
-    NaPNLogicalAND  land;        // activate just after delay units are ready
+    NaPNLogicalAND  land;       // activate just after delay units are ready
+    NaPNFileOutput  cerrst_out; // output statistics of control error
+    NaPNFileOutput  iderrst_out;// output statistics of identification error
 
 private:/* data */
 

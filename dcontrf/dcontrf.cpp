@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.7 2001-11-26 20:31:26 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.8 2001-12-13 12:35:20 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -17,6 +17,7 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 1.7 2001-11-26 20:31:26 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -33,6 +34,101 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 1.7 2001-11-26 20:31:26 vlad Exp $";
 #include <kbdif.h>
 
 #include "NaNNOCL.h"
+
+
+//---------------------------------------------------------------------------
+NaReal	fPrevMSEc = 0.0, fPrevMSEi = 0.0;
+
+void
+PrintLog (int iAct, void* pData)
+{
+  NaNNOptimContrLearn	&nnocl = *(NaNNOptimContrLearn*)pData;
+
+  printf("%4d: Control MSE=%7.4f delta=%+9.7f"\
+	 "  Ident.MSE=%7.4f delta=%+9.7f\n", iAct,
+	 nnocl.cerrstat.RMS[0], nnocl.cerrstat.RMS[0] - fPrevMSEc,
+	 nnocl.iderrstat.RMS[0], nnocl.iderrstat.RMS[0] - fPrevMSEi);
+
+  fPrevMSEc = nnocl.cerrstat.RMS[0];
+  fPrevMSEi = nnocl.iderrstat.RMS[0];
+}
+
+
+//---------------------------------------------------------------------------
+void
+ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
+{
+  char	*token;
+
+  for(token = strtok(parvalue, ";");
+      NULL != token;
+      token = strtok(NULL, ";"))
+    {
+      int	sign;
+      char	*stend;
+
+      char	*stname = token;
+
+      // skip leading spaces
+      while(*stname != '\0')
+	{
+	  if(!isspace(*stname))
+	    break;
+	  ++stname;
+	}
+
+      stend = stname;
+
+      // find end of statistics name
+      while(*stend != '\0')
+	{
+	  if(!isalpha(*stend))
+	    break;
+	  ++stend;
+	}
+
+      char	*op = stend;
+
+      // skip leading spaces
+      while(*op != '\0')
+	{
+	  if(!isspace(*op))
+	    break;
+	  ++op;
+	}
+
+      switch(*op)
+	{
+	case '<':
+	  sign = LESS_THAN;
+	  break;
+	case '=':
+	  sign = EQUAL_TO;
+	  break;
+	case '>':
+	  sign = GREATER_THAN;
+	  break;
+	default:
+	  // skip 
+	  NaPrintLog("Unknown condition operator '%c' -> skip token '%s'\n",
+		     *op, token);
+	  continue;
+	}
+
+      *stend = '\0';
+
+      int	stat_id = NaStatTextToId(stname);
+      NaReal	value = atof(1 + op);
+
+      NaPrintLog("Halt rule is: %s %c %g\n",
+		 NaStatIdToText(stat_id),
+		 (sign < 0)?'<':((sign > 0)?'>':'='),
+		 value);
+
+      pnstat.halt_condition(stat_id, sign, value);
+    }
+}
+
 
 //---------------------------------------------------------------------------
 #pragma argsused
@@ -131,16 +227,6 @@ int main(int argc, char **argv)
     else if(!strcmp(par("nnc_mode"), "e+e+..."))
       ckind = NaNeuralContrDelayedE;
 
-    // Additional log files
-    NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
-
-    nnllog->SetTitle("NN controller preliminary learning (error)");
-
-    nnllog->SetVarName(0, "Mean");
-    nnllog->SetVarName(1, "StdDev");
-    nnllog->SetVarName(2, "MSE");
-    nnllog->SetVarName(3, "MSE(Identif)");
-
     // Load input data
     int	len;
     switch(inp_data_mode)
@@ -155,7 +241,7 @@ int main(int argc, char **argv)
 	break;
       }
 
-    NaNNOptimContrLearn     nnocl(len, ckind);
+    NaNNOptimContrLearn     nnocl(len, ckind, "nncfl");
 
     // Configure nodes
     nnocl.nncontr.set_transfer_func(&au_nnc);
@@ -166,6 +252,30 @@ int main(int argc, char **argv)
 
     nnocl.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
     nnocl.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
+
+    /* Equalize delay to provide synchronous start of delay_u and
+       delay_y nodes */
+    unsigned	iDelay_u = nnocl.delay_u.get_max_delay();
+    unsigned	iDelay_y = nnocl.delay_y.get_max_delay();
+    if(iDelay_u < iDelay_y)
+      {
+	iDelay_u = iDelay_y - iDelay_u;
+	iDelay_y = 0;
+      }
+    else if(iDelay_u > iDelay_y)
+      {
+	iDelay_y = iDelay_u - iDelay_y;
+	iDelay_u = 0;
+      }
+    else /* if(iDelay_u == iDelay_y) */
+      {
+	iDelay_y = 0;
+	iDelay_u = 0;
+      }
+
+    // Provide equalization
+    nnocl.delay_y.add_delay(iDelay_y);
+    nnocl.delay_u.add_delay(iDelay_u);
 
     nnocl.errfetch.set_output(0);	/* u[0] - actual controller force */
 
@@ -180,12 +290,27 @@ int main(int argc, char **argv)
 
 	nnocl.noise_gen.set_generator_func(&noise_tf);
 	nnocl.noise_gen.set_gauss_distrib(&fMean, &fStdDev);
+
+	nnocl.setpnt_out.set_output_filename(par("out_r"));
+	printf("Writing reference signal to '%s' file.\n", par("out_r"));
+
+	nnocl.noise_out.set_output_filename(par("out_n"));
+	printf("Writing pure noise signal to '%s' file.\n", par("out_n"));
 	break;
+
       case file_mode:
 	nnocl.setpnt_inp.set_input_filename(par("in_r"));
 	nnocl.noise_inp.set_input_filename(par("in_n"));
 	break;
       }
+
+    nnocl.cerrst_out.set_output_filename(par("cerr_trace_file"));
+    printf("Writing control error statistics to '%s' file.\n",
+	   par("cerr_trace_file"));
+
+    nnocl.iderrst_out.set_output_filename(par("iderr_trace_file"));
+    printf("Writing identification error statistics to '%s' file.\n",
+	   par("iderr_trace_file"));
 
     nnocl.nn_u.set_output_filename(par("out_u"));
     printf("Writing NNC control force to '%s' file.\n", par("out_u"));
@@ -246,6 +371,16 @@ int main(int argc, char **argv)
 	// Set autoupdate facility
 	auf = atoi(par("nnc_auf"));
 	nnocl.nnteacher.set_auto_update_freq(auf);
+	nnocl.cerrstat.set_floating_gap(auf);
+	nnocl.iderrstat.set_floating_gap(auf);
+
+	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
+	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
+	//nnocl.cerrstat.halt_condition(NaSI_ABSMEAN, GREATER_THAN, 1.0);
+	//nnocl.iderrstat.halt_condition(NaSI_RMS, GREATER_THAN, 5.0);
+
+	nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
+
 	NaPrintLog("Autoupdate frequency is %d\n", auf);
 
 	pnev = nnocl.run_net();
@@ -269,18 +404,7 @@ int main(int argc, char **argv)
 	  if(pneError == pnev)
 	    break;
 
-	  nnocl.iderrstat.print_stat();
-	  nnocl.cerrstat.print_stat();
-
-	  nnllog->AppendRecord();
-	  nnllog->SetValue(nnocl.cerrstat.Mean[0], 0);
-	  nnllog->SetValue(nnocl.cerrstat.StdDev[0], 1);
-	  nnllog->SetValue(nnocl.cerrstat.RMS[0], 2);
-	  nnllog->SetValue(nnocl.iderrstat.RMS[0], 3);
-
-	  printf("Iteration %-4d, MSE=%g  delta=%-g\n",
-		 iIter, nnocl.cerrstat.RMS[0],
-		 nnocl.cerrstat.RMS[0] - fPrevMSE);
+	  PrintLog(iIter, &nnocl);
 
 	  if(fPrevMSE != 0.0 && fPrevMSE < nnocl.cerrstat.RMS[0]){
 	    if(nSkipped < nSkipGrowErr && nNumGrowErr > 0){
@@ -342,8 +466,6 @@ int main(int argc, char **argv)
       NaPrintLog("unknown reason.\n");
       break;
     }
-
-    delete nnllog;
 
     nncfile.SaveToFile(par("out_nnc_file"));
   }

@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.4 2001-11-26 20:31:26 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.5 2001-12-13 12:35:20 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -13,13 +13,16 @@ static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.4 2001-11-26 20:31:26 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Create NN-C training control system with stream of given length
-// in input or with with data files if len=0
-NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind)
-  : net("nncp3pn"), nSeriesLen(len), eContrKind(ckind),
+// in input or with data files if len=0
+NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
+					  const char* szNetName)
+  : net(szNetName), nSeriesLen(len), eContrKind(ckind),
     setpnt_inp("setpnt_inp"),
     setpnt_gen("setpnt_gen"),
+    setpnt_out("setpnt_out"),
     noise_inp("noise_inp"),
     noise_gen("noise_gen"),
+    noise_out("noise_out"),
     on_y("on_y"),
     nn_y("nn_y"),
     nn_u("nn_u"),
@@ -41,7 +44,9 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind)
     trig_e("trig_e"),
     delay_u("delay_u"),
     delay_y("delay_y"),
-    errfetch("errfetch")
+    errfetch("errfetch"),
+    cerrst_out("cerrst_out"),
+    iderrst_out("iderrst_out")
 {
   // Nothing to do
 }
@@ -77,6 +82,7 @@ NaNNOptimContrLearn::link_net ()
 	  net.link(&setpnt_inp.out, &cerrcomp.main);
 	}else{
 	  net.link(&setpnt_gen.y, &bus_c.in1);
+	  net.link(&setpnt_gen.y, &setpnt_out.in);
 	  net.link(&setpnt_gen.y, &cerrcomp.main);
 	}
 	net.link(&cerrcomp.cmp, &bus_c.in2);
@@ -85,16 +91,20 @@ NaNNOptimContrLearn::link_net ()
       case NaNeuralContrDelayedE:
 	if(0 == nSeriesLen)
 	  net.link(&setpnt_inp.out, &cerrcomp.main);
-	else
+	else{
+	  net.link(&setpnt_gen.y, &setpnt_out.in);
 	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	}
 	net.link(&cerrcomp.cmp, &delay_c.in);
 	net.link(&delay_c.dout, &nncontr.x);
 	break;
       case NaNeuralContrEdE:
 	if(0 == nSeriesLen)
 	  net.link(&setpnt_inp.out, &cerrcomp.main);
-	else
+	else{
+	  net.link(&setpnt_gen.y, &setpnt_out.in);
 	  net.link(&setpnt_gen.y, &cerrcomp.main);
+	}
 	net.link(&cerrcomp.cmp, &bus_c.in1);
 	net.link(&cerrcomp.cmp, &delta_e.x);
 	net.link(&delta_e.dx, &bus_c.in2);
@@ -108,8 +118,10 @@ NaNNOptimContrLearn::link_net ()
     net.link(&plant.y, &sum_on.main);
     if(0 == nSeriesLen)
       net.link(&noise_inp.out, &sum_on.aux);
-    else
+    else{
+      net.link(&noise_gen.y, &noise_out.in);
       net.link(&noise_gen.y, &sum_on.aux);
+    }
     net.link(&sum_on.sum, &on_y.in);
 
     net.link(&delay_u.dout, &bus_p.in1);
@@ -141,6 +153,9 @@ NaNNOptimContrLearn::link_net ()
     net.link(&on_y.out, &cerrcomp.aux);
     net.link(&cerrcomp.cmp, &cerrstat.signal);
 
+    net.link(&cerrstat.stat, &cerrst_out.in);
+    net.link(&iderrstat.stat, &iderrst_out.in);
+
   }catch(NaException ex){
     NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
   }
@@ -167,7 +182,7 @@ NaNNOptimContrLearn::run_net ()
 			: (NaPetriNode*)&setpnt_gen);
 
    // Prepare petri net engine
-    if(!net.prepare(true)){
+    if(!net.prepare()){
       NaPrintLog("IMPORTANT: verification is failed!\n");
     }
     else{
