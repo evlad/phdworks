@@ -1,5 +1,5 @@
 /* dmse.cpp */
-static char rcsid[] = "$Id: dmse.cpp,v 1.1 2001-04-01 19:40:16 vlad Exp $";
+static char rcsid[] = "$Id: dmse.cpp,v 1.2 2001-04-21 09:55:44 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -37,6 +37,10 @@ main (int argc, char* argv[])
   try{
     NaDataFile	*dfSignal = OpenInputDataFile(signal_file);
     NaDataFile	*dfObserved = OpenInputDataFile(observed_file);
+
+    if(NULL == dfSignal || NULL == dfObserved)
+      throw(na_cant_open_file);
+
     NaReal	fMSE = 0.;
     unsigned	nSamples = 0;
 
