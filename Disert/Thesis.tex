@@ -1,4 +1,4 @@
-% $Id: Thesis.tex,v 1.10 2002-02-28 21:12:10 vlad Exp $
+% $Id: Thesis.tex,v 1.11 2002-03-26 21:02:41 vlad Exp $
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Главный файл
 %\documentclass[12pt,a4paper,draft]{report}
@@ -21,8 +21,9 @@
 \language=6 %iso88595
 
 % My macros
+\newcommand\tablref[1]{\cyrt\cyra\cyrb\cyrl.~\ref{#1}}
 \newcommand\figref[1]{\cyrr\cyri\cyrs.~\ref{#1}}
-\newcommand\pgref[1]{\cyrs\cyrt\cyrr.~\pageref{#1}}
+\newcommand\pgref[1]{\cyrs.~\pageref{#1}}
 %\newcommand\eqref[1]{(\ref{#1})}
 
 \renewcommand{\tan}{\mathop{\rm tg}}
@@ -33,6 +34,8 @@
 \newcommand{\hatMSE}{\overline{\hat{\varepsilon}^2}}
 \newcommand{\MSEmin}{\overline{\varepsilon^2}_{\rm min}}
 \newcommand{\dt}{\Delta t}
+\newcommand{\NN}{\mathcal{N}}
+\newcommand{\Emax}{|e|_{max}}
 
 % Activation function
 \newcommand{\fa}{\phi}
@@ -57,11 +60,11 @@
 {\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
 
 % Выводы
-\makeatletter
-\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
-\newcommand{\conclusion}[1]{\section*{#1}%
-\addcontentsline{toc}{conclusion}{#1}}
-\makeatother
+%\makeatletter
+%\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
+%\newcommand{\conclusion}[1]{\section*{#1}%
+%\addcontentsline{toc}{conclusion}{#1}}
+%\makeatother
 
 \input{RusDoc.tex}
 \input{RusStyle.tex}
@@ -95,7 +98,7 @@
 % \input{Part1.tex}
 
 % Глава 2 - Стохастическое оптимальное управление
-\part{Стохастическое квазиоптимальное управление}
+\part{Нейросетевое оптимальное управление}
 \input{Part2.tex}
 
 % Глава 3 - Адаптивное управление
@@ -111,10 +114,12 @@
 \bibliography{Bibliogr}
 
 % Приложения
-%\appendix
+\appendix
 
 % Приложение 1 - Эксперименты
-% \chapter{Эксперименты }
+\section{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+         оптимальными регуляторами}
+\input{Appendix1.tex}
 
 %\chapter{Вывод кинематических уравнений движения маяка в поле
 %         зрения видеокамеры мобильного робота}
