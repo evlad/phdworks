@@ -1,0 +1,20 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Transfer input to output if turn is true (>0) and skip it else
+# File: <NaPNTrig.h>  Class: NaPNTrigger  Parent: NaPetriNode
+# Inputs: in(m) turn  Outputs: out(m)
+1200 2
+6 450 450 810 810
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 810 450 810 810 450 810 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 3
+	 810 630 720 630 540 540
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 540 630 450 630
+-6

@@ -1,0 +1,19 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Neural net teacher for NaNNUnit synchronized with its node
+# File: <NaPNTchr.h>  Class: NaPNTeacher  Parent: NaPetriNode
+# Inputs: nnout desout errout  Outputs: errinp
+1200 2
+6 450 450 990 990
+6 450 450 990 990
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 990 450 990 990 450 990 450 450
+4 1 0 50 0 4 14 0.0000 0 165 435 720 810 NNT\001
+-6
+-6

@@ -1,0 +1,20 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Maps some values from vector input to vector output
+# File: <NaPNFetc.h>  Class: NaPNFetcher  Parent: NaPetriNode
+# Inputs: in(m)  Outputs: out(m)
+1200 2
+6 450 450 810 990
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 810 450 810 990 450 990 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 810 540 450 720
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 810 900 450 720
+-6

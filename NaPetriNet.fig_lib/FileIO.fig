@@ -1,0 +1,23 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Provides file input/output operations
+# File: <NaPNFIn.h>  Class: NaPNFileInput  Parent: NaPetriNode
+# Inputs: -  Outputs: out(m)
+# File: <NaPNFOut.h>  Class: NaPNFileOutput  Parent: NaPetriNode
+# Inputs: in(m)  Outputs: -
+1200 2
+6 450 360 990 1170
+5 1 0 1 0 7 50 0 -1 0.000 0 0 0 0 720.000 630.000 990 990 720 1080 450 990
+5 1 0 1 0 7 50 0 -1 0.000 0 1 0 0 720.000 180.000 450 540 720 630 990 540
+5 1 0 1 0 7 50 0 -1 0.000 0 1 0 0 720.000 900.000 990 540 720 450 450 540
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 450 540 450 990
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 990 540 990 990
+-6

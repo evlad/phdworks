@@ -1,0 +1,19 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Computes sum of two inputs
+# File: <NaPNSum.h>  Class: NaPNSum  Parent: NaPetriNode
+# Inputs: main(m) aux  Outputs: sum
+1200 2
+6 450 450 810 810
+1 3 0 1 0 7 50 0 -1 0.000 1 0.0000 630 630 180 180 630 630 630 450
+2 1 0 2 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 495 630 765 630
+2 1 0 2 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 630 495 630 765
+-6

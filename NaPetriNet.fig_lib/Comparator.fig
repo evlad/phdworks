@@ -1,0 +1,22 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Compares main and aux inputs to produce main-aux output
+# File: <NaPNCmp.h>  Class: NaPNComparator  Parent: NaPetriNode
+# Inputs: main(m) aux  Outputs: out(m)
+1200 2
+6 450 405 810 810
+5 1 0 1 0 7 50 0 0 0.000 0 0 0 0 630.000 675.000 495 495 630 450 765 495
+1 3 0 1 0 7 50 0 -1 0.000 1 0.0000 630 630 180 180 630 630 630 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 495 495 765 765
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 765 495 495 765
+2 3 0 1 0 7 50 0 0 0.000 0 0 -1 0 0 4
+	 630 630 495 495 765 495 630 630
+-6

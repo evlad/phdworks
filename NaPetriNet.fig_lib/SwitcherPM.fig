@@ -1,0 +1,22 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Puts in1 to out if turn is true (>0) and in2 otherwise
+# File: <NaPNSwit.h>  Class: NaPNSwitcher  Parent: NaPetriNode
+# Inputs: in1(m) in2 turn  Outputs: out
+1200 2
+6 450 450 810 1170
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 810 450 810 1170 450 1170 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 3
+	 450 630 630 810 810 810
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 450 990 630 810
+4 0 0 50 0 4 8 0.0000 0 90 150 540 630 +1\001
+4 0 0 50 0 4 8 0.0000 0 90 165 540 1080 -1\001
+-6

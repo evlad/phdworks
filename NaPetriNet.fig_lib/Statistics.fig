@@ -1,0 +1,17 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Computes statistics for vector signal (mean, std.dev, rms, min, max)
+# File: <NaPNStat.h>  Class: NaPNStatistics  Parent: NaPetriNode
+# Inputs: signal(m)  Outputs: -
+1200 2
+6 450 360 810 720
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 360 810 360 810 720 450 720 450 360
+4 1 0 50 0 4 14 0.0000 0 165 135 630 630 S\001
+-6

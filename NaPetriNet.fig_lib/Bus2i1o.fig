@@ -1,0 +1,22 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Bus for 2 inputs and 1 output
+# File: <NaPNBu21.h>  Class: NaPNBus2i1o  Parent: NaPetriNode
+# Inputs: in1(m) in2  Outputs: out(m)
+1200 2
+6 450 450 810 1170
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 810 450 810 1170 450 1170 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 450 540 810 720
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 450 1080 810 900
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 3
+	 450 900 630 810 450 720
+-6

@@ -1,0 +1,43 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Provides queue input/output operations
+# File: <NaPNQIn.h>  Class: NaPNQueueInput  Parent: NaPetriNode
+# Inputs: -  Outputs: out(m)
+# File: <NaPNQOut.h>  Class: NaPNQueueOutput  Parent: NaPetriNode
+# Inputs: in(m)  Outputs: -
+1200 2
+0 32 #444444
+0 33 #8e8f8e
+0 34 #444444
+0 35 #8e8f8e
+0 36 #444444
+0 37 #8e8f8e
+0 38 #444444
+0 39 #8e8f8e
+0 40 #444444
+0 41 #8e8f8e
+0 42 #444444
+0 43 #8e8f8e
+0 44 #444444
+0 45 #8e8f8e
+0 46 #444444
+0 47 #8e8f8e
+0 48 #444444
+0 49 #8e8f8e
+6 450 450 990 810
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 990 450 990 810 450 810 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 540 450 540 810
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 495 450 495 810
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 585 450 585 810
+4 1 0 50 0 4 14 0.0000 0 165 165 765 720 Q\001
+-6

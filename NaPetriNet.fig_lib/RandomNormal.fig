@@ -1,0 +1,23 @@
+#FIG 3.2
+Landscape
+Center
+Metric
+Letter  
+100.00
+Single
+-2
+# Vector random series generator in rdGaussNormal mode
+# File: <NaPNRand.h>  Class: NaPNRandomGen  Parent: NaPNGenerator
+# Inputs: time  Outputs: y(m)
+1200 2
+6 450 450 810 810
+2 2 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 5
+	 450 450 810 450 810 810 450 810 450 450
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 495 765 765 765
+2 1 0 1 0 7 50 0 -1 0.000 0 0 -1 0 0 2
+	 630 765 630 495
+3 2 0 1 0 7 50 0 -1 0.000 0 0 0 5
+	 495 720 585 675 630 540 675 675 765 720
+	 0.000 -1.000 -1.000 -1.000 0.000
+-6
