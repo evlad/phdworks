@@ -1,0 +1,55 @@
+# dcontrf parameters
+# $Id: dcontrf.par,v 1.1 2001-04-29 08:36:41 vlad Exp $
+
+########################################
+# Mode of the modeling
+input_kind = stream
+#input_kind = file
+
+# (input_kind = stream) Length of series
+stream_len = 5000
+
+# (input_kind = stream) Auto update frequency
+nnc_auf = 100
+
+# Linear plant transfer function
+linplant_tf = plant.tf
+
+# (input_kind = stream) Input transfer functions
+refer_tf = refer.tf
+noise_tf = noise.tf
+
+# (input_kind = file) Input files
+in_r = r.dat
+in_n = n.dat
+
+# (input_kind = stream) Output files
+out_r = r_out.dat
+out_n = n_out.dat
+
+# Output files
+out_u = u.dat
+out_e = e.dat
+out_y = y.dat
+out_nn_y = nn_y.dat
+out_ny = ny.dat
+
+# Neural net files
+in_nnp_file = nnp.nn
+in_nnc_file = nnc.nn
+out_nnc_file = nnc_res.nn
+
+# Tracking learning process:
+# LearnME LearnSDE LearnMSE TestME TestSDE TestMSE NormLearnMSE NormTestMSE
+trace_file = nnc_trace.dat
+
+# Stop learning if...
+#finish_decrease=0.0001
+finish_on_value=0.001
+finish_on_grow=20
+finish_max_epoch=400
+
+# Learning algorithm setup
+eta = 0.01
+eta_output = 0.001
+alpha = 0.0
