@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.3 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -218,8 +218,8 @@ main (int argc, char* argv[])
     for(i = 0; i < sizeof(names); ++i)
       printf("name='%s' -> value='%s'\n", names[i], par(names[i]));
   }
-  catch(NaException& ex){
-    NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+  catch(NaException& exCode){
+    NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(exCode));
   }
 
   return 0;

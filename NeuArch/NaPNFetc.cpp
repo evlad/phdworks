@@ -1,5 +1,5 @@
 /* NaPNFetc.cpp */
-static char rcsid[] = "$Id: NaPNFetc.cpp,v 1.4 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNFetc.cpp,v 1.5 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNFetc.h"
@@ -40,7 +40,7 @@ NaPNFetcher::set_output (unsigned iPos, int nDim)
     piOutMap = NULL;
   else
     {
-      unsigned	i;
+      int	i;
       piOutMap = new unsigned[nOutDim];
       for(i = 0; i < nOutDim; ++i)
 	piOutMap[i] = iPos + i;
@@ -64,7 +64,7 @@ NaPNFetcher::set_output (int nDim, unsigned* piMap)
     throw(na_null_pointer);
   else
     {
-      unsigned	i;
+      int	i;
       piOutMap = new unsigned[nOutDim];
       for(i = 0; i < nOutDim; ++i)
 	piOutMap[i] = piMap[i];
@@ -99,7 +99,8 @@ NaPNFetcher::verify ()
     return false;
   }
 
-  unsigned	i, iMaxPos = 0;
+  int		i;
+  unsigned	iMaxPos = 0;
   for(i = 0; i < nOutDim; ++i){
     if(iMaxPos < piOutMap[i])
       iMaxPos = piOutMap[i];
@@ -119,7 +120,7 @@ NaPNFetcher::verify ()
 void
 NaPNFetcher::action ()
 {
-  unsigned	i;
+  int	i;
   for(i = 0; i < nOutDim; ++i){
     out.data()[i] = in.data()[piOutMap[i]];
   }

@@ -1,5 +1,5 @@
 /* NaPNKalm.cpp */
-static char rcsid[] = "$Id: NaPNKalm.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNKalm.cpp,v 1.3 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -346,7 +346,7 @@ NaPNKalman::action ()
     P_extra = P_next;
 
     if(dfK || dfP_tilde){
-        int	i, j;
+        unsigned	i, j;
         dfK->AppendRecord();
 
 	for(i = 0; i < K.dim_rows(); ++i){

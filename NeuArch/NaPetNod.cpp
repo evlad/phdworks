@@ -1,5 +1,5 @@
 /* NaPetNod.cpp */
-static char rcsid[] = "$Id: NaPetNod.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNod.cpp,v 1.3 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaStrOps.h"
 #include "NaPetNod.h"
@@ -97,7 +97,7 @@ void
 NaPetriNode::check_tunable ()
 {
     if(!tunable())
-        throw na_not_tunable;
+        throw(na_not_tunable);
 }
 
 

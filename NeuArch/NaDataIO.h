@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaDataIO.h */
-/* $Id: NaDataIO.h,v 1.3 2001-05-19 21:19:08 vlad Exp $ */
+/* $Id: NaDataIO.h,v 1.4 2001-05-22 18:18:42 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaDataIOH
 #define NaDataIOH
@@ -151,9 +151,9 @@ protected:
 };
 
 #include <NaTextIO.h>
-#ifndef unix
+#if defined(WIN32)
 #include <NaStaIO.h>
-#endif /* unix */
+#endif /* WIN32 */
 #include <NaPlotIO.h>
 #include <NaBinrIO.h>
 

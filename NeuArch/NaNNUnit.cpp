@@ -1,5 +1,5 @@
 /* NaNNUnit.cpp */
-static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.3 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -470,6 +470,9 @@ NaNNUnit::Neurons (unsigned iLayer) const
         return descr.nOutNeurons;
 
     throw(na_out_of_range);
+
+    /* make compiler happy */
+    return 0;
 }
 
 
@@ -484,6 +487,9 @@ NaNNUnit::Inputs (unsigned iLayer) const
         return descr.nHidNeurons[iLayer - 1];
 
     throw(na_out_of_range);
+
+    /* make compiler happy */
+    return 0;
 }
 
 

@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.5 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.6 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"
@@ -57,7 +57,7 @@ NaPNTeacher::set_nn (NaNNUnit* pNN)
     check_tunable();
 
     if(NULL == pNN)
-        throw na_null_pointer;
+        throw(na_null_pointer);
 
     nn = pNN;
 
@@ -67,7 +67,7 @@ NaPNTeacher::set_nn (NaNNUnit* pNN)
     bpe = new NaStdBackProp(*nn);
     //qprop: bpe = new NaQuickProp(*nn);
     if(NULL == bpe)
-        throw na_bad_alloc;
+        throw(na_bad_alloc);
 }
 
 

@@ -1,5 +1,5 @@
 /* NaDataIO.cpp */
-static char rcsid[] = "$Id: NaDataIO.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
+static char rcsid[] = "$Id: NaDataIO.cpp,v 1.4 2001-05-22 18:18:42 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <string.h>
 
@@ -36,7 +36,7 @@ NaDataFile::~NaDataFile ()
 // Return number of records in the file
 long    NaDataFile::CountOfRecord ()
 {
-    long    n;
+    long    n = 0;
     switch(eFileMode){
     case fmReadOnly:
         n = 0;

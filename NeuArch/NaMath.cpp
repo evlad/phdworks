@@ -1,10 +1,11 @@
 /* NaMath.cpp */
-static char rcsid[] = "$Id: NaMath.cpp,v 1.3 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaMath.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "NaMath.h"

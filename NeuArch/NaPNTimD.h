@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNTimD.h */
-/* $Id: NaPNTimD.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNTimD.h,v 1.3 2001-05-22 18:18:43 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTimDH
 #define NaPNTimDH
@@ -65,6 +65,14 @@ public:
 
     // 5. Verification to be sure all is OK (true)
     virtual bool        verify ();
+
+    // 8. True action of the node (if activate returned true)
+    virtual void        action ();
+
+protected:
+
+  // Current time
+  NaReal		fCurTime;
 
 };
 

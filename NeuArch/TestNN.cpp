@@ -1,5 +1,5 @@
 /* TestNN.cpp */
-static char rcsid[] = "$Id: TestNN.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
+static char rcsid[] = "$Id: TestNN.cpp,v 1.3 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaNNUnit.h"
@@ -27,8 +27,8 @@ main (int argc, char* argv[])
 
     au_nn.descr.PrintLog();
   }
-  catch(NaException& ex){
-    NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+  catch(NaException& exCode){
+    NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(exCode));
   }
 
   return 0;

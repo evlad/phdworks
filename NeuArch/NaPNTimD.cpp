@@ -1,6 +1,8 @@
 /* NaPNTimD.cpp */
-static char rcsid[] = "$Id: NaPNTimD.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPNTimD.cpp,v 1.3 2001-05-22 18:18:43 vlad Exp $";
 //---------------------------------------------------------------------------
+
+#include <string.h>
 
 #include "NaPNTimD.h"
 #include "NaPNTime.h"
@@ -82,7 +84,7 @@ NaPNTimeDepend::GoNextTime ()
 NaReal
 NaPNTimeDepend::CurrentTime () const
 {
-    return time.data()(0);
+    return fCurTime;
 }
 
 
@@ -113,6 +115,15 @@ NaPNTimeDepend::verify ()
         return false;
     }
     return 1 == time.data().dim();
+}
+
+
+//---------------------------------------------------------------------------
+// 8. True action of the node (if activate returned true)
+void
+NaPNTimeDepend::action ()
+{
+  fCurTime = time.data()(0);
 }
 
 

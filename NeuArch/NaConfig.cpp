@@ -1,5 +1,5 @@
 /* NaConfig.cpp */
-static char rcsid[] = "$Id: NaConfig.cpp,v 1.3 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaConfig.cpp,v 1.4 2001-05-22 18:18:42 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -148,7 +148,7 @@ void
 NaConfigPart::SetInstance (const char* szInstance)
 {
     if(NULL == szInstance){
-        delete[] szInstance;
+        delete[] szInstanceName;
         szInstanceName = NULL;
     }
     else{
@@ -729,7 +729,9 @@ NaConfigFile::GetData ()
     }while(eLineKind != clkEOF);
 
     throw(na_end_of_file);
+
+    /* make compiler happy */
+    return NULL;
 }
 
 //---------------------------------------------------------------------------
-

@@ -1,10 +1,11 @@
 /* NaConLaw.cpp */
-static char rcsid[] = "$Id: NaConLaw.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaConLaw.cpp,v 1.3 2001-05-22 18:18:42 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "NaMath.h"
 #include "NaLogFil.h"
 #include "NaConLaw.h"
 
@@ -339,11 +340,11 @@ void    NaControlLaw::Reset ()
             dataio->GoStartRecord();
             prev_index = 0;
         }
-        catch(NaException e){
+        catch(NaException exCode){
             // Handle file exceptions
             dataio = NULL;
             NaPrintLog("..can't open file \"%s\": exception code %d\n",
-                       filepath, e);
+                       filepath, -1);
         }
         break;
     }
