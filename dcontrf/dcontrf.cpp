@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 1.4 2001-06-19 15:44:27 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 1.5 2001-06-19 20:44:33 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -111,6 +111,10 @@ int main(int argc, char **argv)
     nnpfile.AddPartitions(NaNUMBER(conf_list_nnp), conf_list_nnp);
     nnpfile.LoadFromFile(par("in_nnp_file"));
 
+    // Get NNP delays
+    unsigned	*input_delays = au_nnp.descr.InputDelays();
+    unsigned	*output_delays = au_nnp.descr.OutputDelays();
+
     // Interpret NN-C structure
     NaControllerKind	ckind;
     // Default rule
@@ -159,6 +163,11 @@ int main(int argc, char **argv)
     nnocl.nnplant.set_transfer_func(&au_nnp);
     nnocl.errbackprop.set_nn(&au_nnp);
 
+    nnocl.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
+    nnocl.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
+
+    nnocl.errfetch.set_output(0);	/* u[0] - actual controller force */
+
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
 
@@ -199,9 +208,6 @@ int main(int argc, char **argv)
 	nnocl.delay_c.set_sleep_value(0.0);
 	break;
       }
-
-    nnocl.delay.set_delay(au_nnp.descr.nOutputsRepeat - 1);
-    nnocl.errfetch.set_output(0);
 
     // Link the network
     nnocl.link_net();

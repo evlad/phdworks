@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.2 2001-06-19 15:44:27 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 1.3 2001-06-19 20:44:33 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -38,9 +38,9 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind)
     cerrcomp("cerrcomp"),
     cerrstat("cerrstat"),
     switch_y("switch_y"),
-    trig_u("trig_u"),
     trig_e("trig_e"),
-    delay("delay"),
+    delay_u("delay_u"),
+    delay_y("delay_y"),
     errfetch("errfetch")
 {
   // Nothing to do
@@ -104,7 +104,6 @@ NaNNOptimContrLearn::link_net ()
 
     net.link(&nncontr.y, &nn_u.in);
     net.link(&nn_u.out, &plant.x);
-    net.link(&nn_u.out, &trig_u.in);
 
     net.link(&plant.y, &sum_on.main);
     if(0 == nSeriesLen)
@@ -113,21 +112,24 @@ NaNNOptimContrLearn::link_net ()
       net.link(&noise_gen.y, &sum_on.aux);
     net.link(&sum_on.sum, &on_y.in);
 
-    net.link(&trig_u.out, &bus_p.in1);
-    net.link(&delay.dout, &bus_p.in2);
+    net.link(&delay_u.dout, &bus_p.in1);
+    net.link(&delay_y.dout, &bus_p.in2);
     net.link(&bus_p.out, &nnplant.x);
 
-    net.link(&on_y.out, &delay.in);
+    net.link(&on_y.out, &delay_y.in);
+    net.link(&nn_u.out, &delay_u.in);
 
-    net.link(&delay.sync, &trig_u.turn);
-    net.link(&delay.sync, &trig_e.turn);
+    net.link(&delay_u.sync, &and.in1);
+    net.link(&delay_y.sync, &and.in2);
+
+    net.link(&and.out, &trig_e.turn);
     net.link(&cerrcomp.cmp, &trig_e.in);
     net.link(&trig_e.out, &errbackprop.errout);
 
     net.link(&errbackprop.errinp, &errfetch.in);
     net.link(&errfetch.out, &nnteacher.errout);
 
-    net.link(&delay.sync, &switch_y.turn);
+    net.link(&and.out, &switch_y.turn);
     net.link(&nnplant.y, &switch_y.in1);
     net.link(&on_y.out, &switch_y.in2);
     net.link(&switch_y.out, &nn_y.in);

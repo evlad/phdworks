@@ -21,6 +21,7 @@
 #include <NaPNChPt.h>
 #include <NaPNFetc.h>
 #include <NaPNDerv.h>
+#include <NaPNLAnd.h>
 
 
 //---------------------------------------------------------------------------
@@ -87,10 +88,11 @@ public:/* data */
     NaPNComparator  cerrcomp;   // control error computer
     NaPNStatistics  cerrstat;   // control error statistics
     NaPNSwitcher    switch_y;   // (nnp,y)->(y_nn) 
-    NaPNTrigger     trig_u;     // pre-bus u delayer
     NaPNTrigger     trig_e;     // pre-teacher e delayer
-    NaPNDelay       delay;      // y -> y(-1), y(-2), ...
+    NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
+    NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
     NaPNFetcher     errfetch;   // fetch control error 
+    NaPNLogicalAND  and;        // activate just after delay units are ready
 
 private:/* data */
 
