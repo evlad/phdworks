@@ -1,5 +1,5 @@
 /* NaMatrix.cpp */
-static char rcsid[] = "$Id: NaMatrix.cpp,v 1.4 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaMatrix.cpp,v 1.5 2001-05-21 20:17:19 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <math.h>
 #include <stdio.h>
@@ -339,6 +339,7 @@ bool        NaMatrix::invalid (unsigned iR, unsigned iC) const
 // Compute determinant of the matrix
 NaReal      NaMatrix::det () const
 {
+#ifdef __matrix_h
     if(dim_rows() != dim_cols()){
         throw(na_size_mismatch);
     }
@@ -356,6 +357,9 @@ NaReal      NaMatrix::det () const
     vDet = mat_det(mat);
     mat_free(mat);
     return vDet;
+#else
+    throw(na_not_implemented);
+#endif/* __matrix_h */
 
 #if 0
     unsigned    i, j, k, n = dim_rows();
@@ -406,6 +410,7 @@ NaReal      NaMatrix::det () const
 // Compute inverse matrix
 NaMatrix&   NaMatrix::inv (NaMatrix& mInv) const
 {
+#ifdef __matrix_h
     if(dim_rows() != dim_cols()){
         throw(na_size_mismatch);
     }
@@ -445,6 +450,9 @@ NaMatrix&   NaMatrix::inv (NaMatrix& mInv) const
 #endif
 
     return mInv;
+#else
+    throw(na_not_implemented);
+#endif /* __matrix_h */
 }
 
 //---------------------------------------------------------------------------
