@@ -1,5 +1,5 @@
 /* NaPCnInp.cpp */
-static char rcsid[] = "$Id: NaPCnInp.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id: NaPCnInp.cpp,v 1.3 2001-12-23 21:41:00 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaExcept.h"
@@ -95,6 +95,8 @@ NaPetriCnInput::commit_data ()
     if(links() > 0){
         idData = adjoint()->idData;     // Mark own data as old
         ++adjoint()->nPrCnt;            // One more processed connector
+
+	NaPetriConnector::commit_data();
     }
 }
 

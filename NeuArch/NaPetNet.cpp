@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.12 2001-12-03 21:20:53 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.13 2001-12-23 21:41:00 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -307,6 +307,23 @@ NaPetriNet::prepare (bool bDoPrintouts)
 
     if(bDoPrintouts){
         NaPrintLog("# net '%s', phase #4: allocate resources.\n", name());
+    }
+
+    // Call dim_ready() for each connector
+    for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+        // Need to setup connections
+        int iCn;
+        for(iCn = 0; iCn < pnaNet[iNode]->connectors(); ++iCn){
+	  try{
+            pnaNet[iNode]->connector(iCn)->dim_ready();
+	  }catch(NaException exCode){
+            NaPrintLog("Failure at %s.%s.%s.dim_ready().\n"
+                       "Caused by exception: %s\n",
+		       name(), pnaNet[iNode]->name(),
+		       pnaNet[iNode]->connector(iCn)->name(),
+		       NaExceptionMsg(exCode));
+	  }
+        }
     }
 
     // 4. Allocate resources for internal usage
@@ -701,6 +718,23 @@ NaPetriNet::terminate (bool bDoPrintouts)
             NaPrintLog("Deallocate resources phase (#10): node '%s' fault.\n"
                        "Caused by exception: %s\n",
                        pnaNet[iNode]->name(), NaExceptionMsg(exCode));
+        }
+    }
+
+    // Call final() for each connector
+    for(iNode = 0; iNode < pnaNet.count(); ++iNode){
+        // Need to shutdown connections
+        int iCn;
+        for(iCn = 0; iCn < pnaNet[iNode]->connectors(); ++iCn){
+	  try{
+            pnaNet[iNode]->connector(iCn)->final();
+	  }catch(NaException exCode){
+            NaPrintLog("Failure at %s.%s.%s.final().\n"
+                       "Caused by exception: %s\n",
+		       name(), pnaNet[iNode]->name(),
+		       pnaNet[iNode]->connector(iCn)->name(),
+		       NaExceptionMsg(exCode));
+	  }
         }
     }
 

@@ -1,12 +1,13 @@
 //-*-C++-*-
 /* NaPetCn.h */
-/* $Id: NaPetCn.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPetCn.h,v 1.3 2001-12-23 21:41:00 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetCnH
 #define NaPetCnH
 
 #include <NaDynAr.h>
 #include <NaVector.h>
+#include <NaDataIO.h>
 
 //---------------------------------------------------------------------------
 // Forward declaration
@@ -63,6 +64,12 @@ public:
     // Initialize the connector on the start of network life
     virtual void        init () = 0;
 
+    // Called when dimension is already defined
+    virtual void        dim_ready ();
+
+    // Called at network termination
+    virtual void        final ();
+
     // Return type of the connector
     virtual NaPCnKind   kind () = 0;
 
@@ -73,7 +80,7 @@ public:
     virtual bool        is_waiting () = 0;
 
     // Complete data waiting period (after activate)
-    virtual void        commit_data () = 0;
+    virtual void        commit_data ();
 
     // Link the connector with another one and return true on success
     virtual bool        link (NaPetriConnector* pLinked) = 0;
@@ -94,6 +101,9 @@ protected:/* data */
 
     // Linked connectors
     NaPCnPtrAr          pcaLinked;
+
+    // File for logging all data, passed through the connector
+    NaDataFile          *dfTrace;
 
     // Autoname facility counter
     static int          iCnNumber;

@@ -1,8 +1,13 @@
 /* NaPetCn.cpp */
-static char rcsid[] = "$Id: NaPetCn.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
+static char rcsid[] = "$Id: NaPetCn.cpp,v 1.3 2001-12-23 21:41:00 vlad Exp $";
 //---------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <string.h>
+
 #include "NaStrOps.h"
 #include "NaExcept.h"
+#include "NaPetNet.h"
 #include "NaPetNod.h"
 #include "NaPetCn.h"
 
@@ -15,6 +20,7 @@ int     NaPetriConnector::iCnNumber = 0;
 //---------------------------------------------------------------------------
 // Link to the host node
 NaPetriConnector::NaPetriConnector (NaPetriNode* pHost, const char* szCnName)
+  : dfTrace(NULL)
 {
     if(NULL == pHost)
         throw(na_null_pointer);
@@ -89,6 +95,96 @@ void
 NaPetriConnector::unlink ()
 {
     pcaLinked.clean();
+}
+
+
+//---------------------------------------------------------------------------
+// Called when dimension is already defined
+void
+NaPetriConnector::dim_ready ()
+{
+  // Check for env name with track file
+  const char	*szNetName = host()->net()->name();
+  const char	*szNodeName = host()->name();
+  const char	szPrefix[] = "cn";
+  const char	*szFileName;
+
+  char	*szEnvName = new char[strlen(szPrefix) + 1
+			     + strlen(szNetName) + 1
+			     + strlen(szNodeName) + 1
+			     + strlen(szName) + 1];
+
+  /* The most exact */
+  sprintf(szEnvName, "%s_%s_%s_%s", szPrefix, szNetName, szNodeName, szName);
+  if(NULL != getenv(szEnvName)){
+    szFileName = getenv(szEnvName);
+    goto FILENAME_OK;
+  }
+
+  /* All connectors of the same net */
+  sprintf(szEnvName, "%s_%s_%s", szPrefix, szNetName, szName);
+  if(NULL != getenv(szEnvName)){
+    szFileName = getenv(szEnvName);
+    goto FILENAME_OK;
+  }
+
+  /* Exact connector of the given node (all nets) */
+  sprintf(szEnvName, "%s_%s_%s", szPrefix, szNodeName, szName);
+  if(NULL != getenv(szEnvName)){
+    szFileName = getenv(szEnvName);
+    goto FILENAME_OK;
+  }
+
+  /* Any connector of given name */
+  sprintf(szEnvName, "%s_%s", szPrefix, szName);
+  if(NULL != getenv(szEnvName)){
+    szFileName = getenv(szEnvName);
+    goto FILENAME_OK;
+  }
+
+  delete[] szEnvName;
+
+  /* No env. variables were found */
+  return;
+
+ FILENAME_OK:
+
+  dfTrace = OpenOutputDataFile(szFileName, bdtAuto, data().dim());
+
+  delete[] szEnvName;
+
+  if(NULL == dfTrace)
+    throw(na_cant_open_file);
+}
+
+
+//---------------------------------------------------------------------------
+// Called at network termination
+void
+NaPetriConnector::final ()
+{
+  if(NULL != dfTrace)
+    delete dfTrace;
+
+  dfTrace = NULL;
+}
+
+
+//---------------------------------------------------------------------------
+// Complete data waiting period (after activate)
+void
+NaPetriConnector::commit_data ()
+{
+  if(NULL == dfTrace)
+    return;
+
+  unsigned    i;
+
+  // Write the data passed trough the connector
+  dfTrace->AppendRecord();
+  for(i = 0; i < data().dim(); ++i){
+    dfTrace->SetValue(data()[i], i);
+  }
 }
 
 
