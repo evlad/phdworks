@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNNNUn.h */
-/* $Id: NaPNNNUn.h,v 1.2 2001-12-17 21:16:51 vlad Exp $ */
+/* $Id: NaPNNNUn.h,v 1.3 2001-12-23 14:21:49 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNNNUnH
 #define NaPNNNUnH
@@ -47,7 +47,7 @@ public:
   void		set_transfer_func (NaNNUnit* pNN);
 
   // Request state storage
-  void		need_nn_deck (bool bDeckRequest);
+  void		need_nn_deck (bool bDeckRequest, unsigned nSkipFirst = 0);
 
   // Put actual state of NN to the deck (first-in first-out)
   void		push_nn ();
@@ -79,6 +79,9 @@ protected:/* data */
 
   // 'true' to provide deck and 'false' to decline
   bool			need_deck;
+
+  // number of nn items to skip before starting to store them
+  unsigned		skip_deck, skip_rest;
 
   // First-in first-out structure
   NaDynAr<NaNNUnit>	deck;

@@ -1,5 +1,5 @@
 /* NaPNNNUn.cpp */
-static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.1 2001-12-16 17:23:39 vlad Exp $";
+static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.2 2001-12-23 14:21:49 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNNNUn.h"
@@ -8,7 +8,8 @@ static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.1 2001-12-16 17:23:39 vlad Exp $";
 //---------------------------------------------------------------------------
 // Create node for Petri network
 NaPNNNUnit::NaPNNNUnit (const char* szNodeName)
-  : NaPetriNode(szNodeName), nn(NULL), need_deck(false),
+  : NaPetriNode(szNodeName), nn(NULL),
+    need_deck(false), skip_deck(0), skip_rest(0),
     ////////////////
     // Connectors //
     ////////////////
@@ -60,9 +61,10 @@ NaPNNNUnit::set_transfer_func (NaNNUnit* pNN)
 //---------------------------------------------------------------------------
 // Request state storage
 void
-NaPNNNUnit::need_nn_deck (bool bDeckRequest)
+NaPNNNUnit::need_nn_deck (bool bDeckRequest, unsigned nSkipFirst)
 {
   need_deck = bDeckRequest;
+  skip_deck = nSkipFirst;
 }
 
 
@@ -71,7 +73,14 @@ NaPNNNUnit::need_nn_deck (bool bDeckRequest)
 void
 NaPNNNUnit::push_nn ()
 {
-  deck.addh(*nn);
+  if(skip_rest > 0){
+    --skip_rest;
+  }else{
+    deck.addh(*nn);
+  }
+
+  NaPrintLog("NaPNNNUnit::push_nn(%s.%s, %p) --> %u items stored\n",
+	     net()->name(), name(), this, deck.count());
 }
 
 
@@ -82,6 +91,9 @@ NaPNNNUnit::pop_nn (NaNNUnit& nnunit)
 {
   nnunit = deck(0);
   deck.remove(0);
+
+  NaPrintLog("NaPNNNUnit::pop_nn(%s.%s, %p) --> %u items stored left\n",
+	     net()->name(), name(), this, deck.count());
 }
 
 
@@ -125,6 +137,7 @@ NaPNNNUnit::initialize (bool& starter)
 {
   nn->Reset();
   deck.clean();
+  skip_rest = skip_deck;
 }
 
 
