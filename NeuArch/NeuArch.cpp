@@ -1,5 +1,5 @@
 /* NeuArch.cpp */
-static char rcsid[] = "$Id: NeuArch.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id: NeuArch.cpp,v 1.3 2003-09-05 20:50:03 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <condefs.h>
 #pragma hdrstop
@@ -33,7 +33,6 @@ USEUNIT("NaMath.cpp");
 USEUNIT("NaSysSch.cpp");
 USEUNIT("NaSSPlan.cpp");
 USEUNIT("NaSSCtrl.cpp");
-USEUNIT("NaNNet.cpp");
 USEUNIT("NaTrFunc.cpp");
 //---------------------------------------------------------------------------
 #define Library

@@ -20,7 +20,6 @@ SRCS	=NaConLaw.cpp \
 	NaNNLrn.cpp \
 	NaNNPObj.cpp \
 	NaNNUnit.cpp \
-	NaNNet.cpp \
 	NaPCnInp.cpp \
 	NaPCnOut.cpp \
 	NaPID.cpp \
@@ -100,7 +99,6 @@ OBJS	=NaConLaw.o \
 	NaNNLrn.o \
 	NaNNPObj.o \
 	NaNNUnit.o \
-	NaNNet.o \
 	NaPCnInp.o \
 	NaPCnOut.o \
 	NaPID.o \
