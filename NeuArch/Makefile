@@ -68,6 +68,7 @@ SRCS	=NaConLaw.cpp \
 	NaPNQIn.cpp \
 	NaPNQOut.cpp \
 	NaPNSkip.cpp \
+	NaPNFill.cpp \
 	NaPNNNUn.cpp \
 	kbdif.cpp
 
@@ -143,6 +144,7 @@ OBJS	=NaConLaw.o \
 	NaPNQIn.o \
 	NaPNQOut.o \
 	NaPNSkip.o \
+	NaPNFill.o \
 	NaPNNNUn.o \
 	kbdif.o
 
