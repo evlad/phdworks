@@ -1,3 +1,5 @@
+/* NaCSM.cpp */
+static char rcsid[] = "$Id: NaCSM.cpp,v 1.3 2001-04-22 09:34:09 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -26,7 +28,7 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   noise_inp("noise_inp"),
   noise_gen("noise_gen"),
   chkpnt_n("chkpnt_n"),
-  object("object"),
+  plant("plant"),
   chkpnt_y("chkpnt_y"),
   onsum("onsum"),
   chkpnt_ny("chkpnt_ny"),
@@ -85,7 +87,7 @@ NaControlSystemModel::link_net ()
         net.link_nodes(
                        &controller,
 		       &chkpnt_u,
-                       &object,
+                       &plant,
 		       &chkpnt_y,
 		       &onsum,
                        &chkpnt_ny,
@@ -100,7 +102,7 @@ NaControlSystemModel::link_net ()
         net.link(&chkpnt_n.out, &onsum.aux);
 
         net.link(&chkpnt_r.out, &cmp_e.main);
-        net.link(&object.y, &cmp_e.aux);
+        net.link(&plant.y, &cmp_e.aux);
 
         net.link(&cmp_e.cmp, &statan_e.signal);
         net.link(&chkpnt_r.out, &statan_r.signal);

@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.2 2001-04-21 10:51:24 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.3 2001-04-22 09:34:09 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
     // Applied units
     NaTransFunc		refer_tf;
     NaTransFunc		noise_tf;
-    NaTransFunc		au_linobject;
+    NaTransFunc		au_linplant;
     NaTransFunc		au_lincontr;
     NaNeuralNetDescr	nnc_descr;
     NaNNUnit		au_nnc(nnc_descr);
@@ -102,10 +102,10 @@ int main(int argc, char **argv)
     NaConfigFile        nncfile(";NeuCon NeuralNet", 1, 0);
     nncfile.AddPartitions(NaNUMBER(nnc_conf_list), nnc_conf_list);
 
-    NaConfigPart	*conf_list_linobject[] = { &au_linobject };
-    NaConfigFile	conf_file_linobject(";NeuCon transfer", 1, 0);
-    conf_file_linobject.AddPartitions(NaNUMBER(conf_list_linobject),
-				      conf_list_linobject);
+    NaConfigPart	*conf_list_linplant[] = { &au_linplant };
+    NaConfigFile	conf_file_linplant(";NeuCon transfer", 1, 0);
+    conf_file_linplant.AddPartitions(NaNUMBER(conf_list_linplant),
+				     conf_list_linplant);
 
     NaConfigPart	*conf_list_lincontr[] = { &au_lincontr };
     NaConfigFile	conf_file_lincontr(";NeuCon transfer", 1, 0);
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 				  conf_list_noise);
 
     // Load plant
-    conf_file_linobject.LoadFromFile(par("linobject_tf"));
+    conf_file_linplant.LoadFromFile(par("linplant_tf"));
 
     NaControllerKind	ckind;
 
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
       }
 
     // Plant
-    csm.object.set_transfer_func(&au_linobject);
+    csm.plant.set_transfer_func(&au_linplant);
 
     // Controller
     switch(contr_kind)
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     //csm.onsum.verbose(true);
     //csm.cmp.verbose(true);
     //csm.controller.verbose(true);
-    //csm.object.verbose(true);
+    //csm.plant.verbose(true);
 
     NaPNEvent   pnev = csm.run_net();
 

@@ -15,6 +15,7 @@
 #include <NaPNBu21.h>
 #include <NaPNDely.h>
 #include <NaPNRand.h>
+#include <NaNDescr.h>
 
 
 //---------------------------------------------------------------------------
@@ -68,7 +69,7 @@ public:/* data */
     NaPNFileInput   noise_inp;
     NaPNRandomGen   noise_gen;
     NaPNCheckPoint  chkpnt_n;
-    NaPNTransfer    object;
+    NaPNTransfer    plant;
     NaPNCheckPoint  chkpnt_y;
     NaPNCheckPoint  chkpnt_ny;
     NaPNSum         onsum;
