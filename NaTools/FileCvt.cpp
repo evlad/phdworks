@@ -1,5 +1,5 @@
 /* FileCvt.cpp */
-static char rcsid[] = "$Id: FileCvt.cpp,v 1.3 2001-05-19 21:29:34 vlad Exp $";
+static char rcsid[] = "$Id: FileCvt.cpp,v 1.4 2001-06-12 12:32:21 vlad Exp $";
 
 #include <NaDataIO.h>
 
@@ -12,6 +12,8 @@ int main(int argc, char **argv)
       return 1;
     }
 
+  NaOpenLogFile("FileCvt.log");
+
   NaDataFile	*pInDF = OpenInputDataFile(argv[1]);
 
   bool		bNotEmpty;
@@ -22,14 +24,14 @@ int main(int argc, char **argv)
 
   NaDataFile	*pOutDF = OpenOutputDataFile(argv[2], bdtAuto, nVars);
 
-  printf("Input file '%s':\n"\
-	 " - records:   %d\n"\
-	 " - variables: %d\n"\
-	 "Variable list:\n",
-	 argv[1], pInDF->CountOfRecord(), nVars);
+  NaPrintLog("Input file '%s':\n"\
+	     " - records:   %d\n"\
+	     " - variables: %d\n"\
+	     "Variable list:\n",
+	     argv[1], pInDF->CountOfRecord(), nVars);
 
   for(iVar = 0; iVar < nVars; ++iVar){
-    printf(" - %s\n", sVarName[iVar]);
+    NaPrintLog(" - %s\n", sVarName[iVar]);
     pOutDF->SetVarName(iVar, sVarName[iVar]);
   }
 
