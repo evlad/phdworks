@@ -1,11 +1,12 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dtf.cpp,v 1.3 2002-02-16 21:31:25 vlad Exp $";
+static char rcsid[] = "$Id: dtf.cpp,v 1.4 2002-03-16 14:49:50 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <locale.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -13,6 +14,7 @@ static char rcsid[] = "$Id: dtf.cpp,v 1.3 2002-02-16 21:31:25 vlad Exp $";
 
 #include <NaConfig.h>
 #include <NaCoFunc.h>
+#include <NaTrFunc.h>
 #include <NaDataIO.h>
 
 
@@ -36,19 +38,32 @@ main (int argc, char* argv[])
   NaOpenLogFile("dtf.log");
 
   try{
-    NaCombinedFunc	dtf;
-    dtf.Load(dtf_file);
+    NaUnit	*func = NULL;
+    NaCombinedFunc	dcof;
+    NaTransFunc		dtf;
+
+    int	len = strlen(dtf_file);
+    if(len >= 3 && !strcmp(dtf_file + len - 3, ".tf")){
+      dtf.Load(dtf_file);
+      func = &dtf;
+    }else if(len >= 4 && !strcmp(dtf_file + len - 4, ".cof")){
+      dcof.Load(dtf_file);
+      func = &dcof;
+    }else{
+      NaPrintLog("Unknown file format of '%s'!\n", dtf_file);
+      throw(na_cant_open_file);
+    }
 
     NaDataFile	*dfIn = OpenInputDataFile(in_file);
     NaDataFile	*dfOut = OpenOutputDataFile(out_file, bdtAuto, 1);
 
     dfIn->GoStartRecord();
-    dtf.Reset();
+    func->Reset();
     do{
       NaReal	fIn, fOut;
       fIn = dfIn->GetValue();
 
-      dtf.Function(&fIn, &fOut);
+      func->Function(&fIn, &fOut);
 
       dfOut->AppendRecord();
       dfOut->SetValue(fOut);
