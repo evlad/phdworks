@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaNNUnit.h */
-/* $Id: NaNNUnit.h,v 1.6 2003-09-05 20:49:43 vlad Exp $ */
+/* $Id: NaNNUnit.h,v 1.7 2003-09-25 20:15:11 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNUnitH
 #define NaNNUnitH
@@ -128,7 +128,7 @@ public:
     // Set input scale: [yMin,yMax] -> [-1,1]
     virtual void    SetInputScale (const NaReal* yMin, const NaReal* yMax);
 
-    // Scale given vector; maybe pSrcVect==pDstVect
+    // Scale given vector [iIndex..iIndex+nDim1]; maybe pSrcVect==pDstVect
     virtual void    ScaleData (const NaNNUnit::NaScaler& rSrcScaler,
                                const NaNNUnit::NaScaler& rDstScaler,
                                const NaReal* pSrcVect,

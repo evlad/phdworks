@@ -1,5 +1,5 @@
 /* NaNNUnit.cpp */
-static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.7 2003-09-05 20:49:35 vlad Exp $";
+static char rcsid[] = "$Id: NaNNUnit.cpp,v 1.8 2003-09-25 20:15:05 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -635,7 +635,7 @@ NaNNUnit::SetInputScale (const NaReal* yMin, const NaReal* yMax)
 
 
 //---------------------------------------------------------------------------
-// Scale given vector; maybe pSrcVect==pDstVect
+// Scale given vector [iIndex..iIndex+nDim1]; maybe pSrcVect==pDstVect
 void
 NaNNUnit::ScaleData (const NaNNUnit::NaScaler& rSrcScaler,
                      const NaNNUnit::NaScaler& rDstScaler,
