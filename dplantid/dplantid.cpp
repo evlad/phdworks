@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.15 2004-02-22 14:20:02 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.16 2004-02-22 21:04:26 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -37,6 +37,8 @@ main (int argc, char* argv[])
     NaParams	par(argv[1], argc - 2, argv + 2);
 
     NaPrintLog("Run dplantid with %s\n", argv[1]);
+
+    par.ListOfParamsToLog();
 
     // Read neural network from file
     NaNNUnit            au_nn;

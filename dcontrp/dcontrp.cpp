@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.10 2004-02-22 14:20:24 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.11 2004-02-22 21:03:36 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -41,6 +41,10 @@ int main(int argc, char **argv)
 
   try{
     NaParams	par(argv[1], argc - 2, argv + 2);
+
+    NaPrintLog("Run dcontrp with %s\n", argv[1]);
+
+    par.ListOfParamsToLog();
 
     // Read neural network from file
     NaNNUnit            au_nnc;

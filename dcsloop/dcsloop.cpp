@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.11 2004-02-22 14:19:49 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.12 2004-02-22 21:04:12 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -39,6 +39,8 @@ int main(int argc, char **argv)
     NaParams	par(argv[1], argc - 2, argv + 2);
 
     NaPrintLog("Run dcsloop with %s\n", argv[1]);
+
+    par.ListOfParamsToLog();
 
     /*************************************************************/
     enum {
