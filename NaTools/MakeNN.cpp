@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     printf("Usage: MakeNN.exe [ File.nn [ NameOfNN ] ]\n");
 
 
-    fname = ask_name("Target filename", argn > 0? args[0]: deffname);
+    fname = ask_user_name("Target filename", argn > 0? args[0]: deffname);
 
     // Some default NN description
     NaNNUnit            nnu(nnd);
@@ -73,22 +73,27 @@ int main(int argc, char **argv)
         printf("Creating new NN file '%s'\n", fname);
     }
 
-    nname = ask_name("Target filename", argn > 1? args[1]: defnname);
+    nname = ask_user_name("Name of NN instance", argn > 1? args[1]: defnname);
 
     nnu.SetInstance(nname);
 
     // Ask for NN description
-    nnd.nInputsNumber = ask_user("Input dimension", (int)nnd.nInputsNumber);
-    nnd.nInputsRepeat = ask_user("Input repeats", (int)nnd.nInputsRepeat);
-    nnd.nOutNeurons = ask_user("Output dimension", (int)nnd.nOutNeurons);
-    nnd.nOutputsRepeat = ask_user("Output repeats", (int)nnd.nOutputsRepeat);
-    nnd.nFeedbackDepth = ask_user("Feedback depth", (int)nnd.nFeedbackDepth);
+    nnd.nInputsNumber = ask_user_int("Input dimension",
+				     (int)nnd.nInputsNumber);
+    nnd.nInputsRepeat = ask_user_int("Input repeats",
+				     (int)nnd.nInputsRepeat);
+    nnd.nOutNeurons = ask_user_int("Output dimension",
+				   (int)nnd.nOutNeurons);
+    nnd.nOutputsRepeat = ask_user_int("Output repeats",
+				      (int)nnd.nOutputsRepeat);
+    nnd.nFeedbackDepth = ask_user_int("Feedback depth",
+				      (int)nnd.nFeedbackDepth);
 
     nnd.eLastActFunc =
-        (NaActFuncKind) ask_user("Output activation (0-linear; 1-sigmoid)",
-                                 (int)nnd.eLastActFunc);
-    nnd.nHidLayers = ask_user("Number of hidden layers (0-3)",
-			      (int)nnd.nHidLayers);
+        (NaActFuncKind) ask_user_int("Output activation (0-linear; 1-sigmoid)",
+				     (int)nnd.eLastActFunc);
+    nnd.nHidLayers = ask_user_int("Number of hidden layers (0-3)",
+				  (int)nnd.nHidLayers);
     if(nnd.nHidLayers > MAX_HIDDEN){
         printf("Not more than %u layers are allowed.\n", MAX_HIDDEN);
         nnd.nHidLayers = MAX_HIDDEN;
@@ -98,8 +103,8 @@ int main(int argc, char **argv)
         // Ask for number of neurons in given layer
         char    prompt[100];
         sprintf(prompt, "Hidden layer #%u", iLayer);
-        nnd.nHidNeurons[iLayer] = ask_user(prompt,
-					   (int)nnd.nHidNeurons[iLayer]);
+        nnd.nHidNeurons[iLayer] = ask_user_int(prompt,
+					       (int)nnd.nHidNeurons[iLayer]);
     }
 
     nnu.AssignDescr(nnd);
