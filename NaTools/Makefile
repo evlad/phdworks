@@ -1,4 +1,4 @@
-PROGRAMS=UNGen MakeNN Distr2D StatAn ResetNN FileCvt
+PROGRAMS=UNGen MakeNN Distr2D StatAn ResetNN FileCvt EvalNN
 
 all:	$(PROGRAMS)
 
@@ -20,6 +20,9 @@ MakeNN:	MakeNN.o $(LIBS)
 
 ResetNN:	ResetNN.o $(LIBS)
 	g++ -o $@ ResetNN.o $(LDFLAGS) $(LIBS)
+
+EvalNN:	EvalNN.o $(LIBS)
+	g++ -o $@ EvalNN.o $(LDFLAGS) $(LIBS)
 
 UNGen:	UNGen.o $(LIBS)
 	g++ -o $@ UNGen.o $(LDFLAGS) $(LIBS)
