@@ -1,5 +1,5 @@
 /* dobjid.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.6 2001-04-22 19:36:11 vlad Exp $";
+static char rcsid[] = "$Id: dobjid.cpp,v 1.7 2001-04-23 06:21:59 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -92,8 +92,8 @@ main (int argc, char* argv[])
     nnrol.nnteacher.lpar.eta_output = atof(par("eta_output"));
     nnrol.nnteacher.lpar.alpha = atof(par("alpha"));
 
-    ask_user_lpar(nnrol.nnteacher.lpar);
-    putchar('\n');
+    //ask_user_lpar(nnrol.nnteacher.lpar);
+    //putchar('\n');
 
     // Teach the network iteratively
     NaPNEvent   pnev, pnev_test;

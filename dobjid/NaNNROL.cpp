@@ -1,5 +1,5 @@
 /* NaNNROL.cpp */
-static char rcsid[] = "$Id: NaNNROL.cpp,v 1.4 2001-04-22 19:39:04 vlad Exp $";
+static char rcsid[] = "$Id: NaNNROL.cpp,v 1.5 2001-04-23 06:21:59 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -99,7 +99,7 @@ NaNNRegrPlantLearn::run_net ()
 
             // Activities cycle
             do{
-                pnev = net.step_alive();
+	      pnev = net.step_alive();
 
                 idle_entry();
 
