@@ -1,6 +1,9 @@
 /* NaDataIO.cpp */
-static char rcsid[] = "$Id: NaDataIO.cpp,v 1.4 2001-05-22 18:18:42 vlad Exp $";
+static char rcsid[] = "$Id: NaDataIO.cpp,v 1.5 2003-08-18 20:10:36 vlad Exp $";
 //---------------------------------------------------------------------------
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <string.h>
 
 #ifdef unix
@@ -80,6 +83,17 @@ NaFileFormat NaDataFile::GuessFileFormatByName (const char* szFName)
 {
     if(NULL == szFName)
         throw(na_null_pointer);
+
+    // Text output in case of character device or FIFO
+    struct stat	st;
+    if(-1 != stat(szFName, &st)){
+      if(S_ISFIFO(st.st_mode) || S_ISCHR(st.st_mode))
+	return ffTextStream;
+      if(S_ISBLK(st.st_mode) || S_ISDIR(st.st_mode))
+	return ffUnknown;
+    }
+    /* else
+       don't user stat() results in case of it's error */
 
     int len = strlen(szFName);
     if(len >= 4){
