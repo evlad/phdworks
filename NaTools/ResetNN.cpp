@@ -37,6 +37,7 @@ int main(int argc, char **argv)
 
   NaOpenLogFile("ResetNN.log");
 
+  // See DRAND_SAFE to prevent dependent random weights
   reset_rand();
 
   try{

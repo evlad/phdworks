@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	fname = args[0];
+	fname = args[0];  ++args;
 	printf("Target filename: %s\n", fname);
       }
     else
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nname = args[0];
+	nname = args[0];  ++args;
 	printf("Name of NN instance: %s\n", nname);
       }
     else
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nInputsNumber = atoi(args[0]);
+	nnd.nInputsNumber = atoi(args[0]);  ++args;
 	printf("Input dimension: %d\n", nnd.nInputsNumber);
       }
     else
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nInputsRepeat = atoi(args[0]);
+	nnd.nInputsRepeat = atoi(args[0]);  ++args;
 	printf("Input repeats: %d\n", nnd.nInputsRepeat);
       }
     else
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nOutNeurons = atoi(args[0]);
+	nnd.nOutNeurons = atoi(args[0]);  ++args;
 	printf("Output dimension: %d\n", nnd.nOutNeurons);
       }
     else
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nOutputsRepeat = atoi(args[0]);
+	nnd.nOutputsRepeat = atoi(args[0]);  ++args;
 	printf("Output repeats: %d\n", nnd.nOutputsRepeat);
       }
     else
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nFeedbackDepth = atoi(args[6]);
+	nnd.nFeedbackDepth = atoi(args[6]);  ++args;
 	printf("Feedback depth: %d\n", nnd.nFeedbackDepth);
       }
     else
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.eLastActFunc = (NaActFuncKind) atoi(args[0]);
+	nnd.eLastActFunc = (NaActFuncKind) atoi(args[0]);  ++args;
 	printf("Output activation (0-linear; 1-sigmoid): %d\n",
 	       nnd.eLastActFunc);
       }
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nHidLayers = atoi(args[0]);
+	nnd.nHidLayers = atoi(args[0]);  ++args;
 	printf("Number of hidden layers (0-3): %d\n", nnd.nHidLayers);
       }
     else
