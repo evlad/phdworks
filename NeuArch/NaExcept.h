@@ -1,18 +1,18 @@
 //-*-C++-*-
 /* NaExcept.h */
-/* $Id: NaExcept.h,v 1.2 2001-05-22 18:18:42 vlad Exp $ */
+/* $Id: NaExcept.h,v 1.3 2001-07-03 18:26:17 vlad Exp $ */
 #ifndef __NaExcept_h
 #define __NaExcept_h
 
 #include <stdlib.h>
 
-#ifndef unix
+//#ifndef unix
 
-#define try		if(1)
-#define catch(x)	else
-#define throw(x)	exit(x)
+//#define try		if(1)
+//#define catch(x)	else
+//#define throw(x)	exit(x)
 
-#endif /* unix */
+//#endif /* unix */
 
 /* Error codes in natools modules. */
 enum NaException

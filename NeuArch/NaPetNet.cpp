@@ -1,8 +1,9 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.7 2001-07-02 20:00:41 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.8 2001-07-03 18:26:17 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
+#include <string.h>
 
 #include "NaExcept.h"
 #include "NaLogFil.h"
@@ -55,7 +56,7 @@ NaPetriNet::NaPetriNet (const char* szNetName)
     else
         szName = newstr(szNetName);
 
-    char	szMapName[strlen(name()) + 5];
+    char	szMapName[100/*strlen(name()) + 5*/];
     sprintf(szMapName, "%s.map", name());
     fpMap = fopen(szMapName, "w");
     if(NULL == fpMap){
