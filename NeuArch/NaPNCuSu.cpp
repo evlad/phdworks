@@ -1,5 +1,5 @@
 /* NaPNCuSu.cpp */
-static char rcsid[] = "$Id: NaPNCuSu.cpp,v 1.1 2003-06-23 05:22:47 vlad Exp $";
+static char rcsid[] = "$Id: NaPNCuSu.cpp,v 1.2 2003-07-07 20:23:35 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -38,7 +38,16 @@ NaPNCuSum::imaging_point (NaReal Sprev, NaReal Xt)
   NaReal	w1 = gaussian_distrib(fSigma[1], Xt);
   NaReal	zt = log(w1 / w0);
 
-  return Sprev + zt - fK;
+  /*NaPrintLog("%g\t%g\t%g\t%g\t%g\n",
+    Sprev, Sprev + zt - fK, w0, w1, zt);*/
+
+  //return Sprev + zt - fK;
+  NaReal	sq1 = fSigma[1] * fSigma[1];
+  NaReal	sq0 = fSigma[0] * fSigma[0];
+
+  //NaPrintLog("%g\t%g\n", zt, (-0.5*(1/sq1-1/sq0)*Xt*Xt - 0.5*log(sq1/sq0)));
+
+  return Sprev + (-0.5*(1/sq1-1/sq0)*Xt*Xt - 0.5*log(sq1/sq0)) - fK;
 }
 
 
@@ -52,6 +61,14 @@ NaPNCuSum::NaPNCuSum (const char* szNodeName)
   x(this, "x"),
   d(this, "d"),
   sum(this, "sum")
+{
+  // Nothing to do
+}
+
+
+//---------------------------------------------------------------------------
+// Destroy the node
+NaPNCuSum::~NaPNCuSum ()
 {
   // Nothing to do
 }
@@ -121,7 +138,11 @@ NaPNCuSum::initialize (bool& starter)
 void
 NaPNCuSum::action ()
 {
-  sum.data()[0] = imaging_point(fS, x.data()[0]);
+  fS = imaging_point(fS, x.data()[0]);
+  if(fS < 0.0)
+    fS = 0.0;
+
+  sum.data()[0]  = fS;
 
   // compute detection signal here
   // *** stub ***
