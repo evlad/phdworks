@@ -1,5 +1,5 @@
 /* NaNNRPL.cpp */
-static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.5 2001-10-01 18:04:50 vlad Exp $";
+static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.6 2001-12-11 18:35:16 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -13,8 +13,9 @@ static char rcsid[] = "$Id: NaNNRPL.cpp,v 1.5 2001-10-01 18:04:50 vlad Exp $";
 
 //---------------------------------------------------------------------------
 // Create the object
-NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind)
-: net("nncp2pn"), eAlgoKind(akind),
+NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
+					const char* szNetName)
+: net(szNetName), eAlgoKind(akind),
   in_u("in_u"),
   in_y("in_y"),
   nn_y("nn_y"),
@@ -28,7 +29,7 @@ NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind)
   delay_y("delay_y"),
   statan("statan"),
   statan_y("statan_y"),
-  and("and")
+  land("land")
 {
     // Nothing to do
 }
@@ -74,11 +75,11 @@ NaNNRegrPlantLearn::link_net ()
 	    net.link(&nnplant.y, &nnteacher.nnout);
 	  }
 
-        net.link(&delay_u.sync, &and.in1);
-        net.link(&delay_y.sync, &and.in2);
+        net.link(&delay_u.sync, &land.in1);
+        net.link(&delay_y.sync, &land.in2);
 
-	net.link(&and.out, &trig_y.turn);
-        net.link(&and.out, &switcher.turn);
+	net.link(&land.out, &trig_y.turn);
+        net.link(&land.out, &switcher.turn);
 
         net.link(&nnplant.y, &switcher.in1);
         net.link(&in_y.out, &switcher.in2);

@@ -28,7 +28,8 @@ class NaNNRegrPlantLearn
 public:/* methods */
 
     // Create the object
-    NaNNRegrPlantLearn (NaAlgorithmKind akind);
+    NaNNRegrPlantLearn (NaAlgorithmKind akind,
+			const char* szNetName = "nncp2pn");
 
     // Destroy the object
     virtual ~NaNNRegrPlantLearn ();
@@ -73,7 +74,7 @@ public:/* data */
     NaPNTrigger     trig_y;     // pre-teacher y delayer
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
-    NaPNLogicalAND  and;        // activate just after delay units are ready
+    NaPNLogicalAND  land;       // activate just after delay units are ready
 
 private:/* data */
 

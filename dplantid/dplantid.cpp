@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.7 2001-06-12 12:43:15 vlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.8 2001-12-11 18:35:16 vlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -57,8 +57,8 @@ main (int argc, char* argv[])
     nnllog->SetVarName(1, "StdDev");
     nnllog->SetVarName(2, "MSE");
 
-    NaNNRegrPlantLearn	nnrol(NaTrainingAlgorithm);	// teach
-    NaNNRegrPlantLearn	nnroe(NaEvaluationAlgorithm);	// test
+    NaNNRegrPlantLearn	nnrol(NaTrainingAlgorithm, "nnpl");
+    NaNNRegrPlantLearn	nnroe(NaEvaluationAlgorithm, "nnpe");
 
     // Configure nodes
     nnrol.nnteacher.set_nn(&au_nn);
@@ -98,9 +98,37 @@ main (int argc, char* argv[])
     nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
+    /* Equalize delay to provide synchronous start of delay_u and
+       delay_y nodes */
+    unsigned	iDelay_u = nnrol.delay_u.get_max_delay();
+    unsigned	iDelay_y = nnrol.delay_y.get_max_delay();
+    if(iDelay_u < iDelay_y)
+      {
+	iDelay_u = iDelay_y - iDelay_u;
+	iDelay_y = 0;
+      }
+    else if(iDelay_u > iDelay_y)
+      {
+	iDelay_y = iDelay_u - iDelay_y;
+	iDelay_u = 0;
+      }
+    else /* if(iDelay_u == iDelay_y) */
+      {
+	iDelay_y = 0;
+	iDelay_u = 0;
+      }
+
+    // Provide equalization
+    nnrol.delay_y.add_delay(iDelay_y);
+    nnrol.delay_u.add_delay(iDelay_u);
+
     nnroe.nnplant.set_transfer_func(&au_nn);
     nnroe.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnroe.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
+
+    // Provide the same equalization for evaluation petri net
+    nnroe.delay_y.add_delay(iDelay_y);
+    nnroe.delay_u.add_delay(iDelay_u);
 
     // Configure learning parameters
     nnrol.nnteacher.lpar.eta = atof(par("eta"));
