@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.2 2002-01-13 17:34:59 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.3 2002-01-15 12:41:48 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -436,7 +436,7 @@ int main(int argc, char **argv)
 	  for(i = 0; i < NaSI_number; ++i)
 	    dfIdErr->SetValue(buf[i], i);
 
-	  if(pneError == pnev)
+	  if(pneError == pnev || pneTerminate == pnev || pneHalted == pnev)
 	    break;
 
 	  PrintLog(iIter, &nnocl);
@@ -479,28 +479,32 @@ int main(int argc, char **argv)
 	break;
       }
 
-    NaPrintLog("IMPORTANT: net is dead due to ");
+    char	*szFirst = "IMPORTANT: net is dead due to";
+    char	*szSecond = NULL;
     switch(pnev){
     case pneTerminate:
-      NaPrintLog("user break.\n");
+      szSecond = "user break.";
       break;
 
     case pneHalted:
-      NaPrintLog("internal halt.\n");
+      szSecond = "internal halt.";
       break;
 
     case pneDead:
-      NaPrintLog("data are exhausted.\n");
+      szSecond = "data are exhausted.";
       break;
 
     case pneError:
-      NaPrintLog("some error occured.\n");
+      szSecond = "some error occured.";
       break;
 
     default:
-      NaPrintLog("unknown reason.\n");
+      szSecond = "unknown reason.";
       break;
     }
+
+    NaPrintLog("%s %s\n", szFirst, szSecond);
+    printf("%s %s\n", szFirst, szSecond);
 
     delete dfCErr;
     delete dfIdErr;

@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.2 2002-01-13 17:34:59 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.3 2002-01-15 12:41:48 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -211,13 +211,15 @@ NaNNOptimContrLearn::run_net ()
 
 	idle_entry();
 
+	if(pneAlive == pnev)
+	  {
+	    if(0 != nSeriesLen && setpnt_gen.activations() > nSeriesLen)
+	      pnev = pneDead;
+	    else if(user_break())
+	      pnev = pneTerminate;
+	  }
+
       }while(pneAlive == pnev);
-
-      if(0 != nSeriesLen && setpnt_gen.activations() > nSeriesLen)
-	pnev = pneDead;
-
-      if(user_break())
-	pnev = pneTerminate;
 
       net.terminate();
 
