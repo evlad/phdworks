@@ -1,12 +1,14 @@
 //-*-C++-*-
+/* NaMatrix.h */
+/* $Id: NaMatrix.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaMatrixH
 #define NaMatrixH
 
-#include "NaGenerl.h"
-#include "NaExcept.h"
-#include "NaVector.h"
-#include "NaLogFil.h"
+#include <NaGenerl.h>
+#include <NaExcept.h>
+#include <NaVector.h>
+#include <NaLogFil.h>
 
 
 //---------------------------------------------------------------------------

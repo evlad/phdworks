@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaPNTchr.h */
+/* $Id: NaPNTchr.h,v 1.4 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTchrH
 #define NaPNTchrH
 
-#include "NaStdBPE.h"
-//qprop: #include "NaQProp.h"
-#include "NaPetri.h"
+#include <NaStdBPE.h>
+//qprop: #include <NaQProp.h>
+#include <NaPetri.h>
 
 
 //---------------------------------------------------------------------------

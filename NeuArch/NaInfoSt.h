@@ -1,4 +1,6 @@
 //-*-C++-*-
+/* NaInfoSt.h */
+/* $Id: NaInfoSt.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaInfoStH
 #define NaInfoStH
@@ -8,8 +10,8 @@
 // data from working petri network to the world (GUI of an application, for
 // example).
 
-#include "NaGenerl.h"
-#include "NaDynAr.h"
+#include <NaGenerl.h>
+#include <NaDynAr.h>
 
 
 //---------------------------------------------------------------------------

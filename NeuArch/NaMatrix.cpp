@@ -1,3 +1,5 @@
+/* NaMatrix.cpp */
+static char rcsid[] = "$Id: NaMatrix.cpp,v 1.4 2001-05-15 06:02:21 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <math.h>
 #include <stdio.h>

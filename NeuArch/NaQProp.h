@@ -1,13 +1,15 @@
 //-*-C++-*-
+/* NaQProp.h */
+/* $Id: NaQProp.h,v 1.4 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaQPropH
 #define NaQPropH
 //---------------------------------------------------------------------------
-#include "NaVector.h"
-#include "NaMatrix.h"
-#include "NaNDescr.h"
-#include "NaNNUnit.h"
-#include "NaStdBPE.h"
+#include <NaVector.h>
+#include <NaMatrix.h>
+#include <NaNDescr.h>
+#include <NaNNUnit.h>
+#include <NaStdBPE.h>
 
 //---------------------------------------------------------------------------
 // Quickprop algorithm is as described in "Back propagation family album" by

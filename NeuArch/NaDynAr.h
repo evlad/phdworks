@@ -1,11 +1,11 @@
 //-*-C++-*-
 /* NaDynAr.h */
-/* $Id: NaDynAr.h,v 1.1 2001-04-01 08:15:53 vlad Exp $ */
+/* $Id: NaDynAr.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 #ifndef __NaDynAr_hxx
 #define __NaDynAr_hxx
 
-#include "NaLogFil.h"
-#include "NaExcept.h"
+#include <NaLogFil.h>
+#include <NaExcept.h>
 
 
 /***********************************************************************

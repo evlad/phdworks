@@ -1,3 +1,5 @@
+/* NaPetNod.cpp */
+static char rcsid[] = "$Id: NaPetNod.cpp,v 1.2 2001-05-15 06:02:22 vlad Exp $";
 //---------------------------------------------------------------------------
 #include "NaStrOps.h"
 #include "NaPetNod.h"

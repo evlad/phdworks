@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaDataIO.h */
+/* $Id: NaDataIO.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaDataIOH
 #define NaDataIOH
 //---------------------------------------------------------------------------
 
-#include "NaGenerl.h"
-#include "NaExcept.h"
+#include <NaGenerl.h>
+#include <NaExcept.h>
 
 //---------------------------------------------------------------------------
 // Supported file formats
@@ -122,11 +124,11 @@ protected:
     long            nRecords;
 };
 
-#include "NaTextIO.h"
+#include <NaTextIO.h>
 #ifndef unix
-#include "NaStaIO.h"
+#include <NaStaIO.h>
 #endif /* unix */
-#include "NaPlotIO.h"
+#include <NaPlotIO.h>
 
 
 // Create object (NaDataFile descendant) for reading given data file

@@ -1,14 +1,16 @@
 //-*-C++-*-
+/* NaStdBPE.h */
+/* $Id: NaStdBPE.h,v 1.4 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaStdBPEH
 #define NaStdBPEH
 //---------------------------------------------------------------------------
 
-#include "NaVector.h"
-#include "NaMatrix.h"
-#include "NaNDescr.h"
-#include "NaNNUnit.h"
-#include "NaLogFil.h"
+#include <NaVector.h>
+#include <NaMatrix.h>
+#include <NaNDescr.h>
+#include <NaNNUnit.h>
+#include <NaLogFil.h>
 
 //---------------------------------------------------------------------------
 // Learning coefficients

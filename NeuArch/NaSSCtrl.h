@@ -1,13 +1,15 @@
 //-*-C++-*-
+/* NaSSCtrl.h */
+/* $Id: NaSSCtrl.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaSSCtrlH
 #define NaSSCtrlH
 
-#include "NaGenerl.h"
-#include "NaUnit.h"
-#include "NaConfig.h"
-#include "NaVector.h"
-#include "NaMatrix.h"
+#include <NaGenerl.h>
+#include <NaUnit.h>
+#include <NaConfig.h>
+#include <NaVector.h>
+#include <NaMatrix.h>
 
 
 //---------------------------------------------------------------------------

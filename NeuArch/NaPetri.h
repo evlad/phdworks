@@ -1,4 +1,6 @@
 //-*-C++-*-
+/* NaPetri.h */
+/* $Id: NaPetri.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetriH
 #define NaPetriH
@@ -7,10 +9,10 @@
 // Common Petri-network tools
 //---------------------------------------------------------------------------
 
-#include "NaPetNet.h"
-#include "NaPetNod.h"
-#include "NaPCnInp.h"
-#include "NaPCnOut.h"
+#include <NaPetNet.h>
+#include <NaPetNod.h>
+#include <NaPCnInp.h>
+#include <NaPCnOut.h>
 
 
 //---------------------------------------------------------------------------

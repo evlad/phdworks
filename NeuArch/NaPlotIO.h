@@ -1,4 +1,6 @@
 //-*-C++-*-
+/* NaPlotIO.h */
+/* $Id: NaPlotIO.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPlotIOH
 #define NaPlotIOH
@@ -57,9 +59,9 @@ Stop
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
-#include "NaDataIO.h"
-#include "NaVector.h"
-#include "NaDynAr.h"
+#include <NaDataIO.h>
+#include <NaVector.h>
+#include <NaDynAr.h>
 
 // Default name of the only variable
 #define NaVAR_PREFIX    "VAR"

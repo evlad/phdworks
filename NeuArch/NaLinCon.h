@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaLinCon.h */
+/* $Id: NaLinCon.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaLinConH
 #define NaLinConH
 
-#include "NaGenerl.h"
-#include "NaUnit.h"
-#include "NaConfig.h"
+#include <NaGenerl.h>
+#include <NaUnit.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // Kinds of linear control units

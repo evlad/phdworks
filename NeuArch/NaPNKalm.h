@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaPNKalm.h */
+/* $Id: NaPNKalm.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNKalmH
 #define NaPNKalmH
 
-#include "NaMatrix.h"
-#include "NaPetri.h"
-#include "NaDataIO.h"
+#include <NaMatrix.h>
+#include <NaPetri.h>
+#include <NaDataIO.h>
 
 
 //---------------------------------------------------------------------------

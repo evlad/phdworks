@@ -1,4 +1,6 @@
 //-*-C++-*-
+/* NaPetNet.h */
+/* $Id: NaPetNet.h,v 1.3 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNetH
 #define NaPetNetH
@@ -7,11 +9,11 @@
 #include <signal.h>
 #endif /* unix */
 
-#include "NaTimer.h"
-#include "NaDataIO.h"
-#include "NaPetCn.h"
-#include "NaPetNod.h"
-#include "NaInfoSt.h"
+#include <NaTimer.h>
+#include <NaDataIO.h>
+#include <NaPetCn.h>
+#include <NaPetNod.h>
+#include <NaInfoSt.h>
 
 
 //---------------------------------------------------------------------------

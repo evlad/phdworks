@@ -1,9 +1,11 @@
 //-*-C++-*-
+/* NaPCnOut.h */
+/* $Id: NaPCnOut.h,v 1.3 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPCnOutH
 #define NaPCnOutH
 
-#include "NaPetCn.h"
+#include <NaPetCn.h>
 
 //---------------------------------------------------------------------------
 // Petri network node input connector

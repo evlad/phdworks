@@ -1,13 +1,15 @@
 //-*-C++-*-
+/* NaUnit.h */
+/* $Id: NaUnit.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaUnitH
 #define NaUnitH
 //---------------------------------------------------------------------------
 
-#include "NaGenerl.h"
-#include "NaTimer.h"
-#include "NaDynAr.h"
-#include "NaLogFil.h"
+#include <NaGenerl.h>
+#include <NaTimer.h>
+#include <NaDynAr.h>
+#include <NaLogFil.h>
 
 //---------------------------------------------------------------------------
 // Common class for control scheme unit representation

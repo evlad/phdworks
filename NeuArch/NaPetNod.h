@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPetNod.h */
+/* $Id: NaPetNod.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetNodH
 #define NaPetNodH
 
-#include "NaPetCn.h"
-#include "NaDynAr.h"
+#include <NaPetCn.h>
+#include <NaDynAr.h>
 
 
 class NaPetriNet;

@@ -1,9 +1,11 @@
 //-*-C++-*-
+/* PNRandom.h */
+/* $Id: PNRandom.h,v 1.2 2001-05-15 06:02:24 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef PNRandomH
 #define PNRandomH
 
-#include "NaPetri.h"
+#include <NaPetri.h>
 
 //---------------------------------------------------------------------------
 // Random number generator

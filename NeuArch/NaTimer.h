@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaTimer.h */
+/* $Id: NaTimer.h,v 1.3 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaTimerH
 #define NaTimerH
 //---------------------------------------------------------------------------
 
-#include "NaGenerl.h"
+#include <NaGenerl.h>
 
 // Time samples counter
 class NaTimer

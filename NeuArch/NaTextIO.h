@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaTextIO.h */
+/* $Id: NaTextIO.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaTextIOH
 #define NaTextIOH
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
-#include "NaDataIO.h"
+#include <NaDataIO.h>
 
 // Default name of the only variable
 #define NaVAR_NAME      "VAR"

@@ -1,3 +1,5 @@
+/* NaVector.cpp */
+static char rcsid[] = "$Id: NaVector.cpp,v 1.5 2001-05-15 06:02:23 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <math.h>
 #include <stdio.h>

@@ -1,3 +1,5 @@
+/* NaNDescr.cpp */
+static char rcsid[] = "$Id: NaNDescr.cpp,v 1.5 2001-05-15 06:02:21 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>

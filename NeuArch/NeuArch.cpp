@@ -1,3 +1,5 @@
+/* NeuArch.cpp */
+static char rcsid[] = "$Id: NeuArch.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <condefs.h>
 #pragma hdrstop

@@ -1,3 +1,5 @@
+/* NaParams.cpp */
+static char rcsid[] = "$Id: NaParams.cpp,v 1.3 2001-05-15 06:02:22 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>

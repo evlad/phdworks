@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPNGen.h */
+/* $Id: NaPNGen.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNGenH
 #define NaPNGenH
 
-#include "NaPetri.h"
-#include "NaUnit.h"
+#include <NaPetri.h>
+#include <NaUnit.h>
 
 
 //---------------------------------------------------------------------------

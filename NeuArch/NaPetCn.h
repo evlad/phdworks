@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPetCn.h */
+/* $Id: NaPetCn.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPetCnH
 #define NaPetCnH
 
-#include "NaDynAr.h"
-#include "NaVector.h"
+#include <NaDynAr.h>
+#include <NaVector.h>
 
 //---------------------------------------------------------------------------
 // Forward declaration

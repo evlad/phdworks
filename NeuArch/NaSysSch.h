@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaSysSch.h */
+/* $Id: NaSysSch.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaSysSchH
 #define NaSysSchH
 
-#include "NaGenerl.h"
-#include "NaConfig.h"
+#include <NaGenerl.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // System schema definition: feedback on/off, noise on/off, sampling rate,

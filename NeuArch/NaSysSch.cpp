@@ -1,3 +1,5 @@
+/* NaSysSch.cpp */
+static char rcsid[] = "$Id: NaSysSch.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <string.h>

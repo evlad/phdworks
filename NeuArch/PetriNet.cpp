@@ -1,3 +1,5 @@
+/* PetriNet.cpp */
+static char rcsid[] = "$Id: PetriNet.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <condefs.h>
 #pragma hdrstop

@@ -1,16 +1,18 @@
 //-*-C++-*-
+/* NaTrFunc.h */
+/* $Id: NaTrFunc.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaTrFuncH
 #define NaTrFuncH
 
 #include <stdarg.h>
 
-#include "NaGenerl.h"
-#include "NaUnit.h"
-#include "NaConfig.h"
-#include "NaDynAr.h"
-#include "NaVector.h"
-#include "NaLogFil.h"
+#include <NaGenerl.h>
+#include <NaUnit.h>
+#include <NaConfig.h>
+#include <NaDynAr.h>
+#include <NaVector.h>
+#include <NaLogFil.h>
 
 
 //---------------------------------------------------------------------------

@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaPNRand.h */
+/* $Id: NaPNRand.h,v 1.3 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNRandH
 #define NaPNRandH
 
-#include "NaPetri.h"
-#include "NaRandom.h"
-#include "NaPNGen.h"
+#include <NaPetri.h>
+#include <NaRandom.h>
+#include <NaPNGen.h>
 
 
 //---------------------------------------------------------------------------

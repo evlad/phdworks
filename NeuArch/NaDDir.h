@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaDDir.h */
+/* $Id: NaDDir.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaDDirH
 #define NaDDirH
 
-#include "NaGenerl.h"
-#include "NaExcept.h"
+#include <NaGenerl.h>
+#include <NaExcept.h>
 
 
 //---------------------------------------------------------------------------

@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPNTime.h */
+/* $Id: NaPNTime.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNTimeH
 #define NaPNTimeH
 
-#include "NaPetri.h"
-#include "NaTimer.h"
+#include <NaPetri.h>
+#include <NaTimer.h>
 
 
 //---------------------------------------------------------------------------

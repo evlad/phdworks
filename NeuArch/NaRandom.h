@@ -1,12 +1,14 @@
 //-*-C++-*-
+/* NaRandom.h */
+/* $Id: NaRandom.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaRandomH
 #define NaRandomH
 //---------------------------------------------------------------------------
 
-#include "NaGenerl.h"
-#include "NaUnit.h"
-#include "NaLinCon.h"
+#include <NaGenerl.h>
+#include <NaUnit.h>
+#include <NaLinCon.h>
 
 //---------------------------------------------------------------------------
 // Types of random generator laws

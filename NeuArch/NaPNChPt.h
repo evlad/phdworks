@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPNChPt.h */
+/* $Id: NaPNChPt.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNChPtH
 #define NaPNChPtH
 
-#include "NaPetri.h"
-#include "NaPNFOut.h"
+#include <NaPetri.h>
+#include <NaPNFOut.h>
 
 
 //---------------------------------------------------------------------------

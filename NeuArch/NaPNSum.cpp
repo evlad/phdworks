@@ -1,3 +1,5 @@
+/* NaPNSum.cpp */
+static char rcsid[] = "$Id: NaPNSum.cpp,v 1.3 2001-05-15 06:02:22 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaPNSum.h"

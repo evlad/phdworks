@@ -1,14 +1,16 @@
 //-*-C++-*-
+/* NaNNUnit.h */
+/* $Id: NaNNUnit.h,v 1.3 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNUnitH
 #define NaNNUnitH
 //---------------------------------------------------------------------------
 
-#include "NaUnit.h"
-#include "NaNDescr.h"
-#include "NaVector.h"
-#include "NaMatrix.h"
-#include "NaConfig.h"
+#include <NaUnit.h>
+#include <NaNDescr.h>
+#include <NaVector.h>
+#include <NaMatrix.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // Class for neural network representation based on NaNDescr.

@@ -1,3 +1,5 @@
+/* TestMatr.cpp */
+static char rcsid[] = "$Id: TestMatr.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop

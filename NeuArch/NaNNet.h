@@ -1,12 +1,14 @@
 //-*-C++-*-
+/* NaNNet.h */
+/* $Id: NaNNet.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNetH
 #define NaNNetH
 
-#include "NaUnit.h"
-#include "NaVector.h"
-#include "NaMatrix.h"
-#include "NaConfig.h"
+#include <NaUnit.h>
+#include <NaVector.h>
+#include <NaMatrix.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // Kind of activation function

@@ -1,17 +1,19 @@
 //-*-C++-*-
+/* NaConLaw.h */
+/* $Id: NaConLaw.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaConLawHPP
 #define NaConLawHPP
 
 #include <stdio.h>
 
-#include "NaGenerl.h"
-#include "NaDynAr.h"
-#include "NaTimer.h"
-#include "NaUnit.h"
-#include "NaDataIO.h"
-#include "NaLiNois.h"
-#include "NaConfig.h"
+#include <NaGenerl.h>
+#include <NaDynAr.h>
+#include <NaTimer.h>
+#include <NaUnit.h>
+#include <NaDataIO.h>
+#include <NaLiNois.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // Control law source

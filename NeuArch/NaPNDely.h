@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaPNDely.h */
+/* $Id: NaPNDely.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNDelyH
 #define NaPNDelyH
 
-#include "NaPetri.h"
-#include "NaUnit.h"
+#include <NaPetri.h>
+#include <NaUnit.h>
 
 
 //---------------------------------------------------------------------------

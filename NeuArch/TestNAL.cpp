@@ -1,3 +1,5 @@
+/* TestNAL.cpp */
+static char rcsid[] = "$Id: TestNAL.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
 
 #pragma hdrstop
 #include <condefs.h>

@@ -1,3 +1,5 @@
+/* NaPetNet.cpp */
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.4 2001-05-15 06:02:22 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>

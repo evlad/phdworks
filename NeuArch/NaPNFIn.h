@@ -1,11 +1,13 @@
 //-*-C++-*-
+/* NaPNFIn.h */
+/* $Id: NaPNFIn.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNFInH
 #define NaPNFInH
 
-#include "NaPCnOut.h"
-#include "NaPetNod.h"
-#include "NaDataIO.h"
+#include <NaPCnOut.h>
+#include <NaPetNod.h>
+#include <NaDataIO.h>
 
 
 //---------------------------------------------------------------------------

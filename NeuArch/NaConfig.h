@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaConfig.h */
+/* $Id: NaConfig.h,v 1.3 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaConfigH
 #define NaConfigH
 //---------------------------------------------------------------------------
 
-#include "NaExcept.h"
+#include <NaExcept.h>
 
 // Very long string length
 #define MaxConfigFileLine           1024

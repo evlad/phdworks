@@ -1,9 +1,11 @@
 //-*-C++-*-
+/* NaPNAct.h */
+/* $Id: NaPNAct.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNActH
 #define NaPNActH
 
-#include "NaPetri.h"
+#include <NaPetri.h>
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: some action unit.

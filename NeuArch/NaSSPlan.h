@@ -1,14 +1,16 @@
 //-*-C++-*-
+/* NaSSPlan.h */
+/* $Id: NaSSPlan.h,v 1.2 2001-05-15 06:02:23 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaSSPlanH
 #define NaSSPlanH
 
-#include "NaGenerl.h"
-#include "NaUnit.h"
-#include "NaRandom.h"
-#include "NaConfig.h"
-#include "NaVector.h"
-#include "NaMatrix.h"
+#include <NaGenerl.h>
+#include <NaUnit.h>
+#include <NaRandom.h>
+#include <NaConfig.h>
+#include <NaVector.h>
+#include <NaMatrix.h>
 
 
 //---------------------------------------------------------------------------

@@ -1,4 +1,6 @@
 //-*-C++-*-
+/* Thread.h */
+/* $Id: Thread.h,v 1.2 2001-05-15 06:02:24 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef ThreadH
 #define ThreadH
@@ -10,7 +12,7 @@
 #endif // __BORLANDC__
 
 
-#include "NaPetNet.h"
+#include <NaPetNet.h>
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: data file writer.

@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaNNCon.h */
+/* $Id: NaNNCon.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNConH
 #define NaNNConH
 
-#include "NaUnit.h"
-#include "NaNNUnit.h"
+#include <NaUnit.h>
+#include <NaNNUnit.h>
 
 //---------------------------------------------------------------------------
 // NN controller unit for runtime processing.

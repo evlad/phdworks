@@ -1,3 +1,5 @@
+/* NaQProp.cpp */
+static char rcsid[] = "$Id: NaQProp.cpp,v 1.3 2001-05-15 06:02:23 vlad Exp $";
  //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"

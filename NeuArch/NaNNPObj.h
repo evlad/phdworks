@@ -1,10 +1,12 @@
 //-*-C++-*-
+/* NaNNPObj.h */
+/* $Id: NaNNPObj.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaNNPObjH
 #define NaNNPObjH
 
-#include "NaUnit.h"
-#include "NaNNUnit.h"
+#include <NaUnit.h>
+#include <NaNNUnit.h>
 
 //---------------------------------------------------------------------------
 // NN predictive model of object.  Unit for runtime processing.

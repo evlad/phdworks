@@ -1,13 +1,15 @@
 //-*-C++-*-
+/* NaLiNois.h */
+/* $Id: NaLiNois.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaLiNoisH
 #define NaLiNoisH
 //---------------------------------------------------------------------------
 
-#include "NaUnit.h"
-#include "NaRandom.h"
-#include "NaLinCon.h"
-#include "NaConfig.h"
+#include <NaUnit.h>
+#include <NaRandom.h>
+#include <NaLinCon.h>
+#include <NaConfig.h>
 
 //---------------------------------------------------------------------------
 // Unit for linear noise generation.  Unit consists of randomizer and linear
