@@ -1,5 +1,5 @@
 /* FileCvt.cpp */
-static char rcsid[] = "$Id: FileCvt.cpp,v 1.1 2001-05-19 21:17:39 vlad Exp $";
+static char rcsid[] = "$Id: FileCvt.cpp,v 1.2 2001-05-19 21:28:55 vlad Exp $";
 
 #include <NaDataIO.h>
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
   pInDF->GetVarNameList(nVars, sVarName);
 
-  NaDataFile	*pOutDF = OpenOutputDataFile(argv[2], bdtAuto, nVars);
+  NaDataFile	*pOutDF = OpenOutputDataFile(argv[2], bdtInteger2, nVars);
 
   printf("Input file '%s':\n"\
 	 " - records:   %d\n"\

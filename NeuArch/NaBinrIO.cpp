@@ -1,5 +1,5 @@
 /* NaBinrIO.cpp */
-static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.1 2001-05-19 21:19:08 vlad Exp $";
+static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.2 2001-05-19 21:29:40 vlad Exp $";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +7,8 @@ static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.1 2001-05-19 21:19:08 vlad Exp $";
 
 #include "NaBinrIO.h"
 
+/* Limit the value X by the range X1..X9 */
+#define NaZone(x,x1,x9)	(x)<(x1)?(x1):((x)>(x9)?(x9):(x))
 
 //---------------------------------------------------------------------------
 // Create a stream or simply read it
@@ -79,9 +81,15 @@ NaBinaryStreamFile::SetValue (NaReal fVal, int iVar)
 
   switch(eDataType)
     {
-    case bdtInteger1:	((char*)vCurLine)[iVar] = (int)fVal;	break;
-    case bdtInteger2:	((short*)vCurLine)[iVar] = (short)fVal;	break;
-    case bdtInteger4:	((long*)vCurLine)[iVar] = (long)fVal;	break;
+    case bdtInteger1:
+      ((char*)vCurLine)[iVar] = NaZone((int)fVal, -128, 127);
+      break;
+    case bdtInteger2:
+      ((short*)vCurLine)[iVar] = NaZone((int)fVal, -32768, 32767);
+      break;
+    case bdtInteger4:
+      ((long*)vCurLine)[iVar] = NaZone((long)fVal, -2147483647-1, 2147483647);
+      break;
     case bdtReal4:	((float*)vCurLine)[iVar] = (float)fVal;	break;
     case bdtReal8:	((double*)vCurLine)[iVar] = (double)fVal;break;
     }
