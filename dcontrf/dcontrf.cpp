@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.9 2004-02-15 20:37:10 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.10 2004-02-15 20:39:49 vlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -269,10 +269,10 @@ int main(int argc, char **argv)
     // Log files with statistics (file_mode)
     NaDataFile	*dfCErr = NULL, *dfIdErr = NULL;
 
-    printf("Writing control error statistics to '%s' file.\n",
-	   par("cerr_trace_file"));
-    printf("Writing identification error statistics to '%s' file.\n",
-	   par("iderr_trace_file"));
+    NaPrintLog("Writing control error statistics to '%s' file.\n",
+	       par("cerr_trace_file"));
+    NaPrintLog("Writing identification error statistics to '%s' file.\n",
+	       par("iderr_trace_file"));
 
     nnocl.c_in.set_output_filename(par("c_in"));
     nnocl.p_in.set_output_filename(par("p_in"));
@@ -287,10 +287,10 @@ int main(int argc, char **argv)
 	nnocl.noise_gen.set_gauss_distrib(&fMean, &fStdDev);
 
 	nnocl.setpnt_out.set_output_filename(par("out_r"));
-	printf("Writing reference signal to '%s' file.\n", par("out_r"));
+	NaPrintLog("Writing reference signal to '%s' file.\n", par("out_r"));
 
 	nnocl.noise_out.set_output_filename(par("out_n"));
-	printf("Writing pure noise signal to '%s' file.\n", par("out_n"));
+	NaPrintLog("Writing pure noise signal to '%s' file.\n", par("out_n"));
 
 	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
 	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
@@ -312,15 +312,15 @@ int main(int argc, char **argv)
       }
 
     nnocl.nn_u.set_output_filename(par("out_u"));
-    printf("Writing NNC control force to '%s' file.\n", par("out_u"));
+    NaPrintLog("Writing NNC control force to '%s' file.\n", par("out_u"));
 
     nnocl.nn_y.set_output_filename(par("out_nn_y"));
-    printf("Writing NNP identification output to '%s' file.\n",
-	   par("out_nn_y"));
+    NaPrintLog("Writing NNP identification output to '%s' file.\n",
+	       par("out_nn_y"));
 
     nnocl.on_y.set_output_filename(par("out_ny"));
-    printf("Writing plant + noise observation output to '%s' file.\n",
-	   par("out_ny"));
+    NaPrintLog("Writing plant + noise observation output to '%s' file.\n",
+	       par("out_ny"));
 
     switch(ckind)
       {
@@ -490,6 +490,7 @@ int main(int argc, char **argv)
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
+    fprintf(stderr, "EXCEPTION: %s\n", NaExceptionMsg(ex));
   }
 
   return 0;
