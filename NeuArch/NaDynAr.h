@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaDynAr.h */
-/* $Id: NaDynAr.h,v 1.4 2005-11-19 16:40:48 evlad Exp $ */
+/* $Id: NaDynAr.h,v 1.5 2005-11-19 17:00:53 evlad Exp $ */
 #ifndef __NaDynAr_hxx
 #define __NaDynAr_hxx
 
@@ -8,21 +8,22 @@
 #include <NaExcept.h>
 
 
-/***********************************************************************
+/**
+ ***********************************************************************
  * Template class for dynamic array of any type.
  ***********************************************************************/
 template <class type> class NaDynAr
 {
 public:
 
-  /* Create empty array. */
+  /** Create empty array. */
   NaDynAr () {
     pTail = pHead = NULL;
     nItems = 0;
   }
 
-  /* Create copy of the array, meaning there is a type(type&)
-     constructor. */
+  /** Create copy of the array, meaning there is a type(type&)
+      constructor. */
   NaDynAr (const NaDynAr& dynar) {
     pTail = pHead = NULL;
     nItems = 0;
@@ -32,12 +33,12 @@ public:
     }
   }
 
-  /* Destroy array and all its items. */
+  /** Destroy array and all its items. */
   virtual ~NaDynAr () {
     clean();
   }
 
-  /* Assign one array to another. */
+  /** Assign one array to another. */
   virtual NaDynAr&  operator= (const NaDynAr& dynar) {
     clean();  // previous contents
     int	i;
@@ -47,12 +48,12 @@ public:
     return *this;
   }
 
-  /* Returns number of items in the array. */
+  /** Returns number of items in the array. */
   virtual int	count () const {
     return nItems;
   }
 
-  /* Add an item at the end of array.  Return its index. */
+  /** Add an item at the end of array.  Return its index. */
   virtual int	addh (type* pobj) {
     if(NULL == pobj)
       throw(na_null_pointer);
@@ -76,7 +77,7 @@ public:
     return nItems - 1;
   }
 
-  /* Add an item at the beginning of array.  Return its index. */
+  /** Add an item at the beginning of array.  Return its index. */
   virtual int	addl (type* pobj) {
     if(NULL == pobj)
       throw(na_null_pointer);
@@ -100,8 +101,8 @@ public:
     return 0;
   }
 
-  /* Insert an item into the array just before given index.
-     Return its index. */
+  /** Insert an item into the array just before given index.  Return
+      its index. */
   virtual int   insert (int index, type* pobj) {
     if(NULL == pobj)
       throw(na_null_pointer);
@@ -130,31 +131,32 @@ public:
     return index;
   }
 
-  /* Add an item at the end of array.  Return its index.  Create new
-     instance of an object by means of copying constructor. */
+  /** Add an item at the end of array.  Return its index.  Create new
+      instance of an object by means of copying constructor. */
   virtual int	addh (const type& obj)  {
     type	*pobj = new type(obj);
     return addh(pobj);
   }
 
-  /* Add an item at the beginning of array.  Return its index.  Create
-     new instance of an object by means of copying constructor. */
+  /** Add an item at the beginning of array.  Return its index.
+      Create new instance of an object by means of copying
+      constructor. */
   virtual int	addl (const type& obj) {
     type	*pobj = new type(obj);
     return addl(pobj);
   }
 
-  /* Insert an item into the array just before given index.
-     Return its index.  Create new instance of an object by
-     means of copying constructor. */
+  /** Insert an item into the array just before given index.  Return
+      its index.  Create new instance of an object by means of copying
+      constructor. */
   virtual int   insert (int index, const type& obj) {
     type	*pobj = new type(obj);
     return insert(index, pobj);
   }
 
-  /* Add array of items making new for each one at the beginning of
-     the array.  Create new instance of an object by means of copying
-     constructor. */
+  /** Add array of items making new for each one at the beginning of
+      the array.  Create new instance of an object by means of copying
+      constructor. */
   virtual void	addh (const NaDynAr& arr) {
     int     i;
     for(i = 0; i < arr.count(); ++i){
@@ -162,9 +164,9 @@ public:
     }
   }
 
-  /* Add array of items making new for each one at the end of the
-     array.  Create new instance of an object by means of copying
-     constructor. */
+  /** Add array of items making new for each one at the end of the
+      array.  Create new instance of an object by means of copying
+      constructor. */
   virtual void	addl (const NaDynAr& arr) {
     int     i;
     for(i = 0; i < arr.count(); ++i){
@@ -172,8 +174,8 @@ public:
     }
   }
 
-  /* Insert array of items making new for each one.  Create
-     new instance of an object by means of copying constructor. */
+  /** Insert array of items making new for each one.  Create new
+      instance of an object by means of copying constructor. */
   virtual void  insert (int index, const NaDynAr& arr) {
     int     i;
     for(i = 0; i < arr.count(); ++i){
@@ -181,7 +183,7 @@ public:
     }
   }
 
-  /* Remove the item. */
+  /** Remove the item. */
   virtual void	remove (int index) {
     item	*p;
 
@@ -211,7 +213,7 @@ public:
     --nItems;
   }
 
-  /* Remove all items. */
+  /** Remove all items. */
   virtual void	clean () {
 #ifdef DynAr_DEBUG
     NaPrintLog("DynAr::clean(this=0x%08p), %d items, contents:\n",
@@ -238,7 +240,7 @@ public:
   }
 
 
-  /* Get reference at the item. */
+  /** Get reference at the item. */
   virtual type&	fetch (int index) {
     item	*p = fetch_item(index);
 
@@ -250,12 +252,12 @@ public:
     return *(p->pData);
   }
 
-  /* Get reference at the item. */
+  /** Get reference at the item. */
   virtual type&	operator[] (int index) {
     return fetch(index);
   }
 
-  /* Get constant reference at the item. */
+  /** Get constant reference at the item. */
   virtual const type&	get (int index) const {
     item	*p = fetch_item(index);
 
@@ -267,12 +269,12 @@ public:
     return *(p->pData);
   }
 
-  /* Get constant reference at the item. */
+  /** Get constant reference at the item. */
   virtual const type&	operator() (int index) const {
     return get(index);
   }
 
-  /* Print contents of the array */
+  /** Print contents of the array */
   virtual void  print_contents () const {
     int	i = 0;
     NaPrintLog("DynAr(this=0x%08p), %d items, contents:\n", this, nItems);
@@ -289,8 +291,8 @@ public:
 
 protected:
 
-  /* Check index for being out of range.  Return `true' if it's
-     in range and `false' otherwise. */
+  /** Check index for being out of range.  Return `true' if it's in
+      range and `false' otherwise. */
   bool		good (int index) const {
     if(index < 0 || index >= nItems)
       return false;
@@ -299,10 +301,10 @@ protected:
 
 private:
 
-  /* Number of items in the array. */
+  /** Number of items in the array. */
   int		nItems;
 
-  /* One-direction list is internal array representation. */
+  /** One-direction list is internal array representation. */
   struct item
   {
     type	*pData;
@@ -320,14 +322,14 @@ private:
       pData = NULL;
     }
 
-    /* Print self contents */
+    /** Print self contents */
     void      print_self () const {
       NaPrintLog("next=0x%08p; data=0x%08p\n", pNext, pData);
     }
 
   }	*pHead, *pTail;
 
-  /* Fetch item by index and return pointer at it or NULL. */
+  /** Fetch item by index and return pointer at it or NULL. */
   item*		fetch_item (int index) const {
     if(!good(index))
       return NULL;
