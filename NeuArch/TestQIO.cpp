@@ -1,5 +1,5 @@
 /* TestQIO.cpp */
-static char rcsid[] = "$Id: TestQIO.cpp,v 1.1 2001-06-23 17:46:30 vlad Exp $";
+static char rcsid[] = "$Id: TestQIO.cpp,v 1.2 2006-03-25 15:09:37 evlad Exp $";
 
 #pragma hdrstop
 //#include <condefs.h>
@@ -32,7 +32,7 @@ main (int argc, char **argv)
 
     /* runtime phase */
     if(!net.prepare()){
-      NaPrintLog("IMPORTANT: verification is failed!\n");
+      NaPrintLog("IMPORTANT: verification failed!\n");
     }
     else{
       NaPNEvent	pnev = pneDead;

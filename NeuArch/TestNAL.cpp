@@ -1,5 +1,5 @@
 /* TestNAL.cpp */
-static char rcsid[] = "$Id: TestNAL.cpp,v 1.2 2001-05-15 06:02:24 vlad Exp $";
+static char rcsid[] = "$Id: TestNAL.cpp,v 1.3 2006-03-25 15:09:37 evlad Exp $";
 
 #pragma hdrstop
 #include <condefs.h>
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     //delay.set_delay(4);
 
     if(!net.prepare()){
-        NaPrintLog("verification is failed\n");
+        NaPrintLog("verification failed\n");
     }
     else{
         do{

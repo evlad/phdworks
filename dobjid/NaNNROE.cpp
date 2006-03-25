@@ -1,5 +1,5 @@
 /* NaNNROE.cpp */
-static char rcsid[] = "$Id: NaNNROE.cpp,v 1.4 2001-04-22 19:39:04 vlad Exp $";
+static char rcsid[] = "$Id: NaNNROE.cpp,v 1.5 2006-03-25 15:09:37 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -89,7 +89,7 @@ NaNNRegrPlantEmulate::run_net ()
     try{
         // Prepare petri net engine
         if(!net.prepare()){
-            NaPrintLog("IMPORTANT: verification is failed!\n");
+            NaPrintLog("IMPORTANT: verification failed!\n");
         }
         else{
             NaPNEvent       pnev;

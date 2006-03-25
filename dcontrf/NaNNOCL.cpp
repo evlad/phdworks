@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.4 2002-02-28 20:18:54 vlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.5 2006-03-25 15:09:37 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -211,7 +211,7 @@ NaNNOptimContrLearn::run_net ()
 
     // Prepare petri net engine
     if(!net.prepare()){
-      NaPrintLog("IMPORTANT: verification is failed!\n");
+      NaPrintLog("IMPORTANT: verification failed!\n");
     }
     else{
       NaPNEvent       pnev;

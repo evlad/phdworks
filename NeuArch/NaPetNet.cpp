@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.15 2004-02-29 09:08:16 vlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.16 2006-03-25 15:09:37 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -135,7 +135,7 @@ NaPetriNet::ask_for_node (NaPetriNode* pNode, int *pIndex)
 
 //---------------------------------------------------------------------------
 // Prepare the network before start and return true if it's ready and false
-// if verification is failed.
+// if verification failed.
 bool
 NaPetriNet::prepare (bool bDoPrintouts)
 {

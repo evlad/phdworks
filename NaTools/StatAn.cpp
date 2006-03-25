@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
         // Prepare petri net engine
         if(!net.prepare()){
-            NaPrintLog("IMPORTANT: verification is failed!\n");
+            NaPrintLog("IMPORTANT: verification failed!\n");
         }
         else{
             NaPNEvent       pnev;
