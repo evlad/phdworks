@@ -1,5 +1,5 @@
 /* NaCSM.cpp */
-static char rcsid[] = "$Id: NaCSM.cpp,v 1.5 2001-12-09 15:32:16 vlad Exp $";
+static char rcsid[] = "$Id: NaCSM.cpp,v 1.6 2006-03-25 15:08:27 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -34,6 +34,8 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   onsum("onsum"),
   chkpnt_ny("chkpnt_ny"),
   cmp_e("cmp_e"),
+  cusum("cusum"),
+  cusum_out("cusum_out"),
   statan_e("statan_e"),
   statan_r("statan_r")
 {
@@ -99,6 +101,7 @@ NaControlSystemModel::link_net ()
 		       &chkpnt_y,
 		       &onsum,
                        &chkpnt_ny,
+                       &cusum,
                        NULL);
         net.link_nodes(
 		       (0==nSeriesLen)?
@@ -106,6 +109,7 @@ NaControlSystemModel::link_net ()
                        &chkpnt_n,
                        NULL);
 
+	net.link(&cusum.sum, &cusum_out.in);
 
         net.link(&chkpnt_ny.out, &cmp.aux);
         net.link(&chkpnt_n.out, &onsum.aux);
@@ -141,7 +145,7 @@ NaControlSystemModel::run_net ()
 
         // Prepare petri net engine
         if(!net.prepare()){
-            NaPrintLog("IMPORTANT: verification is failed!\n");
+            NaPrintLog("IMPORTANT: verification failed!\n");
         }
         else{
             NaPNEvent       pnev;

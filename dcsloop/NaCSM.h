@@ -12,10 +12,12 @@
 #include <NaPNStat.h>
 #include <NaPNChPt.h>
 #include <NaPNFIn.h>
+#include <NaPNFOut.h>
 #include <NaPNBu21.h>
 #include <NaPNDely.h>
 #include <NaPNRand.h>
 #include <NaPNDerv.h>
+#include <NaPNCuSu.h>
 #include <NaNDescr.h>
 
 
@@ -87,6 +89,8 @@ public:/* data */
     NaPNBus2i1o     bus;        // (u,e)->NN former
     NaPNDelay       delay;      // (e(i),e(i-1),...e(i-n))->NN delayer-former
     NaPNDerivative  delta_e;    // (1-1/z)*e(k)
+    NaPNCuSum       cusum;      // cumulative sum for change point detection
+    NaPNFileOutput  cusum_out;  // output of cumulative sum
 
 private:/* data */
 
