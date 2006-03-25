@@ -14,7 +14,7 @@ OBJS	=$(nosense_OBJS) \
 	$(luft_OBJS)
 
 LINK.so	=g++ -shared
-CXXFLAGS=$(FLAGS) -fpic -I../../Matrix.041 -I.. -I.
+CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
 
 all:	$(PROGRAMS)
 

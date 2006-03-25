@@ -1,6 +1,6 @@
 all:	libpnna.a
 
-CXXFLAGS=$(FLAGS) -I../Matrix.041 -I.
+CXXFLAGS=$(FLAGS) -fPIC -I../Matrix.041 -I.
 
 SRCS	=NaConLaw.cpp \
 	NaConfig.cpp \

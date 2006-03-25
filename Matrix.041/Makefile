@@ -1,3 +1,5 @@
+CFLAGS	=$(FLAGS) -fPIC
+
 SRCS	=matcreat.c \
 	matdurbn.c \
 	matinv.c \
