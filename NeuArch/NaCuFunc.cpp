@@ -1,5 +1,5 @@
 /* NaCuFunc.cpp */
-static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.3 2003-01-06 10:21:16 vlad Exp $";
+static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.4 2006-03-27 18:45:17 evlad Exp $";
 
 #include <stdlib.h>
 #include <string.h>
@@ -256,6 +256,7 @@ NaCustomFunc::Load (NaDataStream& ds)
 				    + strlen(NaEXFUNC_FILE_EXT) + 1];
     sprintf(filepath, "%s%s%s%s", getenv(NaEXFUNC_DIR_ENV),
 	    NaEXFUNC_DIR_SEP, szFile, NaEXFUNC_FILE_EXT);
+    NaPrintLog("Loading '%s' ...\n", filepath);
     so = dlopen(filepath, RTLD_LAZY);
     if(NULL == so)
       NaPrintLog("Can't find shared object '%s' due to %s.\n",
@@ -264,6 +265,7 @@ NaCustomFunc::Load (NaDataStream& ds)
   }
 
   if(NULL == so){
+    NaPrintLog("Loading '%s' ...\n", szFile);
     so = dlopen(szFile, RTLD_LAZY);
   }
   if(NULL == so){
