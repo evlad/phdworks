@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaPNKalm.h */
-/* $Id: NaPNKalm.h,v 1.2 2001-05-15 06:02:22 vlad Exp $ */
+/* $Id: NaPNKalm.h,v 1.3 2006-11-10 06:19:20 evlad Exp $ */
 //---------------------------------------------------------------------------
 #ifndef NaPNKalmH
 #define NaPNKalmH
@@ -11,9 +11,8 @@
 
 
 //---------------------------------------------------------------------------
-// Applied Petri net node: state-space object and Kalman filter
-// Has one input: u and three output.  in1.dim()+in2.dim()=out.dim()
-
+// Applied Petri net node: state-space object and Kalman filter.
+// Has three inputs: u, v, w and three outputs: y_obs, x_int, x_est.
 //---------------------------------------------------------------------------
 class NaPNKalman : public NaPetriNode
 {
