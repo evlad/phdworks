@@ -1,5 +1,5 @@
 /* normaldistr.cpp */
-static char rcsid[] = "$Id: normaldistr.cpp,v 1.2 2007-09-10 21:13:23 evlad Exp $";
+static char rcsid[] = "$Id: normaldistr.cpp,v 1.3 2007-09-20 18:02:48 evlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -99,7 +99,7 @@ erf_a (double x)
 
 /**
  ***********************************************************************
- * Conjugate error function: e~(x)=1 - e(x)
+ * Conjugate error function: e~(x) = 1 - e(x)
  ***********************************************************************/
 double
 erfc (double x, double prec)
