@@ -1,5 +1,5 @@
 /* normaldistr.cpp */
-static char rcsid[] = "$Id: normaldistr.cpp,v 1.3 2007-09-20 18:02:48 evlad Exp $";
+static char rcsid[] = "$Id: normaldistr.cpp,v 1.4 2007-10-08 20:22:08 evlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -73,6 +73,18 @@ cdf (double x, double mx, double sx, double prec)
 
 /**
  ***********************************************************************
+ * Cummulative distribution function calculation (Hill, AS66):
+ * F(x)=int f(x)
+ ***********************************************************************/
+double
+cdf_as66 (double x, double mx, double sx)
+{
+  return alnorm((x - mx) / sx, 0);
+}
+
+
+/**
+ ***********************************************************************
  * Error function: e(x)=2 * int_0^x(exp(-t**2)dt)/sqrt(PI)
  ***********************************************************************/
 double
@@ -91,9 +103,10 @@ erf (double x, double prec)
 double
 erf_a (double x)
 {
-  double	a = -8 * (M_PI - 3) / (3 * M_PI * (M_PI - 4));
-  return	sqrt(1 - exp(- x * x * (M_2_SQRTPI * M_2_SQRTPI + a * x * x)
-			     / (1 + a * x * x)));
+  double a = -8 * (M_PI - 3) / (3 * M_PI * (M_PI - 4));
+  double m = sqrt(1 - exp(- x * x * (M_2_SQRTPI * M_2_SQRTPI + a * x * x)
+			  / (1 + a * x * x)));
+  return x < 0? - m: m;
 }
 
 
