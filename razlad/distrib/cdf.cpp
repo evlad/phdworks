@@ -1,5 +1,5 @@
 /* cdf.cpp */
-static char rcsid[] = "$Id: cdf.cpp,v 1.1 2007-09-10 21:13:23 evlad Exp $";
+static char rcsid[] = "$Id: cdf.cpp,v 1.2 2007-10-08 20:23:17 evlad Exp $";
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,10 +23,10 @@ main (int argc, char* argv[])
   double	fLowB = atof(argv[1]);
   double	fHighB = atof(argv[2]);
   double	fStep = atof(argv[3]);
-  double	fPrec = argc == 5? atof(argv[4]): 1e-6;
+  double	fPrec = argc == 5? atof(argv[4]): -1.0;
 
   for(double x = fLowB; x < fHighB; x += fStep)
-    printf("%g\t%g\n", x, cdf(x));
+    printf("%g\t%g\n", x, cdf(x, 0.0, 1.0, fPrec));
  
   return 0;
 }
