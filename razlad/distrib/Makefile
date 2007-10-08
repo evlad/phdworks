@@ -1,6 +1,7 @@
 # CXXFLAGS=$(FLAGS)
 
-LIBSRCS=normaldistr.cpp
+LIBSRCS=normaldistr.cpp \
+	as66.cpp
 
 LIBOBJS=$(LIBSRCS:.cpp=.o)
 
@@ -23,7 +24,16 @@ pdf: pdf.o $(LIBOBJS)
 cdf: cdf.o $(LIBOBJS)
 	g++ -o $@ $@.o $(LIBOBJS) -lm
 
+cdf_as66: cdf_as66.o $(LIBOBJS)
+	g++ -o $@ $@.o $(LIBOBJS) -lm
+
 erfc: erfc.o $(LIBOBJS)
+	g++ -o $@ $@.o $(LIBOBJS) -lm
+
+erf: erf.o $(LIBOBJS)
+	g++ -o $@ $@.o $(LIBOBJS) -lm
+
+erf_a: erf_a.o $(LIBOBJS)
 	g++ -o $@ $@.o $(LIBOBJS) -lm
 
 all: $(LIBOBJS) $(TESTS)
