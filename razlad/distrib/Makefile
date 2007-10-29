@@ -38,6 +38,9 @@ erf_a: erf_a.o $(LIBOBJS)
 
 all: $(LIBOBJS) $(TESTS)
 
+lib: $(LIBOBJS)
+	ar ruv libdistrib.a $(LIBOBJS)
+
 $(OBJECTS):
 
 clean:
