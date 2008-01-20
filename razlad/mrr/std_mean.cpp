@@ -1,5 +1,5 @@
 /* std_mean.cpp */
-static char rcsid[] = "$Id: std_mean.cpp,v 1.2 2008-01-06 21:41:31 evlad Exp $";
+static char rcsid[] = "$Id: std_mean.cpp,v 1.3 2008-01-20 19:39:48 evlad Exp $";
 
 #include <map>
 #include <vector>
@@ -150,9 +150,24 @@ mrr_std_mean (double m_1, double m_x, double h, int k, int n_max)
       //printf("pt_np1=%g\tqt_np1=%g\n", pt_np1, qt_np1);
 
       /* 8 */
-      //double	Sigma_pa = ???;
-      //double	Sigma_qa = ???;
-      //double	P_da = ???;
+      double	p_m = p_r(delta, n, k, m);
+      double	p_m1 = p_r(delta, n + 1, k, m);
+      double	Sigma_pa = p_m * p_m1 * (n * (p_m + p_m1) + p_m)
+	/ ((p_m - p_m1) * (p_m - p_m1));
+
+      double	q_m = q_r(delta, n, k, m);
+      double	q_m1 = q_r(delta, n + 1, k, m);
+      double	Sigma_qa = q_m * q_m1 * (n * (q_m + q_m1) + q_m)
+	/ ((q_m - q_m1) * (q_m - q_m1));
+
+      double	P_da = p_m * p_m1 / (p_m - p_m1);
+
+      for(int j = 1; j <= n; ++j)
+	{
+	  Sigma_pa += j * p_r(delta, j, k, m);
+	  Sigma_qa += j * q_r(delta, j, k, m);
+	  P_da += p_r(delta, j, k, m);
+	}
 
       /* 9 */
       Sigma_p += (n + 1) * pt_np1;
@@ -167,14 +182,15 @@ mrr_std_mean (double m_1, double m_x, double h, int k, int n_max)
 
       /* 12 */
       double	tau_mean = (Sigma_p + Sigma_q) / P_d;
-      double	tau_a = 0.0;//(Sigma_pa + Sigma_qa) / P_da;
+      double	tau_a = (Sigma_pa + Sigma_qa) / P_da;
 
       /* 13 */
       double	P = P_d + P_c;
 
       /* 14 */
       //printf("n=%d\ttau_mean=%g\ttau_a=%g\tP=%g\n", n, tau_mean, tau_a, P);
-      printf("%d\t%g\n", n, tau_mean);
+      //printf("%d\t%g\n", n, tau_mean);
+      printf("%d\t%g\t%g\n", n, tau_mean, tau_a);
 
       /* 15 */
     }//while(n < n_max);
