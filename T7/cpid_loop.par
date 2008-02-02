@@ -1,0 +1,59 @@
+# dcsloop parameters
+# $Id: cpid_loop.par,v 1.1 2008-02-02 15:35:43 evlad Exp $
+
+########################################
+# Type of controller
+#contr_kind = nnc
+contr_kind = lin
+
+# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
+nnc_mode = e+de
+
+# Initial state of a plant
+plant_initial_state = 0
+
+########################################
+# Mode of the modeling
+#input_kind = stream
+input_kind = file
+
+# (input_kind = stream) Length of series
+stream_len = 5000
+
+# Linear (or combined) plant transfer function
+linplant_tf = plant0.tf
+
+# (contr_kind = lin) Linear (or combined) controller transfer function
+lincontr_tf = cpid.tf
+
+# (contr_kind = nnc) Neural net controller
+nncontr = nnc.nn
+
+# (input_kind = stream) Input transfer functions
+refer_tf = refer.tf
+noise_tf = noise.tf
+
+# (input_kind = file) Input files
+in_r = step1_5_100.dat
+in_n = noise0_105.dat
+
+# Output files
+out_u = u.dat
+out_e = e.dat
+out_y = y.dat
+out_ny = ny.dat
+
+# (input_kind = stream) Output files
+out_r = r_out.dat
+out_n = n_out.dat
+
+# Cumulative sum track files and parameters
+cusum = cusum.dat
+sigma0 = 2.15
+sigma1 = 1.28
+h_sol = 0.0
+k_const = 0.0
+
+# (input_kind = stream) Output files
+out_r = r_out.dat
+out_n = n_out.dat
