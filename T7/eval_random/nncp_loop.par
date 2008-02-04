@@ -1,13 +1,13 @@
 # dcsloop parameters
-# $Id: cpid_loop.par,v 1.2 2008-02-04 16:07:09 evlad Exp $
+# $Id: nncp_loop.par,v 1.1 2008-02-04 16:07:10 evlad Exp $
 
 ########################################
 # Type of controller
-#contr_kind = nnc
-contr_kind = lin
+contr_kind = nnc
+#contr_kind = lin
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
-nnc_mode = e+de
+nnc_mode = e+r
 
 # Initial state of a plant
 plant_initial_state = 0
@@ -21,31 +21,31 @@ input_kind = file
 stream_len = 5000
 
 # Linear (or combined) plant transfer function
-linplant_tf = plant0.tf
+linplant_tf = ../plant0.tf
 
 # (contr_kind = lin) Linear (or combined) controller transfer function
-lincontr_tf = cpid.tf
+lincontr_tf = ../cpid.tf
 
 # (contr_kind = nnc) Neural net controller
-nncontr = nnc.nn
+nncontr = ../nnc_r+e_1_531.nn
 
 # (input_kind = stream) Input transfer functions
 refer_tf = refer.tf
 noise_tf = noise.tf
 
 # (input_kind = file) Input files
-in_r = step1_5_100.dat
-in_n = noise0_105.dat
+in_r = ../refer_len2000.dat
+in_n = ../noise_len2000.dat
 
 # Output files
-out_u = cpid_u.dat
-out_e = cpid_e.dat
-out_y = cpid_y.dat
-out_ny = cpid_ny.dat
+out_u = nncp_u.dat
+out_e = nncp_e.dat
+out_y = nncp_y.dat
+out_ny = nncp_ny.dat
 
 # (input_kind = stream) Output files
-out_r = cpid_r_out.dat
-out_n = cpid_n_out.dat
+out_r = r_out.dat
+out_n = n_out.dat
 
 # Cumulative sum track files and parameters
 cusum = cusum.dat
