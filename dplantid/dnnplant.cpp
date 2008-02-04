@@ -1,5 +1,5 @@
 /* dnnplant.cpp */
-static char rcsid[] = "$Id: dnnplant.cpp,v 1.4 2002-02-14 14:16:03 vlad Exp $";
+static char rcsid[] = "$Id: dnnplant.cpp,v 1.5 2008-02-04 14:53:06 evlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -54,7 +54,7 @@ main (int argc, char* argv[])
 
     unsigned	iDelay_u = nnroe.delay_u.get_max_delay();
     unsigned	iDelay_y = nnroe.delay_y.get_max_delay();
-    unsigned	iSkip_u, iSkip_y;
+    unsigned	iSkip_u = 0, iSkip_y = 0;
     unsigned	iDelay_yt, iSkip_yt;
 
     // Skip u or y due to absent earlier values of y or u
