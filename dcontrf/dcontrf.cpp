@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.15 2004-04-06 00:16:10 vlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.16 2008-02-04 15:01:58 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 
     unsigned	iDelay_u = nnocl.delay_u.get_max_delay();
     unsigned	iDelay_y = nnocl.delay_y.get_max_delay();
-    unsigned	iSkip_u, iSkip_y;
+    unsigned	iSkip_u = 0, iSkip_y = 0;
     unsigned	iDelay_e, iSkip_e;
 
     // Skip u or y due to absent earlier values of y or u
