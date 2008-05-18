@@ -63,6 +63,9 @@ public:/* methods */
     // Set initial observed state of a plant
     void		set_initial_state (const NaVector& v);
 
+    // Set flag of using cummulative sum features
+    void		set_cusum_flag (bool use_cusum);
+
 public:/* data */
 
     // Main Petri network module
@@ -102,6 +105,9 @@ private:/* data */
 
     // Initial state of a plant
     NaVector		vInitial;
+
+    // Cummulative sum usage
+    bool		bUseCuSum;
 
 };
 

@@ -1,5 +1,5 @@
 /* dcsloop.cpp */
-static char rcsid[] = "$Id: dcsloop.cpp,v 1.12 2004-02-22 21:04:12 vlad Exp $";
+static char rcsid[] = "$Id: dcsloop.cpp,v 1.13 2008-05-18 19:06:35 evlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #0 of neural network control paradigm (NNCP).
@@ -152,6 +152,11 @@ int main(int argc, char **argv)
       }
 
     NaControlSystemModel	csm(len, ckind);
+    bool			bUseCuSum = par.CheckParam("cusum");
+
+    // Set cummulative sum method is turned on or off
+    csm.set_cusum_flag(bUseCuSum);
+    NaPrintLog("Cummulative sum detection is %s\n", bUseCuSum? "ON": "OFF");
 
     // Link the network
     csm.link_net();
@@ -163,8 +168,10 @@ int main(int argc, char **argv)
     csm.chkpnt_n.set_output_filename(par("out_n"));
     csm.chkpnt_y.set_output_filename(par("out_y"));
     csm.chkpnt_ny.set_output_filename(par("out_ny"));
-    csm.cusum_out.set_output_filename(par("cusum"));
 
+    if(bUseCuSum)
+      csm.cusum_out.set_output_filename(par("cusum"));
+      
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
 
@@ -199,8 +206,9 @@ int main(int argc, char **argv)
       }
 
     // Setup parameters for CUSUM (change-point detection)
-    csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
-		    atof(par("h_sol")), atof(par("k_const")));
+    if(bUseCuSum)
+      csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
+		      atof(par("h_sol")), atof(par("k_const")));
 
     NaPNEvent   pnev = csm.run_net();
 

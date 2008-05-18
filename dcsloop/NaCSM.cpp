@@ -1,5 +1,5 @@
 /* NaCSM.cpp */
-static char rcsid[] = "$Id: NaCSM.cpp,v 1.6 2006-03-25 15:08:27 evlad Exp $";
+static char rcsid[] = "$Id: NaCSM.cpp,v 1.7 2008-05-18 19:06:24 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -16,6 +16,7 @@ static char rcsid[] = "$Id: NaCSM.cpp,v 1.6 2006-03-25 15:08:27 evlad Exp $";
 // with data files if len=0
 NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
 : net("nncp0pn"), nSeriesLen(len), eContrKind(ckind), vInitial(1),
+  bUseCuSum(true),
   setpnt_inp("setpnt_inp"),
   setpnt_gen("setpnt_gen"),
   chkpnt_r("chkpnt_r"),
@@ -94,22 +95,34 @@ NaControlSystemModel::link_net ()
 	    break;
 	  }
 
-        net.link_nodes(
-                       &controller,
-		       &chkpnt_u,
-                       &plant,
-		       &chkpnt_y,
-		       &onsum,
-                       &chkpnt_ny,
-                       &cusum,
-                       NULL);
+	if(bUseCuSum)
+	  net.link_nodes(
+			 &controller,
+			 &chkpnt_u,
+			 &plant,
+			 &chkpnt_y,
+			 &onsum,
+			 &chkpnt_ny,
+			 &cusum,
+			 NULL);
+	else
+	  net.link_nodes(
+			 &controller,
+			 &chkpnt_u,
+			 &plant,
+			 &chkpnt_y,
+			 &onsum,
+			 &chkpnt_ny,
+			 NULL);
+
         net.link_nodes(
 		       (0==nSeriesLen)?
 		       (NaPetriNode*)&noise_inp: (NaPetriNode*)&noise_gen,
                        &chkpnt_n,
                        NULL);
 
-	net.link(&cusum.sum, &cusum_out.in);
+	if(bUseCuSum)
+	  net.link(&cusum.sum, &cusum_out.in);
 
         net.link(&chkpnt_ny.out, &cmp.aux);
         net.link(&chkpnt_n.out, &onsum.aux);
@@ -220,6 +233,15 @@ void
 NaControlSystemModel::set_initial_state (const NaVector& v)
 {
   vInitial = v;
+}
+
+
+//---------------------------------------------------------------------------
+// Set flag of using cummulative sum features
+void
+NaControlSystemModel::set_cusum_flag (bool use_cusum)
+{
+  bUseCuSum = use_cusum;
 }
 
 
