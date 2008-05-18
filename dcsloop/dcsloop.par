@@ -1,5 +1,5 @@
 # dcsloop parameters
-# $Id: dcsloop.par,v 1.5 2003-06-15 08:29:57 vlad Exp $
+# $Id: dcsloop.par,v 1.6 2008-05-18 19:07:01 evlad Exp $
 
 ########################################
 # Type of controller
@@ -42,6 +42,17 @@ out_u = u.dat
 out_e = e.dat
 out_y = y.dat
 out_ny = ny.dat
+
+# (input_kind = stream) Output files
+out_r = r_out.dat
+out_n = n_out.dat
+
+# Cumulative sum track files and parameters
+cusum = cusum.dat
+sigma0 = 2.15
+sigma1 = 1.28
+h_sol = 0.0
+k_const = 0.0
 
 # (input_kind = stream) Output files
 out_r = r_out.dat
