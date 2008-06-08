@@ -1,0 +1,49 @@
+Neural net Optimal Controller case study
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Vladimir L. Eliseev (MPEI, Moscow, 1999-2002)
+
+$Id: README,v 1.1 2008-06-08 21:04:15 evlad Exp $
+
+Directories:
+^^^^^^^^^^^^
+0ev - evaluation (test) data set preparation
+0tr - training data set preparation
+1   - NNP training
+2   - NNC out-of-loop training
+3   - NNC in-the-loop training
+4   - NOC evaluation in the loop
+5a  - NOC not adaptive behavior when plant becomes changed (at t=500)
+5b  - NOC adaptive behavior when plant becomes changed (at t=500)
+6   - NNP adopted for changes (taken from 5a)
+
+Files:
+^^^^^^
+*/*.par - parameters for programs to execute
+*/*.log - log files after execution
+*/*_trace.dat - training/testing traces
+*/*.dat - training/testing(evaluation) input and output data
+*/report.plt - plotting important graphs
+*/*.png - important graphs
+
+Linear objects:
+^^^^^^^^^^^^^^^
+noise.tf   - noise signal
+refer.tf   - reference signal
+pid_bad.tf - not optimal PID controller 
+pid.tf     - fine tuned manually PID controller 
+plant.tf   - plant
+wiener.tf  - wiener equivalent system (linear optimal controller + plant
+	     in the loop)
+woc.tf     - linear optimal controller
+
+plant_notst.cof - plant changes dramatically at t=500
+
+Neural net objects:
+^^^^^^^^^^^^^^^^^^^
+1/nnp_ini.nn - plant emulation initial neural net
+1/nnp_res.nn - plant emulation resulting neural net (after training)
+2/ini.nnc    - controller initial neural net
+2/pre.nnc    - PID controller emulation neural net (after out-of-loop
+	       training)
+3/res.nnc    - quasi-optimal controller neural net (after in-the-loop
+	       training)
