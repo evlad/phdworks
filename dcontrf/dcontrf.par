@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 2.5 2004-04-05 21:59:53 vlad Exp $
+# $Id: dcontrf.par,v 2.6 2008-06-08 20:59:31 evlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -11,6 +11,9 @@ stream_len = 5000
 
 # (input_kind = stream,file) Auto update frequency; 0 to disable
 nnc_auf = 500
+
+# >0 means turn on NNP learning
+#nnp_auf = 100
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
 nnc_mode = e+r

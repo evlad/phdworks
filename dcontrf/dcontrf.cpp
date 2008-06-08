@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.16 2008-02-04 15:01:58 evlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.17 2008-06-08 20:59:21 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -360,6 +360,10 @@ int main(int argc, char **argv)
     nnocl.nnteacher.lpar.eta_output = atof(par("eta_output"));
     nnocl.nnteacher.lpar.alpha = atof(par("alpha"));
 
+    //nnocl.errbackprop.lpar.eta = atof(par("p_eta"));
+    //nnocl.errbackprop.lpar.eta_output = atof(par("p_eta_output"));
+    //nnocl.errbackprop.lpar.alpha = atof(par("p_alpha"));
+
     // Teach the network iteratively
     NaPNEvent   pnev;
     int         iIter = 0;
@@ -369,23 +373,32 @@ int main(int argc, char **argv)
 #endif /* DOS & Win */
 
     NaReal	fPrevMSE = 0.0;
-    int		auf = 0;
+    int		nnc_auf = 0;
+    int		nnp_auf = 0;
     int		max_epochs = 0;
 
-    auf = atoi(par("nnc_auf"));
+    nnc_auf = atoi(par("nnc_auf"));
+    nnp_auf = atoi(par("nnp_auf"));
+
+    if(nnp_auf > 0)
+	NaPrintLog("NNP training is %s\n", (nnp_auf > 0)? "ON": "OFF");
 
     if(stream_mode == inp_data_mode ||
-       file_mode == inp_data_mode && auf > 0)
+       file_mode == inp_data_mode && nnc_auf > 0)
       {
 	// Set autoupdate facility
-	nnocl.nnteacher.set_auto_update_freq(auf);
+	nnocl.nnteacher.set_auto_update_freq(nnc_auf);
+	NaPrintLog("Autoupdate frequency for NNC is %d\n", nnc_auf);
+
+	if(nnp_auf > 0) {
+	    nnocl.errbackprop.set_auto_update_freq(nnp_auf);
+	    NaPrintLog("Autoupdate frequency for NNP is %d\n", nnp_auf);
+	}
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
 	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
 
 	nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
-
-	NaPrintLog("Autoupdate frequency is %d\n", auf);
 
 	pnev = nnocl.run_net();
 
@@ -427,6 +440,8 @@ int main(int argc, char **argv)
 	  if(max_epochs > 0 && iIter >= max_epochs){
 	    // Limited number of epochs
 	    nnocl.nnteacher.update_nn();
+	    if(nnp_auf > 0)
+		nnocl.errbackprop.update_nn();
 	    break;
 	  }
 
