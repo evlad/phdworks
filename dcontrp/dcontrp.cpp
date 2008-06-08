@@ -1,5 +1,5 @@
 /* dcontrp.cpp */
-static char rcsid[] = "$Id: dcontrp.cpp,v 1.11 2004-02-22 21:03:36 vlad Exp $";
+static char rcsid[] = "$Id: dcontrp.cpp,v 1.12 2008-06-08 21:00:31 evlad Exp $";
 
 //---------------------------------------------------------------------------
 // Implementation of the phase #1 of neural network control paradigm (NNCP).
@@ -246,7 +246,7 @@ int main(int argc, char **argv)
 	  else
 	    fNormTestMSE = nncpe.statan.RMS[0];
 
-	  printf("          Test: MSE=%g (%g)\n", nncpe.statan.RMS[0],
+	  printf("          Test: MSE=%g (%g)", nncpe.statan.RMS[0],
 		 fNormTestMSE);
 
 	  NaPrintLog("*** Test pass ***\n");
@@ -263,6 +263,8 @@ int main(int argc, char **argv)
 	    {
 	      NaPrintLog("Test MSE reached preset value %g -> stop\n",
 			 fFinishOnReachMSE);
+	      printf(" -> reached preset value %g -> stop\n",
+		     fFinishOnReachMSE);
 	      break;
 	    }
 	  if(fFinishOnDecrease != 0 &&
@@ -284,17 +286,23 @@ int main(int argc, char **argv)
 		{
 		  NaPrintLog("Test MSE was growing for %d epoch -> stop\n",
 			     nFinishOnGrowMSE);
+		  printf(" -> grew for %d epochs -> stop\n", nFinishOnGrowMSE);
 		  break;
 		}
+	      printf(" -> grows\n", nFinishOnGrowMSE);
 	    }
 	  else
-	    /* Reset counter */
-	    nGrowingMSE = 0;
+	    {
+	      /* Reset counter */
+	      nGrowingMSE = 0;
+	      printf(" -> descents\n");
+	    }
 
 	  if(nFinishOnMaxEpoch != 0 && iEpoch >= nFinishOnMaxEpoch)
 	    {
 	      NaPrintLog("Max number of epoch %d is reached -> stop\n",
 			 nFinishOnMaxEpoch);
+	      printf(" %d epochs is over -> stop\n", nFinishOnMaxEpoch);
 	      break;
 	    }
 
