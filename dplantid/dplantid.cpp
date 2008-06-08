@@ -1,5 +1,5 @@
 /* dplantid.cpp */
-static char rcsid[] = "$Id: dplantid.cpp,v 1.17 2008-02-04 14:53:11 evlad Exp $";
+static char rcsid[] = "$Id: dplantid.cpp,v 1.18 2008-06-08 21:01:47 evlad Exp $";
 
 #include <math.h>
 #include <stdio.h>
@@ -308,7 +308,7 @@ main (int argc, char* argv[])
 
 	  fNormTestMSE = nnroe.statan.RMS[0] / nnroe.statan_y.RMS[0];
 
-	  printf("          Test: MSE=%g (%g)\n", nnroe.statan.RMS[0],
+	  printf("          Test: MSE=%g (%g)", nnroe.statan.RMS[0],
 		 nnroe.statan.RMS[0] / nnroe.statan_y.RMS[0]);
 
 	  NaPrintLog("*** Test passed ***\n");
@@ -325,6 +325,8 @@ main (int argc, char* argv[])
 	    {
 	      NaPrintLog("Test MSE reached preset value %g -> stop\n",
 			 fFinishOnReachMSE);
+	      printf(" -> reached preset value %g -> stop\n",
+		     fFinishOnReachMSE);
 	      break;
 	    }
 	  if(fPrevTestMSE < fNormTestMSE)
@@ -335,17 +337,23 @@ main (int argc, char* argv[])
 		{
 		  NaPrintLog("Test MSE was growing for %d epoch -> stop\n",
 			     nFinishOnGrowMSE);
+		  printf(" -> grew for %d epochs -> stop\n", nFinishOnGrowMSE);
 		  break;
 		}
+	      printf(" -> grows\n", nFinishOnGrowMSE);
 	    }
 	  else
-	    /* Reset counter */
-	    nGrowingMSE = 0;
+	    {
+	      /* Reset counter */
+	      nGrowingMSE = 0;
+	      printf(" -> descents\n");
+	    }
 
 	  if(nFinishOnMaxEpoch != 0 && iEpoch >= nFinishOnMaxEpoch)
 	    {
 	      NaPrintLog("Max number of epoch %d is reached -> stop\n",
 			 nFinishOnMaxEpoch);
+	      printf(" %d epochs is over -> stop\n", nFinishOnMaxEpoch);
 	      break;
 	    }
 
