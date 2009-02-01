@@ -1,0 +1,6 @@
+Original gain=1.0, MSE=0.476744
+ Changed gain=0.9, MSE=0.391622
+ Changed gain=0.8, MSE=0.461133
+ Changed gain=0.7, MSE=0.390293
+ Changed gain=0.6, MSE=0.450595
+ Changed gain=0.5, MSE=0.368631
