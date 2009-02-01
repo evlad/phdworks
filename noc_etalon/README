@@ -2,7 +2,7 @@ Neural net Optimal Controller case study
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Vladimir L. Eliseev (MPEI, Moscow, 1999-2002)
 
-$Id: README,v 1.1 2008-06-08 21:04:15 evlad Exp $
+$Id: README,v 1.2 2009-02-01 19:35:08 evlad Exp $
 
 Directories:
 ^^^^^^^^^^^^
@@ -15,6 +15,11 @@ Directories:
 5a  - NOC not adaptive behavior when plant becomes changed (at t=500)
 5b  - NOC adaptive behavior when plant becomes changed (at t=500)
 6   - NNP adopted for changes (taken from 5a)
+7   - NNP adopted in-the-loop for plant2 separately
+8a  - influence of tau ascent on control MSE in non-adaptive NOC
+8b  - influence of tau descent on control MSE in non-adaptive NOC
+8c  - influence of gain ascent on control MSE in non-adaptive NOC
+8d  - influence of gain descent on control MSE in non-adaptive NOC
 
 Files:
 ^^^^^^
@@ -31,12 +36,15 @@ noise.tf   - noise signal
 refer.tf   - reference signal
 pid_bad.tf - not optimal PID controller 
 pid.tf     - fine tuned manually PID controller 
-plant.tf   - plant
+plant1.tf  - original plant (K=1,tau=-0.5)
+plant2.tf  - plant changed both with K and tau (K=2, tau=-0.7)
 wiener.tf  - wiener equivalent system (linear optimal controller + plant
 	     in the loop)
 woc.tf     - linear optimal controller
 
-plant_notst.cof - plant changes dramatically at t=500
+plant_notst.cof - plant1 changes to plant2 at t=500
+plant_tau_asc.cof - plant1 changes to tau=-0.6 (at t=500)
+		    and to tau=-0.7(at t=100)
 
 Neural net objects:
 ^^^^^^^^^^^^^^^^^^^
