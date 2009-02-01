@@ -2,7 +2,7 @@ Neural net Optimal Controller case study
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Vladimir L. Eliseev (MPEI, Moscow, 1999-2002)
 
-$Id: README,v 1.2 2009-02-01 19:35:08 evlad Exp $
+$Id: README,v 1.3 2009-02-01 19:44:39 evlad Exp $
 
 Directories:
 ^^^^^^^^^^^^
@@ -42,9 +42,15 @@ wiener.tf  - wiener equivalent system (linear optimal controller + plant
 	     in the loop)
 woc.tf     - linear optimal controller
 
-plant_notst.cof - plant1 changes to plant2 at t=500
-plant_tau_asc.cof - plant1 changes to tau=-0.6 (at t=500)
-		    and to tau=-0.7(at t=100)
+plant_notst.cof    - plant1 changes to plant2 at t=500
+plant_tau_asc.cof  - plant1 changes tau from -0.5 to -0.6, -0.7, -0.8,
+                     -0.9 every 500 time samples
+plant_tau_des.cof  - plant1 changes tau from -0.5 to -0.4, -0.3, -0.2,
+                     -0.1 every 500 time samples
+plant_gain_asc.cof - plant1 changes gain from 1 to 1.1, 1.2, 1.3, 1.4
+                     1.5 every 500 time samples
+plant_gain_des.cof - plant1 changes gain from 1 to 0.9, 0.8, 0.7, 0.6
+                     0.5 every 500 time samples
 
 Neural net objects:
 ^^^^^^^^^^^^^^^^^^^
