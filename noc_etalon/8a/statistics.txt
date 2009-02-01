@@ -1,0 +1,5 @@
+Original tau=-0.5, MSE=0.428428
+ Changed tau=-0.6, MSE=0.458036
+ Changed tau=-0.7, MSE=0.502446
+ Changed tau=-0.8, MSE=0.658843
+ Changed tau=-0.9, MSE=0.791114
