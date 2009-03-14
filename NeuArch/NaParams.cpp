@@ -1,5 +1,5 @@
 /* NaParams.cpp */
-static char rcsid[] = "$Id: NaParams.cpp,v 1.13 2004-03-24 21:27:22 vlad Exp $";
+static char rcsid[] = "$Id: NaParams.cpp,v 1.14 2009-02-14 20:24:15 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -198,7 +198,8 @@ NaParams::GetParam (const char* szParamName) const
   it.name = (char*)szParamName;
   it.value = NULL;
 
-  char	*szParamValue = "?not found";
+  char	szNotFound[] = "?not found";
+  char	*szParamValue = szNotFound;
 
   pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
   if(NULL != pit)
@@ -220,7 +221,7 @@ NaParams::FetchParam (const char* szParamName)
   it.name = (char*)szParamName;
   it.value = NULL;
 
-  char	*szParamValue = "?not found";
+  const char	*szParamValue = "?not found";
 
   pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
   if(NULL != pit)
@@ -257,7 +258,7 @@ NaParams::GetListOfParams (const char* szParamName,
   it.value = NULL;
 
   char	**szResult;
-  char	*szParamValue;
+  const char	*szParamValue;
 
   pit = (item_t*)bsearch(&it, storage, stored_n, sizeof(item_t), stored_cmp);
   if(NULL == pit)
