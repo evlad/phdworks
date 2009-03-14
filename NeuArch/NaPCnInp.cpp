@@ -1,5 +1,5 @@
 /* NaPCnInp.cpp */
-static char rcsid[] = "$Id: NaPCnInp.cpp,v 1.3 2001-12-23 21:41:00 vlad Exp $";
+static char rcsid[] = "$Id: NaPCnInp.cpp,v 1.4 2009-02-14 20:24:30 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include "NaExcept.h"
@@ -67,7 +67,10 @@ NaPetriCnInput::kind ()
 NaVector&
 NaPetriCnInput::data ()
 {
-    return adjoint()->data();
+  static NaVector	vEmpty;
+  if(NULL == adjoint())
+    return vEmpty;
+  return adjoint()->data();
 }
 
 
