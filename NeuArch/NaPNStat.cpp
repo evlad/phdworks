@@ -1,5 +1,5 @@
 /* NaPNStat.cpp */
-static char rcsid[] = "$Id: NaPNStat.cpp,v 1.7 2002-02-28 19:22:27 vlad Exp $";
+static char rcsid[] = "$Id: NaPNStat.cpp,v 1.8 2009-02-14 20:24:30 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <math.h>
@@ -9,10 +9,10 @@ static char rcsid[] = "$Id: NaPNStat.cpp,v 1.7 2002-02-28 19:22:27 vlad Exp $";
 #include "NaPNStat.h"
 
 
-static char	*szId[NaSI_number] = {
+static const char	*szId[NaSI_number] = {
   "ABSMEAN", "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABSMAX"
 };
-static char	*szSign[3] = {
+static const char	*szSign[3] = {
   "<", "=", ">"
 };
 
