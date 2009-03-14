@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaExcept.h */
-/* $Id: NaExcept.h,v 1.4 2004-02-21 09:16:36 vlad Exp $ */
+/* $Id: NaExcept.h,v 1.5 2009-02-14 20:22:56 evlad Exp $ */
 #ifndef __NaExcept_h
 #define __NaExcept_h
 
