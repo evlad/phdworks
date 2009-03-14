@@ -1,5 +1,5 @@
 /* NaPetNet.cpp */
-static char rcsid[] = "$Id: NaPetNet.cpp,v 1.16 2006-03-25 15:09:37 evlad Exp $";
+static char rcsid[] = "$Id: NaPetNet.cpp,v 1.17 2009-02-14 20:23:34 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdarg.h>
@@ -178,7 +178,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
         if(NULL == dfTimeChart){
             NaPrintLog("time chart file opening failed.\n");
         }else{
-	    char    *msg = "Time chart for petri network '%s'";
+	    const char    *msg = "Time chart for petri network '%s'";
             char    *title = new char[strlen(msg) + strlen(name())];
             sprintf(title, msg, name());
             dfTimeChart->SetVarName(0, "*TIME*");
@@ -556,19 +556,21 @@ NaPetriNet::step_alive (bool bDoPrintouts)
       bool    bActivate = false;
 
       try{
+	NaPetriNode &node = *pnaNet[iNode];
+
 	// 7. Do one step of node activity and return true if succeeded
-	if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	if(bDoPrintouts || node.is_verbose()){
 	  NaPrintLog("node '%s' try to activate.\n",
-		     pnaNet[iNode]->name());
+		     node.name());
 	}
-	bActivate = pnaNet[iNode]->activate();
+	bActivate = node.activate();
 
 	// Count calls
-	++pnaNet[iNode]->nCalls;
+	++node.nCalls;
 
-	if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	if(bDoPrintouts || node.is_verbose()){
 	  NaPrintLog("node '%s' is %sactivated.\n",
-		     pnaNet[iNode]->name(), bActivate?"" :"not ");
+		     node.name(), bActivate?"" :"not ");
 	}
 
 	// Node is timing one
@@ -595,15 +597,16 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 	++iActive;
 
 	try{
+	  NaPetriNode &node = *pnaNet[iNode];
+
 	  // 8. True action of the node (if activate returned true)
-	  if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
-	    NaPrintLog("node '%s' action.\n", pnaNet[iNode]->name());
+	  if(bDoPrintouts || node.is_verbose()){
+	    NaPrintLog("node '%s' action.\n", node.name());
 	  }
 
 	  // Print contents of linked inputs
-	  if(pnaNet[iNode]->is_verbose()){
+	  if(node.is_verbose()){
             int	iCn;
-            NaPetriNode &node = *pnaNet[iNode];
 
             NaPrintLog("node '%s', input data:\n", node.name());
             for(iCn = 0; iCn < node.connectors(); ++iCn){
@@ -617,12 +620,11 @@ NaPetriNet::step_alive (bool bDoPrintouts)
             }
 	  }
 
-	  pnaNet[iNode]->action();
+	  node.action();
 
 	  // Print contents of linked outputs
-	  if(pnaNet[iNode]->is_verbose()){
+	  if(node.is_verbose()){
             int	iCn;
-            NaPetriNode &node = *pnaNet[iNode];
 
             NaPrintLog("node '%s', output data:\n", node.name());
             for(iCn = 0; iCn < node.connectors(); ++iCn){
@@ -637,7 +639,7 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 	  }
 
 	  // Count activations
-	  ++pnaNet[iNode]->nActivations;
+	  ++node.nActivations;
 
 	}catch(NaException exCode){
 	  NaPrintLog("True action phase (#8): node '%s' fault.\n"
@@ -646,13 +648,15 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 	}
 
 	try{
+	  NaPetriNode &node = *pnaNet[iNode];
+
 	  // 9. Finish data processing by the node (if activate
 	  //    returned true)
-	  if(bDoPrintouts || pnaNet[iNode]->is_verbose()){
+	  if(bDoPrintouts || node.is_verbose()){
 	    NaPrintLog("node '%s' post action.\n",
-		       pnaNet[iNode]->name());
+		       node.name());
 	  }
-	  pnaNet[iNode]->post_action();
+	  node.post_action();
 	}catch(NaException exCode){
 	  NaPrintLog("Postaction phase (#9): node '%s' fault.\n"
 		     "Caused by exception: %s\n",
