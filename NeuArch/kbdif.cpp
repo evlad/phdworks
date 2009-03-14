@@ -1,5 +1,5 @@
 /* kbdif.cpp */
-static char rcsid[] = "$Id: kbdif.cpp,v 1.2 2001-04-05 18:38:33 vlad Exp $";
+static char rcsid[] = "$Id: kbdif.cpp,v 1.3 2009-02-14 20:24:30 evlad Exp $";
 
 #include <ctype.h>
 #include <stdio.h>
@@ -104,7 +104,8 @@ ask_user_int (const char* szPrompt, int iDefault)
 bool
 ask_user_bool (const char* szPrompt, bool bDefault)
 {
-    char    enter[30] = "", *szSelVals;
+    char    enter[30] = "";
+    const char *szSelVals;
     if(bDefault){
         szSelVals = "<y>,n";
     }else{
