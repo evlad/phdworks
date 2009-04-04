@@ -1,8 +1,8 @@
-%PSUBS  Вычитает из первого полинома второй
+%PADD  Складывает первый полином и второй
 % Example:
 % P1 = [ 1 2 3 ], P2 = [ 1 3 ]
-% psubs(P1,P2) = [ 1 1 0 ]
-function q = psubs(p1,p2)
+% padd(P1,P2) = [ 1 3 6 ]
+function q = padd(p1,p2)
 
 np1 = length(p1);
 np2 = length(p2);
@@ -17,6 +17,6 @@ elseif np1 > np2
    end
 end
 
-q = ppack(p1 - p2);
+q = ppack(p1 + p2);
 
 % End of file
