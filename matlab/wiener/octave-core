@@ -1,0 +1,19 @@
+# Created by Octave 2.0.15, Sat Feb 24 20:48:32 2001 <vlad@localhost.localdomain>
+# name: alpha
+# type: scalar
+1.33333333333333
+# name: K
+# type: scalar
+2
+# name: T
+# type: scalar
+3
+# name: a1
+# type: scalar
+0.166666666666667
+# name: dT
+# type: scalar
+0.5
+# name: beta
+# type: scalar
+0.333333333333333

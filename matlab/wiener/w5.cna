@@ -1,0 +1,109 @@
+;NeuCon config 1.0
+[SystemSchema]
+1	 ; Global control feedback loop switcher
+1	 ; Additive noise to object output switcher
+LinearController
+LinearObjectModel
+0.1	 ; Sampling rate, s
+[PIDController Controller]
+1	 ; Proportional gain
+0	 ; Integration time
+0	 ; Derivation time
+[LinearUnitsChain Controller]
+10	 ; Number of units in the chain
+; Unit description by fields:
+;  1 - actuality (1-on/0-off)
+;  2 - kind of unit ('gain','inertial','integral','delay','differencial','diffstatic','oscillation','conservative')
+;  3 - gain constant (K)
+;  4 - time constant (T)
+;  5 - oscillation fading (Rho)
+;  6 - pure delay time constant/diff.static top time constant (Tau)
+1 diffstatic 38.79 3 0 0.7
+0 diffstatic 1 3.1643 0 3
+0 diffstatic 1 4 0 5
+0 diffstatic 1 4.6497 0 10
+0 diffstatic 1 7 0 16.8
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+[ControlLaw]
+; Control law definition (set point)
+random	 ; Current source kind
+; Source kind 'description': set point by description
+1	 ; Number of items
+;  1 - Law kind ('constant', 'meander', 'pike', 'sine')
+;  2 - Relative value
+;  3 - Duration (how long lasts), s
+;  4 - Period (for periodic laws, s
+constant 0 100 1
+; Source kind 'from_file': set point from file
+contrlaw.dat	 ; File path
+; Source kind 'manual': manual set point
+0	 ; Start value
+; Source kind 'random': randomized set point
+; Kinds of random distribution: 'gaussian', 'uniform'
+gaussian	 ; Distribution kind
+0 1	 ; Gaussian distribution parameters (m D)
+0 1	 ; Uniform distribution parameters (min max)
+10	 ; Number of units in the chain
+; Unit description by fields:
+;  1 - actuality (1-on/0-off)
+;  2 - kind of unit ('gain','inertial','integral','delay','differencial','diffstatic','oscillation','conservative')
+;  3 - gain constant (K)
+;  4 - time constant (T)
+;  5 - oscillation fading (Rho)
+;  6 - pure delay time constant/diff.static top time constant (Tau)
+1 inertial 2 3 0 0
+0 inertial 1 21 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+[LinearUnitsChain Object]
+10	 ; Number of units in the chain
+; Unit description by fields:
+;  1 - actuality (1-on/0-off)
+;  2 - kind of unit ('gain','inertial','integral','delay','differencial','diffstatic','oscillation','conservative')
+;  3 - gain constant (K)
+;  4 - time constant (T)
+;  5 - oscillation fading (Rho)
+;  6 - pure delay time constant/diff.static top time constant (Tau)
+1 gain 1 4 0 10
+0 diffstatic 1 7 0 16.8
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+[LinearNoiseGenerator Noise]
+; Kinds of random distribution: 'gaussian', 'uniform'
+gaussian	 ; Distribution kind
+0 1	 ; Gaussian distribution parameters (m D)
+0 1	 ; Uniform distribution parameters (min max)
+10	 ; Number of units in the chain
+; Unit description by fields:
+;  1 - actuality (1-on/0-off)
+;  2 - kind of unit ('gain','inertial','integral','delay','differencial','diffstatic','oscillation','conservative')
+;  3 - gain constant (K)
+;  4 - time constant (T)
+;  5 - oscillation fading (Rho)
+;  6 - pure delay time constant/diff.static top time constant (Tau)
+1 inertial 0.2 0.7 0 0
+0 inertial 1 5 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
+0 gain 1 0 0 0
