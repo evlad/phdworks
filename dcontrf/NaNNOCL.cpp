@@ -1,5 +1,5 @@
 /* NaNNOCL.cpp */
-static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.6 2008-06-08 20:59:52 evlad Exp $";
+static char rcsid[] = "$Id: NaNNOCL.cpp,v 2.8 2009-02-25 17:21:47 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -26,6 +26,7 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
     on_y("on_y"),
     nn_y("nn_y"),
     nn_u("nn_u"),
+    tradcontr("tradcontr"),
     nncontr("nncontr"),
     nnplant("nnplant"),
     plant("plant"),
@@ -85,6 +86,17 @@ NaNNOptimContrLearn::link_net ()
 
     switch(eContrKind)
       {
+      case NaLinearContr:
+	if(0 == nSeriesLen){
+	  net.link_1n(&setpnt_inp.out,
+		      &devcomp.main, &cerrcomp.main, NULL);
+	}else{
+	  net.link_1n(&setpnt_gen.y,
+		      &setpnt_out.in,
+		      &devcomp.main, &cerrcomp.main, NULL);
+	}
+	net.link(&devcomp.cmp, &tradcontr.x);
+	break;
       case NaNeuralContrER:
 	if(0 == nSeriesLen){
 	  net.link_1n(&setpnt_inp.out,
@@ -130,9 +142,15 @@ NaNNOptimContrLearn::link_net ()
 	break;
       }
 
-    net.link(&bus_c.out, &c_in.in);
+    if(eContrKind == NaLinearContr)
+      net.link(&devcomp.cmp, &c_in.in);
+    else
+      net.link(&bus_c.out, &c_in.in);
 
-    net.link(&nncontr.y, &nn_u.in);
+    if(eContrKind == NaLinearContr)
+      net.link(&tradcontr.y, &nn_u.in);
+    else
+      net.link(&nncontr.y, &nn_u.in);
     net.link(&nn_u.out, &plant.x);
 
     net.link(&plant.y, &sum_on.main);
@@ -157,15 +175,19 @@ NaNNOptimContrLearn::link_net ()
     net.link(&bus_p.out, &p_in.in);
 
     net.link(&cerrcomp.cmp, &skip_e.in);
-    net.link(&skip_e.out, &errbackprop.errout);
+    ///net.link(&skip_e.out, &errbackprop.errout);
 
     net.link(&errbackprop.errinp, &errfetch.in);
-    net.link(&errfetch.out, &nnteacher.errout);
+    if(eContrKind != NaLinearContr)
+      net.link(&errfetch.out, &nnteacher.errout);
 
     net.link(&on_y.out, &skip_ny.in);
-    net.link(&skip_ny.out, &iderrcomp.main);
-    net.link(&nnplant.y, &iderrcomp.aux);
+    net.link(&skip_ny.out, &iderrcomp.aux);
+    net.link(&nnplant.y, &iderrcomp.main);
     net.link(&iderrcomp.cmp, &iderrstat.signal);
+
+    ///
+    net.link(&iderrcomp.cmp, &errbackprop.errout);
 
     net.link(&nnplant.y, &fill_nn_y.in);
     net.link(&fill_nn_y.out, &nn_y.in);
@@ -174,7 +196,7 @@ NaNNOptimContrLearn::link_net ()
     net.link(&on_y.out, &cerrcomp.aux);
     net.link(&skip_e.out, &cerrstat.signal);
 
-    if(0 == nSeriesLen){
+    if(false/*0 == nSeriesLen*/){
       net.link(&cerrstat.stat, &cerr_qout.in);
       net.link(&iderrstat.stat, &iderr_qout.in);
     }
@@ -201,7 +223,9 @@ NaNNOptimContrLearn::run_net ()
     rMain.init_value(1.);
     rAux.init_value(-1.);
 
-    skip_r.set_skip_number(1);
+    if(eContrKind != NaLinearContr)
+      skip_r.set_skip_number(1);
+
     devcomp.cmp.set_starter(rZero);
     sum_on.set_gain(rMain, rAux);
 

@@ -77,6 +77,7 @@ public:/* data */
   NaPNCheckPoint  on_y;       // plant (free) + noise (fixed) output
   NaPNFileOutput  nn_y;       // NN plant output
   NaPNCheckPoint  nn_u;       // NN controller output
+  NaPNTransfer    tradcontr;  // traditional controller
   NaPNNNUnit      nncontr;    // NN controller
   NaPNNNUnit      nnplant;    // NN plant
   NaPNTransfer    plant;      // plant model

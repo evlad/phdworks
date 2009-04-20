@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 2.6 2008-06-08 20:59:31 evlad Exp $
+# $Id: dcontrf.par,v 2.7 2009-02-14 20:28:06 evlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -15,8 +15,13 @@ nnc_auf = 500
 # >0 means turn on NNP learning
 #nnp_auf = 100
 
-# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
+# NNC INPUT MODE: "e+r", "e+de", "e+e+...", "tradcontr"
+# "tradcontr" means using traditional controller instead of neural one
+# to teach NNP online
 nnc_mode = e+r
+
+# Traditional controller
+tradcontr = pid.tf
 
 # Linear (or combined) plant transfer function
 linplant_tf = ../../../plant.tf
@@ -49,6 +54,7 @@ p_in = p_in.dat
 
 # Neural net files
 in_nnp_file = ../nnp_1+1_1res.nn
+out_nnp_file = nnp_1+1_1fix.nn
 in_nnc_file = ../nnc_re_1pre.nn
 out_nnc_file = nnc_re_1fin.nn
 

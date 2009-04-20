@@ -1,5 +1,5 @@
 /* dcontrf.cpp */
-static char rcsid[] = "$Id: dcontrf.cpp,v 2.17 2008-06-08 20:59:21 evlad Exp $";
+static char rcsid[] = "$Id: dcontrf.cpp,v 2.19 2009-02-25 17:21:21 evlad Exp $";
 //---------------------------------------------------------------------------
 
 #pragma hdrstop
@@ -176,15 +176,15 @@ int main(int argc, char **argv)
     NaCombinedFunc	refer_tf;
     NaCombinedFunc	noise_tf;
     NaCombinedFunc	au_linplant;
+    NaCombinedFunc	au_tradcontr;
 
     // Load plant
     au_linplant.Load(par("linplant_tf"));
 
     // Read neural network from file
     NaNNUnit            au_nnc, au_nnp;
-    //au_nnc.SetInstance("Plant");
 
-    au_nnc.Load(par("in_nnc_file"));
+    //au_nnc.SetInstance("Plant");
     au_nnp.Load(par("in_nnp_file"));
 
     // Get NNP delays
@@ -193,18 +193,29 @@ int main(int argc, char **argv)
 
     // Interpret NN-C structure
     NaControllerKind	ckind;
+#if 0
     // Default rule
     if(au_nnc.descr.nInputsRepeat > 1)
       ckind = NaNeuralContrDelayedE;
     else
       ckind = NaNeuralContrER;
+#endif
     // Explicit rule
-    if(!strcmp(par("nnc_mode"), "e+r"))
+    if(!strcmp(par("nnc_mode"), "tradcontr"))
+      ckind = NaLinearContr;
+    else if(!strcmp(par("nnc_mode"), "e+r"))
       ckind = NaNeuralContrER;
     else if(!strcmp(par("nnc_mode"), "e+de"))
       ckind = NaNeuralContrEdE;
     else if(!strcmp(par("nnc_mode"), "e+e+..."))
       ckind = NaNeuralContrDelayedE;
+
+    if(NaLinearContr == ckind)
+      // Load traditional controller
+      au_tradcontr.Load(par("tradcontr"));
+    else
+      // Load NNC from file
+      au_nnc.Load(par("in_nnc_file"));
 
     // Load input data
     int	len;
@@ -257,8 +268,15 @@ int main(int argc, char **argv)
     NaPrintLog("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
 
     nnocl.plant.set_transfer_func(&au_linplant);
-    nnocl.nncontr.set_nn_unit(&au_nnc);
-    nnocl.nnteacher.set_nn(&nnocl.nncontr, iSkip_e);
+
+    if(NaLinearContr == ckind)
+      nnocl.tradcontr.set_transfer_func(&au_tradcontr);
+    else
+      {
+	nnocl.nncontr.set_nn_unit(&au_nnc);
+	nnocl.nnteacher.set_nn(&nnocl.nncontr, iSkip_e);
+      }
+
     nnocl.nnplant.set_nn_unit(&au_nnp);
     nnocl.errbackprop.set_nn(&nnocl.nnplant);
 
@@ -307,11 +325,14 @@ int main(int argc, char **argv)
 	nnocl.setpnt_inp.set_input_filename(par("in_r"));
 	nnocl.noise_inp.set_input_filename(par("in_n"));
 
+	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
+	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
+#if 0
 	dfCErr = OpenOutputDataFile(par("cerr_trace_file"),
 				    bdtAuto, NaSI_number);
 	dfIdErr = OpenOutputDataFile(par("iderr_trace_file"),
 				     bdtAuto, NaSI_number);
-
+#endif
 	// Need only the last data portion; all previous must be skipped
 	nnocl.cerr_qout.set_queue_limit(0);
 	nnocl.iderr_qout.set_queue_limit(0);
@@ -384,11 +405,13 @@ int main(int argc, char **argv)
 	NaPrintLog("NNP training is %s\n", (nnp_auf > 0)? "ON": "OFF");
 
     if(stream_mode == inp_data_mode ||
-       file_mode == inp_data_mode && nnc_auf > 0)
+       file_mode == inp_data_mode && (nnc_auf > 0 || nnp_auf > 0))
       {
 	// Set autoupdate facility
-	nnocl.nnteacher.set_auto_update_freq(nnc_auf);
-	NaPrintLog("Autoupdate frequency for NNC is %d\n", nnc_auf);
+	if(nnc_auf > 0) {
+	  nnocl.nnteacher.set_auto_update_freq(nnc_auf);
+	  NaPrintLog("Autoupdate frequency for NNC is %d\n", nnc_auf);
+	}
 
 	if(nnp_auf > 0) {
 	    nnocl.errbackprop.set_auto_update_freq(nnp_auf);
@@ -398,7 +421,9 @@ int main(int argc, char **argv)
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
 	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
 
-	nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
+	if(nnc_auf > 0 || nnp_auf > 0) {
+	  nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
+	}
 
 	pnev = nnocl.run_net();
 
@@ -482,8 +507,8 @@ int main(int argc, char **argv)
 	}while(pneDead == pnev);
       }
 
-    char	*szFirst = "IMPORTANT: net is dead due to";
-    char	*szSecond = NULL;
+    const char	*szFirst = "IMPORTANT: net is dead due to";
+    const char	*szSecond = NULL;
     switch(pnev){
     case pneTerminate:
       szSecond = "user break.";
@@ -515,7 +540,10 @@ int main(int argc, char **argv)
     delete dfCErr;
     delete dfIdErr;
 
-    au_nnc.Save(par("out_nnc_file"));
+    if(nnp_auf > 0)
+      au_nnp.Save(par("out_nnp_file"));
+    if(NaLinearContr != ckind)
+      au_nnc.Save(par("out_nnc_file"));
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));
