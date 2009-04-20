@@ -1,0 +1,52 @@
+#!/bin/sh
+
+if [ $# -lt 2 -o $# -gt 3 ]
+then
+    echo "Usage: dmeander Length HalfPeriod [PhaseShift]
+        *** All values are integer! ***"
+    return 1
+fi
+
+length=$1
+hperiod=$2
+if [ $# = 3 ]
+then
+    phshift=$3
+else
+    phshift=0
+fi
+
+if [ "$length" -le 0 ]
+then
+    echo "Length must be positive"
+    return 1
+fi
+if [ "$hperiod" -le 0 ]
+then
+    echo "Period must be positive"
+    return 1
+fi
+
+period=`expr $hperiod \* 2`
+
+i=0
+j=`expr $phshift % $period`
+while [ $i -lt $length ]
+do
+    if [ $j -lt $hperiod ]
+    then
+	echo 1
+	j=`expr $j + 1`
+    elif [ $j -lt $period ]
+    then
+	echo -1
+	j=`expr $j + 1`
+    else
+	j=0
+    fi
+    i=`expr $i + 1`
+done
+
+return 0
+
+# End of file
