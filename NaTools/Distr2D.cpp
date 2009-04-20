@@ -51,16 +51,28 @@ void    dataset_preproc (DataSet& ds);
 #pragma argsused
 int main(int argc, char **argv)
 {
-    if(3 != argc && 4 != argc){
-        printf("Usage: Distr2D.exe FName1.dat FName2.dat [FName.map]\n");
+    if(argc < 3 || argc > 5){
+        printf("Usage: Distr2D.exe FName1.dat FName2.dat [FName.map [Surface.dat]]\n"\
+	       "       FName1.dat  - X dimension;\n"\
+	       "       FName2.dat  - Y dimension;\n"\
+	       "       FName.map   - text map with X-Y distribution;\n"\
+	       "       Surface.dat - gnuplot-ready file:\n"\
+	       "                       set view map\n"\
+	       "                       splot 'Surface.dat' with pm3d\n");
         return 1;
     }
 
-    char    *szMapName = "distr2d.map";
+    FILE    *fpMap = stdout;
+    FILE    *fpSurface = NULL;
     ds[0].fname = argv[1];
     ds[1].fname = argv[2];
     if(argc > 3){
-        szMapName = argv[3];
+        fpMap = fopen(argv[3], "w");
+    }
+    if(argc > 4){
+      fpSurface = fopen(argv[4], "w");
+      if(NULL == fpSurface)
+	printf("Failed to create '%s'\n", argv[4]);
     }
 
     try{
@@ -104,12 +116,17 @@ int main(int argc, char **argv)
 
         // print the map
         char    cellchar[] = ".1234567890$$$$$#####%%%%%@@@@@>";
-        FILE    *fpMap = fopen(szMapName, "w");
         int     nCovered = 0;   // number of covered cells
 
         for(i0 = 0; i0 < ds[0].cells; ++i0){
             for(i1 = 0; i1 < ds[1].cells; ++i1){
                 int j = map[i0 * ds[1].cells + i1];
+
+		if(NULL != fpSurface)
+		  fprintf(fpSurface, "%g\t%g\t%d\n",
+			  ds[1].min + i1 * ds[1].step,
+			  ds[0].min + i0 * ds[0].step,
+			  j);
 
                 if(j > 0){
                     ++nCovered;
@@ -120,8 +137,13 @@ int main(int argc, char **argv)
                 }
                 fputc(cellchar[j], fpMap);
             }
+	    if(NULL != fpSurface)
+	      fputc('\n', fpSurface);
             fputc('\n', fpMap);
         }
+
+	if(NULL != fpSurface)
+	  fclose(fpSurface);
 
         fprintf(fpMap, "\nCell characters: %s\n"
                 "Total (X,Y)-pairs: %d\n"
@@ -224,7 +246,8 @@ ask_user (const char* szPrompt, int iDefault)
 bool
 ask_user (const char* szPrompt, bool bDefault)
 {
-    char    enter[30], *szSelVals;
+  char    enter[30];
+  const char	*szSelVals;
     if(bDefault){
         szSelVals = "<y>,n";
     }else{
