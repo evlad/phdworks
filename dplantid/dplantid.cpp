@@ -281,9 +281,9 @@ main (int argc, char* argv[])
 	      if(nAccelHits > 0 && nHits >= nAccelHits &&
 		 nnrol.nnteacher.lpar.eta < fMaxEta)
 		{
-		  nnrol.nnteacher.lpar.eta *= 2;
-		  nnrol.nnteacher.lpar.eta_output *= 2;
-		  nnrol.nnteacher.lpar.alpha *= 2;
+		  nnrol.nnteacher.lpar.eta *= 1.5;
+		  nnrol.nnteacher.lpar.eta_output *= 1.5;
+		  nnrol.nnteacher.lpar.alpha *= 1.5;
 
 		  nHits = 0;
 
