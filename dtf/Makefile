@@ -1,12 +1,14 @@
 PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat djacob \
-		dsin dmean dstddev dsmooth dconst dmult dmeander drandmea
+		dsin dmean dstddev dsmooth dconst dmult drandmea
+
+SCRIPTS		=dmeander
 
 LD	=g++
 
 all:	$(PROGRAMS)
 
-install:	$(PROGRAMS)
-	cp $(PROGRAMS) $(HOME)/bin
+install:	$(SCRIPTS) $(PROGRAMS)
+	cp $(SCRIPTS) $(PROGRAMS) $(HOME)/bin
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
