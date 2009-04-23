@@ -43,6 +43,7 @@ do
 	j=`expr $j + 1`
     else
 	j=0
+	continue
     fi
     i=`expr $i + 1`
 done
