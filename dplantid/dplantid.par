@@ -36,3 +36,7 @@ finish_max_epoch=100
 eta = 0.01
 eta_output = 0.001
 alpha = 0.0
+
+# When MSE will descent for accel_hits epochs then eta, eta_output,
+# alpha will be multiplied by two
+#accel_hits = 20

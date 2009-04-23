@@ -150,12 +150,20 @@ main (int argc, char* argv[])
     nnrol.nnteacher.lpar.eta_output = atof(par("eta_output"));
     nnrol.nnteacher.lpar.alpha = atof(par("alpha"));
 
+    // Number of successful descending MSE to make faster learning
+    // rate (=0 means off)
+    int		nAccelHits = atoi(par("accel_hits"));
+    float	fMaxEta = atof(par("eta"));
+    if(nAccelHits > 0)
+      NaPrintLog("when learning will succeed for %d epochs"	\
+		 " eta will be enlarged\n", nAccelHits);
+
     //ask_user_lpar(nnrol.nnteacher.lpar);
     //putchar('\n');
 
     // Teach the network iteratively
     NaPNEvent   pnev, pnev_test;
-    int         iIter = 0, iEpoch = 0, iData;
+    int         iIter = 0, iEpoch = 0, iData, nHits = 0;
 
 #if defined(__MSDOS__) || defined(__WIN32__)
     printf("Press 'q' or 'x' for exit\n");
@@ -240,6 +248,8 @@ main (int argc, char* argv[])
 	      nnrol.nnteacher.lpar.eta_output /= 2;
 	      nnrol.nnteacher.lpar.alpha /= 2;
 
+	      nHits = 0;
+
 	      NaPrintLog("Learning parameters: "\
 			 "lrate=%g  lrate(out)=%g  momentum=%g\n",
 			 nnrol.nnteacher.lpar.eta,
@@ -264,8 +274,32 @@ main (int argc, char* argv[])
 	      fLastMSE = fPrevMSE = fNormMSE;
 	      rPrevNN = au_nn;
 	      nnrol.nnteacher.update_nn();
-	      printf(" -> teach NN\n");
 	      bTeach = true;
+
+	      /* Try to accelerate learning */
+	      ++nHits;
+	      if(nAccelHits > 0 && nHits >= nAccelHits &&
+		 nnrol.nnteacher.lpar.eta < fMaxEta)
+		{
+		  nnrol.nnteacher.lpar.eta *= 2;
+		  nnrol.nnteacher.lpar.eta_output *= 2;
+		  nnrol.nnteacher.lpar.alpha *= 2;
+
+		  nHits = 0;
+
+		  NaPrintLog("Learning parameters: "			\
+			     "lrate=%g  lrate(out)=%g  momentum=%g\n",
+			     nnrol.nnteacher.lpar.eta,
+			     nnrol.nnteacher.lpar.eta_output,
+			     nnrol.nnteacher.lpar.alpha);
+
+		  printf(" -> teach NN and continue with (%g, %g, %g)\n",
+			 nnrol.nnteacher.lpar.eta,
+			 nnrol.nnteacher.lpar.eta_output,
+			 nnrol.nnteacher.lpar.alpha);
+		}
+	      else
+		printf(" -> teach NN\n");
 	    }
 	}
 
