@@ -16,6 +16,8 @@ static char rcsid[] = "$Id: dcontrf.cpp,v 2.19 2009-02-25 17:21:21 evlad Exp $";
 //           + prelearned regression NN plant model.
 //---------------------------------------------------------------------------
 
+#include <vector>
+
 #include <math.h>
 #include <ctype.h>
 #include <string.h>
@@ -281,12 +283,63 @@ int main(int argc, char **argv)
     nnocl.errbackprop.set_nn(&nnocl.nnplant);
 
     // u[?] - actual controller force
-    int	iErrFetch = iDelay_u;	// value of u delay by default
-    if(par.CheckParam("errfetch_output"))
-      iErrFetch = atoi(par("errfetch_output"));
+    if(!par.CheckParam("errfetch_output"))
+      {
+	int	iErrFetch = iDelay_u;	// value of u delay by default
+	NaPrintLog("default errfetch_output=%d\n", iErrFetch);
+	nnocl.errfetch.set_output(iErrFetch);
+      }
+    else
+      {
+	char	*buf = strdup(par("errfetch_output"));
+	char	*token = strtok(buf, " ,;");
+	std::vector<int>	viErrFetch;
+	std::vector<NaReal>	vfSumWeights;
+	while(NULL != token)
+	  {
+	    viErrFetch.push_back(atoi(token));
+	    token = strtok(NULL, " ,;");
+	  }
+	free(buf);  buf = NULL;
 
-    NaPrintLog("errfetch_output=%d\n", iErrFetch);
-    nnocl.errfetch.set_output(iErrFetch);
+	int	nOutDim = viErrFetch.size();
+	unsigned	*piOutMap = new unsigned[nOutDim];
+	NaPrintLog("errfetch_output=");
+	for(int i = 0; i < nOutDim; ++i)
+	  {
+	    piOutMap[i] = viErrFetch[i];
+	    NaPrintLog("%d ", piOutMap[i]);
+	  }
+	NaPrintLog("\n");
+	nnocl.errfetch.set_output(nOutDim, piOutMap);
+	delete[] piOutMap;  piOutMap = NULL;
+
+	if(par.CheckParam("errfetch_sumweights"))
+	  {
+	    buf = strdup(par("errfetch_sumweights"));
+	    token = strtok(buf, " ,;");
+	    while(NULL != token)
+	      {
+		vfSumWeights.push_back(atoi(token));
+		token = strtok(NULL, " ,;");
+	      }
+	    free(buf);
+
+	    NaReal	*pfSumWeights = new NaReal[nOutDim];
+	    NaPrintLog("errfetch_sumweights=");
+	    for(int i = 0; i < nOutDim; ++i)
+	      {
+		if(i >= vfSumWeights.size())
+		  pfSumWeights[i] = 1.0;
+		else
+		  pfSumWeights[i] = vfSumWeights[i];
+		NaPrintLog("%g ", pfSumWeights[i]);
+	      }
+	    NaPrintLog("\n");
+	    nnocl.errfetch.set_sum_weights(pfSumWeights);
+	    delete[] pfSumWeights;  pfSumWeights = NULL;
+	  }
+      }
 
     // Setpoint and noise
     NaReal	fMean = 0.0, fStdDev = 1.0;
