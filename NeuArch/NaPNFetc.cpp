@@ -17,6 +17,7 @@ NaPNFetcher::NaPNFetcher (const char* szNodeName)
 {
     piOutMap = NULL;	// Inputs in output vector
     nOutDim = -1;	// Output dimension
+    pfSumWeights = NULL;// Do not apply summation
 }
 
 
@@ -34,7 +35,7 @@ NaPNFetcher::set_output (unsigned iPos, int nDim)
   check_tunable();
 
   nOutDim = nDim;
-  delete piOutMap;
+  delete[] piOutMap;
 
   if(nOutDim < 0)
     piOutMap = NULL;
@@ -51,12 +52,12 @@ NaPNFetcher::set_output (unsigned iPos, int nDim)
 //---------------------------------------------------------------------------
 // Set output dimension and positions of input (0,1...)
 void
-NaPNFetcher::set_output (int nDim, unsigned* piMap)
+NaPNFetcher::set_output (int nDim, const unsigned* piMap)
 {
   check_tunable();
 
   nOutDim = nDim;
-  delete piOutMap;
+  delete[] piOutMap;
 
   if(nOutDim < 0)
     piOutMap = NULL;
@@ -73,6 +74,33 @@ NaPNFetcher::set_output (int nDim, unsigned* piMap)
 
 
 //---------------------------------------------------------------------------
+// Setup sum of inputs with given weights; if no weights are given
+// then sum with weight 1.0
+void
+NaPNFetcher::set_sum_weights (const NaReal* pfWeights)
+{
+  check_tunable();
+
+  if(nOutDim < 0)
+    {
+      delete[] pfSumWeights;
+      pfSumWeights = NULL;
+    }
+  else
+    {
+      int	i;
+      pfSumWeights = new NaReal[nOutDim];
+      if(NULL == pfWeights)
+	for(i = 0; i < nOutDim; ++i)
+	  pfSumWeights[i] = 1.0;
+      else
+	for(i = 0; i < nOutDim; ++i)
+	  pfSumWeights[i] = pfWeights[i];
+    }
+}
+
+
+//---------------------------------------------------------------------------
 
 ///////////////////////
 // Phases of network //
@@ -84,7 +112,10 @@ void
 NaPNFetcher::relate_connectors ()
 {
     if(nOutDim >= 0){
+      if(NULL == pfSumWeights)
         out.data().new_dim(nOutDim);
+      else /* sum means scalar */
+        out.data().new_dim(1);
     }
 }
 
@@ -99,17 +130,21 @@ NaPNFetcher::verify ()
     return false;
   }
 
-  int		i;
-  unsigned	iMaxPos = 0;
-  for(i = 0; i < nOutDim; ++i){
-    if(iMaxPos < piOutMap[i])
-      iMaxPos = piOutMap[i];
-  }
+  if(NULL == pfSumWeights)
+    {
+      int	i;
+      unsigned	iMaxPos = 0;
+      for(i = 0; i < nOutDim; ++i){
+	if(iMaxPos < piOutMap[i])
+	  iMaxPos = piOutMap[i];
+      }
 
-  if((unsigned)iMaxPos >= in.data().dim()){
-    NaPrintLog("VERIFY FAILED: some output positions are out of input range!\n");
-    return false;
-  }
+      if((unsigned)iMaxPos >= in.data().dim()){
+	NaPrintLog("VERIFY FAILED: some output positions are out "\
+		   "of input range!\n");
+	return false;
+      }
+    }
 
   return true;
 }
@@ -120,10 +155,22 @@ NaPNFetcher::verify ()
 void
 NaPNFetcher::action ()
 {
-  int	i;
-  for(i = 0; i < nOutDim; ++i){
-    out.data()[i] = in.data()[piOutMap[i]];
-  }
+  if(NULL == pfSumWeights)
+    {
+      int	i;
+      for(i = 0; i < nOutDim; ++i){
+	out.data()[i] = in.data()[piOutMap[i]];
+      }
+    }
+  else
+    {
+      NaReal	fSum = 0.0;
+      int	i;
+      for(i = 0; i < nOutDim; ++i){
+	fSum += pfSumWeights[i] * in.data()[piOutMap[i]];
+      }
+      out.data()[0] = fSum;
+    }
 }
 
 
