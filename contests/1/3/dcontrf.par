@@ -49,9 +49,18 @@ in_nnp_file = ../1/nnp_res.nn
 in_nnc_file = ../2/nnc_pre.nn
 out_nnc_file = nnc_res.nn
 
-# Optional to select exact input of NN-P as a error conductor in
-# backpropagation chain.  Defined automatically by default.
-#errfetch_output=0
+# Optional to list inputs of NN-P as a error conductor in
+# backpropagation chain.  Defined automatically by default as a scalar.
+errfetch_output = 0 1
+
+# Optional to errfetch_output is vector of weights used to sum fetched
+# errors into one scalar value
+# IMPORTANT! if not defined then errors are not summed!
+# 1 errfetch_sumweights = 1.0 0.0
+# 2
+errfetch_sumweights = 0.5 0.5
+# 3 errfetch_sumweights = 0.8 0.2
+# 4 errfetch_sumweights = 1.0 0.5
 
 # Tracking learning process: ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX
 cerr_trace_file = cerr_trace.dat
