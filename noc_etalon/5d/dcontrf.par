@@ -1,5 +1,5 @@
 # dcontrf parameters
-# $Id: dcontrf.par,v 1.1 2009-02-25 17:19:48 evlad Exp $
+# $Id: dcontrf.par,v 1.1 2008-06-08 21:04:17 evlad Exp $
 
 ########################################
 # Mode of the modeling
@@ -7,24 +7,18 @@ input_kind = stream
 #input_kind = file
 
 # (input_kind = stream) Length of series
-stream_len = 100000
+stream_len = 10000
 
 # (input_kind = stream,file) Auto update frequency; 0 to disable
-#nnc_auf = 500
+nnc_auf = 0
 
-# >0 means turn on NNP learning
-nnp_auf = 1000
+nnp_auf = 600
 
-# NNC INPUT MODE: "e+r", "e+de", "e+e+...", "tradcontr"
-# "tradcontr" means using traditional controller instead of neural one
-# to teach NNP online
-nnc_mode = tradcontr
-
-# Traditional controller
-tradcontr = ../pid.tf
+# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
+nnc_mode = e+r
 
 # Linear (or combined) plant transfer function
-linplant_tf = ../plant.tf
+linplant_tf = ../plant_notst.cof
 
 # (input_kind = stream) Input transfer (or combined) functions
 refer_tf = ../refer.tf
@@ -53,11 +47,10 @@ c_in = c_in.dat
 p_in = p_in.dat
 
 # Neural net files
-in_nnp_file = nnp_2+2_751.nn
-out_nnp_file = nnp_adopted.nn
-in_nnc_file = ../2/pre.nnc
+in_nnp_file = ../1/nnp_res.nn
+in_nnc_file = ../3/res.nnc
 out_nnc_file = res.nnc
-out_nnp_file = nnp_res.nn
+out_nnp_file = nnp_adopted.nn
 
 # Optional to select exact input of NN-P as a error conductor in
 # backpropagation chain.  Defined automatically by default.
@@ -85,9 +78,10 @@ finish_cerr_cond = absmean > 1.0 ; rms > 1.0
 finish_iderr_cond = rms > 6.0
 
 # Learning algorithm setup
-eta = 0.0001
-eta_output = 0.00001
+eta = 0.005
+eta_output = 0.0005
 alpha = 0.0
+
 p_eta = 0.0001
 p_eta_output = 0.00001
 p_alpha = 0.0

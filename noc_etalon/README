@@ -14,12 +14,14 @@ Directories:
 4   - NOC evaluation in the loop
 5a  - NOC not adaptive behavior when plant becomes changed (at t=500)
 5b  - NOC adaptive behavior when plant becomes changed (at t=500)
+5d  - NOC+NNP adaptive behavior when plant becomes changed (at t=500)
 6   - NNP adopted for changes (taken from 5a)
 7   - NNP adopted in-the-loop for plant2 separately
 8a  - influence of tau ascent on control MSE in non-adaptive NOC
 8b  - influence of tau descent on control MSE in non-adaptive NOC
 8c  - influence of gain ascent on control MSE in non-adaptive NOC
 8d  - influence of gain descent on control MSE in non-adaptive NOC
+8abcd - report graphs composition for 8a,b,c,d
 9   - test for nnc_mode=tradcontr
 9a  - test for nnc_mode=tradcontr on repeated the same r,n series
 
