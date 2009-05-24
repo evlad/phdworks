@@ -43,7 +43,7 @@ public:
 
   // Setup parameters
   void		setup (NaReal sigma0, NaReal sigma1,
-		       NaReal h_sol, NaReal k_const);
+		       NaReal h_sol, NaReal k_const = 0.0);
 
 
   ///////////////////
