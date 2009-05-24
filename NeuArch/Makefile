@@ -73,6 +73,7 @@ SRCS	=NaConLaw.cpp \
 	NaPNFill.cpp \
 	NaPNNNUn.cpp \
 	NaPNCuSu.cpp \
+	NaPNWatc.cpp \
 	kbdif.cpp
 
 #	NaStaIO.cpp \
@@ -81,78 +82,7 @@ SRCS	=NaConLaw.cpp \
 #	PNPrintr.cpp \
 #	PNRandom.cpp
 
-OBJS	=NaConLaw.o \
-	NaConfig.o \
-	NaDDir.o \
-	NaDataIO.o \
-	NaBinrIO.o \
-	NaDynAr.o \
-	NaExcept.o \
-	NaInfoSt.o \
-	NaLiNois.o \
-	NaLinCon.o \
-	NaLogFil.o \
-	NaMath.o \
-	NaMatrix.o \
-	NaNDescr.o \
-	NaNNCon.o \
-	NaNNLrn.o \
-	NaNNPObj.o \
-	NaNNUnit.o \
-	NaPCnInp.o \
-	NaPCnOut.o \
-	NaPID.o \
-	NaPNAct.o \
-	NaPNBu21.o \
-	NaPNChPt.o \
-	NaPNCmp.o \
-	NaPNCnst.o \
-	NaPNDely.o \
-	NaPNFIn.o \
-	NaPNFOut.o \
-	NaPNFetc.o \
-	NaPNGen.o \
-	NaPNKalm.o \
-	NaPNRand.o \
-	NaPNStat.o \
-	NaPNSum.o \
-	NaPNSwap.o \
-	NaPNSwit.o \
-	NaPNTchr.o \
-	NaPNTimD.o \
-	NaPNTime.o \
-	NaPNTran.o \
-	NaPNTrig.o \
-	NaPNLAnd.o \
-	NaPetCn.o \
-	NaPetNet.o \
-	NaPetNod.o \
-	NaPetri.o \
-	NaPlotIO.o \
-	NaQProp.o \
-	NaRandom.o \
-	NaSSCtrl.o \
-	NaSSPlan.o \
-	NaStdBPE.o \
-	NaStrOps.o \
-	NaSysSch.o \
-	NaTextIO.o \
-	NaTimer.o \
-	NaTrFunc.o \
-	NaCoFunc.o \
-	NaCuFunc.o \
-	NaExFunc.o \
-	NaUnit.o \
-	NaVector.o \
-	NaParams.o \
-	NaPNDerv.o \
-	NaPNQIn.o \
-	NaPNQOut.o \
-	NaPNSkip.o \
-	NaPNFill.o \
-	NaPNNNUn.o \
-	NaPNCuSu.o \
-	kbdif.o
+OBJS	=$(SRCS:.cpp=.o)
 
 TestNN:	TestNN.o libpnna.a
 	$(LINK.cpp) -o $@ TestNN.o libpnna.a ../Matrix.041/libmatrix.a -lm
