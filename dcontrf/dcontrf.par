@@ -88,7 +88,12 @@ finish_decrease = 1e-6
 finish_cerr_cond = absmean > 1.0 ; rms > 1.0
 finish_iderr_cond = rms > 6.0
 
-# Learning algorithm setup
+# Learning algorithm setup for NN-C
 eta = 0.005
 eta_output = 0.0005
 alpha = 0.0
+
+# Learning algorithm setup for NN-P
+p_eta = 0.005
+p_eta_output = 0.0005
+p_alpha = 0.0

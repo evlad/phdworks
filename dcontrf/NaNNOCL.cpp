@@ -29,8 +29,10 @@ NaNNOptimContrLearn::NaNNOptimContrLearn (int len, NaControllerKind ckind,
     tradcontr("tradcontr"),
     nncontr("nncontr"),
     nnplant("nnplant"),
+    nnplant2("nnplant2"),
     plant("plant"),
-    nnteacher("nnteacher"),
+    nncteacher("nncteacher"),
+    nnpteacher("nnpteacher"),
     errbackprop("errbackprop"),
     bus_p("bus_p"),
     bus_c("bus_c"),
@@ -171,25 +173,25 @@ NaNNOptimContrLearn::link_net ()
     net.link(&delay_u.dout, &bus_p.in1);
     net.link(&delay_y.dout, &bus_p.in2);
     net.link(&bus_p.out, &nnplant.x);
+    net.link(&bus_p.out, &nnplant2.x);
 
     net.link(&bus_p.out, &p_in.in);
 
     net.link(&cerrcomp.cmp, &skip_e.in);
-    ///net.link(&skip_e.out, &errbackprop.errout);
+    net.link(&skip_e.out, &errbackprop.errout);
 
     net.link(&errbackprop.errinp, &errfetch.in);
     if(eContrKind != NaLinearContr)
-      net.link(&errfetch.out, &nnteacher.errout);
+      net.link(&errfetch.out, &nncteacher.errout);
 
     net.link(&on_y.out, &skip_ny.in);
     net.link(&skip_ny.out, &iderrcomp.aux);
-    net.link(&nnplant.y, &iderrcomp.main);
+    net.link(&nnplant2.y, &iderrcomp.main);
     net.link(&iderrcomp.cmp, &iderrstat.signal);
 
-    ///
-    net.link(&iderrcomp.cmp, &errbackprop.errout);
+    net.link(&iderrcomp.cmp, &nnpteacher.errout);
 
-    net.link(&nnplant.y, &fill_nn_y.in);
+    net.link(&nnplant2.y, &fill_nn_y.in);
     net.link(&fill_nn_y.out, &nn_y.in);
 
     net.link(&on_y.out, &devcomp.aux);

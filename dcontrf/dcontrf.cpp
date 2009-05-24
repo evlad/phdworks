@@ -276,11 +276,20 @@ int main(int argc, char **argv)
     else
       {
 	nnocl.nncontr.set_nn_unit(&au_nnc);
-	nnocl.nnteacher.set_nn(&nnocl.nncontr, iSkip_e);
+	nnocl.nncteacher.set_nn(&nnocl.nncontr, iSkip_e);
       }
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
+    nnocl.nnplant2.set_nn_unit(&au_nnp);
+
+    // NN-P is used here to backpropagate control error to teach the
+    // NN controller
     nnocl.errbackprop.set_nn(&nnocl.nnplant);
+
+    // NN-P is used here to teach the NN-P itself according to
+    // identification error
+    nnocl.nnpteacher.set_nn(&nnocl.nnplant2);
+    //nnocl.nnpteacher.set_nn(&nnocl.nnplant2, iSkip_e);
 
     // u[?] - actual controller force
     if(!par.CheckParam("errfetch_output"))
@@ -430,13 +439,13 @@ int main(int argc, char **argv)
     int     nNumGrowErr = atoi(par("finish_on_grow"));
 
     // Configure learning parameters
-    nnocl.nnteacher.lpar.eta = atof(par("eta"));
-    nnocl.nnteacher.lpar.eta_output = atof(par("eta_output"));
-    nnocl.nnteacher.lpar.alpha = atof(par("alpha"));
+    nnocl.nncteacher.lpar.eta = atof(par("eta"));
+    nnocl.nncteacher.lpar.eta_output = atof(par("eta_output"));
+    nnocl.nncteacher.lpar.alpha = atof(par("alpha"));
 
-    //nnocl.errbackprop.lpar.eta = atof(par("p_eta"));
-    //nnocl.errbackprop.lpar.eta_output = atof(par("p_eta_output"));
-    //nnocl.errbackprop.lpar.alpha = atof(par("p_alpha"));
+    nnocl.nnpteacher.lpar.eta = atof(par("p_eta"));
+    nnocl.nnpteacher.lpar.eta_output = atof(par("p_eta_output"));
+    nnocl.nnpteacher.lpar.alpha = atof(par("p_alpha"));
 
     // Teach the network iteratively
     NaPNEvent   pnev;
@@ -462,12 +471,12 @@ int main(int argc, char **argv)
       {
 	// Set autoupdate facility
 	if(nnc_auf > 0) {
-	  nnocl.nnteacher.set_auto_update_freq(nnc_auf);
+	  nnocl.nncteacher.set_auto_update_freq(nnc_auf);
 	  NaPrintLog("Autoupdate frequency for NNC is %d\n", nnc_auf);
 	}
 
 	if(nnp_auf > 0) {
-	    nnocl.errbackprop.set_auto_update_freq(nnp_auf);
+	    nnocl.nnpteacher.set_auto_update_freq(nnp_auf);
 	    NaPrintLog("Autoupdate frequency for NNP is %d\n", nnp_auf);
 	}
 
@@ -475,7 +484,7 @@ int main(int argc, char **argv)
 	ParseHaltCond(nnocl.iderrstat, par("finish_iderr_cond"));
 
 	if(nnc_auf > 0 || nnp_auf > 0) {
-	  nnocl.nnteacher.set_auto_update_proc(PrintLog, &nnocl);
+	  nnocl.nncteacher.set_auto_update_proc(PrintLog, &nnocl);
 	}
 
 	pnev = nnocl.run_net();
@@ -517,9 +526,9 @@ int main(int argc, char **argv)
 
 	  if(max_epochs > 0 && iIter >= max_epochs){
 	    // Limited number of epochs
-	    nnocl.nnteacher.update_nn();
+	    nnocl.nncteacher.update_nn();
 	    if(nnp_auf > 0)
-		nnocl.errbackprop.update_nn();
+		nnocl.nnpteacher.update_nn();
 	    break;
 	  }
 
@@ -537,7 +546,7 @@ int main(int argc, char **argv)
 	      }
 	      if(ask_user_bool("Would you like to change learning parameters?",
 			       false)){
-		ask_user_lpar(nnocl.nnteacher.lpar);
+		ask_user_lpar(nnocl.nncteacher.lpar);
 	      }
 	    }
 	  }else{
@@ -555,7 +564,7 @@ int main(int argc, char **argv)
 
 	  fPrevMSE = nnocl.cerrstat.RMS[0];
 
-	  nnocl.nnteacher.update_nn();
+	  nnocl.nncteacher.update_nn();
 
 	}while(pneDead == pnev);
       }

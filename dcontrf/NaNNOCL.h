@@ -80,8 +80,10 @@ public:/* data */
   NaPNTransfer    tradcontr;  // traditional controller
   NaPNNNUnit      nncontr;    // NN controller
   NaPNNNUnit      nnplant;    // NN plant
+  NaPNNNUnit      nnplant2;   // NN plant to teach
   NaPNTransfer    plant;      // plant model
-  NaPNTeacher     nnteacher;  // NN teacher
+  NaPNTeacher     nncteacher; // NN controller teacher
+  NaPNTeacher     nnpteacher; // NN plant teacher
   NaPNTeacher     errbackprop;// NN error backpropagator
   NaPNBus2i1o     bus_p;      // ((u,y),e)->NN plant former
   NaPNBus2i1o     bus_c;      // (u,e)->NN controller former
