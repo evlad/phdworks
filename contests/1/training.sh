@@ -22,7 +22,7 @@ gnuplot report.plt
 
 echo "*** NN controller training optimally in the loop ***"
 cd ../3
-dcontrf dcontrf.par stream_len=10000 nnc_auf=50 \
+dcontrf dcontrf.par stream_len=50000 nnc_auf=50 \
     in_nnp_file=../1/nnp_res.nn \
     in_nnc_file=../2/nnc_pre.nn \
     out_nnc_file=nnc_res.nn
