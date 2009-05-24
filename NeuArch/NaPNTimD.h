@@ -10,7 +10,7 @@
 
 
 //---------------------------------------------------------------------------
-// Applied Petri net node: tim dependence
+// Applied Petri net node: time dependence
 // For time dependent objects implement relation with timer.
 
 //---------------------------------------------------------------------------
