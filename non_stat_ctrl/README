@@ -1,0 +1,17 @@
+Preparation of article for "Vestnik MEI"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Theme:
+Artificial neural net control for non-stationary plant
+
+Plan:
+1. Algorithm of cummulative sums probe on simple non-stationary model.
+   acs_simple/
+2. Use ACS to detect change of parameters.  Find plant and NOC.
+3. Implement simulation with NNP adoption out of loop.
+4. Implement simulation with NNC adoption in the loop
+5. Write an article text.
+
+Schedule:
+June,30   - all materials
+August,31 - article is ready
