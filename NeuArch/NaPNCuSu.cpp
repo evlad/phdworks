@@ -16,6 +16,7 @@ NaPNCuSum::setup (NaReal sigma0, NaReal sigma1,
   fSigma[0] = sigma0;
   fSigma[1] = sigma1;
   fK = k_const;
+  fTopVal = h_sol;
   fS = 0.0;
 }
 
@@ -145,6 +146,8 @@ NaPNCuSum::action ()
   sum.data()[0]  = fS;
 
   // compute detection signal here
-  // *** stub ***
-  d.data()[0] = 0;
+  if(fS > fTopVal)
+    d.data()[0] = 1;
+  else
+    d.data()[0] = 0;
 }
