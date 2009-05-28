@@ -17,7 +17,13 @@
                       [ConstK [ImagingPoint.dat]]
 
     Example: ./acs_simple test.cof 1 2 5
+
+    Example: ACS_EVENTS=3 ./acs_simple test.cof 1 2 5 0 acs.dat
  */
+
+
+/** Number of detection events to log. */
+int	iCounter = -1;
 
 
 /** Disorder detector after cummulative sum node */
@@ -31,7 +37,11 @@ logger (void* dummy, const NaVector& data, NaTimer& timer)
     {
       printf("disorder is detected (%g) at time %g (sample %d)\n",
 	     data(0), timer.CurrentTime(), timer.CurrentIndex());
-      return false;
+
+      --iCounter;
+      if(iCounter <= 0)
+	/* stop execution only if iCounter reached zero */
+	return false;
     }
   return true;
 }
@@ -44,8 +54,16 @@ main (int argc, char* argv[])
     {
       fprintf(stderr,
 	      "Usage: acs_simple Process.cof StdDev0 StdDev1 SolLevel\n"\
-	      "                  [ConstK [ImagingPoint.dat]]\n");
+	      "                  [ConstK [ImagingPoint.dat]]\n"\
+	      "ACS_EVENTS=N - number of disorder events to detect\n");
       return 1;
+    }
+
+  if(NULL != getenv("ACS_EVENTS"))
+    {
+      iCounter = atoi(getenv("ACS_EVENTS"));
+      NaPrintLog("Maximum number of disorder events to detect is %d\n",
+		 iCounter);
     }
 
   /*
