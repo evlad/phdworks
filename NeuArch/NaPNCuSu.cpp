@@ -147,7 +147,11 @@ NaPNCuSum::action ()
 
   // compute detection signal here
   if(fS > fTopVal)
-    d.data()[0] = 1;
+    {
+      d.data()[0] = 1;
+      /* reset sum to initial one */
+      fS = 0.0;
+    }
   else
     d.data()[0] = 0;
 }
