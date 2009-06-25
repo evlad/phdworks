@@ -128,11 +128,12 @@ NaPNStatistics::print_stat (const char* szTitle)
     }else{
         NaPrintLog("%s\n", szTitle);
     }
-    NaPrintLog("         Min           Max          Mean        StdDev  "\
-	       "         RMS  Volume\n");
+    NaPrintLog("       Min        Max         Mean     StdDev "\
+	       "Dispersion        RMS Volume\n");
     for(unsigned i = 0; i < Mean.dim(); ++i){
-      NaPrintLog("%12g  %12g  %12g  %12g  %12g  %u\n",
-		 Min[i], Max[i], Mean[i], StdDev[i], RMS[i], activations());
+      NaPrintLog("%10g %10g %12g %10g %10g %10g %u\n",
+		 Min[i], Max[i], Mean[i], StdDev[i], StdDev[i]*StdDev[i],
+		 RMS[i], activations());
     }
 }
 
