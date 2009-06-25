@@ -47,13 +47,27 @@ out_ny = ny.dat
 out_r = r_out.dat
 out_n = n_out.dat
 
-# Cumulative sum track files and parameters
+# (input_kind = stream) Output files
+out_r = r_out.dat
+out_n = n_out.dat
+
+#
+# Cumulative sum method parameters for disorder detection.
+#
+
+# Parameter cusum must be set (even to /dev/null) to turn on disorder
+# detection
 cusum = cusum.dat
+
+# Parameters of cummulative sum method to detect std.dev. change
 sigma0 = 2.15
 sigma1 = 1.28
 h_sol = 0.0
 k_const = 0.0
 
-# (input_kind = stream) Output files
-out_r = r_out.dat
-out_n = n_out.dat
+# If the second disorder was detected not later that given time sample
+# interval then loop becomes terminated (interval of false detection).
+# If this parameter is not set or zero at all then the first disorder
+# will cause termination (default).  If the parameter is negative then
+# disorder will be detected but run will be not terminated.
+#detect_interval = 10

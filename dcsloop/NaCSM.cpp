@@ -37,6 +37,7 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   cmp_e("cmp_e"),
   cusum("cusum"),
   cusum_out("cusum_out"),
+  dodetect("dodetect"),
   statan_e("statan_e"),
   statan_r("statan_r")
 {
@@ -122,7 +123,10 @@ NaControlSystemModel::link_net ()
                        NULL);
 
 	if(bUseCuSum)
-	  net.link(&cusum.sum, &cusum_out.in);
+	  {
+	    net.link(&cusum.sum, &cusum_out.in);
+	    net.link(&cusum.d, &dodetect.events);
+	  }
 
         net.link(&chkpnt_ny.out, &cmp.aux);
         net.link(&chkpnt_n.out, &onsum.aux);

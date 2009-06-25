@@ -18,6 +18,7 @@
 #include <NaPNRand.h>
 #include <NaPNDerv.h>
 #include <NaPNCuSu.h>
+#include <NaPNWatc.h>
 #include <NaNDescr.h>
 
 
@@ -94,6 +95,7 @@ public:/* data */
     NaPNDerivative  delta_e;    // (1-1/z)*e(k)
     NaPNCuSum       cusum;      // cumulative sum for change point detection
     NaPNFileOutput  cusum_out;  // output of cumulative sum
+    NaPNWatcher     dodetect;   // disorder watcher
 
 private:/* data */
 

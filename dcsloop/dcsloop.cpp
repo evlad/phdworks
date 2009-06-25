@@ -23,6 +23,41 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.13 2008-05-18 19:06:35 evlad Exp $";
 
 #include "NaCSM.h"
 
+
+
+/* Interval to control the 2nd disorder detection interpretation */
+int	iDetectInterval = 0;
+
+bool
+OnDisorderDetection (void* pUserData, const NaVector& rEvents, NaTimer& rTimer)
+{
+  static int	nCounter = 0;
+  static int	iLastDetection = 0;
+
+  if(rEvents(0) > 0)
+    {
+      /* count disorder */
+      ++nCounter;
+
+      if(iDetectInterval == 0)
+	/* terminate execution at the first disorder detection */
+	return false;
+      else if(iDetectInterval > 0 && nCounter > 1)
+	{
+	  if(rTimer.CurrentIndex() - iLastDetection > iDetectInterval)
+	    /* forget about previous disorder because is was too long
+	       ago */
+	    nCounter = 0;
+	  else
+	    /* two disorders inside iDetectInterval, so let's terminate */
+	    return false;
+	}
+    }
+  /* let's continue execution */
+  return true;
+}
+
+
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)
@@ -157,6 +192,10 @@ int main(int argc, char **argv)
     // Set cummulative sum method is turned on or off
     csm.set_cusum_flag(bUseCuSum);
     NaPrintLog("Cummulative sum detection is %s\n", bUseCuSum? "ON": "OFF");
+    if(bUseCuSum)
+      {
+	csm.dodetect.attach_function(OnDisorderDetection);
+      }
 
     // Link the network
     csm.link_net();
@@ -205,10 +244,15 @@ int main(int argc, char **argv)
 	break;
       }
 
-    // Setup parameters for CUSUM (change-point detection)
+    // Setup parameters for CUSUM (disorder detection)
     if(bUseCuSum)
-      csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
-		      atof(par("h_sol")), atof(par("k_const")));
+      {
+	csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
+			atof(par("h_sol")), atof(par("k_const")));
+
+	if(par.CheckParam("detect_interval"))
+	  iDetectInterval = atoi(par("detect_interval"));
+      }
 
     NaPNEvent   pnev = csm.run_net();
 
