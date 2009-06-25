@@ -1,0 +1,62 @@
+# dcsloop parameters
+
+########################################
+# Type of controller
+#contr_kind = nnc
+contr_kind = lin
+
+########################################
+# Mode of the modeling
+input_kind = stream
+#input_kind = file
+
+# (input_kind = stream) Length of series
+stream_len = 5000
+
+# Linear plant transfer function
+linplant_tf = plant_notst.cof
+
+# (contr_kind = lin) Linear controller transfer function
+lincontr_tf = pid.tf
+
+# (contr_kind = nnc) Neural net controller
+nncontr = res.nnc
+
+# (input_kind = stream) Input transfer functions
+refer_tf = refer.tf
+noise_tf = noise.tf
+
+# (input_kind = file) Input files
+in_r = r_in.dat
+in_n = n_in.dat
+
+# Output files
+out_u = pid_nst_u.dat
+out_e = pid_nst_e.dat
+out_y = pid_nst_y.dat
+out_ny = pid_nst_ny.dat
+
+# (input_kind = stream) Output files
+out_r = pid_nst_r.dat
+out_n = pid_nst_n.dat
+
+#
+# Cumulative sum method parameters for disorder detection.
+#
+
+# Parameter cusum must be set (even to /dev/null) to turn on disorder
+# detection
+cusum = pid_nst_cusum.dat
+
+# Parameters of cummulative sum method to detect std.dev. change
+sigma0 = 0.45
+sigma1 = 10
+h_sol = 3.26
+k_const = 0.0
+
+# If the second disorder was detected not later that given time sample
+# interval then loop becomes terminated (interval of false detection).
+# If this parameter is not set or zero at all then the first disorder
+# will cause termination (default).  If the parameter is negative then
+# disorder will be detected but run will be not terminated.
+detect_interval = -1

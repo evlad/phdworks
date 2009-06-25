@@ -8,6 +8,7 @@ Plan:
 1. Algorithm of cummulative sums probe on simple non-stationary model.
    acs_simple/
 2. Use ACS to detect change of parameters.  Find plant and NOC.
+   1/ - all files were taken from noc_etalon
 3. Implement simulation with NNP adoption out of loop.
 4. Implement simulation with NNC adoption in the loop
 5. Write an article text.

@@ -1,0 +1,110 @@
+Logging started.
+name='contr_kind' value='lin' APPEND
+name='input_kind' value='stream' APPEND
+name='stream_len' value='5000' APPEND
+name='linplant_tf' value='plant_notst.cof' APPEND
+name='lincontr_tf' value='pid.tf' APPEND
+name='nncontr' value='res.nnc' APPEND
+name='refer_tf' value='refer.tf' APPEND
+name='noise_tf' value='noise.tf' APPEND
+name='in_r' value='r_in.dat' APPEND
+name='in_n' value='n_in.dat' APPEND
+name='out_u' value='pid_nst_u.dat' APPEND
+name='out_e' value='pid_nst_e.dat' APPEND
+name='out_y' value='pid_nst_y.dat' APPEND
+name='out_ny' value='pid_nst_ny.dat' APPEND
+name='out_r' value='pid_nst_r.dat' APPEND
+name='out_n' value='pid_nst_n.dat' APPEND
+name='cusum' value='pid_nst_cusum.dat' APPEND
+name='sigma0' value='0.45' APPEND
+name='sigma1' value='10' APPEND
+name='h_sol' value='3.26' APPEND
+name='k_const' value='0.0' APPEND
+name='detect_interval' value='-1' APPEND
+Run dcsloop with dcsloop_pid_nst.par
+----------------------------->8----------------------------
+contr_kind=lin
+cusum=pid_nst_cusum.dat
+detect_interval=-1
+h_sol=3.26
+in_n=n_in.dat
+in_r=r_in.dat
+input_kind=stream
+k_const=0.0
+lincontr_tf=pid.tf
+linplant_tf=plant_notst.cof
+nncontr=res.nnc
+noise_tf=noise.tf
+out_e=pid_nst_e.dat
+out_n=pid_nst_n.dat
+out_ny=pid_nst_ny.dat
+out_r=pid_nst_r.dat
+out_u=pid_nst_u.dat
+out_y=pid_nst_y.dat
+refer_tf=refer.tf
+sigma0=0.45
+sigma1=10
+stream_len=5000
+-----------------------------8<----------------------------
+Query for parameter 'contr_kind' gives value 'lin'
+Using linear controller in control system loop
+Query for parameter 'input_kind' gives value 'stream'
+Using stream reference and noise (transfer functions)
+Query for parameter 'linplant_tf' gives value 'plant_notst.cof'
+Open file 'plant_notst.cof' for loading configuration data
+Query for parameter 'lincontr_tf' gives value 'pid.tf'
+Open file 'pid.tf' for loading configuration data
+Query for parameter 'plant_initial_state' gives value '?not found'
+Query for parameter 'refer_tf' gives value 'refer.tf'
+Open file 'refer.tf' for loading configuration data
+Query for parameter 'noise_tf' gives value 'noise.tf'
+Open file 'noise.tf' for loading configuration data
+Query for parameter 'stream_len' gives value '5000'
+Cummulative sum detection is ON
+Link setpnt_gen.y & chkpnt_r.in
+Link chkpnt_r.out & cmp.main
+Link cmp.cmp & chkpnt_e.in
+Link chkpnt_e.out & controller.x
+Link controller.y & chkpnt_u.in
+Link chkpnt_u.out & plant.x
+Link plant.y & chkpnt_y.in
+Link chkpnt_y.out & onsum.main
+Link onsum.sum & chkpnt_ny.in
+Link chkpnt_ny.out & cusum.x
+Link noise_gen.y & chkpnt_n.in
+Link cusum.sum & cusum_out.in
+Link cusum.d & dodetect.events
+Link chkpnt_ny.out & cmp.aux
+Link chkpnt_n.out & onsum.aux
+Link chkpnt_r.out & cmp_e.main
+Link plant.y & cmp_e.aux
+Link cmp_e.cmp & statan_e.signal
+Link chkpnt_r.out & statan_r.signal
+Query for parameter 'out_r' gives value 'pid_nst_r.dat'
+Query for parameter 'out_e' gives value 'pid_nst_e.dat'
+Query for parameter 'out_u' gives value 'pid_nst_u.dat'
+Query for parameter 'out_n' gives value 'pid_nst_n.dat'
+Query for parameter 'out_y' gives value 'pid_nst_y.dat'
+Query for parameter 'out_ny' gives value 'pid_nst_ny.dat'
+Query for parameter 'cusum' gives value 'pid_nst_cusum.dat'
+Query for parameter 'k_const' gives value '0.0'
+Query for parameter 'h_sol' gives value '3.26'
+Query for parameter 'sigma1' gives value '10'
+Query for parameter 'sigma0' gives value '0.45'
+Query for parameter 'detect_interval' gives value '-1'
+Timing node 'setpnt_gen' (0xbfc58960)
+node 'chkpnt_y', connector 'out' is << STARTER >>
+Text stream output data file 'pid_nst_r.dat'
+Text stream output data file 'pid_nst_e.dat'
+Text stream output data file 'pid_nst_u.dat'
+Text stream output data file 'pid_nst_y.dat'
+Text stream output data file 'pid_nst_ny.dat'
+Text stream output data file 'pid_nst_n.dat'
+Text stream output data file 'pid_nst_cusum.dat'
+IMPORTANT: net is dead due to data are exhausted.
+Statistics of set point:
+       Min        Max         Mean     StdDev Dispersion        RMS Volume
+  -4.21491    3.80923   -0.0302588    1.00173    1.00347    1.00439 5001
+Statistics of error:
+       Min        Max         Mean     StdDev Dispersion        RMS Volume
+  -3.71772    4.24283    0.0015034   0.874535   0.764812   0.764814 5001
