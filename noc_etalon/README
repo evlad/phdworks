@@ -9,6 +9,7 @@ Directories:
 0ev - evaluation (test) data set preparation
 0tr - training data set preparation
 1   - NNP training
+1a  - NNP evaluation when plant becomes changed (at t=500)
 2   - NNC out-of-loop training
 3   - NNC in-the-loop training
 4   - NOC evaluation in the loop

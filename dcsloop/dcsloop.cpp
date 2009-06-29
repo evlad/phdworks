@@ -128,7 +128,7 @@ int main(int argc, char **argv)
     NaCombinedFunc	noise_tf;
     NaCombinedFunc	au_linplant;
     NaCombinedFunc	au_lincontr;
-    NaNNUnit		au_nnc;
+    NaNNUnit		au_nnc, au_nnp;
 
     // Load plant
     au_linplant.Load(par("linplant_tf"));
@@ -195,6 +195,60 @@ int main(int argc, char **argv)
     if(bUseCuSum)
       {
 	csm.dodetect.attach_function(OnDisorderDetection);
+      }
+
+    // Setup parameters for NN-P
+    if(par.CheckParam("in_nnp_file"))
+      {
+	//au_nnp.SetInstance("Plant");
+	au_nnp.Load(par("in_nnp_file"));
+	csm.nnplant.set_nn_unit(&au_nnp);
+
+	// Get NNP delays
+	unsigned	*input_delays = au_nnp.descr.InputDelays();
+	unsigned	*output_delays = au_nnp.descr.OutputDelays();
+
+	// Configure nodes
+	csm.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
+	csm.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
+
+	unsigned	iDelay_u = csm.delay_u.get_max_delay();
+	unsigned	iDelay_y = csm.delay_y.get_max_delay();
+	unsigned	iSkip_u = 0, iSkip_y = 0;
+	unsigned	iDelay_e, iSkip_e;
+
+	// Skip u or y due to absent earlier values of y or u
+	if(iDelay_y >= iDelay_u)
+	  {
+	    iSkip_u = iDelay_y - iDelay_u + 1;
+	  }
+	else /* if(iDelay_u > iDelay_y) */
+	  {
+	    iSkip_y = iDelay_u - iDelay_y - 1;
+	  }
+	iDelay_e = iDelay_y + iSkip_y;
+	iSkip_e = 1 + iDelay_e;
+
+	csm.skip_u.set_skip_number(iSkip_u);
+	csm.skip_y.set_skip_number(iSkip_y);
+
+	// Additional delay for target value
+	//csm.skip_e.set_skip_number(1 + iSkip_e);
+
+	csm.skip_ny.set_skip_number(1 + iSkip_e);
+	csm.fill_nn_y.set_fill_number(iSkip_e);
+
+	NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+	NaPrintLog("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+	NaPrintLog("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
+
+	csm.nn_y.set_output_filename(par("out_nn_y"));
+	NaPrintLog("Writing NNP identification output to '%s' file.\n",
+		   par("out_nn_y"));
+
+	csm.nn_e.set_output_filename(par("out_nn_e"));
+	NaPrintLog("Writing NNP identification error to '%s' file.\n",
+		   par("out_nn_e"));
       }
 
     // Link the network

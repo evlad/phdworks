@@ -39,7 +39,20 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   cusum_out("cusum_out"),
   dodetect("dodetect"),
   statan_e("statan_e"),
-  statan_r("statan_r")
+  statan_r("statan_r"),
+  nnplant("nnplant"),
+  nn_y("nn_y"),
+  nn_e("nn_e"),
+  fill_nn_y("fill_nn_y"),
+  bus_p("bus_p"),
+  iderrcomp("iderrcomp"),
+  iderrstat("iderrstat"),
+  skip_u("skip_u"),
+  skip_y("skip_y"),
+  skip_ny("skip_ny"),
+  delay_u("delay_u"),
+  delay_y("delay_y"),
+  iderr_fout("iderr_fout")
 {
   vInitial.init_zero();
 }
@@ -96,25 +109,14 @@ NaControlSystemModel::link_net ()
 	    break;
 	  }
 
-	if(bUseCuSum)
-	  net.link_nodes(
-			 &controller,
-			 &chkpnt_u,
-			 &plant,
-			 &chkpnt_y,
-			 &onsum,
-			 &chkpnt_ny,
-			 &cusum,
-			 NULL);
-	else
-	  net.link_nodes(
-			 &controller,
-			 &chkpnt_u,
-			 &plant,
-			 &chkpnt_y,
-			 &onsum,
-			 &chkpnt_ny,
-			 NULL);
+	net.link_nodes(
+		       &controller,
+		       &chkpnt_u,
+		       &plant,
+		       &chkpnt_y,
+		       &onsum,
+		       &chkpnt_ny,
+		       NULL);
 
         net.link_nodes(
 		       (0==nSeriesLen)?
@@ -122,13 +124,43 @@ NaControlSystemModel::link_net ()
                        &chkpnt_n,
                        NULL);
 
-	if(bUseCuSum)
-	  {
-	    net.link(&cusum.sum, &cusum_out.in);
-	    net.link(&cusum.d, &dodetect.events);
-	  }
-
         net.link(&chkpnt_ny.out, &cmp.aux);
+
+	/* NN-P BEGIN */
+	if(nnplant.get_nn_unit() != NULL)
+	  {
+	    net.link(&chkpnt_ny.out, &skip_y.in);
+	    net.link(&chkpnt_ny.out, &skip_ny.in);
+	    net.link(&chkpnt_u.out, &skip_u.in);
+
+	    net.link(&skip_y.out, &delay_y.in);
+	    net.link(&skip_u.out, &delay_u.in);
+
+	    net.link(&delay_u.dout, &bus_p.in1);
+	    net.link(&delay_y.dout, &bus_p.in2);
+	    net.link(&bus_p.out, &nnplant.x);
+
+	    net.link(&nnplant.y, &fill_nn_y.in);
+	    //net.link(&skip_ny.out, &iderrcomp.aux);
+	    //net.link(&nnplant.y, &iderrcomp.main);
+	    net.link(&chkpnt_ny.out, &iderrcomp.aux);
+	    net.link(&fill_nn_y.out, &iderrcomp.main);
+	    net.link(&iderrcomp.cmp, &iderrstat.signal);
+	    net.link(&iderrcomp.cmp, &nn_e.in);
+
+	    //net.link(&nnplant.y, &fill_nn_y.in);
+	    net.link(&fill_nn_y.out, &nn_y.in);
+	    //net.link(&iderrstat.stat, &iderr_fout.in);
+
+	    if(bUseCuSum)
+	      {
+		net.link(&iderrcomp.cmp, &cusum.x);
+		net.link(&cusum.sum, &cusum_out.in);
+		net.link(&cusum.d, &dodetect.events);
+	      }
+	  }
+	/* NN-P END */
+
         net.link(&chkpnt_n.out, &onsum.aux);
 
         net.link(&chkpnt_r.out, &cmp_e.main);

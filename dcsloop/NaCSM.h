@@ -20,6 +20,9 @@
 #include <NaPNCuSu.h>
 #include <NaPNWatc.h>
 #include <NaNDescr.h>
+#include <NaPNNNUn.h>
+#include <NaPNSkip.h>
+#include <NaPNFill.h>
 
 
 //---------------------------------------------------------------------------
@@ -96,6 +99,19 @@ public:/* data */
     NaPNCuSum       cusum;      // cumulative sum for change point detection
     NaPNFileOutput  cusum_out;  // output of cumulative sum
     NaPNWatcher     dodetect;   // disorder watcher
+    NaPNBus2i1o     bus_p;      // ((u,y),e)->NN plant former
+    NaPNNNUnit      nnplant;    // NN plant
+    NaPNSkip        skip_y;     // skip some y due to u isn't available
+    NaPNSkip        skip_u;     // skip some u due to y isn't available
+    NaPNSkip        skip_ny;    // skip some not meaning n+y values
+    NaPNComparator  iderrcomp;  // identification error computer
+    NaPNStatistics  iderrstat;  // identification error statistics
+    NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
+    NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
+    NaPNFileOutput  iderr_fout; // output statistics of identif. error (file)
+    NaPNFileOutput  nn_y;       // NN plant output
+    NaPNFileOutput  nn_e;       // identification error output
+    NaPNFill        fill_nn_y;  // fill by zeros nn_y output to fit on_y
 
 private:/* data */
 
