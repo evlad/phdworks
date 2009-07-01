@@ -11,6 +11,7 @@
 #include <NaGenerl.h>
 #include <NaExcept.h>
 #include <NaDataIO.h>
+#include <kbdif.h>
 
 //---------------------------------------------------------------------------
 #ifndef unix
@@ -19,16 +20,6 @@ USELIB("..\StaDev\stadev32.lib");
 #endif /* unix */
 //---------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
-NaReal  ask_user (const char* szPrompt, NaReal fDefault);
-
-//---------------------------------------------------------------------------
-// Ask for integer parameter
-int     ask_user (const char* szPrompt, int iDefault);
-
-//---------------------------------------------------------------------------
-// Ask for boolean parameter
-bool    ask_user (const char* szPrompt, bool bDefault = true);
 
 //---------------------------------------------------------------------------
 // Structure for one-dimension description
@@ -194,15 +185,15 @@ dataset_preproc (DataSet& ds)
         printf("There are %d values in the file.\n", ds.df->CountOfRecord());
 
         // ask user about data range (propose defined)
-        ds.min = ask_user("Enter low bound for data", ds.min);
-        ds.max = ask_user("Enter high bound for data", ds.max);
+        ds.min = ask_user_real("Enter low bound for data", ds.min);
+        ds.max = ask_user_real("Enter high bound for data", ds.max);
         
         ds.width = ds.max - ds.min;
         printf("Data has range of %g width\n", ds.width);
 
         // ask user about number of one-dimension cells
         while(ds.cells <= 0){
-            ds.cells = ask_user("Enter number of subranges", ds.cells);
+            ds.cells = ask_user_int("Enter number of subranges", ds.cells);
         }
 
         ds.step = ds.width / ds.cells;
@@ -211,62 +202,4 @@ dataset_preproc (DataSet& ds)
                ds.cells, ds.step);
     }
 }
-
-
-//---------------------------------------------------------------------------
-// Ask for real parameter
-NaReal
-ask_user (const char* szPrompt, NaReal fDefault)
-{
-    char    enter[30];
-    printf("%s <%g>: ", szPrompt, fDefault);
-    fgets(enter, 29, stdin);
-    if('\0' == enter[0])
-        return fDefault;
-    return strtod(enter, NULL);
-}
-
-
-//---------------------------------------------------------------------------
-// Ask for integer parameter
-int
-ask_user (const char* szPrompt, int iDefault)
-{
-    char    enter[30];
-    printf("%s <%d>: ", szPrompt, iDefault);
-    fgets(enter, 29, stdin);
-    if('\0' == enter[0])
-        return iDefault;
-    return strtol(enter, NULL, 10);
-}
-
-
-//---------------------------------------------------------------------------
-// Ask for boolean parameter
-bool
-ask_user (const char* szPrompt, bool bDefault)
-{
-  char    enter[30];
-  const char	*szSelVals;
-    if(bDefault){
-        szSelVals = "<y>,n";
-    }else{
-        szSelVals = "y,<n>";
-    }
-
-    do{
-        printf("%s (%s): ", szPrompt, szSelVals);
-        fgets(enter, 29, stdin);
-    }while('y' != enter[0] && 'n' != enter[0] && '\0' != enter[0]);
-
-    switch(enter[0]){
-    case 'y':
-        return true;
-    case 'n':
-        return false;
-    }
-    return bDefault;
-}
-
-
 //---------------------------------------------------------------------------

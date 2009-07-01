@@ -1,4 +1,4 @@
-PROGRAMS=UNGen MakeNN Distr2D StatAn ResetNN FileCvt EvalNN TrainNN
+PROGRAMS=UNGen MakeNN Distr2D Distr1D StatAn ResetNN FileCvt EvalNN TrainNN
 
 all:	$(PROGRAMS)
 
@@ -16,6 +16,9 @@ StatAn:	StatAn.o $(LIBS)
 
 Distr2D:	Distr2D.o $(LIBS)
 	$(CCC) -o $@ Distr2D.o $(LDFLAGS) $(LIBS)
+
+Distr1D:	Distr1D.o $(LIBS)
+	$(CCC) -o $@ Distr1D.o $(LDFLAGS) $(LIBS)
 
 MakeNN:	MakeNN.o $(LIBS)
 	$(CCC) -o $@ MakeNN.o $(LDFLAGS) $(LIBS)
