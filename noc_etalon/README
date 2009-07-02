@@ -9,7 +9,16 @@ Directories:
 0ev - evaluation (test) data set preparation
 0tr - training data set preparation
 1   - NNP training
-1a  - NNP evaluation when plant becomes changed (at t=500)
+1a  - NNP evaluation when plant becomes changed
+      at t=500 from plant1.tf to plant2.tf
+1b  - NNP evaluation when plant becomes changed
+      at t=500 from plant1.tf to plant3.tf (plant_notst3.cof)
+    * script split_tr_ev.sh makes 1b_0tr/*.dat and 1b_0ev/*.dat
+1b_0ev   - evaluation data after plant change
+1b_0tr   - training data after plant change
+1b_1     - secondary NNP training to fit plant3.tf based on previous NNP
+1b_1test - test for new NNP in loop
+1b_3     - NNC in-the-loop training with new NNP
 2   - NNC out-of-loop training
 3   - NNC in-the-loop training
 4   - NOC evaluation in the loop
@@ -43,11 +52,13 @@ pid_bad.tf - not optimal PID controller
 pid.tf     - fine tuned manually PID controller 
 plant.tf   - original plant (K=1,tau=-0.5)
 plant2.tf  - plant changed both with K and tau (K=2, tau=-0.7)
+plant3.tf  - plant changed with K only (K=1.4, tau=-0.5)
 wiener.tf  - wiener equivalent system (linear optimal controller + plant
 	     in the loop)
 woc.tf     - linear optimal controller
 
 plant_notst.cof    - plant1 changes to plant2 at t=500
+plant_notst3.cof   - plant1 changes to plant3 at t=500
 plant_tau_asc.cof  - plant1 changes tau from -0.5 to -0.6, -0.7, -0.8,
                      -0.9 every 500 time samples
 plant_tau_des.cof  - plant1 changes tau from -0.5 to -0.4, -0.3, -0.2,
