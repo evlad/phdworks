@@ -22,6 +22,17 @@ Directories:
 2   - NNC out-of-loop training
 3   - NNC in-the-loop training
 4   - NOC evaluation in the loop
+4a  - NNP and NNC evaluation when plant becomes changed
+      at t=500 from plant1.tf to plant2.tf
+4b  - NNP evaluation when plant becomes changed
+      at t=500 from plant1.tf to plant2.tf (plant_notst.cof)
+    * script split_tr_ev.sh makes 4b_0tr/*.dat and 4b_0ev/*.dat
+4b_0ev   - evaluation data after plant change
+4b_0tr   - training data after plant change
+4b_1     - secondary NNP training to fit plant2.tf based on previous NNP
+4b_3     - secondary NNC in-the-loop training with plant2.tf and new NNP
+4b_4     - new NOC evaluation in the loop and comparison with old one
+4b_4old  - old NOC evaluation on series from 4b_4 in the loop
 5a  - NOC not adaptive behavior when plant becomes changed (at t=500)
 5b  - NOC adaptive behavior when plant becomes changed (at t=500)
 5d  - NOC+NNP adaptive behavior when plant becomes changed (at t=500)
