@@ -33,6 +33,9 @@ Directories:
 4b_3     - secondary NNC in-the-loop training with plant2.tf and new NNP
 4b_4     - new NOC evaluation in the loop and comparison with old one
 4b_4old  - old NOC evaluation on series from 4b_4 in the loop
+4c  - experimental search for CUSUM parameters
+4c_1     - search for average time of false alarm
+4c_2     - search for average time of alarm delay
 5a  - NOC not adaptive behavior when plant becomes changed (at t=500)
 5b  - NOC adaptive behavior when plant becomes changed (at t=500)
 5d  - NOC+NNP adaptive behavior when plant becomes changed (at t=500)
