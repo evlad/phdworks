@@ -28,6 +28,9 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.13 2008-05-18 19:06:35 evlad Exp $";
 /* Interval to control the 2nd disorder detection interpretation */
 int	iDetectInterval = 0;
 
+/* Number of disorder detection */
+int	nDisorderCounter = 0;
+
 bool
 OnDisorderDetection (void* pUserData, const NaVector& rEvents, NaTimer& rTimer)
 {
@@ -38,6 +41,7 @@ OnDisorderDetection (void* pUserData, const NaVector& rEvents, NaTimer& rTimer)
     {
       /* count disorder */
       ++nCounter;
+      ++nDisorderCounter;
 
       if(iDetectInterval == 0)
 	/* terminate execution at the first disorder detection */
@@ -186,167 +190,205 @@ int main(int argc, char **argv)
 	break;
       }
 
-    NaControlSystemModel	csm(len, ckind);
-    bool			bUseCuSum = par.CheckParam("cusum");
-
-    // Set cummulative sum method is turned on or off
-    csm.set_cusum_flag(bUseCuSum);
-    NaPrintLog("Cummulative sum detection is %s\n", bUseCuSum? "ON": "OFF");
-    if(bUseCuSum)
+    bool	bUseCuSum = par.CheckParam("cusum");
+    int		nRuns = atoi(par("cusum_atad"));
+    if(bUseCuSum && nRuns <= 0 || !bUseCuSum)
+      nRuns = 1;
+    NaReal	fTotalTime = 0.0;
+       
+    for(int iRun = 0; iRun < nRuns; ++iRun)
       {
-	csm.dodetect.attach_function(OnDisorderDetection);
-      }
+	NaPrintLog("Run %d (of %d)\n", 1+iRun, nRuns);
+	NaControlSystemModel	csm(len, ckind);
 
-    // Setup parameters for NN-P
-    if(par.CheckParam("in_nnp_file"))
-      {
-	//au_nnp.SetInstance("Plant");
-	au_nnp.Load(par("in_nnp_file"));
-	csm.nnplant.set_nn_unit(&au_nnp);
+	// Set cummulative sum method is turned on or off
+	csm.set_cusum_flag(bUseCuSum);
+	NaPrintLog("Cummulative sum detection is %s\n", bUseCuSum? "ON": "OFF");
+	if(bUseCuSum)
+	  {
+	    csm.dodetect.attach_function(OnDisorderDetection);
+	  }
 
-	// Get NNP delays
-	unsigned	*input_delays = au_nnp.descr.InputDelays();
-	unsigned	*output_delays = au_nnp.descr.OutputDelays();
+	// Setup parameters for NN-P
+	if(par.CheckParam("in_nnp_file"))
+	  {
+	    //au_nnp.SetInstance("Plant");
+	    au_nnp.Load(par("in_nnp_file"));
+	    csm.nnplant.set_nn_unit(&au_nnp);
+
+	    // Get NNP delays
+	    unsigned	*input_delays = au_nnp.descr.InputDelays();
+	    unsigned	*output_delays = au_nnp.descr.OutputDelays();
+
+	    // Configure nodes
+	    csm.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
+	    csm.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
+
+	    unsigned	iDelay_u = csm.delay_u.get_max_delay();
+	    unsigned	iDelay_y = csm.delay_y.get_max_delay();
+	    unsigned	iSkip_u = 0, iSkip_y = 0;
+	    unsigned	iDelay_e, iSkip_e;
+
+	    // Skip u or y due to absent earlier values of y or u
+	    if(iDelay_y >= iDelay_u)
+	      {
+		iSkip_u = iDelay_y - iDelay_u + 1;
+	      }
+	    else /* if(iDelay_u > iDelay_y) */
+	      {
+		iSkip_y = iDelay_u - iDelay_y - 1;
+	      }
+	    iDelay_e = iDelay_y + iSkip_y;
+	    iSkip_e = 1 + iDelay_e;
+
+	    csm.skip_u.set_skip_number(iSkip_u);
+	    csm.skip_y.set_skip_number(iSkip_y);
+
+	    // Additional delay for target value
+	    //csm.skip_e.set_skip_number(1 + iSkip_e);
+
+	    csm.skip_ny.set_skip_number(1 + iSkip_e);
+	    csm.fill_nn_y.set_fill_number(iSkip_e);
+
+	    NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
+	    NaPrintLog("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
+	    NaPrintLog("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
+
+	    csm.nn_y.set_output_filename(par("out_nn_y"));
+	    NaPrintLog("Writing NNP identification output to '%s' file.\n",
+		       par("out_nn_y"));
+
+	    csm.nn_e.set_output_filename(par("out_nn_e"));
+	    NaPrintLog("Writing NNP identification error to '%s' file.\n",
+		       par("out_nn_e"));
+	  }
+
+	// Link the network
+	csm.link_net();
 
 	// Configure nodes
-	csm.delay_u.set_delay(au_nnp.descr.nInputsRepeat, input_delays);
-	csm.delay_y.set_delay(au_nnp.descr.nOutputsRepeat, output_delays);
+	csm.chkpnt_r.set_output_filename(par("out_r"));
+	csm.chkpnt_e.set_output_filename(par("out_e"));
+	csm.chkpnt_u.set_output_filename(par("out_u"));
+	csm.chkpnt_n.set_output_filename(par("out_n"));
+	csm.chkpnt_y.set_output_filename(par("out_y"));
+	csm.chkpnt_ny.set_output_filename(par("out_ny"));
 
-	unsigned	iDelay_u = csm.delay_u.get_max_delay();
-	unsigned	iDelay_y = csm.delay_y.get_max_delay();
-	unsigned	iSkip_u = 0, iSkip_y = 0;
-	unsigned	iDelay_e, iSkip_e;
-
-	// Skip u or y due to absent earlier values of y or u
-	if(iDelay_y >= iDelay_u)
-	  {
-	    iSkip_u = iDelay_y - iDelay_u + 1;
-	  }
-	else /* if(iDelay_u > iDelay_y) */
-	  {
-	    iSkip_y = iDelay_u - iDelay_y - 1;
-	  }
-	iDelay_e = iDelay_y + iSkip_y;
-	iSkip_e = 1 + iDelay_e;
-
-	csm.skip_u.set_skip_number(iSkip_u);
-	csm.skip_y.set_skip_number(iSkip_y);
-
-	// Additional delay for target value
-	//csm.skip_e.set_skip_number(1 + iSkip_e);
-
-	csm.skip_ny.set_skip_number(1 + iSkip_e);
-	csm.fill_nn_y.set_fill_number(iSkip_e);
-
-	NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
-	NaPrintLog("delay_y=%d,  skip_y=%d\n", iDelay_y, iSkip_y);
-	NaPrintLog("delay_e=%d,  skip_e=%d\n", iDelay_e, iSkip_e);
-
-	csm.nn_y.set_output_filename(par("out_nn_y"));
-	NaPrintLog("Writing NNP identification output to '%s' file.\n",
-		   par("out_nn_y"));
-
-	csm.nn_e.set_output_filename(par("out_nn_e"));
-	NaPrintLog("Writing NNP identification error to '%s' file.\n",
-		   par("out_nn_e"));
-      }
-
-    // Link the network
-    csm.link_net();
-
-    // Configure nodes
-    csm.chkpnt_r.set_output_filename(par("out_r"));
-    csm.chkpnt_e.set_output_filename(par("out_e"));
-    csm.chkpnt_u.set_output_filename(par("out_u"));
-    csm.chkpnt_n.set_output_filename(par("out_n"));
-    csm.chkpnt_y.set_output_filename(par("out_y"));
-    csm.chkpnt_ny.set_output_filename(par("out_ny"));
-
-    if(bUseCuSum)
-      csm.cusum_out.set_output_filename(par("cusum"));
+	if(bUseCuSum)
+	  csm.cusum_out.set_output_filename(par("cusum"));
       
-    // Setpoint and noise
-    NaReal	fMean = 0.0, fStdDev = 1.0;
+	// Setpoint and noise
+	NaReal	fMean = 0.0, fStdDev = 1.0;
 
-    switch(inp_data_mode)
-      {
-      case stream_mode:
-	csm.setpnt_gen.set_generator_func(&refer_tf);
-	csm.setpnt_gen.set_gauss_distrib(&fMean, &fStdDev);
+	switch(inp_data_mode)
+	  {
+	  case stream_mode:
+	    csm.setpnt_gen.set_generator_func(&refer_tf);
+	    csm.setpnt_gen.set_gauss_distrib(&fMean, &fStdDev);
 
-	csm.noise_gen.set_generator_func(&noise_tf);
-	csm.noise_gen.set_gauss_distrib(&fMean, &fStdDev);
-	break;
-      case file_mode:
-	csm.setpnt_inp.set_input_filename(par("in_r"));
-	csm.noise_inp.set_input_filename(par("in_n"));
-	break;
-      }
+	    csm.noise_gen.set_generator_func(&noise_tf);
+	    csm.noise_gen.set_gauss_distrib(&fMean, &fStdDev);
+	    break;
+	  case file_mode:
+	    csm.setpnt_inp.set_input_filename(par("in_r"));
+	    csm.noise_inp.set_input_filename(par("in_n"));
+	    break;
+	  }
 
-    // Plant
-    csm.set_initial_state(vInitial);
-    csm.plant.set_transfer_func(&au_linplant);
+	// Plant
+	csm.set_initial_state(vInitial);
+	csm.plant.set_transfer_func(&au_linplant);
 
-    // Controller
-    switch(contr_kind)
-      {
-      case linear_contr:
-	csm.controller.set_transfer_func(&au_lincontr);
-	break;
-      case neural_contr:
-	csm.controller.set_transfer_func(&au_nnc);
-	break;
-      }
+	// Controller
+	switch(contr_kind)
+	  {
+	  case linear_contr:
+	    csm.controller.set_transfer_func(&au_lincontr);
+	    break;
+	  case neural_contr:
+	    csm.controller.set_transfer_func(&au_nnc);
+	    break;
+	  }
 
-    // Setup parameters for CUSUM (disorder detection)
-    if(bUseCuSum)
-      {
-	csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
-			atof(par("h_sol")), atof(par("k_const")));
+	// Setup parameters for CUSUM (disorder detection)
+	if(bUseCuSum)
+	  {
+	    csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
+			    atof(par("h_sol")), atof(par("k_const")));
 
-	if(par.CheckParam("detect_interval"))
-	  iDetectInterval = atoi(par("detect_interval"));
-      }
+	    if(par.CheckParam("detect_interval"))
+	      iDetectInterval = atoi(par("detect_interval"));
+	  }
 
-    NaPNEvent   pnev = csm.run_net();
+	NaPNEvent   pnev = csm.run_net();
 
-    printf("\nMean squared error=%g\n", csm.statan_e.RMS[0]);
+	printf("\nMean squared error=%g\n", csm.statan_e.RMS[0]);
 
-    NaPrintLog("IMPORTANT: net is dead due to ");
-    switch(pnev){
-    case pneTerminate:
-      NaPrintLog("user break.\n");
-      break;
+	NaPrintLog("IMPORTANT: net is dead due to ");
+	switch(pnev){
+	case pneTerminate:
+	  NaPrintLog("user break.\n");
+	  break;
 
-    case pneHalted:
-      NaPrintLog("internal halt.\n");
-      break;
+	case pneHalted:
+	  NaPrintLog("internal halt.\n");
+	  break;
 
-    case pneDead:
-      NaPrintLog("data are exhausted.\n");
-      break;
+	case pneDead:
+	  NaPrintLog("data are exhausted.\n");
+	  break;
 
-    case pneError:
-      NaPrintLog("some error occured.\n");
-      break;
+	case pneError:
+	  NaPrintLog("some error occured.\n");
+	  break;
 
-    default:
-      NaPrintLog("unknown reason.\n");
-      break;
-    }
+	default:
+	  NaPrintLog("unknown reason.\n");
+	  break;
+	}
 
+	if(bUseCuSum)
+	  {
+	    printf("Number of disorder detections %d\n", nDisorderCounter);
+	    NaPrintLog("Number of disorder detections %d\n", nDisorderCounter);
+
+	    if(iDetectInterval < 0)
+	      {
+		printf("Average time of false alarm %g\n",
+		       csm.net.timer().CurrentTime()/nDisorderCounter);
+		NaPrintLog("Average time of false alarm %g\n",
+			   csm.net.timer().CurrentTime()/nDisorderCounter);
+	      }
+	    else if(iDetectInterval == 0)
+	      {
+		fTotalTime += csm.net.timer().CurrentTime();
+		NaPrintLog("Time of alarm delay is %g\n",
+			   csm.net.timer().CurrentTime());
+	      }
+	  }
+     
 #if 0
-    // Maximum absolute value of an set point
-    NaReal  aMax_u;
-    if(fabs(csm.statan_u.Min[0]) > fabs(csm.statan_u.Max[0])){
-      aMax = csm.statan_u.Min[0];
-    }else{
-      aMax = csm.statan_u.Max[0];
-    }
+	// Maximum absolute value of an set point
+	NaReal  aMax_u;
+	if(fabs(csm.statan_u.Min[0]) > fabs(csm.statan_u.Max[0])){
+	  aMax = csm.statan_u.Min[0];
+	}else{
+	  aMax = csm.statan_u.Max[0];
+	}
 #endif
 
-    csm.statan_r.print_stat("Statistics of set point:");
-    csm.statan_e.print_stat("Statistics of error:");
+	csm.statan_r.print_stat("Statistics of set point:");
+	csm.statan_e.print_stat("Statistics of error:");
+
+	csm.net.timer().ResetTime();
+
+      }/* End of numerous runs */
+
+    if(nRuns > 1 && iDetectInterval == 0)
+      {
+	printf("Average time of alarm delay %g\n", fTotalTime / nRuns);
+	NaPrintLog("Average time of alarm delay %g\n", fTotalTime / nRuns);
+      }
   }
   catch(NaException& ex){
     NaPrintLog("EXCEPTION: %s\n", NaExceptionMsg(ex));

@@ -81,3 +81,6 @@ k_const = 0.0
 # will cause termination (default).  If the parameter is negative then
 # disorder will be detected but run will be not terminated.
 #detect_interval = 10
+
+# Number of sequential runs to evaluate average time of alarm delay
+#cusum_atad=100
