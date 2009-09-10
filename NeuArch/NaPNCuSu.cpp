@@ -18,6 +18,16 @@ NaPNCuSum::setup (NaReal sigma0, NaReal sigma1,
   fK = k_const;
   fTopVal = h_sol;
   fS = 0.0;
+  fStartTime = 0.0;
+}
+
+
+//---------------------------------------------------------------------------
+// Setup time of turning on the node in activity (time=0 by default)
+void
+NaPNCuSum::turn_on_at (NaReal start_time)
+{
+  fStartTime = start_time;
 }
 
 
@@ -139,6 +149,14 @@ NaPNCuSum::initialize (bool& starter)
 void
 NaPNCuSum::action ()
 {
+  if(fStartTime > net()->timer().CurrentTime())
+    {
+      // "turned-off" mode to wait for predefined moment
+      sum.data()[0]  = 0.0;
+      d.data()[0] = 0;
+      return;
+    }
+
   fS = imaging_point(fS, x.data()[0]);
   if(fS < 0.0)
     fS = 0.0;

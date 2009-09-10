@@ -9,8 +9,8 @@
 
 
 //---------------------------------------------------------------------------
-// Node of CUSUM method implementation - change-point detection problem.
-// Detection of standard deviation is performed.
+// Node of CUSUM method implementation - change-point (disorder)
+// detection problem.  Detection of standard deviation change is performed.
 
 //---------------------------------------------------------------------------
 class NaPNCuSum : public NaPetriNode
@@ -41,10 +41,12 @@ public:
   // Node specific //
   ///////////////////
 
-  // Setup parameters
+  // Setup cummulative sum parameters to detect disorder
   void		setup (NaReal sigma0, NaReal sigma1,
 		       NaReal h_sol, NaReal k_const = 0.0);
 
+  // Setup time of turning on the node in activity (time=0 by default)
+  void		turn_on_at (NaReal start_time);
 
   ///////////////////
   // Quick linkage //
@@ -87,6 +89,8 @@ protected:/* data */
   NaReal	fTopVal;	// solution level
   NaReal	fK;		// constant k
   NaReal	fS;		// imaging point
+  NaReal	fStartTime;	// Start the true activity when
+				// timer().CurrentTime() becomes >= fStartTime
 
 };
 
