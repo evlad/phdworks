@@ -4,6 +4,7 @@ static char rcsid[] = "$Id: NaMath.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
 
 #include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -23,6 +24,7 @@ static char rcsid[] = "$Id: NaMath.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
 extern "C" void
 reset_rand ()
 {
+#if 0
   char	*p = getenv("DRAND_SAFE");
   if(NULL != p)
     if(strlen(p) > 0)
@@ -32,8 +34,14 @@ reset_rand ()
 	sleep(1);
       }
 
+  /* very standardized but very slow way */
   time_t	tTime = time(NULL);
   srand(tTime);
+#else
+  struct timeval	tv;
+  gettimeofday(&tv, NULL);
+  srand(tv.tv_usec);
+#endif
 }
 
 
