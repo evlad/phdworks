@@ -21,7 +21,7 @@ input_kind = stream
 stream_len = 1000
 
 # Linear (or combined) plant transfer function
-linplant_tf = ../plant2.tf
+linplant_tf = ../plant_notst_t10.cof
 
 # (contr_kind = lin) Linear (or combined) controller transfer function
 lincontr_tf = ../pid.tf
@@ -84,3 +84,7 @@ detect_interval = 0
 
 # Number of sequential runs to evaluate average time of alarm delay
 cusum_atad=10000
+
+# Time of cummulative sum start (needed for waiting the whole control
+# loop will operate normally)
+cusum_start_time=10
