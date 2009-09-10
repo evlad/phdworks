@@ -84,3 +84,7 @@ k_const = 0.0
 
 # Number of sequential runs to evaluate average time of alarm delay
 #cusum_atad=100
+
+# Time of cummulative sum start (needed for waiting the whole control
+#loop will operate normally)
+#cusum_start_time=10

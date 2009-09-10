@@ -9,10 +9,12 @@ static char rcsid[] = "$Id: dcsloop.cpp,v 1.13 2008-05-18 19:06:35 evlad Exp $";
 //           control system or traditional control system modeling.
 //---------------------------------------------------------------------------
 
+#include <time.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <NaMath.h>
 #include <NaLogFil.h>
 #include <NaGenerl.h>
 #include <NaExcept.h>
@@ -192,6 +194,9 @@ int main(int argc, char **argv)
 
     bool	bUseCuSum = par.CheckParam("cusum");
     int		nRuns = atoi(par("cusum_atad"));
+    NaReal	fStartTime = atof(par("cusum_start_time"));
+    if(fStartTime < 0.0)
+      fStartTime= 0.0;
     if(bUseCuSum && nRuns <= 0 || !bUseCuSum)
       nRuns = 1;
     NaReal	fTotalTime = 0.0;
@@ -201,9 +206,14 @@ int main(int argc, char **argv)
 	NaPrintLog("Run %d (of %d)\n", 1+iRun, nRuns);
 	NaControlSystemModel	csm(len, ckind);
 
+	// Reset pseudo-random sequence
+	putenv("DRAND_SAFE=1");
+	reset_rand();
+
 	// Set cummulative sum method is turned on or off
 	csm.set_cusum_flag(bUseCuSum);
-	NaPrintLog("Cummulative sum detection is %s\n", bUseCuSum? "ON": "OFF");
+	NaPrintLog("Cummulative sum detection is %s starting at %g\n",
+		   bUseCuSum? "ON": "OFF", fStartTime);
 	if(bUseCuSum)
 	  {
 	    csm.dodetect.attach_function(OnDisorderDetection);
@@ -315,6 +325,7 @@ int main(int argc, char **argv)
 	  {
 	    csm.cusum.setup(atof(par("sigma0")), atof(par("sigma1")),
 			    atof(par("h_sol")), atof(par("k_const")));
+	    csm.cusum.turn_on_at(fStartTime);
 
 	    if(par.CheckParam("detect_interval"))
 	      iDetectInterval = atoi(par("detect_interval"));
@@ -361,7 +372,7 @@ int main(int argc, char **argv)
 	      }
 	    else if(iDetectInterval == 0)
 	      {
-		fTotalTime += csm.net.timer().CurrentTime();
+		fTotalTime += csm.net.timer().CurrentTime() - fStartTime;
 		NaPrintLog("Time of alarm delay is %g\n",
 			   csm.net.timer().CurrentTime());
 	      }
