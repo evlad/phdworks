@@ -61,6 +61,21 @@ out_n = n_out.dat
 #out_nn_e = nn_e.dat
 
 #
+# Train data gathering parameters
+# Activated from the beginning or at disorder detection (if CUSUM is ON)
+#
+
+# Output files (optional)
+#tdg_u = tdg_u.dat
+#tdg_ny = tdg_ny.dat
+
+# Statistical parameters for all gathered data
+#tdg_stpardet_len = 20
+#tdg_cells = 10
+#tdg_sigma_num = 3
+#tdg_cover_percent = 50
+
+#
 # Cumulative sum method parameters for disorder detection.
 # Works only if NN-P node is ON (in_nnp_file is defined)
 #
@@ -74,6 +89,11 @@ sigma0 = 2.15
 sigma1 = 1.28
 h_sol = 0.0
 k_const = 0.0
+
+# Predefined average time of alarm delay - to detect disorder only if
+# the second alarm will be not later than atad time samples from the
+# first one
+atad = 15
 
 # If the second disorder was detected not later that given time sample
 # interval then loop becomes terminated (interval of false detection).

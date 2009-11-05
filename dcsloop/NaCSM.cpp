@@ -52,7 +52,10 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   skip_ny("skip_ny"),
   delay_u("delay_u"),
   delay_y("delay_y"),
-  iderr_fout("iderr_fout")
+  iderr_fout("iderr_fout"),
+  trdgath("trdgath"),
+  tdg_u("tdg_u"),
+  tdg_ny("tdg_ny")
 {
   vInitial.init_zero();
 }
@@ -126,6 +129,14 @@ NaControlSystemModel::link_net ()
 
         net.link(&chkpnt_ny.out, &cmp.aux);
 
+	/* training data gathering */
+	{
+	  net.link(&chkpnt_u.out, &trdgath.in1);
+	  net.link(&chkpnt_ny.out, &trdgath.in2);
+	  net.link(&trdgath.out1, &tdg_u.in);
+	  net.link(&trdgath.out2, &tdg_ny.in);
+	}
+
 	/* NN-P BEGIN */
 	if(nnplant.get_nn_unit() != NULL)
 	  {
@@ -157,6 +168,7 @@ NaControlSystemModel::link_net ()
 		net.link(&iderrcomp.cmp, &cusum.x);
 		net.link(&cusum.sum, &cusum_out.in);
 		net.link(&cusum.d, &dodetect.events);
+		net.link(&cusum.d, &trdgath.turnon);
 	      }
 	  }
 	/* NN-P END */

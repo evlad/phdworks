@@ -74,8 +74,6 @@ int main(int argc, char **argv)
       return 1;
     }
 
-  NaOpenLogFile("dcsloop.log");
-
   try{
     NaParams	par(argv[1], argc - 2, argv + 2);
 
@@ -206,6 +204,22 @@ int main(int argc, char **argv)
 	NaPrintLog("Run %d (of %d)\n", 1+iRun, nRuns);
 	NaControlSystemModel	csm(len, ckind);
 
+	if(par.CheckParam("tdg_stpardet_len") &&
+	   par.CheckParam("tdg_cells") &&
+	   par.CheckParam("tdg_sigma_num") &&
+	   par.CheckParam("tdg_cover_percent"))
+	  {
+	    csm.trdgath.set_parameters(atoi(par("tdg_stpardet_len")),
+				       atoi(par("tdg_cells")),
+				       atof(par("tdg_sigma_num")),
+				       atof(par("tdg_cover_percent")));
+
+	    if(par.CheckParam("tdg_u"))
+	      csm.tdg_u.set_output_filename(par("tdg_u"));
+	    if(par.CheckParam("tdg_ny"))
+	      csm.tdg_ny.set_output_filename(par("tdg_ny"));
+	  }
+
 	// Reset pseudo-random sequence
 	putenv("DRAND_SAFE=1");
 	reset_rand();
@@ -217,6 +231,12 @@ int main(int argc, char **argv)
 	if(bUseCuSum)
 	  {
 	    csm.dodetect.attach_function(OnDisorderDetection);
+	    if(par.CheckParam("atad"))
+	      {
+		NaPrintLog("Average time of alarm delay is %g\n",
+			   atof(par("atad")));
+		csm.cusum.set_smart_detection(atof(par("atad")));
+	      }
 	  }
 
 	// Setup parameters for NN-P

@@ -23,6 +23,7 @@
 #include <NaPNNNUn.h>
 #include <NaPNSkip.h>
 #include <NaPNFill.h>
+#include <NaPNTDG.h>
 
 
 //---------------------------------------------------------------------------
@@ -112,6 +113,9 @@ public:/* data */
     NaPNFileOutput  nn_y;       // NN plant output
     NaPNFileOutput  nn_e;       // identification error output
     NaPNFill        fill_nn_y;  // fill by zeros nn_y output to fit on_y
+    NaPNTrainDataGath trdgath;	// train data gathering
+    NaPNFileOutput  tdg_u;      // u series
+    NaPNFileOutput  tdg_ny;     // y+n series
 
 private:/* data */
 
