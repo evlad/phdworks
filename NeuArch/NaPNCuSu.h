@@ -48,6 +48,11 @@ public:
   // Setup time of turning on the node in activity (time=0 by default)
   void		turn_on_at (NaReal start_time);
 
+  // Make smart detection considering known average time of alarm
+  // delay.  Actual detection is solved to be the second during given
+  // time range from the first one.
+  void		set_smart_detection (NaReal atad);
+
   ///////////////////
   // Quick linkage //
   ///////////////////
@@ -91,7 +96,8 @@ protected:/* data */
   NaReal	fS;		// imaging point
   NaReal	fStartTime;	// Start the true activity when
 				// timer().CurrentTime() becomes >= fStartTime
-
+  NaReal	fATAD;		// average time of alarm delay (<=0 means off)
+  NaReal	fPrevTA;	// time of previous alarm (<0 means no alarm)
 };
 
 

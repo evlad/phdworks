@@ -8,6 +8,30 @@ static char rcsid[] = "$Id: NaPNCuSu.cpp,v 1.2 2003-07-07 20:23:35 vlad Exp $";
 
 
 //---------------------------------------------------------------------------
+// Create node for Petri network
+NaPNCuSum::NaPNCuSum (const char* szNodeName)
+: NaPetriNode(szNodeName),
+  ////////////////
+  // Connectors //
+  ////////////////
+  x(this, "x"),
+  d(this, "d"),
+  sum(this, "sum")
+{
+  // Nothing to do
+  fATAD = 0.0;
+}
+
+
+//---------------------------------------------------------------------------
+// Destroy the node
+NaPNCuSum::~NaPNCuSum ()
+{
+  // Nothing to do
+}
+
+
+//---------------------------------------------------------------------------
 // Setup parameters
 void
 NaPNCuSum::setup (NaReal sigma0, NaReal sigma1,
@@ -19,6 +43,19 @@ NaPNCuSum::setup (NaReal sigma0, NaReal sigma1,
   fTopVal = h_sol;
   fS = 0.0;
   fStartTime = 0.0;
+  fPrevTA = -1.0;
+}
+
+
+//---------------------------------------------------------------------------
+// Make smart detection considering known average time of alarm
+// delay.  Actual detection is solved to be the second during given
+// time range from the first one.
+void
+NaPNCuSum::set_smart_detection (NaReal atad)
+{
+  fATAD = atad;
+  NaPrintLog("'%s' fATAD=%g\n", name(), fATAD);
 }
 
 
@@ -59,29 +96,6 @@ NaPNCuSum::imaging_point (NaReal Sprev, NaReal Xt)
   //NaPrintLog("%g\t%g\n", zt, (-0.5*(1/sq1-1/sq0)*Xt*Xt - 0.5*log(sq1/sq0)));
 
   return Sprev + (-0.5*(1/sq1-1/sq0)*Xt*Xt - 0.5*log(sq1/sq0)) - fK;
-}
-
-
-//---------------------------------------------------------------------------
-// Create node for Petri network
-NaPNCuSum::NaPNCuSum (const char* szNodeName)
-: NaPetriNode(szNodeName),
-  ////////////////
-  // Connectors //
-  ////////////////
-  x(this, "x"),
-  d(this, "d"),
-  sum(this, "sum")
-{
-  // Nothing to do
-}
-
-
-//---------------------------------------------------------------------------
-// Destroy the node
-NaPNCuSum::~NaPNCuSum ()
-{
-  // Nothing to do
 }
 
 
@@ -162,11 +176,55 @@ NaPNCuSum::action ()
     fS = 0.0;
 
   sum.data()[0]  = fS;
-
+  /*
+  NaPrintLog("'%s' -> check %g > %g (at %d) fATAD=%g\n",
+	     name(), fS, fTopVal, net()->timer().CurrentIndex(), fATAD);
+  */
   // compute detection signal here
   if(fS > fTopVal)
     {
-      d.data()[0] = 1;
+      if(fATAD <= 0.0)
+	{
+	  /* unconditional alarm */
+	  d.data()[0] = 1;
+	  /*
+	  NaPrintLog("'%s' -> unconditional alarm (at %d)\n",
+		     name(), net()->timer().CurrentIndex());
+	  */
+	}
+      else
+	{
+	  if(fPrevTA < 0)
+	    {
+	      /* first alarm: let's check it */
+	      fPrevTA = net()->timer().CurrentTime();
+	      d.data()[0] = 0;
+	      /*
+	      NaPrintLog("'%s' -> first alarm (at %d)\n",
+			 name(), net()->timer().CurrentIndex());
+	      */
+	    }
+	  else if(net()->timer().CurrentTime() - fPrevTA <= fATAD)
+	    {
+	      /* second alarm: fits average time of alarm delay */
+	      fPrevTA = -1.0;
+	      d.data()[0] = 1;
+	      /*
+	      NaPrintLog("'%s' -> second alarm (at %d) -> YES\n",
+			 name(), net()->timer().CurrentIndex());
+	      */
+	    }
+	  else if(net()->timer().CurrentTime() - fPrevTA > fATAD)
+	    {
+	      /* second alarm: out of average time of alarm delay */
+	      fPrevTA = net()->timer().CurrentTime();
+	      d.data()[0] = 0;
+	      /*
+	      NaPrintLog("'%s' -> second alarm (at %d) -> NO\n",
+			 name(), net()->timer().CurrentIndex());
+	      */
+	    }
+	}
       /* reset sum to initial one */
       fS = 0.0;
     }
