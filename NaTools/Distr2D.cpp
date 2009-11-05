@@ -114,7 +114,7 @@ int main(int argc, char **argv)
                 int j = map[i0 * ds[1].cells + i1];
 
 		if(NULL != fpSurface)
-		  fprintf(fpSurface, "%g\t%g\t%d\n",
+		  fprintf(fpSurface, "%f\t%f\t%d\n",
 			  ds[1].min + i1 * ds[1].step,
 			  ds[0].min + i0 * ds[0].step,
 			  j);
