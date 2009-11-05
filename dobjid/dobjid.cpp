@@ -32,8 +32,6 @@ main (int argc, char* argv[])
       return 1;
     }
 
-  NaOpenLogFile("dobjid.log");
-
   try{
     NaParams	par(argv[1]);
 

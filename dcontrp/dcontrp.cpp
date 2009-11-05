@@ -37,8 +37,6 @@ int main(int argc, char **argv)
       return 1;
     }
 
-  NaOpenLogFile("dcontrp.log");
-
   try{
     NaParams	par(argv[1], argc - 2, argv + 2);
 
