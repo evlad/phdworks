@@ -27,10 +27,12 @@ Directories:
 4b  - NNP evaluation when plant becomes changed
       at t=500 from plant1.tf to plant2.tf (plant_notst.cof)
     * script split_tr_ev.sh makes 4b_0tr/*.dat and 4b_0ev/*.dat
+4b_tdg - training data gathering
 4b_0ev   - evaluation data after plant change
 4b_0tr   - training data after plant change
 4b_1     - secondary NNP training to fit plant2.tf based on previous NNP
 4b_3     - secondary NNC in-the-loop training with plant2.tf and new NNP
+4b_3a    - secondary NNC in-the-loop training with plant2.tf and new NNP
 4b_4     - new NOC evaluation in the loop and comparison with old one
 4b_4old  - old NOC evaluation on series from 4b_4 in the loop
 4c_*  - experimental search for CUSUM parameters
@@ -91,3 +93,5 @@ Neural net objects:
 	       training)
 3/res.nnc    - quasi-optimal controller neural net (after in-the-loop
 	       training)
+4b_3/new_res.nnc - quasi-optimal controller neural net (after in-the-loop
+	       training after NN-P adoption to changed plant)

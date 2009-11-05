@@ -1,0 +1,195 @@
+Logging started.
+name='contr_kind' value='nnc' APPEND
+name='nnc_mode' value='e+de' APPEND
+name='plant_initial_state' value='0' APPEND
+name='input_kind' value='stream' APPEND
+name='stream_len' value='5000' APPEND
+name='linplant_tf' value='../plant_notst.cof' APPEND
+name='lincontr_tf' value='../pid.tf' APPEND
+name='nncontr' value='../3/res.nnc' APPEND
+name='refer_tf' value='../refer.tf' APPEND
+name='noise_tf' value='../noise.tf' APPEND
+name='in_r' value='r.dat' APPEND
+name='in_n' value='n.dat' APPEND
+name='out_u' value='u.dat' APPEND
+name='out_e' value='e.dat' APPEND
+name='out_y' value='y.dat' APPEND
+name='out_ny' value='ny.dat' APPEND
+name='out_r' value='r_out.dat' APPEND
+name='out_n' value='n_out.dat' APPEND
+name='in_nnp_file' value='../1/nnp_res.nn' APPEND
+name='out_nn_y' value='nn_y.dat' APPEND
+name='out_nn_e' value='nn_e.dat' APPEND
+name='tdg_u' value='tdg_u.dat' APPEND
+name='tdg_ny' value='tdg_ny.dat' APPEND
+name='tdg_stpardet_len' value='50' APPEND
+name='tdg_cells' value='10' APPEND
+name='tdg_sigma_num' value='3' APPEND
+name='tdg_cover_percent' value='50' APPEND
+name='cusum' value='cusum.dat' APPEND
+name='sigma0' value='0.02' APPEND
+name='sigma1' value='0.05' APPEND
+name='h_sol' value='5000' APPEND
+name='k_const' value='0.0' APPEND
+name='atad' value='15' APPEND
+name='detect_interval' value='-1' APPEND
+Run dcsloop with dcsloop.par
+----------------------------->8----------------------------
+atad=15
+contr_kind=nnc
+cusum=cusum.dat
+detect_interval=-1
+h_sol=5000
+in_n=n.dat
+in_nnp_file=../1/nnp_res.nn
+in_r=r.dat
+input_kind=stream
+k_const=0.0
+lincontr_tf=../pid.tf
+linplant_tf=../plant_notst.cof
+nnc_mode=e+de
+nncontr=../3/res.nnc
+noise_tf=../noise.tf
+out_e=e.dat
+out_n=n_out.dat
+out_nn_e=nn_e.dat
+out_nn_y=nn_y.dat
+out_ny=ny.dat
+out_r=r_out.dat
+out_u=u.dat
+out_y=y.dat
+plant_initial_state=0
+refer_tf=../refer.tf
+sigma0=0.02
+sigma1=0.05
+stream_len=5000
+tdg_cells=10
+tdg_cover_percent=50
+tdg_ny=tdg_ny.dat
+tdg_sigma_num=3
+tdg_stpardet_len=50
+tdg_u=tdg_u.dat
+-----------------------------8<----------------------------
+Query for parameter 'contr_kind' gives value 'nnc'
+Query for parameter 'contr_kind' gives value 'nnc'
+Using neural net controller in control system loop
+Query for parameter 'input_kind' gives value 'stream'
+Using stream reference and noise (transfer functions)
+Query for parameter 'linplant_tf' gives value '../plant_notst.cof'
+Open file '../plant_notst.cof' for loading configuration data
+Query for parameter 'nncontr' gives value '../3/res.nnc'
+Open file '../3/res.nnc' for loading configuration data
+Data stream version 1.1
+Query for parameter 'nnc_mode' gives value 'e+de'
+Query for parameter 'nnc_mode' gives value 'e+de'
+Query for parameter 'refer_tf' gives value '../refer.tf'
+Open file '../refer.tf' for loading configuration data
+Query for parameter 'noise_tf' gives value '../noise.tf'
+Open file '../noise.tf' for loading configuration data
+Query for parameter 'stream_len' gives value '5000'
+Query for parameter 'cusum_atad' gives value '?not found'
+Query for parameter 'cusum_start_time' gives value '?not found'
+Run 1 (of 1)
+Query for parameter 'tdg_cover_percent' gives value '50'
+Query for parameter 'tdg_sigma_num' gives value '3'
+Query for parameter 'tdg_cells' gives value '10'
+Query for parameter 'tdg_stpardet_len' gives value '50'
+Query for parameter 'tdg_u' gives value 'tdg_u.dat'
+Query for parameter 'tdg_ny' gives value 'tdg_ny.dat'
+Cummulative sum detection is ON starting at 0
+Query for parameter 'atad' gives value '15'
+Average time of alarm delay is 15
+Query for parameter 'atad' gives value '15'
+'cusum' fATAD=15
+Query for parameter 'in_nnp_file' gives value '../1/nnp_res.nn'
+Open file '../1/nnp_res.nn' for loading configuration data
+Data stream version 1.1
+delay_u=1,  skip_u=1
+delay_y=1,  skip_y=0
+delay_e=1,  skip_e=2
+Query for parameter 'out_nn_y' gives value 'nn_y.dat'
+Query for parameter 'out_nn_y' gives value 'nn_y.dat'
+Writing NNP identification output to 'nn_y.dat' file.
+Query for parameter 'out_nn_e' gives value 'nn_e.dat'
+Query for parameter 'out_nn_e' gives value 'nn_e.dat'
+Writing NNP identification error to 'nn_e.dat' file.
+Link setpnt_gen.y & chkpnt_r.in
+Link chkpnt_r.out & cmp.main
+Link cmp.cmp & chkpnt_e.in
+Link chkpnt_r.out & bus.in1
+Link chkpnt_e.out & bus.in2
+Link bus.out & controller.x
+Link controller.y & chkpnt_u.in
+Link chkpnt_u.out & plant.x
+Link plant.y & chkpnt_y.in
+Link chkpnt_y.out & onsum.main
+Link onsum.sum & chkpnt_ny.in
+Link noise_gen.y & chkpnt_n.in
+Link chkpnt_ny.out & cmp.aux
+Link chkpnt_u.out & trdgath.in1
+Link chkpnt_ny.out & trdgath.in2
+Link trdgath.out1 & tdg_u.in
+Link trdgath.out2 & tdg_ny.in
+Link chkpnt_ny.out & skip_y.in
+Link chkpnt_ny.out & skip_ny.in
+Link chkpnt_u.out & skip_u.in
+Link skip_y.out & delay_y.in
+Link skip_u.out & delay_u.in
+Link delay_u.dout & bus_p.in1
+Link delay_y.dout & bus_p.in2
+Link bus_p.out & nnplant.x
+Link nnplant.y & fill_nn_y.in
+Link chkpnt_ny.out & iderrcomp.aux
+Link fill_nn_y.out & iderrcomp.main
+Link iderrcomp.cmp & iderrstat.signal
+Link iderrcomp.cmp & nn_e.in
+Link fill_nn_y.out & nn_y.in
+Link iderrcomp.cmp & cusum.x
+Link cusum.sum & cusum_out.in
+Link cusum.d & dodetect.events
+Link cusum.d & trdgath.turnon
+Link chkpnt_n.out & onsum.aux
+Link chkpnt_r.out & cmp_e.main
+Link plant.y & cmp_e.aux
+Link cmp_e.cmp & statan_e.signal
+Link chkpnt_r.out & statan_r.signal
+Query for parameter 'out_r' gives value 'r_out.dat'
+Query for parameter 'out_e' gives value 'e.dat'
+Query for parameter 'out_u' gives value 'u.dat'
+Query for parameter 'out_n' gives value 'n_out.dat'
+Query for parameter 'out_y' gives value 'y.dat'
+Query for parameter 'out_ny' gives value 'ny.dat'
+Query for parameter 'cusum' gives value 'cusum.dat'
+Query for parameter 'k_const' gives value '0.0'
+Query for parameter 'h_sol' gives value '5000'
+Query for parameter 'sigma1' gives value '0.05'
+Query for parameter 'sigma0' gives value '0.02'
+Query for parameter 'detect_interval' gives value '-1'
+Timing node 'setpnt_gen' (0xbfa21928)
+node 'chkpnt_y', connector 'out' is << STARTER >>
+Text stream output data file 'r_out.dat'
+Text stream output data file 'e.dat'
+Text stream output data file 'u.dat'
+Text stream output data file 'y.dat'
+Text stream output data file 'ny.dat'
+Text stream output data file 'n_out.dat'
+Text stream output data file 'tdg_u.dat'
+Text stream output data file 'tdg_ny.dat'
+Text stream output data file 'nn_e.dat'
+Text stream output data file 'nn_y.dat'
+Text stream output data file 'cusum.dat'
+'trdgath' is ON (at 511)
+'trdgath' calculated statistics (at 561):
+	average=0.052691	sigma=0.73772	range: -2.16047 .. 2.26585
+	average=0.239367	sigma=1.63535	range: -4.66669 .. 5.14543
+'trdgath' has 29 non-zero cells (29.0%) (at 561)
+'trdgath' reached 50 non-zero cells (50.0%) -> OFF (at 674)
+IMPORTANT: net is dead due to internal halt.
+Number of disorder detections 8
+Average time of false alarm 84.25
+Statistics of set point:
+       Min        Max         Mean     StdDev Dispersion        RMS Volume
+  -2.81041    2.70568    -0.270676   0.944238   0.891586   0.964851 674
+Statistics of error:
+       Min        Max         Mean     StdDev Dispersion        RMS Volume
+  -2.33901    2.27024   0.00928137   0.433035    0.18752   0.187606 673

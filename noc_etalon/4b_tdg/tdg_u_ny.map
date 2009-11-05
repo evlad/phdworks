@@ -1,0 +1,17 @@
+..........
+...1.21..2
+...1.11.1.
+.136579511
+..2$05421.
+11795754.1
+.2167531..
+13..112...
+...112....
+1...1.....
+
+Cell characters: .1234567890$$$$$#####%%%%%@@@@@>
+Total (X,Y)-pairs: 162
+Percent of coverage: 50.0 %
+Percent of missing:  0.0 %
+X dimension: tdg_ny.dat (min=-4.5 max=4.5 step=0.9 cells=10)
+Y dimension: tdg_u.dat (min=-2.5 max=2.5 step=0.5 cells=10)
