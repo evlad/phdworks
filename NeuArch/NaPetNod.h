@@ -32,10 +32,10 @@ public:
     // Information //
     /////////////////
 
-    // Return name of the connector
+    // Return name of the parent network
     NaPetriNet*         net () const;
 
-    // Return name of the connector
+    // Return name of the node
     const char*         name () const;
 
     // Return number of connectors
