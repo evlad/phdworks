@@ -33,6 +33,22 @@ NaParams::NaParams (const char* szFileName,
 
   if(NULL != szFileName)
     {
+      // open special logfile derived from name of parameter
+      char	*szPath = strdup(szFileName);
+      char	*szExt = strstr(szPath, ".par");
+      if(NULL != szExt && szExt[4] == '\0')
+	{
+	  // let's replace log file with new one but in current directory
+	  NaCloseLogFile();
+	  strcpy(szExt, ".log");
+	  char	*szFile = strrchr(szPath, '/');
+	  if(NULL == szFile)
+	    /* local already */
+	    szFile = szPath - 1;
+	  NaOpenLogFile(szFile + 1);
+	}
+      free(szPath);
+
       // open file
       fp = fopen(szFileName, "r");
       if(NULL == fp)
