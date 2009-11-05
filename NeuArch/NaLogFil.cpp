@@ -12,7 +12,7 @@ static char rcsid[] = "$Id: NaLogFil.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
 #include "NaLogFil.h"
 
 //---------------------------------------------------------------------------
-FILE    *fpNaLog = stdout;
+FILE    *fpNaLog = NULL;
 
 #ifdef ThreadSafe_BCB
 // To protect multi-threaded bugs
@@ -26,7 +26,7 @@ void    NaOpenLogFile (const char* szFile)
     if(NULL == szFile)
         return;
 
-    if(fpNaLog != stdout && fpNaLog != stderr){
+    if(fpNaLog != stdout && fpNaLog != stderr && fpNaLog != NULL){
         fclose(fpNaLog);
     }
 
@@ -104,12 +104,13 @@ void    NaPrintLog (const char* fmt, ...)
 
     va_list argptr;
 
-    if(NULL == fpNaLog)
-        return;
+    FILE	*fpLog = fpNaLog;
+    if(NULL == fpLog)
+      fpLog = stdout;
 
     va_start(argptr, fmt);
-    vfprintf(fpNaLog, fmt, argptr);
-    fflush(fpNaLog);
+    vfprintf(fpLog, fmt, argptr);
+    fflush(fpLog);
     va_end(argptr);
 
 #ifdef ThreadSafe_BCB
