@@ -32,7 +32,9 @@ Directories:
 4b_0tr   - training data after plant change
 4b_1     - secondary NNP training to fit plant2.tf based on previous NNP
 4b_3     - secondary NNC in-the-loop training with plant2.tf and new NNP
-4b_3a    - secondary NNC in-the-loop training with plant2.tf and new NNP
+4b_3a    - same: eta=0.005 eta_output=0.0005 nnc_auf=50 rms < 0.019
+4b_3b    - same: finding optimal eta for nnc_auf=50
+4b_3c    - same: finding optimal nnc_auf for eta=0.2
 4b_4     - new NOC evaluation in the loop and comparison with old one
 4b_4old  - old NOC evaluation on series from 4b_4 in the loop
 4c_*  - experimental search for CUSUM parameters
