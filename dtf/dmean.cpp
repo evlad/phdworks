@@ -1,5 +1,5 @@
 /* dmean.cpp */
-static char rcsid[] = "$Id: dmean.cpp,v 1.1 2002-02-11 21:32:40 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

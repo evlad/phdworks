@@ -1,5 +1,5 @@
 /* NaInfoSt.cpp */
-static char rcsid[] = "$Id: NaInfoSt.cpp,v 1.2 2001-05-15 06:02:21 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaStrOps.h"

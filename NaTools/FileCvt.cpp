@@ -1,5 +1,5 @@
 /* FileCvt.cpp */
-static char rcsid[] = "$Id: FileCvt.cpp,v 1.4 2001-06-12 12:32:21 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <NaDataIO.h>
 

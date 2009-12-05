@@ -1,5 +1,5 @@
 /* NaSSPlan.cpp */
-static char rcsid[] = "$Id: NaSSPlan.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 #include <string.h>
 #include <stdlib.h>

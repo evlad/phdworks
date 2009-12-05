@@ -1,5 +1,5 @@
 /* NaRandom.cpp */
-static char rcsid[] = "$Id: NaRandom.cpp,v 1.2 2001-05-15 06:02:23 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 #include <ctype.h>
 #include <stdio.h>

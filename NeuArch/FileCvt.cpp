@@ -1,5 +1,5 @@
 /* FileCvt.cpp */
-static char rcsid[] = "$Id: FileCvt.cpp,v 1.3 2001-05-19 21:19:08 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #pragma hdrstop
 #include <condefs.h>

@@ -1,5 +1,5 @@
 /* NaMath.cpp */
-static char rcsid[] = "$Id: NaMath.cpp,v 1.4 2001-05-22 18:18:43 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include <math.h>

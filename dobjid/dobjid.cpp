@@ -1,5 +1,5 @@
 /* dobjid.cpp */
-static char rcsid[] = "$Id: dobjid.cpp,v 1.8 2001-06-12 12:43:33 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

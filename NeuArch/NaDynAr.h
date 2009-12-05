@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaDynAr.h */
-/* $Id: NaDynAr.h,v 1.5 2005-11-19 17:00:53 evlad Exp $ */
+/* $Id$ */
 #ifndef __NaDynAr_hxx
 #define __NaDynAr_hxx
 

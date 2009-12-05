@@ -1,5 +1,5 @@
 /* dconst.cpp */
-static char rcsid[] = "$Id: dconst.cpp,v 1.2 2002-03-12 21:45:07 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

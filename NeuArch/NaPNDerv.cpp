@@ -1,5 +1,5 @@
 /* NaPNDerv.cpp */
-static char rcsid[] = "$Id: NaPNDerv.cpp,v 1.1 2001-06-18 19:15:55 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaExcept.h"

@@ -1,5 +1,5 @@
 /* dnnplant.cpp */
-static char rcsid[] = "$Id: dnnplant.cpp,v 1.5 2008-02-04 14:53:06 evlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

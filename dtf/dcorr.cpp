@@ -1,5 +1,5 @@
 /* dcorr.cpp */
-static char rcsid[] = "$Id: dcorr.cpp,v 1.3 2002-03-09 18:46:07 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

@@ -1,5 +1,5 @@
 /* NaPNQOut.cpp */
-static char rcsid[] = "$Id: NaPNQOut.cpp,v 1.5 2002-01-13 14:54:06 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaPNQOut.h"

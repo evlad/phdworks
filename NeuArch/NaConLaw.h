@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* NaConLaw.h */
-/* $Id: NaConLaw.h,v 1.2 2001-05-15 06:02:21 vlad Exp $ */
+/* $Id$ */
 //---------------------------------------------------------------------------
 #ifndef NaConLawHPP
 #define NaConLawHPP

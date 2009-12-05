@@ -1,5 +1,5 @@
 /* NaCuFunc.cpp */
-static char rcsid[] = "$Id: NaCuFunc.cpp,v 1.4 2006-03-27 18:45:17 evlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <stdlib.h>
 #include <string.h>

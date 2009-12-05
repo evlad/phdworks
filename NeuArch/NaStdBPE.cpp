@@ -1,5 +1,5 @@
 /* NaStdBPE.cpp */
-static char rcsid[] = "$Id: NaStdBPE.cpp,v 1.8 2003-09-05 20:49:26 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 #include "NaLogFil.h"
 #include "NaStdBPE.h"

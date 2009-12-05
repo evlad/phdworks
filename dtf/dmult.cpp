@@ -1,5 +1,5 @@
 /* dprod.cpp */
-static char rcsid[] = "$Id: dmult.cpp,v 1.1 2003-09-16 19:25:53 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

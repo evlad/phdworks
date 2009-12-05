@@ -1,5 +1,5 @@
 /* NaPNTchr.cpp */
-static char rcsid[] = "$Id: NaPNTchr.cpp,v 1.13 2001-12-23 14:42:13 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaPNTchr.h"

@@ -1,5 +1,5 @@
 /* NaExFunc.cpp */
-static char rcsid[] = "$Id: NaExFunc.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include "NaExFunc.h"
 

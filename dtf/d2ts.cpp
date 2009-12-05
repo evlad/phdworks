@@ -1,5 +1,5 @@
 /* d2ts.cpp */
-static char rcsid[] = "$Id: d2ts.cpp,v 1.2 2001-06-12 12:31:56 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

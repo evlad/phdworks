@@ -1,5 +1,5 @@
 /* dsmooth.cpp */
-static char rcsid[] = "$Id: dsmooth.cpp,v 1.2 2002-03-09 18:44:23 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

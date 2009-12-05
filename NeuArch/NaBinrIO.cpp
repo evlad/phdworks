@@ -1,5 +1,5 @@
 /* NaBinrIO.cpp */
-static char rcsid[] = "$Id: NaBinrIO.cpp,v 1.4 2001-12-23 14:20:28 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>

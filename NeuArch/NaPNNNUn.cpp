@@ -1,5 +1,5 @@
 /* NaPNNNUn.cpp */
-static char rcsid[] = "$Id: NaPNNNUn.cpp,v 1.3 2001-12-23 14:40:59 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaPNNNUn.h"

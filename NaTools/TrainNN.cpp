@@ -1,5 +1,5 @@
 /* TrainNN.cpp */
-static char rcsid[] = "$Id: TrainNN.cpp,v 1.2 2003-10-15 19:02:59 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <stdio.h>
 #include <signal.h>

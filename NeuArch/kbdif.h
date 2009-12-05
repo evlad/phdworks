@@ -1,6 +1,6 @@
 //-*-C++-*-
 /* kbdif.h */
-/* $Id: kbdif.h,v 1.1 2001-04-01 08:15:56 vlad Exp $ */
+/* $Id$ */
 #ifndef __kbdif_h
 #define __kbdif_h
 

@@ -1,5 +1,5 @@
 /* TestTF.cpp */
-static char rcsid[] = "$Id: TestTF.cpp,v 1.3 2001-06-18 19:15:55 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #pragma hdrstop
 //#include <condefs.h>

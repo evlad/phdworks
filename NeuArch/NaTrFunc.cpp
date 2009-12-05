@@ -1,5 +1,5 @@
 /* NaTrFunc.cpp */
-static char rcsid[] = "$Id: NaTrFunc.cpp,v 1.4 2002-02-16 21:34:41 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include <ctype.h>

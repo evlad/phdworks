@@ -1,5 +1,5 @@
 /* NaPNFOut.cpp */
-static char rcsid[] = "$Id: NaPNFOut.cpp,v 1.4 2001-06-23 08:59:57 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include <string.h>

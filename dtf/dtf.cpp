@@ -1,5 +1,5 @@
 /* dtf.cpp */
-static char rcsid[] = "$Id: dtf.cpp,v 1.4 2002-03-16 14:49:50 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>

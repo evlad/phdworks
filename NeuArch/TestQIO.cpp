@@ -1,5 +1,5 @@
 /* TestQIO.cpp */
-static char rcsid[] = "$Id: TestQIO.cpp,v 1.2 2006-03-25 15:09:37 evlad Exp $";
+static char rcsid[] = "$Id$";
 
 #pragma hdrstop
 //#include <condefs.h>

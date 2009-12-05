@@ -1,5 +1,5 @@
 /* NaPCnOut.cpp */
-static char rcsid[] = "$Id: NaPCnOut.cpp,v 1.4 2001-12-23 21:41:00 vlad Exp $";
+static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
 #include "NaExcept.h"

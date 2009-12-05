@@ -1,5 +1,5 @@
 /* dsum.cpp */
-static char rcsid[] = "$Id: dsum.cpp,v 1.2 2001-05-05 18:31:26 vlad Exp $";
+static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <stdio.h>
