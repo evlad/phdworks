@@ -8,7 +8,7 @@
 
 /**
  ***********************************************************************
- * Inverted pendulum on a cart system implementation.
+ * Inverted pendulum on the cart linearized system implementation.
  ***********************************************************************/
 class NaInvPend : public NaUnit
 {
@@ -35,6 +35,9 @@ public:
       y[0] => x[0] - position of the cart [m];
       y[2] => q[0] - angle of the pendulum [rad] */
   virtual void	Function (NaReal* u, NaReal* y);
+
+  /** Print current state of the inverted pendulum. */
+  virtual void	PrintLog () const;
 
 
   /** Calculated linearized state space matrices. */
