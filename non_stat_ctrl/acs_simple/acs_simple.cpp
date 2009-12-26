@@ -1,19 +1,22 @@
 /* acs_simple.cpp */
+static char rcsid[] = "$Id$";
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <NaDataIO.h>
 #include <NaCoFunc.h>
 #include <NaPNRand.h>
 #include <NaPNFOut.h>
 #include <NaPNCuSu.h>
 #include <NaPNWatc.h>
+#include <NaPNFIn.h>
 
 
 /** \file Simple test for algorithm of cummulative sum used to detect
     change of standard deviation of random process.
 
-    Usage: acs_simple Process.cof StdDev0 StdDev1 SolLevel \
+    Usage: acs_simple [Process.cof|Series.dat] StdDev0 StdDev1 SolLevel \
                       [ConstK [ImagingPoint.dat]]
 
     Example: ./acs_simple test.cof 1 2 5
@@ -39,7 +42,7 @@ logger (void* dummy, const NaVector& data, NaTimer& timer)
 	     data(0), timer.CurrentTime(), timer.CurrentIndex());
 
       --iCounter;
-      if(iCounter <= 0)
+      if(iCounter == 0)
 	/* stop execution only if iCounter reached zero */
 	return false;
     }
@@ -53,7 +56,7 @@ main (int argc, char* argv[])
   if(argc < 5)
     {
       fprintf(stderr,
-	      "Usage: acs_simple Process.cof StdDev0 StdDev1 SolLevel\n"\
+	      "Usage: acs_simple [Process.cof|Series.dat] StdDev0 StdDev1 SolLevel\n"\
 	      "                  [ConstK [ImagingPoint.dat]]\n"\
 	      "ACS_EVENTS=N - number of disorder events to detect\n");
       return 1;
@@ -71,15 +74,32 @@ main (int argc, char* argv[])
    */
 
   try{
+    /** type of process definition: series file or function */
+    enum { Series, Function }	eType;
     /** random process */
     NaPNRandomGen	proc("proc");
     NaCombinedFunc	proc_cof;
+    NaPNFileInput	series;
 
-    proc_cof.Load(argv[1]);
-    proc.set_generator_func(&proc_cof);
+    if(ffUnknown == NaDataFile::GuessFileFormatByName(argv[1]) &&
+       ffUnknown == NaDataFile::GuessFileFormatByMagic(argv[1]))
+      eType = Function;
+    else
+      eType = Series;
 
     NaReal	fMean = 0.0, fStdDev = 1.0;
-    proc.set_gauss_distrib(&fMean, &fStdDev);
+    switch(eType)
+      {
+      case Function:
+	proc_cof.Load(argv[1]);
+	proc.set_generator_func(&proc_cof);
+	proc.set_gauss_distrib(&fMean, &fStdDev);
+	break;
+
+      case Series:
+	series.set_input_filename(argv[1]);
+	break;
+      }
 
     /** cummulative sum detector */
     NaPNCuSum		cusum("cusum");
@@ -104,7 +124,16 @@ main (int argc, char* argv[])
 
       net.set_timing_node(&watcher);
 
-      net.link(&proc.y, &cusum.x);
+    switch(eType)
+      {
+      case Function:
+	net.link(&proc.y, &cusum.x);
+	break;
+
+      case Series:
+	net.link(&series.out, &cusum.x);
+	break;
+      }
       net.link(&cusum.d, &watcher.events);
       net.link(&cusum.sum, &imgpnt.in);
 
