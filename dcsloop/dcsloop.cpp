@@ -219,6 +219,11 @@ int main(int argc, char **argv)
 	    if(par.CheckParam("tdg_ny"))
 	      csm.tdg_ny.set_output_filename(par("tdg_ny"));
 	  }
+	else
+	  {
+	    csm.tdg_u.set_output_filename("/dev/null");
+	    csm.tdg_ny.set_output_filename("/dev/null");
+	  }
 
 	// Reset pseudo-random sequence
 	putenv("DRAND_SAFE=1");
