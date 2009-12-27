@@ -49,7 +49,6 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   iderrstat("iderrstat"),
   skip_u("skip_u"),
   skip_y("skip_y"),
-  skip_ny("skip_ny"),
   delay_u("delay_u"),
   delay_y("delay_y"),
   iderr_fout("iderr_fout"),
@@ -142,7 +141,6 @@ NaControlSystemModel::link_net ()
 	if(nnplant.get_nn_unit() != NULL)
 	  {
 	    net.link(&chkpnt_ny.out, &skip_y.in);
-	    net.link(&chkpnt_ny.out, &skip_ny.in);
 	    net.link(&chkpnt_u.out, &skip_u.in);
 
 	    net.link(&skip_y.out, &delay_y.in);
@@ -153,8 +151,6 @@ NaControlSystemModel::link_net ()
 	    net.link(&bus_p.out, &nnplant.x);
 
 	    net.link(&nnplant.y, &fill_nn_y.in);
-	    //net.link(&skip_ny.out, &iderrcomp.aux);
-	    //net.link(&nnplant.y, &iderrcomp.main);
 	    net.link(&chkpnt_ny.out, &iderrcomp.aux);
 	    net.link(&fill_nn_y.out, &iderrcomp.main);
 	    net.link(&iderrcomp.cmp, &iderrstat.signal);

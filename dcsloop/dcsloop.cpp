@@ -280,11 +280,6 @@ int main(int argc, char **argv)
 
 	    csm.skip_u.set_skip_number(iSkip_u);
 	    csm.skip_y.set_skip_number(iSkip_y);
-
-	    // Additional delay for target value
-	    //csm.skip_e.set_skip_number(1 + iSkip_e);
-
-	    csm.skip_ny.set_skip_number(1 + iSkip_e);
 	    csm.fill_nn_y.set_fill_number(iSkip_e);
 
 	    NaPrintLog("delay_u=%d,  skip_u=%d\n", iDelay_u, iSkip_u);
