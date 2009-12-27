@@ -69,9 +69,11 @@ out_nn_e = nn_e.dat
 cusum = cusum.dat
 
 # Parameters of cummulative sum method to detect std.dev. change
-sigma0 = 0.02
-sigma1 = 0.05
-h_sol = 4.94
+sigma0 = 0.15
+sigma1 = 0.80
+#sigma0 = 0.148
+#sigma1 = 0.798
+h_sol = 4
 k_const = 0.0
 
 # If the second disorder was detected not later that given time sample
