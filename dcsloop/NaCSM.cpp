@@ -16,7 +16,7 @@ static char rcsid[] = "$Id$";
 // with data files if len=0
 NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
 : net("nncp0pn"), nSeriesLen(len), eContrKind(ckind), vInitial(1),
-  bUseCuSum(true),
+  bUseCuSum(true), bUseTDG(false),
   setpnt_inp("setpnt_inp"),
   setpnt_gen("setpnt_gen"),
   chkpnt_r("chkpnt_r"),
@@ -130,12 +130,13 @@ NaControlSystemModel::link_net ()
         net.link(&chkpnt_ny.out, &cmp.aux);
 
 	/* training data gathering */
-	{
-	  net.link(&chkpnt_u.out, &trdgath.in1);
-	  net.link(&chkpnt_ny.out, &trdgath.in2);
-	  net.link(&trdgath.out1, &tdg_u.in);
-	  net.link(&trdgath.out2, &tdg_ny.in);
-	}
+	if(bUseTDG && bUseCuSum)
+	  {
+	    net.link(&chkpnt_u.out, &trdgath.in1);
+	    net.link(&chkpnt_ny.out, &trdgath.in2);
+	    net.link(&trdgath.out1, &tdg_u.in);
+	    net.link(&trdgath.out2, &tdg_ny.in);
+	  }
 
 	/* NN-P BEGIN */
 	if(nnplant.get_nn_unit() != NULL)
@@ -168,7 +169,8 @@ NaControlSystemModel::link_net ()
 		net.link(&iderrcomp.cmp, &cusum.x);
 		net.link(&cusum.sum, &cusum_out.in);
 		net.link(&cusum.d, &dodetect.events);
-		net.link(&cusum.d, &trdgath.turnon);
+		if(bUseTDG)
+		  net.link(&cusum.d, &trdgath.turnon);
 	      }
 	  }
 	/* NN-P END */
@@ -290,6 +292,15 @@ void
 NaControlSystemModel::set_cusum_flag (bool use_cusum)
 {
   bUseCuSum = use_cusum;
+}
+
+
+//---------------------------------------------------------------------------
+// Set flag of using training data gather features
+void
+NaControlSystemModel::set_tdg_flag (bool use_tdg)
+{
+  bUseTDG = use_tdg;
 }
 
 

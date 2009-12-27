@@ -209,6 +209,7 @@ int main(int argc, char **argv)
 	   par.CheckParam("tdg_sigma_num") &&
 	   par.CheckParam("tdg_cover_percent"))
 	  {
+	    csm.set_tdg_flag(true);
 	    csm.trdgath.set_parameters(atoi(par("tdg_stpardet_len")),
 				       atoi(par("tdg_cells")),
 				       atof(par("tdg_sigma_num")),
@@ -216,14 +217,15 @@ int main(int argc, char **argv)
 
 	    if(par.CheckParam("tdg_u"))
 	      csm.tdg_u.set_output_filename(par("tdg_u"));
+	    else
+	      csm.tdg_u.set_output_filename("/dev/null");
 	    if(par.CheckParam("tdg_ny"))
 	      csm.tdg_ny.set_output_filename(par("tdg_ny"));
+	    else
+	      csm.tdg_ny.set_output_filename("/dev/null");
 	  }
 	else
-	  {
-	    csm.tdg_u.set_output_filename("/dev/null");
-	    csm.tdg_ny.set_output_filename("/dev/null");
-	  }
+	  csm.set_tdg_flag(false);
 
 	// Reset pseudo-random sequence
 	putenv("DRAND_SAFE=1");

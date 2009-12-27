@@ -71,6 +71,9 @@ public:/* methods */
     // Set flag of using cummulative sum features
     void		set_cusum_flag (bool use_cusum);
 
+    // Set flag of using training data gather features
+    void		set_tdg_flag (bool use_tdg);
+
 public:/* data */
 
     // Main Petri network module
@@ -130,6 +133,9 @@ private:/* data */
 
     // Cummulative sum usage
     bool		bUseCuSum;
+
+    // Training data gather usage
+    bool		bUseTDG;
 
 };
 
