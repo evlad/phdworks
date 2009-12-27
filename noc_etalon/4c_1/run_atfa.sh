@@ -2,15 +2,21 @@
 
 # Run experiment for average time of false alarm in CUSUM
 
-list_h_sol="300 500 700 1000 1300 1500 1700 2000 2500 3000 3500 4000 4500
-5000 5500 6000 6500 7000 7500 8000 8500 9000 9500 10000"
-length=50000
+list_h_sol="0.5 0.75 1 1.25 1.5 1.75 2 2.25 2.5 2.75 3 4 5 6 7 8 9 10"
+# 11 12 13 14 15"
+length=100000
 
 for h_sol in ${list_h_sol}
 do
-    atfa=`dcsloop dcsloop.par h_sol=${h_sol} stream_len=${length} \
+    atfa2=`dcsloop dcsloop.par sigma1=0.3 h_sol=${h_sol} stream_len=${length} \
 	| tail -1 | awk '{print $6}'`
-    echo ${h_sol} ${atfa}
+    atfa3=`dcsloop dcsloop.par sigma1=0.45 h_sol=${h_sol} stream_len=${length} \
+	| tail -1 | awk '{print $6}'`
+    atfa4=`dcsloop dcsloop.par sigma1=0.6 h_sol=${h_sol} stream_len=${length} \
+	| tail -1 | awk '{print $6}'`
+    atfa5=`dcsloop dcsloop.par sigma1=0.75 h_sol=${h_sol} stream_len=${length} \
+	| tail -1 | awk '{print $6}'`
+    echo ${h_sol} ${atfa2} ${atfa3} ${atfa4} ${atfa5}
 done
 
 # End of file

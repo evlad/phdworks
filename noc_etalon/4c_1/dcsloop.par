@@ -69,10 +69,9 @@ out_nn_e = /dev/null
 cusum = /dev/null
 
 # Parameters of cummulative sum method to detect std.dev. change
-sigma0 = 0.02
-sigma1 = 0.05
+sigma0 = 0.15
+sigma1 = 0.30
 h_sol = 1000
-#4.94
 k_const = 0.0
 
 # If the second disorder was detected not later that given time sample
