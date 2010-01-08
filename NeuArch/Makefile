@@ -76,6 +76,7 @@ SRCS	=NaConLaw.cpp \
 	NaPNWatc.cpp \
 	NaPNTDG.cpp \
 	NaInvPnd.cpp \
+	NaWMR.cpp \
 	kbdif.cpp
 
 #	NaStaIO.cpp \
