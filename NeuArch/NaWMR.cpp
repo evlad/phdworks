@@ -69,14 +69,16 @@ NaWMR::Function (NaReal* x, NaReal* y)
     + dt * (-par.b * cs[angle_vel] * cs[angle_vel]
 	    + (cs[right_torque] + cs[left_torque])/(par.m * par.r));
 
-  NaReal	a = par.Km * par.Kw * par.i / par.L;
+  NaReal	a = par.Km * par.Kw * par.i;
   NaReal	b = cs[angle_vel] * par.l / 2;
-  y[left_torque] = cs[left_torque]
-    + dt * (-par.R * cs[left_torque] / par.L - a * (cs[dir_vel] - b)
-	    + par.Km * x[left_volts] / par.L);
-  y[right_torque] = cs[right_torque]
-    + dt * (-par.R * cs[right_torque] / par.L - a * (cs[dir_vel] + b)
-	    + par.Km * x[right_volts] / par.L);
+  y[left_torque] =
+    cs[left_torque] + dt * (- par.R * cs[left_torque]
+			    - a * (cs[dir_vel] - b)
+			    + par.Km * x[left_volts]) / par.L;
+  y[right_torque] =
+    cs[right_torque] + dt * (- par.R * cs[right_torque]
+			     - a * (cs[dir_vel] + b)
+			     + par.Km * x[right_volts]) / par.L;
 
   for(int i = 0; i < __state_dim; ++i)
     cs[i] = y[i];
