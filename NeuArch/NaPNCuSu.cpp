@@ -227,6 +227,9 @@ NaPNCuSum::action ()
 	}
       /* reset sum to initial one */
       fS = 0.0;
+
+      /* show imaging point as threshold value */
+      sum.data()[0]  = fTopVal;
     }
   else
     d.data()[0] = 0;
