@@ -1,5 +1,5 @@
 PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat djacob \
-		dsin dmean dstddev dsmooth dconst dmult drandmea
+		dsin dmean dstddev dsmooth dconst dmult drandmea dsub
 
 SCRIPTS		=dmeander
 
@@ -23,6 +23,7 @@ SRCS	=dtf.cpp \
 	dmse.cpp \
 	dcorr.cpp \
 	dsum.cpp \
+	dsub.cpp \
 	dstat.cpp \
 	djacob.cpp \
 	dstddev.cpp \
@@ -34,7 +35,7 @@ SRCS	=dtf.cpp \
 	drandmea.cpp
 
 OBJS	=$(dtf_OBJS) $(d2ts_OBJS) $(drand_OBJS) $(dwtest_OBJS) \
-	$(dmse_OBJS) $(dcorr_OBJS) $(dsum_OBJS) $(dstat_OBJS) \
+	$(dmse_OBJS) $(dcorr_OBJS) $(dsum_OBJS) $(dsub_OBJS) $(dstat_OBJS) \
 	$(djacob_OBJS) $(dsin_OBJS) $(dmean_OBJS) $(dstddev_OBJS) \
 	$(dconst_OBJS) $(dsmooth_OBJS) $(dmult_OBJS) $(drandmea_OBJS)
 
@@ -69,6 +70,10 @@ dcorr:	$(dcorr_OBJS) $(LIBS)
 dsum_OBJS	=dsum.o
 dsum:	$(dsum_OBJS) $(LIBS)
 	$(LD) -o $@ $(dsum_OBJS) $(LIBS) $(SYSLIBS)
+
+dsub_OBJS	=dsub.o
+dsub:	$(dsub_OBJS) $(LIBS)
+	$(LD) -o $@ $(dsub_OBJS) $(LIBS) $(SYSLIBS)
 
 dstat_OBJS	=dstat.o
 dstat:	$(dstat_OBJS) $(LIBS)
