@@ -278,7 +278,9 @@ int main(int argc, char **argv)
       }
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
-    nnocl.nnplant2.set_nn_unit(&au_nnp);
+
+    NaNNUnit	au_nnp2(au_nnp);
+    nnocl.nnplant2.set_nn_unit(&au_nnp2);
 
     // NN-P is used here to backpropagate control error to teach the
     // NN controller
