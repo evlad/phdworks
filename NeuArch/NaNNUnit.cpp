@@ -35,13 +35,7 @@ NaNNUnit::NaNNUnit (const NaNNUnit& rUnit)
   descr(rUnit.descr), feedback(rUnit.feedback.dim()),
   NaConfigPart(rUnit)
 {
-    AssignDescr(rUnit.descr);
-
-    // Copy scaler
-    InputScaler.min = rUnit.InputScaler.min;
-    InputScaler.max = rUnit.InputScaler.max;
-    OutputScaler.min = rUnit.OutputScaler.min;
-    OutputScaler.max = rUnit.OutputScaler.max;
+  operator=(rUnit);
 }
 
 
@@ -65,6 +59,14 @@ NaNNUnit::operator= (const NaNNUnit& rUnit)
     InputScaler.max = rUnit.InputScaler.max;
     OutputScaler.min = rUnit.OutputScaler.min;
     OutputScaler.max = rUnit.OutputScaler.max;
+
+    // Copy weights
+    feedback = rUnit.feedback;
+
+    for(int i = 0; i < Layers(); ++i) {
+      weight[i] = rUnit.weight[i];
+      bias[i] = rUnit.bias[i];
+    }
 
     return *this;
 }
