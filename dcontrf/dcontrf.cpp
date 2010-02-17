@@ -278,8 +278,9 @@ int main(int argc, char **argv)
       }
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
-
+    au_nnp.PrintLog();
     NaNNUnit	au_nnp2(au_nnp);
+    au_nnp2.PrintLog();
     nnocl.nnplant2.set_nn_unit(&au_nnp2);
 
     // NN-P is used here to backpropagate control error to teach the
@@ -459,13 +460,16 @@ int main(int argc, char **argv)
     int		nnc_auf = 0;
     int		nnp_auf = 0;
     int		max_epochs = 0;
+    bool	bLRbyAUF = false;
+
+    bLRbyAUF = !!atoi(par("eta_scale_by_auf"));
 
     nnc_auf = atoi(par("nnc_auf"));
     nnp_auf = atoi(par("nnp_auf"));
 
     if(nnp_auf > 0)
-	NaPrintLog("NNP training is %s\n", (nnp_auf > 0)? "ON": "OFF");
-
+      NaPrintLog("NNP training is %s\n", (nnp_auf > 0)? "ON": "OFF");
+	  
     if(stream_mode == inp_data_mode ||
        file_mode == inp_data_mode && (nnc_auf > 0 || nnp_auf > 0))
       {
@@ -473,11 +477,27 @@ int main(int argc, char **argv)
 	if(nnc_auf > 0) {
 	  nnocl.nncteacher.set_auto_update_freq(nnc_auf);
 	  NaPrintLog("Autoupdate frequency for NNC is %d\n", nnc_auf);
+
+	  if(bLRbyAUF)
+	    {
+	      /* Scale down learning rate by length of auto-update
+		 frequency */
+	      nnocl.nncteacher.lpar.eta /= nnc_auf;
+	      nnocl.nncteacher.lpar.eta_output /= nnc_auf;
+	  }
 	}
 
 	if(nnp_auf > 0) {
 	    nnocl.nnpteacher.set_auto_update_freq(nnp_auf);
 	    NaPrintLog("Autoupdate frequency for NNP is %d\n", nnp_auf);
+
+	    if(bLRbyAUF)
+	      {
+		/* Scale down learning rate by length of auto-update
+		   frequency */
+		nnocl.nnpteacher.lpar.eta /= nnp_auf;
+		nnocl.nnpteacher.lpar.eta_output /= nnp_auf;
+	      }
 	}
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
