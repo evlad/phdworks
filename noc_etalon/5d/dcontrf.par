@@ -3,22 +3,23 @@
 
 ########################################
 # Mode of the modeling
-input_kind = stream
-#input_kind = file
+#input_kind = stream
+input_kind = file
 
 # (input_kind = stream) Length of series
-stream_len = 10000
+stream_len = 1000
 
 # (input_kind = stream,file) Auto update frequency; 0 to disable
 nnc_auf = 0
 
-nnp_auf = 600
+nnp_auf = 1000
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
 nnc_mode = e+r
 
 # Linear (or combined) plant transfer function
-linplant_tf = ../plant_notst.cof
+#linplant_tf = ../plant_notst.cof
+linplant_tf = ../plant.tf
 
 # (input_kind = stream) Input transfer (or combined) functions
 refer_tf = ../refer.tf
@@ -28,8 +29,8 @@ noise_tf = ../noise.tf
 max_epochs = 0
 
 # (input_kind = file) Input files
-in_r = r.dat
-in_n = n.dat
+in_r = r_in.bis
+in_n = n_in.bis
 
 # (input_kind = stream) Output files
 out_r = r_out.dat
@@ -58,7 +59,7 @@ out_nnp_file = nnp_adopted.nn
 
 # Tracking learning process: ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX
 cerr_trace_file = cerr_trace.dat
-iderr_trace_file = iderr_trace.dat
+iderr_trace_file = iderr_trace2_nnpauf=1k.dat
 
 # Skip up to given number of epochs if MSE growing at start
 skip_growing = 35
@@ -78,10 +79,12 @@ finish_cerr_cond = absmean > 1.0 ; rms > 1.0
 finish_iderr_cond = rms > 6.0
 
 # Learning algorithm setup
+eta_scale_by_auf = 1
+
 eta = 0.005
 eta_output = 0.0005
 alpha = 0.0
 
-p_eta = 0.0001
-p_eta_output = 0.00001
+p_eta = 0.01
+p_eta_output = 0.001
 p_alpha = 0.0

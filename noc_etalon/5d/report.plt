@@ -16,3 +16,5 @@ set terminal png
 unset logscale
 set title "NOC adopted the plant change"
 plot [9850:9950] "r_out.dat" w l, "ny.dat" w l
+
+plot "iderr_trace_nnpauf=500.dat" u 3 w l, "iderr_trace_nnpauf=1k.dat" u 3 w l, "iderr_trace_nnpauf=5k.dat" u 3 w l
