@@ -9,7 +9,7 @@ static char rcsid[] = "$Id$";
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
   : NaPetriNode(szNodeName), nAutoUpdateFreq(0), auProc(NULL),
-    nn(NULL), pnn(NULL), bpe(NULL),  
+    nn(NULL), pnn(NULL), bpe(NULL), bLearn(true), 
   ////////////////
   // Connectors //
   ////////////////
@@ -35,6 +35,16 @@ NaPNTeacher::~NaPNTeacher ()
 ///////////////////
 // Node specific //
 ///////////////////
+
+//---------------------------------------------------------------------------
+// Set learning (true by default).  May be set online.
+void
+NaPNTeacher::set_learning (bool bFlag)
+{
+  bLearn = bFlag;
+  nLastUpdate = 0;
+}
+
 
 //---------------------------------------------------------------------------
 // Set up procedure which will be executed each time the updating
@@ -205,9 +215,6 @@ NaPNTeacher::action ()
     unsigned    iLayer;
     unsigned    iInpLayer = nn->InputLayer();
 
-    // One more activations since last update
-    ++nLastUpdate;
-
     // Replace NN by stored in deck
     if(NULL != pnn)
       pnn->pop_nn(bpe->nn);
@@ -230,7 +237,11 @@ NaPNTeacher::action ()
       NaPrintLog("\n");
     }
 
-    for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
+    if(bLearn){
+      // One more activations since last update
+      ++nLastUpdate;
+
+      for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
         if(nn->OutputLayer() == iLayer){
             // Output layer
             if(errout.links() == 0){
@@ -245,10 +256,10 @@ NaPNTeacher::action ()
             // Hidden layer
             bpe->DeltaRule(iLayer, iLayer + 1);
         }
-    }// backward step
+      }// backward step
 
-    // Compute error on input
-    if(errinp.links() > 0){
+      // Compute error on input
+      if(errinp.links() > 0){
         unsigned    iInput;
         NaVector    &einp = errinp.data();
 
@@ -257,17 +268,18 @@ NaPNTeacher::action ()
 	    // Or may be += ???  I didn't recognize the difference...
             einp[iInput] -= bpe->PartOfDeltaRule(iInpLayer, iInput);
         }
-    }
+      }
 
-    // Autoupdate facility
-    if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
-      NaPrintLog("Automatic update #%d of NN (%d sample)\n",
-		 iUpdateCounter, activations());
-      update_nn();
+      // Autoupdate facility
+      if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
+	NaPrintLog("Automatic update #%d of NN (%d sample)\n",
+		   iUpdateCounter, activations());
+	update_nn();
 
-      // Call procedure
-      if(NULL != auProc)
-	(*auProc)(iUpdateCounter, pData);
+	// Call procedure
+	if(NULL != auProc)
+	  (*auProc)(iUpdateCounter, pData);
+      }// if bLearn is on
     }
 }
 

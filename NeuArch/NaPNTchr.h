@@ -51,6 +51,9 @@ public:
     // Node specific //
     ///////////////////
 
+    // Set learning (true by default).  May be set online.
+    virtual void	set_learning (bool bFlag);
+
     // Set up updating frequency; 0 (no update) by default
     virtual void	set_auto_update_freq (int nFreq);
 
@@ -123,6 +126,9 @@ protected:/* data */
     // Method of teaching
     NaStdBackProp       *bpe;
     //qprop: NaQuickProp         *bpe;
+
+    // Flag of active delta-rule calculation and application
+    bool		bLearn;
 
 };
 
