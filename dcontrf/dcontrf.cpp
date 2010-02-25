@@ -57,6 +57,21 @@ PrintLog (int iAct, void* pData)
 
 
 //---------------------------------------------------------------------------
+// Copy neural network from nnplant2 (NN-P adoption) to nnplant (NN-C
+// adoption).
+void
+PushNNP (int iAct, void* pData)
+{
+  NaNNOptimContrLearn	*self = (NaNNOptimContrLearn*)pData;
+  NaNNUnit	*pNNP = self->nnplant.get_nn_unit();
+  NaNNUnit	*pNNP2 = self->nnplant2.get_nn_unit();
+
+  /* just copy oneNN to another */
+  *pNNP = *pNNP2;
+}
+
+
+//---------------------------------------------------------------------------
 void
 ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
 {
@@ -279,6 +294,8 @@ int main(int argc, char **argv)
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
     au_nnp.PrintLog();
+
+    /* Special neural network to be tuned by identification error */
     NaNNUnit	au_nnp2(au_nnp);
     au_nnp2.PrintLog();
     nnocl.nnplant2.set_nn_unit(&au_nnp2);
@@ -505,6 +522,9 @@ int main(int argc, char **argv)
 
 	if(nnc_auf > 0 || nnp_auf > 0) {
 	  nnocl.nncteacher.set_auto_update_proc(PrintLog, &nnocl);
+	}
+	if(nnc_auf > 0 && nnp_auf > 0) {
+	  nnocl.nnpteacher.set_auto_update_proc(PushNNP, &nnocl);
 	}
 
 	pnev = nnocl.run_net();
