@@ -14,8 +14,21 @@ main (int argc, char* argv[])
   if(argc < 5)
     {
       fprintf(stderr, "Error: need at least 4 arguments\n");
-      printf("Usage: wmr0 wmr.par DeltaTime InSeries OutSeries "\
-	     " [rest parameters]\n");
+      printf("Usage: wmr0 wmr.par DeltaTime InSeries OutSeries "	\
+	     " [rest parameters]\n"					\
+	     "InSeries:\n"						\
+	     " x[1] - left DC motor voltage\n"				\
+	     " x[2] - right DC motor voltage\n"				\
+	     "OutSeries:\n"						\
+	     " y[1] - time samples\n"					\
+	     " y[2] - x coordinate\n"					\
+	     " y[3] - y coordinate\n"					\
+	     " y[4] - directional angle\n"				\
+	     " y[5] - angle velocity\n"					\
+	     " y[6] - direct velocity\n"				\
+	     " y[7] - left wheel torque\n"				\
+	     " y[8] - right wheel torque\n"
+	     );
       return 1;
     }
 
@@ -42,7 +55,7 @@ main (int argc, char* argv[])
 
     NaDataFile	*dfIn = OpenInputDataFile(szInFile);
     NaDataFile	*dfOut = OpenOutputDataFile(szOutFile, bdtAuto,
-					    NaWMR::__state_dim);
+					    1 + NaWMR::__state_dim);
 
     dfIn->GoStartRecord();
     wmr.Reset();
@@ -56,8 +69,11 @@ main (int argc, char* argv[])
 
       dfOut->AppendRecord();
 
+      dfOut->SetValue(wmr.Timer().CurrentTime(), 0);
       for(int i = 0; i < NaWMR::__state_dim; ++i)
-	dfOut->SetValue(fOut[i], i);
+	dfOut->SetValue(fOut[i], i+1);
+
+      wmr.Timer().GoNextTime();
     }while(dfIn->GoNextRecord());
 
     delete dfOut;

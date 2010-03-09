@@ -58,10 +58,42 @@ NaWMR::Function (NaReal* x, NaReal* y)
   if(NULL == x || NULL == y)
     return;
 
+#if 1
+#define NEXT(id, next)	y[id] = cs[id] + dt * (next)
+
   NaReal	dt = Timer().GetSamplingRate();
+
+  NEXT(x_coord,
+       cs[dir_vel] * cos(cs[angle]));
+  NEXT(y_coord,
+       cs[dir_vel] * sin(cs[angle]));
+  NEXT(angle,
+       cs[angle_vel]);
+  NEXT(angle_vel,
+       par.b * par.m * cs[angle_vel] * cs[dir_vel]/par.iz
+       + par.l * (cs[right_torque] - cs[left_torque])/(2 * par.r * par.iz));
+  NEXT(dir_vel,
+       - par.b * cs[angle_vel] * cs[angle_vel]
+       + (cs[right_torque] + cs[left_torque])/(par.m * par.r));
+
+  NaReal	a = par.Km * par.Kw * par.i / par.l/* or par.r ??? some m */;
+  NaReal	b = cs[angle_vel] * par.l / 2;
+  NEXT(left_torque,
+       (- par.R * cs[left_torque]
+	- a * (cs[dir_vel] - b)
+	+ par.Km * x[left_volts]) / par.L);
+  NEXT(right_torque,
+       (- par.R * cs[right_torque]
+	- a * (cs[dir_vel] + b)
+	+ par.Km * x[right_volts]) / par.L);
+
+#undef NEXT
+
+#else
+
   y[x_coord] = cs[x_coord] + dt * (cs[dir_vel] * cos(cs[angle]));
   y[y_coord] = cs[y_coord] + dt * (cs[dir_vel] * sin(cs[angle]));
-  y[angle] = cs[angle] + dt * y[angle_vel];
+  y[angle] = cs[angle] + dt * cs[angle_vel];
   y[angle_vel] = cs[angle_vel]
     + dt * (par.b * par.m * cs[angle_vel] * cs[dir_vel]/par.iz
 	    + (cs[right_torque] - cs[left_torque])/(2 * par.r * par.iz));
@@ -79,6 +111,7 @@ NaWMR::Function (NaReal* x, NaReal* y)
     cs[right_torque] + dt * (- par.R * cs[right_torque]
 			     - a * (cs[dir_vel] + b)
 			     + par.Km * x[right_volts]) / par.L;
+#endif
 
   for(int i = 0; i < __state_dim; ++i)
     cs[i] = y[i];
