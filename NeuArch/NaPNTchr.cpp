@@ -272,8 +272,10 @@ NaPNTeacher::action ()
 
       // Autoupdate facility
       if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
-	NaPrintLog("Automatic update #%d of NN (%d sample)\n",
-		   iUpdateCounter, activations());
+	NaPrintLog("%s: Automatic update #%d of NN '%s' (%d sample)\n",
+		   name(), iUpdateCounter,
+		   bpe->nn.GetInstance()? bpe->nn.GetInstance(): "",
+		   activations());
 	update_nn();
 
 	// Call procedure
