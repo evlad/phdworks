@@ -293,11 +293,11 @@ int main(int argc, char **argv)
       }
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
-    au_nnp.PrintLog();
+    //au_nnp.PrintLog();
 
     /* Special neural network to be tuned by identification error */
     NaNNUnit	au_nnp2(au_nnp);
-    au_nnp2.PrintLog();
+    //au_nnp2.PrintLog();
     nnocl.nnplant2.set_nn_unit(&au_nnp2);
 
     // NN-P is used here to backpropagate control error to teach the
