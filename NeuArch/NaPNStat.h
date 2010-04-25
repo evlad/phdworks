@@ -41,7 +41,8 @@
 #define NaSM_TINDEX	NaSIdToMask(NaSI_TINDEX)
 
 #define NaSM_ALL	(NaSM_ABSMEAN | NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
-			 NaSM_MAX | NaSM_MIN | NaSM_ABSMAX)
+			 NaSM_MAX | NaSM_MIN | NaSM_ABSMAX | \
+			 NaSM_TIME | NaSM_TINDEX)
 
 
 // Stat identifier string<->id conversion
