@@ -72,7 +72,7 @@ PushNNP (int iAct, void* pData)
 
 
 //---------------------------------------------------------------------------
-int
+void
 ParseStatFormat (NaPNStatistics& pnstat, char* parvalue)
 {
     char *token;
@@ -86,7 +86,8 @@ ParseStatFormat (NaPNStatistics& pnstat, char* parvalue)
 	    if(id != NaSI_bad_id)
 		resmask |= NaSIdToMask(id);
 	}
-    return resmask;
+    if(0 != resmask)
+	pnstat.configure_output(resmask);
 }
 
 
@@ -449,6 +450,13 @@ int main(int argc, char **argv)
     NaPrintLog("Writing plant + noise observation output to '%s' file.\n",
 	       par("out_ny"));
 
+    if(par.CheckParam("cerr_trace_contents")) {
+	ParseStatFormat(nnocl.cerrstat, par("cerr_trace_contents"));
+    }
+    if(par.CheckParam("iderr_trace_contents")) {
+	ParseStatFormat(nnocl.iderrstat, par("iderr_trace_contents"));
+    }
+
     switch(ckind)
       {
       case NaNeuralContrDelayedE:
@@ -534,15 +542,6 @@ int main(int argc, char **argv)
 		nnocl.nnpteacher.lpar.eta /= nnp_auf;
 		nnocl.nnpteacher.lpar.eta_output /= nnp_auf;
 	      }
-	}
-
-	if(par.CheckParam("cerr_trace_contents")) {
-	    ParseStatFormat(nnocl.cerrstat,
-			    ParseStatFormat(par("cerr_trace_contents")));
-	}
-	if(par.CheckParam("iderr_trace_contents")) {
-	    ParseStatFormat(nnocl.iderrstat,
-			    ParseStatFormat(par("iderr_trace_contents")));
 	}
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
