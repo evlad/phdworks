@@ -60,15 +60,35 @@ NaNNUnit::operator= (const NaNNUnit& rUnit)
     OutputScaler.min = rUnit.OutputScaler.min;
     OutputScaler.max = rUnit.OutputScaler.max;
 
-    // Copy weights
+    // Copy weights, input and intermediate results
     feedback = rUnit.feedback;
+    Xinp0 = rUnit.Xinp0;
 
-    for(int i = 0; i < Layers(); ++i) {
+    for(unsigned i = 0; i < Layers(); ++i) {
       weight[i] = rUnit.weight[i];
       bias[i] = rUnit.bias[i];
+      Yout[i] = rUnit.Yout[i];
+      Znet[i] = rUnit.Znet[i];
     }
 
     return *this;
+}
+
+
+//---------------------------------------------------------------------------
+// Compare objects
+bool
+NaNNUnit::operator== (const NaNNUnit& rUnit) const
+{
+    if(descr != rUnit.descr)
+	return false;
+
+    for(unsigned i = 0; i < Layers(); ++i) {
+	if(weight[i] != rUnit.weight[i] || bias[i] != rUnit.bias[i])
+	    return false;
+    }
+
+    return true;
 }
 
 

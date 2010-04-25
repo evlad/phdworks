@@ -9,7 +9,7 @@ static char rcsid[] = "$Id$";
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
   : NaPetriNode(szNodeName), nAutoUpdateFreq(0), auProc(NULL),
-    nn(NULL), pnn(NULL), bpe(NULL), bLearn(true), 
+    pnn(NULL), bpe(NULL), bLearn(true), 
   ////////////////
   // Connectors //
   ////////////////
@@ -75,34 +75,20 @@ NaPNTeacher::set_auto_update_freq (int nFreq)
 void
 NaPNTeacher::set_nn (NaPNNNUnit* pnNN, unsigned nSkipFirst)
 {
-  check_tunable();
-
-  if(NULL == pnNN)
-    throw(na_null_pointer);
-
-  pnn = pnNN;
-  pnn->need_nn_deck(true, nSkipFirst);
-
-  set_nn(pnn->get_nn_unit());
-}
-
-
-//---------------------------------------------------------------------------
-// Set link with neural net unit to teach it
-void
-NaPNTeacher::set_nn (NaNNUnit* pNN)
-{
     check_tunable();
 
-    if(NULL == pNN)
-        throw(na_null_pointer);
+    if(NULL == pnNN)
+	throw(na_null_pointer);
 
-    nn = pNN;
+    pnn = pnNN;
+    pnn->need_nn_deck(true, nSkipFirst);
 
     // Create a teacher
     if(NULL != bpe)
         delete bpe;
-    bpe = new NaStdBackProp(*nn);
+
+    // Create teacher and attach NN at the same time
+    bpe = new NaStdBackProp(*(pnn->get_nn_unit()));
     //qprop: bpe = new NaQuickProp(*nn);
     if(NULL == bpe)
         throw(na_bad_alloc);
@@ -112,10 +98,10 @@ NaPNTeacher::set_nn (NaNNUnit* pNN)
 //---------------------------------------------------------------------------
 // Reset NN weight changes
 void
-NaPNTeacher::reset_nn ()
+NaPNTeacher::reset_training ()
 {
     if(NULL != bpe){
-        bpe->ResetNN();
+        bpe->Reset();
     }
 }
 
@@ -125,15 +111,12 @@ NaPNTeacher::reset_nn ()
 void
 NaPNTeacher::update_nn ()
 {
-    if(NULL != bpe){
-      // Replace NN by actual one
-      if(NULL != pnn)
-	bpe->nn = *nn;
+    if(NULL == bpe)
+	return;
 
-      bpe->UpdateNN();
-      nLastUpdate = 0;
-      ++iUpdateCounter;
-    }
+    bpe->UpdateNN();
+    nLastUpdate = 0;
+    ++iUpdateCounter;
 }
 
 
@@ -148,7 +131,7 @@ NaPNTeacher::update_nn ()
 void
 NaPNTeacher::relate_connectors ()
 {
-    errinp.data().new_dim(nn->InputDim());
+    errinp.data().new_dim(pnn->get_nn_unit()->InputDim());
 }
 
 
@@ -157,18 +140,18 @@ NaPNTeacher::relate_connectors ()
 bool
 NaPNTeacher::verify ()
 {
-    if(NULL == nn){
+    if(NULL == pnn || NULL == pnn->get_nn_unit()){
         NaPrintLog("VERIFY FAILED: No NN is set!\n");
         return false;
     }else if(nnout.links() != 0 && desout.links() != 0 && errout.links() == 0){
         // Input pack #1
-        return nn->OutputDim() == nnout.data().dim()
-            && nn->OutputDim() == desout.data().dim()
-            && nn->InputDim() == errinp.data().dim();
+        return pnn->get_nn_unit()->OutputDim() == nnout.data().dim()
+            && pnn->get_nn_unit()->OutputDim() == desout.data().dim()
+            && pnn->get_nn_unit()->InputDim() == errinp.data().dim();
     }else if(nnout.links() == 0 && desout.links() == 0 && errout.links() != 0){
         // Input pack #2
-        return nn->OutputDim() == errout.data().dim()
-            && nn->InputDim() == errinp.data().dim();
+        return pnn->get_nn_unit()->OutputDim() == errout.data().dim()
+            && pnn->get_nn_unit()->InputDim() == errinp.data().dim();
     }
     NaPrintLog("VERIFY FAILED: "
                "'nnout' & 'desout' or 'errout' must be linked!\n");
@@ -187,6 +170,9 @@ NaPNTeacher::initialize (bool& starter)
     // Assign parameters
     *(NaStdBackPropParams*)bpe = lpar;
     //qprop: *(NaQuickPropParams*)bpe = lpar;
+
+    if(is_verbose())
+	bpe->SetDebugLevel(2);
 }
 
 
@@ -213,18 +199,18 @@ void
 NaPNTeacher::action ()
 {
     unsigned    iLayer;
-    unsigned    iInpLayer = nn->InputLayer();
+    unsigned    iInpLayer = pnn->get_nn_unit()->InputLayer();
 
-    // Replace NN by stored in deck
-    if(NULL != pnn)
-      pnn->pop_nn(bpe->nn);
+    // Take neural network state at the time it's feed forward calculation
+    NaNNUnit	pastNN;
+    pnn->pop_nn(pastNN);
 
     if(is_verbose()){
       int	i;
-      NaPrintLog("NaPNTeacher (%p, %s.%s):\n  NN input: ",
-		 this, net()->name(), name());
-      for(i = 0; i < bpe->nn.Xinp0.dim(); ++i)
-	NaPrintLog(" %g", bpe->nn.Xinp0[i]);
+      NaPrintLog("NaPNTeacher (%p, %s[%s]):\n  NN input: ",
+		 this, name(), pastNN.GetInstance());
+      for(i = 0; i < pastNN.Xinp0.dim(); ++i)
+	NaPrintLog(" %g", pastNN.Xinp0[i]);
       if(errout.links() == 0){
 	NaPrintLog("\n  NN target: ");
 	for(i = 0; i < desout.data().dim(); ++i)
@@ -238,11 +224,15 @@ NaPNTeacher::action ()
     }
 
     if(bLearn){
+      // Let's calculate delta weight from the past NN
+      bpe->AttachNN(&pastNN);
+
       // One more activations since last update
       ++nLastUpdate;
 
-      for(iLayer = nn->OutputLayer(); (int)iLayer >= (int)iInpLayer; --iLayer){
-        if(nn->OutputLayer() == iLayer){
+      for(iLayer = pastNN.OutputLayer();
+	  (int)iLayer >= (int)iInpLayer; --iLayer){
+        if(pastNN.OutputLayer() == iLayer){
             // Output layer
             if(errout.links() == 0){
                 // Input pack #1
@@ -270,11 +260,15 @@ NaPNTeacher::action ()
         }
       }
 
+      // Now let's forget the past NN state since changes should be
+      // applied to the current neural net anyway
+      bpe->DetachNN();
+
       // Autoupdate facility
       if(0 != nAutoUpdateFreq && nLastUpdate >= nAutoUpdateFreq){
 	NaPrintLog("%s: Automatic update #%d of NN '%s' (%d sample)\n",
 		   name(), iUpdateCounter,
-		   bpe->nn.GetInstance()? bpe->nn.GetInstance(): "",
+		   bpe->nn().GetInstance()? bpe->nn().GetInstance(): "",
 		   activations());
 	update_nn();
 

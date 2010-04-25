@@ -4,8 +4,455 @@ static char rcsid[] = "$Id$";
 #include "NaLogFil.h"
 #include "NaStdBPE.h"
 
-//#define StdBPE_DEBUG
-//#define PrintUpdateNN
+//---------------------------------------------------------------------------
+// Initialize the object on the basic of preset nd
+void
+NaStdBackProp::Init ()
+{
+    unsigned    /*iInput, iNeuron, */iLayer;
+
+    // Assign dimensions
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+        psWeight[iLayer].new_dim(nd.Neurons(iLayer), nd.Inputs(iLayer));
+        psBias[iLayer].new_dim(nd.Neurons(iLayer));
+        dWeight[iLayer].new_dim(nd.Neurons(iLayer), nd.Inputs(iLayer));
+        dBias[iLayer].new_dim(nd.Neurons(iLayer));
+        delta[iLayer].new_dim(nd.Neurons(iLayer));
+        delta_prev[iLayer].new_dim(nd.Neurons(iLayer));
+    }
+
+    // Initalize all values by zero
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+        psWeight[iLayer].init_zero();
+        psBias[iLayer].init_zero();
+        dWeight[iLayer].init_zero();
+        dBias[iLayer].init_zero();
+        delta[iLayer].init_zero();
+        delta_prev[iLayer].init_zero();
+    }
+}
+
+
+//---------------------------------------------------------------------------
+// Prepare object to work with given neural network architecture.
+// Most operations are disabled until attaching neural network data.
+NaStdBackProp::NaStdBackProp (NaNeuralNetDescr& rND)
+    : nd(rND), nDebugLvl(0)
+{
+    Init();
+}
+
+
+//---------------------------------------------------------------------------
+// Prepare object to work with given neural network passed by
+// reference.  Actually a pointer to the NN object will be stored.
+NaStdBackProp::NaStdBackProp (NaNNUnit& rNN)
+    : nd(rNN.descr), nDebugLvl(0)
+{
+    Init();
+    AttachNN(&rNN);
+}
+
+
+//---------------------------------------------------------------------------
+NaStdBackProp::~NaStdBackProp ()
+{
+    // Dummy
+}
+
+//---------------------------------------------------------------------------
+// Return reference to the neural network architecture
+const NaNeuralNetDescr&
+NaStdBackProp::Arch () const
+{
+    return nd;
+}
+
+
+//---------------------------------------------------------------------------
+// Return pointer to the current neural network data or NULL if no
+// network data is attached
+NaNNUnit*
+NaStdBackProp::NN () const
+{
+    if(nnStack.count() == 0)
+	return NULL;
+    return nnStack(0);
+}
+
+
+//---------------------------------------------------------------------------
+// Return reference to the current neural network data or throw
+// exception na_bad_value if no network data is attached
+NaNNUnit&
+NaStdBackProp::nn () const
+{
+    NaNNUnit	*pNN = NN();
+    if(NULL == pNN)
+	throw(na_bad_value);
+    return *pNN;
+}
+
+
+//---------------------------------------------------------------------------
+// Attach neural network data to be used in further operations:
+// delta calculations and application.  Several attached neural
+// networks must be detached in order.
+void
+NaStdBackProp::AttachNN (NaNNUnit* pNN)
+{
+    if(NULL == pNN)
+	throw(na_null_pointer);
+
+    // check the same architecture
+    if(nd != pNN->descr)
+	throw(na_not_compatible);
+
+    // push
+    nnStack.addl(pNN);
+}
+
+
+//---------------------------------------------------------------------------
+// Detach the last attached neural network
+void
+NaStdBackProp::DetachNN ()
+{
+    // pop
+    if(nnStack.count() > 0)
+	nnStack.remove(0);
+}
+
+
+//---------------------------------------------------------------------------
+// Reset computed changes: delta of weights
+void
+NaStdBackProp::Reset ()
+{
+    unsigned    iLayer;
+    // Reset dWeight and dBias for the next epoch
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+        dWeight[iLayer].init_zero();
+        dBias[iLayer].init_zero();
+    }
+}
+
+//---------------------------------------------------------------------------
+// Update the current neural network parameters on the basis of
+// computed changes.
+void
+NaStdBackProp::UpdateNN ()
+{
+    if(NULL == NN())
+	// Disabled until the first valid attach
+	return;
+
+    unsigned    iInput, iNeuron, iLayer;
+    bool        bProhibitBiasChange = DontTouchBias();
+
+    NaMatrix    old_w;
+    NaVector    old_b;
+
+    // Apply dWeight and dBias to nn.weight and nn.bias
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+
+	if(nDebugLvl >= 1) {
+	    NaPrintLog("=== Update layer[%u] ===\n", iLayer);
+	    old_w = nn().weight[iLayer];
+	    old_b = nn().bias[iLayer];
+	}
+
+        for(iNeuron = 0; iNeuron < nd.Neurons(iLayer); ++iNeuron){
+	    if(nDebugLvl >= 1)
+		NaPrintLog("    Neuron[%u]:\n", iNeuron);
+
+            for(iInput = 0; iInput < nd.Inputs(iLayer); ++iInput){
+                psWeight[iLayer][iNeuron][iInput] =
+                    dWeight[iLayer](iNeuron, iInput);
+                nn().weight[iLayer][iNeuron][iInput] +=
+                    dWeight[iLayer](iNeuron, iInput);
+
+		if(nDebugLvl >= 1)
+		    NaPrintLog("    * W[%u]= %g\t%+g\t--> %g\n",
+			       iInput, old_w(iNeuron, iInput),
+			       dWeight[iLayer](iNeuron, iInput),
+			       nn().weight[iLayer](iNeuron, iInput));
+            }
+            psBias[iLayer][iNeuron] = dBias[iLayer][iNeuron];
+
+	    if(!bProhibitBiasChange){
+		nn().bias[iLayer][iNeuron] += dBias[iLayer][iNeuron];
+
+		if(nDebugLvl >= 1)
+		    NaPrintLog("    * B= %g\t%+g\t--> %g\n",
+			       old_b[iNeuron], dBias[iLayer][iNeuron],
+			       nn().bias[iLayer][iNeuron]);
+	    }else{
+		if(nDebugLvl >= 1)
+		    NaPrintLog("    * prohibited bias change: B= %g\n",
+			       nn().bias[iLayer][iNeuron]);
+	    }
+        }
+    }
+
+    // Reset dWeight and dBias for the next epoch
+    Reset();
+}
+
+//---------------------------------------------------------------------------
+// Compute delta weights based on common delta (see DeltaRule)
+void
+NaStdBackProp::ApplyDelta (unsigned iLayer)
+{
+    unsigned    iNeuron, iInput;
+
+    // Apply delta weight and delta bias
+    NaMatrix    old_dW;
+    NaVector    old_dB;
+
+    if(nDebugLvl >= 2) {
+	NaPrintLog("--- Applied delta for weight and bias [%u]-layer ---\n",
+		   iLayer);
+	old_dW = dWeight[iLayer];
+	old_dB = dBias[iLayer];
+    }
+
+    for(iNeuron = 0; iNeuron < nd.Neurons(iLayer); ++iNeuron){
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    Neuron[%u]:\n", iNeuron);
+
+        for(iInput = 0; iInput < nd.Inputs(iLayer); ++iInput){
+            dWeight[iLayer][iNeuron][iInput] +=
+                DeltaWeight(iLayer, iNeuron, iInput);
+
+	    if(nDebugLvl >= 2)
+		NaPrintLog("    * dW[%u]= %g\t--> %g\n",
+			   iInput, old_dW(iNeuron, iInput),
+			   dWeight[iLayer](iNeuron, iInput));
+        }
+        dBias[iLayer][iNeuron] += DeltaBias(iLayer, iNeuron);
+
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    * dB= %g\t--> %g\n",
+		       old_dB[iNeuron], dBias[iLayer][iNeuron]);
+    }
+}
+
+
+//---------------------------------------------------------------------------
+// Delta rule for the last layer.
+// Ytarg is desired vector needs to be compared with Yout
+// of the output layer or error value already computed..
+// If bError==true then Ytarg means error ready to use without Yout.
+// If bError==false then Ytarg means Ydes to compare with Yout.
+void
+NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
+{
+    if(NULL == NN())
+	// Disabled until the first valid attach
+	return;
+
+    NaReal      fError;
+    unsigned    iNeuron, iLayer = nd.OutputLayer();
+
+    if(nDebugLvl >= 2)
+	NaPrintLog("+++ Standard delta rule [%u]-output +++\n", iLayer);
+
+    if(NULL == Ytarg)
+        throw(na_null_pointer);
+
+    // Compute common delta
+    for(iNeuron = 0; iNeuron < nd.Neurons(iLayer); ++iNeuron){
+        // Compute error by comparing values Ydes and Yout
+        if(bError){
+	  // I still don't know whether precomputed error needs to be
+	  // scaled the same manner as desired value or not.  Anyway
+	  // I'm sure this bit of code (with disabled error scaling)
+	  // is good enough to work in real application with outputs
+	  // without scaling.  Don't scale NN outputs until you will
+	  // be sure about proper way to scale precomputed error too!
+#if 0
+            // Error must not be scaled
+            fError = Ytarg[iNeuron];
+#else
+            // Error must be scaled to standard range too
+	    nn().ScaleData(nn().OutputScaler, nn().StdOutputRange,
+			   &(Ytarg[iNeuron]), &fError, 1, iNeuron);
+#endif
+	    if(nDebugLvl >= 3)
+		NaPrintLog("    ~ precomp.error[%d]= %g\n", iNeuron, fError);
+        }else{
+            NaReal  Ydes_i;
+
+            // Scale Ydes to standard range [-1,1]
+	    nn().ScaleData(nn().OutputScaler, nn().StdOutputRange,
+			   &(Ytarg[iNeuron]), &Ydes_i, 1, iNeuron);
+
+            fError = nn().Yout[iLayer][iNeuron] - Ydes_i;
+	    if(nDebugLvl >= 2)
+		NaPrintLog("    ~ error[%d]= %g\n", iNeuron, fError);
+        }
+
+        delta_prev[iLayer][iNeuron] = delta[iLayer][iNeuron];
+        delta[iLayer][iNeuron] =
+            fError * nn().DerivActFunc(iLayer, nn().Znet[iLayer][iNeuron]);
+
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    * delta[%u]= %g\n", iNeuron, delta[iLayer][iNeuron]);
+    }
+
+    // Apply common delta - accumulate it in dWeight and dBias
+    ApplyDelta(iLayer);
+}
+
+
+//---------------------------------------------------------------------------
+// Part of delta rule for the hidden layer
+// Computes sum of products outcoming weights and target deltas
+// on given layer and for given input
+NaReal
+NaStdBackProp::PartOfDeltaRule (unsigned iPrevLayer, unsigned iInput)
+{
+    if(NULL == NN())
+	// Disabled until the first valid attach
+	return 0.0;
+
+    unsigned    iPrevNeuron;
+    NaReal      fSum = 0.;
+
+    for(iPrevNeuron = 0; iPrevNeuron < nd.Neurons(iPrevLayer); ++iPrevNeuron){
+
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    ** [%u]: prev_delta= %g,  weight= %g\n",
+		       iPrevNeuron, delta[iPrevLayer][iPrevNeuron],
+		       nn().weight[iPrevLayer](iPrevNeuron, iInput));
+
+        fSum += delta[iPrevLayer][iPrevNeuron] *
+            nn().weight[iPrevLayer](iPrevNeuron, iInput);
+    }
+
+    return fSum;
+}
+
+
+//---------------------------------------------------------------------------
+// Delta rule for the hidden layer
+// iLayer - index of target layer delta computation on the basis of previous
+// layer's delta and linked weights.  Usually iPrevLayer=iLayer+1.
+void
+NaStdBackProp::DeltaRule (unsigned iLayer, unsigned iPrevLayer)
+{
+    if(NULL == NN())
+	// Disabled until the first valid attach
+	return;
+
+    unsigned    iNeuron;
+
+    if(nDebugLvl >= 2)
+	NaPrintLog("+++ Standard delta rule [%u]-hidden [%u]-previous +++\n",
+		   iLayer, iPrevLayer);
+
+    // For each neuron of the current layer...
+    for(iNeuron = 0; iNeuron < nd.Neurons(iLayer); ++iNeuron){
+
+        // Store delta for future usage...
+        delta_prev[iLayer][iNeuron] = delta[iLayer][iNeuron];
+        // Initialize delta...
+        delta[iLayer][iNeuron] = PartOfDeltaRule(iPrevLayer, iNeuron);
+
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    * sum delta= %g,  Znet= %g,  Deriv= %g\n",
+		       delta[iLayer][iNeuron], nn().Znet[iLayer][iNeuron],
+		       nn().DerivActFunc(iLayer, nn().Znet[iLayer][iNeuron]));
+
+        // Mulitply delta by derivation of the activation function
+        delta[iLayer][iNeuron] *=
+            nn().DerivActFunc(iLayer, nn().Znet[iLayer][iNeuron]);
+
+	if(nDebugLvl >= 2)
+	    NaPrintLog("    * delta[%u]= %g\n", iNeuron, delta[iLayer][iNeuron]);
+    }
+
+    // Apply common delta - accumulate it in dWeight and dBias
+    ApplyDelta(iLayer);
+}
+
+
+//---------------------------------------------------------------------------
+// Compute delta of exact w[i,j,k]
+NaReal
+NaStdBackProp::DeltaWeight (unsigned iLayer, unsigned iNeuron,
+                            unsigned iInput)
+{
+    if(NULL == NN())
+	// Disabled until the first valid attach
+	return 0.0;
+
+    return - nn().Xinp(iLayer)(iInput) *
+        delta[iLayer][iNeuron] * LearningRate(iLayer) +
+        Momentum(iLayer) * psWeight[iLayer][iNeuron][iInput];
+}
+
+
+//---------------------------------------------------------------------------
+// Compute delta of exact b[i,j]
+NaReal
+NaStdBackProp::DeltaBias (unsigned iLayer, unsigned iNeuron)
+{
+    return - delta[iLayer][iNeuron] * LearningRate(iLayer) +
+        Momentum(iLayer) * psBias[iLayer][iNeuron];
+}
+
+
+//---------------------------------------------------------------------------
+// Return true if there is a need to prohibit bias change.
+bool
+NaStdBackProp::DontTouchBias ()
+{
+  bool		bAllZero = true;
+  unsigned	iNeuron, iLayer;
+
+  // Find out zero biases
+  for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer)
+    {
+      for(iNeuron = 0; iNeuron < nd.Neurons(iLayer); ++iNeuron)
+	{
+	    if(0.0 != nn().bias[iLayer][iNeuron])
+	    {
+	      bAllZero = false;
+	      break;
+	    }
+	}
+      if(!bAllZero)
+	break;
+    }
+
+  return bAllZero;
+}
+
+
+//---------------------------------------------------------------------------
+// Learning rate coefficient for the given layer
+NaReal
+NaStdBackProp::LearningRate (unsigned iLayer) const
+{
+    if(afkLinear == nd.eLastActFunc &&
+       nd.OutputLayer() == iLayer){
+       // Last layer -> do special (usually very slow) learning
+       return eta_output;
+    }
+    return NaStdBackPropParams::LearningRate(iLayer);
+}
+
+
+//---------------------------------------------------------------------------
+// Set flag of debugging messages
+void
+NaStdBackProp::SetDebugLevel (int iDebug)
+{
+    nDebugLvl = iDebug;
+}
+
 
 //---------------------------------------------------------------------------
 NaStdBackPropParams::NaStdBackPropParams ()
@@ -47,344 +494,6 @@ NaStdBackPropParams::PrintLog () const
 {
     NaPrintLog("StdBackProp parameters: learning rate %g,  momentum %g\n",
                eta, alpha);
-}
-
-//---------------------------------------------------------------------------
-NaStdBackProp::NaStdBackProp (NaNNUnit& rNN)
-: nn(rNN)
-{
-    unsigned    /*iInput, iNeuron, */iLayer;
-
-    // Assign dimensions
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        psWeight[iLayer].new_dim(nn.Neurons(iLayer), nn.Inputs(iLayer));
-        psBias[iLayer].new_dim(nn.Neurons(iLayer));
-        dWeight[iLayer].new_dim(nn.Neurons(iLayer), nn.Inputs(iLayer));
-        dBias[iLayer].new_dim(nn.Neurons(iLayer));
-        delta[iLayer].new_dim(nn.Neurons(iLayer));
-        delta_prev[iLayer].new_dim(nn.Neurons(iLayer));
-    }
-
-    // Initalize all values by zero
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        psWeight[iLayer].init_zero();
-        psBias[iLayer].init_zero();
-        dWeight[iLayer].init_zero();
-        dBias[iLayer].init_zero();
-        delta[iLayer].init_zero();
-        delta_prev[iLayer].init_zero();
-    }
-}
-
-//---------------------------------------------------------------------------
-NaStdBackProp::~NaStdBackProp ()
-{
-    // Dummy
-}
-
-//---------------------------------------------------------------------------
-// Reset computed changes
-void
-NaStdBackProp::ResetNN ()
-{
-    unsigned    iLayer;
-    // Reset dWeight and dBias for the next epoch
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        dWeight[iLayer].init_zero();
-        dBias[iLayer].init_zero();
-    }
-}
-
-//---------------------------------------------------------------------------
-// Update network parameters on the basis of computed changes
-void
-NaStdBackProp::UpdateNN ()
-{
-    unsigned    iInput, iNeuron, iLayer;
-    bool        bProhibitBiasChange = DontTouchBias();
-
-#ifdef PrintUpdateNN
-#define StdBPE_DEBUG
-#endif /* PrintUpdateNN */
-
-    // Apply dWeight and dBias to nn.weight and nn.bias
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-#ifdef StdBPE_DEBUG
-        NaMatrix    old_w(nn.weight[iLayer]);
-        NaVector    old_b(nn.bias[iLayer]);
-        NaPrintLog("=== Update layer[%u] ===\n", iLayer);
-#endif // StdBPE_DEBUG
-        for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron){
-#ifdef StdBPE_DEBUG
-            NaPrintLog("    Neuron[%u]:\n", iNeuron);
-#endif // StdBPE_DEBUG
-            for(iInput = 0; iInput < nn.Inputs(iLayer); ++iInput){
-                psWeight[iLayer][iNeuron][iInput] =
-                    dWeight[iLayer](iNeuron, iInput);
-                nn.weight[iLayer][iNeuron][iInput] +=
-                    dWeight[iLayer](iNeuron, iInput);
-#ifdef StdBPE_DEBUG
-                NaPrintLog("    * W[%u]= %g\t%+g\t--> %g\n",
-                           iInput, old_w(iNeuron, iInput),
-                           dWeight[iLayer](iNeuron, iInput),
-                           nn.weight[iLayer](iNeuron, iInput));
-#endif // StdBPE_DEBUG
-            }
-            psBias[iLayer][iNeuron] = dBias[iLayer][iNeuron];
-
-	    if(!bProhibitBiasChange){
-	      nn.bias[iLayer][iNeuron] += dBias[iLayer][iNeuron];
-#ifdef StdBPE_DEBUG
-	      NaPrintLog("    * B= %g\t%+g\t--> %g\n",
-			 old_b[iNeuron], dBias[iLayer][iNeuron],
-			 nn.bias[iLayer][iNeuron]);
-#endif // StdBPE_DEBUG
-	    }else{
-#ifdef StdBPE_DEBUG
-	      NaPrintLog("    * prohibited bias change: B= %g\n",
-			 nn.bias[iLayer][iNeuron]);
-#endif // StdBPE_DEBUG
-	      ;
-	    }
-        }
-    }
-
-    // Reset dWeight and dBias for the next epoch
-    ResetNN();
-
-#ifdef PrintUpdateNN
-#undef StdBPE_DEBUG
-#endif /* PrintUpdateNN */
-}
-
-//---------------------------------------------------------------------------
-// Compute delta weights based on common delta (see DeltaRule)
-void
-NaStdBackProp::ApplyDelta (unsigned iLayer)
-{
-    unsigned    iNeuron, iInput;
-
-    // Apply delta weight and delta bias
-#ifdef StdBPE_DEBUG
-    NaMatrix    old_dW(dWeight[iLayer]);
-    NaVector    old_dB(dBias[iLayer]);
-    NaPrintLog("--- Applied delta for weight and bias [%u]-layer ---\n",
-               iLayer);
-#endif // StdBPE_DEBUG
-    for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron){
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    Neuron[%u]:\n", iNeuron);
-#endif // StdBPE_DEBUG
-        for(iInput = 0; iInput < nn.Inputs(iLayer); ++iInput){
-            dWeight[iLayer][iNeuron][iInput] +=
-                DeltaWeight(iLayer, iNeuron, iInput);
-#ifdef StdBPE_DEBUG
-            NaPrintLog("    * dW[%u]= %g\t--> %g\n",
-                       iInput, old_dW(iNeuron, iInput),
-                       dWeight[iLayer](iNeuron, iInput));
-#endif // StdBPE_DEBUG
-        }
-        dBias[iLayer][iNeuron] += DeltaBias(iLayer, iNeuron);
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    * dB= %g\t--> %g\n",
-                   old_dB[iNeuron], dBias[iLayer][iNeuron]);
-#endif // StdBPE_DEBUG
-    }
-}
-
-
-//---------------------------------------------------------------------------
-// Delta rule for the last layer.
-// Ytarg is desired vector needs to be compared with Yout
-// of the output layer or error value already computed..
-// If bError==true then Ytarg means error ready to use without Yout.
-// If bError==false then Ytarg means Ydes to compare with Yout.
-void
-NaStdBackProp::DeltaRule (const NaReal* Ytarg, bool bError)
-{
-    NaReal      fError;
-    unsigned    iNeuron, iLayer = nn.OutputLayer();
-
-#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
-    NaPrintLog("+++ Standard delta rule [%u]-output +++\n", iLayer);
-#endif // StdBPE_DEBUG || NNUnit_SCALE
-
-    if(NULL == Ytarg)
-        throw(na_null_pointer);
-
-    // Compute common delta
-    for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron){
-        // Compute error by comparing values Ydes and Yout
-        if(bError){
-	  // I still don't know whether precomputed error needs to be
-	  // scaled the same manner as desired value or not.  Anyway
-	  // I'm sure this bit of code (with disabled error scaling)
-	  // is good enough to work in real application with outputs
-	  // without scaling.  Don't scale NN outputs until you will
-	  // be sure about proper way to scale precomputed error too!
-#if 0
-            // Error must not be scaled
-            fError = Ytarg[iNeuron];
-#else
-            // Error must be scaled to standard range too
-	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
-			 &(Ytarg[iNeuron]), &fError, 1, iNeuron);
-#endif
-#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
-            NaPrintLog("    ~ precomp.error[%d]= %g\n", iNeuron, fError);
-#endif // StdBPE_DEBUG || NNUnit_SCALE
-        }else{
-            NaReal  Ydes_i;
-
-            // Scale Ydes to standard range [-1,1]
-	    nn.ScaleData(nn.OutputScaler, nn.StdOutputRange,
-			 &(Ytarg[iNeuron]), &Ydes_i, 1, iNeuron);
-
-            fError = nn.Yout[iLayer][iNeuron] - Ydes_i;
-#if defined(StdBPE_DEBUG) || defined(NNUnit_SCALE)
-            NaPrintLog("    ~ error[%d]= %g\n", iNeuron, fError);
-#endif // StdBPE_DEBUG || NNUnit_SCALE
-        }
-
-        delta_prev[iLayer][iNeuron] = delta[iLayer][iNeuron];
-        delta[iLayer][iNeuron] =
-            fError * nn.DerivActFunc(iLayer, nn.Znet[iLayer][iNeuron]);
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    * delta[%u]= %g\n", iNeuron, delta[iLayer][iNeuron]);
-#endif // StdBPE_DEBUG
-    }
-
-    // Apply common delta - accumulate it in dWeight and dBias
-    ApplyDelta(iLayer);
-}
-
-
-//---------------------------------------------------------------------------
-// Part of delta rule for the hidden layer
-// Computes sum of products outcoming weights and target deltas
-// on given layer and for given input
-NaReal
-NaStdBackProp::PartOfDeltaRule (unsigned iPrevLayer, unsigned iInput)
-{
-    unsigned    iPrevNeuron;
-    NaReal      fSum = 0.;
-
-    for(iPrevNeuron = 0;
-        iPrevNeuron < nn.Neurons(iPrevLayer);
-        ++iPrevNeuron){
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    ** [%u]: prev_delta= %g,  weight= %g\n",
-                   iPrevNeuron, delta[iPrevLayer][iPrevNeuron],
-                   nn.weight[iPrevLayer](iPrevNeuron, iInput));
-#endif // StdBPE_DEBUG
-        fSum += delta[iPrevLayer][iPrevNeuron] *
-            nn.weight[iPrevLayer](iPrevNeuron, iInput);
-    }
-
-    return fSum;
-}
-
-
-//---------------------------------------------------------------------------
-// Delta rule for the hidden layer
-// iLayer - index of target layer delta computation on the basis of previous
-// layer's delta and linked weights.  Usually iPrevLayer=iLayer+1.
-void
-NaStdBackProp::DeltaRule (unsigned iLayer, unsigned iPrevLayer)
-{
-    unsigned    iNeuron;
-
-#ifdef StdBPE_DEBUG
-    NaPrintLog("+++ Standard delta rule [%u]-hidden [%u]-previous +++\n",
-               iLayer, iPrevLayer);
-#endif // StdBPE_DEBUG
-
-    // For each neuron of the current layer...
-    for(iNeuron = 0;
-        iNeuron < nn.Neurons(iLayer);
-        ++iNeuron){
-        // Store delta for future usage...
-        delta_prev[iLayer][iNeuron] = delta[iLayer][iNeuron];
-        // Initialize delta...
-        delta[iLayer][iNeuron] = PartOfDeltaRule(iPrevLayer, iNeuron);
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    * sum delta= %g,  Znet= %g,  Deriv= %g\n",
-                   delta[iLayer][iNeuron], nn.Znet[iLayer][iNeuron],
-                   nn.DerivActFunc(iLayer, nn.Znet[iLayer][iNeuron]));
-#endif // StdBPE_DEBUG
-        // Mulitply delta by derivation of the activation function
-        delta[iLayer][iNeuron] *=
-            nn.DerivActFunc(iLayer, nn.Znet[iLayer][iNeuron]);
-#ifdef StdBPE_DEBUG
-        NaPrintLog("    * delta[%u]= %g\n", iNeuron, delta[iLayer][iNeuron]);
-#endif // StdBPE_DEBUG
-    }
-
-    // Apply common delta - accumulate it in dWeight and dBias
-    ApplyDelta(iLayer);
-}
-
-
-//---------------------------------------------------------------------------
-// Compute delta of exact w[i,j,k]
-NaReal
-NaStdBackProp::DeltaWeight (unsigned iLayer, unsigned iNeuron,
-                            unsigned iInput)
-{
-    return - nn.Xinp(iLayer)(iInput) *
-        delta[iLayer][iNeuron] * LearningRate(iLayer) +
-        Momentum(iLayer) * psWeight[iLayer][iNeuron][iInput];
-}
-
-
-//---------------------------------------------------------------------------
-// Compute delta of exact b[i,j]
-NaReal
-NaStdBackProp::DeltaBias (unsigned iLayer, unsigned iNeuron)
-{
-    return - delta[iLayer][iNeuron] * LearningRate(iLayer) +
-        Momentum(iLayer) * psBias[iLayer][iNeuron];
-}
-
-
-//---------------------------------------------------------------------------
-// Return true if there is a need to prohibit bias change.
-bool
-NaStdBackProp::DontTouchBias ()
-{
-  bool		bAllZero = true;
-  unsigned	iNeuron, iLayer;
-
-  // Find out zero biases
-  for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer)
-    {
-      for(iNeuron = 0; iNeuron < nn.Neurons(iLayer); ++iNeuron)
-	{
-	  if(0.0 != nn.bias[iLayer][iNeuron])
-	    {
-	      bAllZero = false;
-	      break;
-	    }
-	}
-      if(!bAllZero)
-	break;
-    }
-
-  return bAllZero;
-}
-
-
-//---------------------------------------------------------------------------
-// Learning rate coefficient for the given layer
-NaReal
-NaStdBackProp::LearningRate (unsigned iLayer) const
-{
-    if(afkLinear == nn.descr.eLastActFunc &&
-       nn.OutputLayer() == iLayer){
-       // Last layer -> do special (usually very slow) learning
-       return eta_output;
-    }
-    return NaStdBackPropParams::LearningRate(iLayer);
 }
 
 

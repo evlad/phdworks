@@ -258,7 +258,7 @@ public:
   }
 
   /** Get constant reference at the item. */
-  virtual const type&	get (int index) const {
+  virtual type&	get (int index) const {
     item	*p = fetch_item(index);
 
     if(NULL == p)
@@ -270,7 +270,7 @@ public:
   }
 
   /** Get constant reference at the item. */
-  virtual const type&	operator() (int index) const {
+  virtual type&	operator() (int index) const {
     return get(index);
   }
 

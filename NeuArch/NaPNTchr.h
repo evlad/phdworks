@@ -62,15 +62,12 @@ public:
     virtual void	set_auto_update_proc (void (*proc)(int, void*),
 					      void* data);
 
-    // Set link with neural net unit to teach it
-    virtual void        set_nn (NaNNUnit* pNN);
-
     // Set link with Petri node neural net unit to teach it (with
     // state stored in FIFO, skipping few first states)
     virtual void        set_nn (NaPNNNUnit* pnNN, unsigned nSkipFirst = 0);
 
     // Reset NN weight changes
-    virtual void        reset_nn ();
+    virtual void        reset_training ();
 
     // Update NN weights
     virtual void        update_nn ();
@@ -103,9 +100,6 @@ public:
     virtual void        post_action ();
 
 protected:/* data */
-
-    // Neural network to teach
-    NaNNUnit            *nn;
 
     // Neural net petri node to teach
     NaPNNNUnit          *pnn;

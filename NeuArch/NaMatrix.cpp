@@ -147,6 +147,22 @@ NaReal      NaMatrix::operator() (unsigned iR, unsigned iC) const
 
 
 //---------------------------------------------------------------------------
+// Check for equivalence
+bool
+NaMatrix::operator== (const NaMatrix& rMatr) const
+{
+    if(dim_rows() != rMatr.dim_rows() || dim_cols() != rMatr.dim_cols())
+	return false;
+    unsigned	i, j;
+    for(i = 0; i < dim_rows(); ++i)
+	for(j = 0; j < dim_cols(); ++j)
+	    if(get(i, j) != rMatr.get(i, j))
+		return false;
+    return true;
+}
+
+
+//---------------------------------------------------------------------------
 
     /*=======================================*
      *    GROUP OPERATIONS AND METHODS       *

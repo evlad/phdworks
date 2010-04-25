@@ -6,6 +6,7 @@
 #define NaStdBPEH
 //---------------------------------------------------------------------------
 
+#include <NaDynAr.h>
 #include <NaVector.h>
 #include <NaMatrix.h>
 #include <NaNDescr.h>
@@ -44,13 +45,47 @@ class NaStdBackProp : virtual public NaStdBackPropParams
 {
 public:/* methods */
 
+    // Prepare object to work with given neural network architecture.
+    // Most operations are disabled until attaching neural network data.
+    NaStdBackProp (NaNeuralNetDescr& rND);
+
+    // Prepare object to work with given neural network passed by
+    // reference.  Actually a pointer to the NN object will be stored.
     NaStdBackProp (NaNNUnit& rNN);
+
     virtual ~NaStdBackProp ();
 
-    // Reset computed changes
-    virtual void    ResetNN ();
+    // Set flag of debugging messages:
+    // 0 - off (default)
+    // 1 - weight change application
+    // 2 - delta weight calculation
+    // 3 - scaling
+    void            SetDebugLevel (int iDebug);
 
-    // Update network parameters on the basis of computed changes
+    // Return reference to the neural network architecture
+    const NaNeuralNetDescr&	Arch () const;
+
+    // Return pointer to the current neural network data or NULL if no
+    // network data is attached
+    NaNNUnit*       NN () const;
+
+    // Return reference to the current neural network data or throw
+    // exception na_bad_value if no network data is attached
+    NaNNUnit&       nn () const;
+
+    // Attach neural network data to be used in further operations:
+    // delta calculations and application.  Several attached neural
+    // networks must be detached in order.
+    virtual void    AttachNN (NaNNUnit* pNN);
+
+    // Detach the last attached neural network
+    virtual void    DetachNN ();
+
+    // Reset computed changes: delta of weights
+    virtual void    Reset ();
+
+    // Update the current neural network parameters on the basis of
+    // computed changes.
     virtual void    UpdateNN ();
 
     // Delta rule for the last layer.
@@ -88,10 +123,17 @@ public:/* methods */
     // Return true if there is a need to prohibit bias change.
     virtual bool    DontTouchBias ();
 
-public:/* data */
+    //public:/* data */
+protected:
 
-    // Linked neural network
-    NaNNUnit    &nn;
+    // Initialize the object on the basic of preset nd
+    void	Init ();
+
+    // Neural network architecture to deal with
+    NaNeuralNetDescr	nd;
+
+    // Currently attached neural networks: the last is the first
+    NaDynAr<NaNNUnit*>	nnStack;
 
     // Intermediate delta (t)
     NaVector    delta[NaMAX_HIDDEN+1];
@@ -107,6 +149,8 @@ public:/* data */
     NaMatrix    psWeight[NaMAX_HIDDEN+1];
     NaVector    psBias[NaMAX_HIDDEN+1];
 
+    // Level of debugging messages.
+    int         nDebugLvl;
 };
 
 //---------------------------------------------------------------------------

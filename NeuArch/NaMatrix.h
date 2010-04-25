@@ -55,7 +55,12 @@ public:
     virtual NaReal      get (unsigned iR, unsigned iC) const;
     virtual NaReal      operator() (unsigned iR, unsigned iC) const;
 
-    /*=======================================*
+     // Check for equivalence
+    virtual bool	operator== (const NaMatrix& rMatr) const;
+    virtual bool	operator!= (const NaMatrix& rMatr) const{
+      return !operator==(rMatr);
+    };
+   /*=======================================*
      *    GROUP OPERATIONS AND METHODS       *
      *=======================================*/
 

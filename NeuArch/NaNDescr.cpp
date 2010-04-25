@@ -347,4 +347,66 @@ NaNeuralNetDescr::OutputDelays () const
   return nDelays;
 }
 
+
+//---------------------------------------------------------------------------
+// Return number of paramter records (see layers)
+unsigned
+NaNeuralNetDescr::Layers () const
+{
+    return nHidLayers + 1/* output */;
+}
+
+
+//---------------------------------------------------------------------------
+// Return number of neurons in given layer
+unsigned
+NaNeuralNetDescr::Neurons (unsigned iLayer) const
+{
+    if(iLayer < Layers() - 1)
+        return nHidNeurons[iLayer];
+    else if(iLayer == Layers() - 1)
+        return nOutNeurons;
+
+    throw(na_out_of_range);
+
+    /* make compiler happy */
+    return 0;
+}
+
+
+//---------------------------------------------------------------------------
+// Return number of inputs of given layer
+unsigned
+NaNeuralNetDescr::Inputs (unsigned iLayer) const
+{
+    if(iLayer == 0)
+        return InputsNumber();
+    else if(iLayer <= Layers() - 1)
+        return nHidNeurons[iLayer - 1];
+
+    throw(na_out_of_range);
+
+    /* make compiler happy */
+    return 0;
+}
+
+
+//---------------------------------------------------------------------------
+// Index of the first avaiable (input) NN hidden layer
+unsigned
+NaNeuralNetDescr::InputLayer () const
+{
+    return 0;
+}
+
+
+//---------------------------------------------------------------------------
+// Index of the last (output) NN layer
+unsigned
+NaNeuralNetDescr::OutputLayer () const
+{
+    return Layers() - 1;
+}
+
+
 //---------------------------------------------------------------------------

@@ -26,6 +26,12 @@ public:
     // Assign the object
     NaNNUnit&   operator= (const NaNNUnit& rUnit);
 
+    // Compare objects
+    bool        operator== (const NaNNUnit& rUnit) const;
+    bool        operator!= (const NaNNUnit& rUnit) const{
+        return !operator==(rUnit);
+    }
+
     // Assign new description
     void    AssignDescr (const NaNeuralNetDescr& rDescr);
 

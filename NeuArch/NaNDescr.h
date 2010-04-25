@@ -113,6 +113,27 @@ public:/* methods */
 
     virtual void    PrintLog () const;
 
+    //====================
+    // New data & methods 
+    //====================
+
+    // Return number of parameter records (see layers)
+    unsigned        Layers () const;
+
+    // Return number of neurons in given layer
+    unsigned        Neurons (unsigned iLayer) const;
+
+    // Return number of inputs of given layer
+    // If feedback exists then Inputs(InputLayer())!=InputDim()
+    unsigned        Inputs (unsigned iLayer) const;
+
+    // Index of the first avaiable (input) NN hidden layer
+    unsigned        InputLayer () const;
+
+    // Index of the last (output) NN layer
+    unsigned        OutputLayer () const;
+
+
     //***********************************************************************
     // Store and retrieve configuration data
     //***********************************************************************

@@ -37,12 +37,12 @@ NaQuickProp::NaQuickProp (NaNNUnit& rNN)
     unsigned    /*iInput, iNeuron, */iLayer;
 
     // Assign dimensions
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        Xinp_prev[iLayer].new_dim(nn.Inputs(iLayer));
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+        Xinp_prev[iLayer].new_dim(nd.Inputs(iLayer));
     }
 
     // Initalize all values by zero
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
         Xinp_prev[iLayer].init_zero();
     }
 }
@@ -112,7 +112,7 @@ NaReal  NaQuickProp::DeltaWeight (unsigned iLayer, unsigned iNeuron,
                                   unsigned iInput)
 {
     return QuickPropDelta(iLayer, iNeuron, psWeight[iLayer][iNeuron][iInput],
-                          nn.Xinp(iLayer)(iInput), Xinp_prev[iLayer][iInput]);
+                          nn().Xinp(iLayer)(iInput), Xinp_prev[iLayer][iInput]);
 }
 
 //---------------------------------------------------------------------------
@@ -125,9 +125,9 @@ NaReal  NaQuickProp::DeltaBias (unsigned iLayer, unsigned iNeuron)
 
 //---------------------------------------------------------------------------
 // Reset computed changes
-void    NaQuickProp::ResetNN ()
+void    NaQuickProp::Reset ()
 {
-  NaStdBackProp::ResetNN();
+  NaStdBackProp::Reset();
 }
 
 //---------------------------------------------------------------------------
@@ -139,9 +139,9 @@ void    NaQuickProp::UpdateNN ()
     unsigned    iInput, /*iNeuron,*/ iLayer;
 
     // Store Xinp from previous step
-    for(iLayer = nn.InputLayer(); iLayer <= nn.OutputLayer(); ++iLayer){
-        for(iInput = 0; iInput < nn.Inputs(iLayer); ++iInput){
-            Xinp_prev[iLayer][iInput] = nn.Xinp(iLayer)[iInput];
+    for(iLayer = nd.InputLayer(); iLayer <= nd.OutputLayer(); ++iLayer){
+        for(iInput = 0; iInput < nd.Inputs(iLayer); ++iInput){
+            Xinp_prev[iLayer][iInput] = nn().Xinp(iLayer)[iInput];
         }
     }
 }

@@ -73,15 +73,18 @@ NaPNNNUnit::need_nn_deck (bool bDeckRequest, unsigned nSkipFirst)
 void
 NaPNNNUnit::push_nn ()
 {
-  if(skip_rest > 0){
-    --skip_rest;
-  }else{
-    deck.addh(*nn);
-  }
-
-  if(is_verbose())
-    NaPrintLog("NaPNNNUnit::push_nn(%s.%s, %p) --> %u items stored\n",
-	       net()->name(), name(), this, deck.count());
+    if(need_deck) {
+	if(skip_rest > 0){
+	    --skip_rest;
+	}else{
+	    deck.addh(*nn);
+	}
+    } else {
+	// do nothing?
+    }
+    if(is_verbose())
+	NaPrintLog("NaPNNNUnit::push_nn(%p, %s[%s]) --> %u items stored\n",
+		   this, name(), nn->GetInstance(), deck.count());
 }
 
 
@@ -90,12 +93,18 @@ NaPNNNUnit::push_nn ()
 void
 NaPNNNUnit::pop_nn (NaNNUnit& nnunit)
 {
-  nnunit = deck(0);
-  deck.remove(0);
-
-  if(is_verbose())
-    NaPrintLog("NaPNNNUnit::pop_nn(%s.%s, %p) --> %u items stored left\n",
-	       net()->name(), name(), this, deck.count());
+    if(need_deck) {
+	// Get store neural network state from FIFO
+	nnunit = deck(0);
+	deck.remove(0);
+    } else {
+	// Get current neural network state since FIFO feature was not
+	// requested
+	nnunit = *get_nn_unit();
+    }
+    if(is_verbose())
+	NaPrintLog("NaPNNNUnit::pop_nn(%p, %s[%s]) --> %u items stored left\n",
+		   this, name(), nnunit.GetInstance(), deck.count());
 }
 
 
@@ -151,7 +160,9 @@ NaPNNNUnit::action ()
   nn->Function(&x.data()[0], &y.data()[0]);
 
   if(need_deck)
-    push_nn();
+      // Store state of the neural network to be used when teacher
+      // will be ready (when error will come to its input)
+      push_nn();
 }
 
 
