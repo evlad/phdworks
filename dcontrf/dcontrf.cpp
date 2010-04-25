@@ -72,6 +72,25 @@ PushNNP (int iAct, void* pData)
 
 
 //---------------------------------------------------------------------------
+int
+ParseStatFormat (NaPNStatistics& pnstat, char* parvalue)
+{
+    char *token;
+    int resmask = 0;
+
+    for(token = strtok(parvalue, " ,;"); NULL != token;
+	token = strtok(NULL, " ,;"))
+	{
+	    int	id = NaStatTextToId(token);
+
+	    if(id != NaSI_bad_id)
+		resmask |= NaSIdToMask(id);
+	}
+    return resmask;
+}
+
+
+//---------------------------------------------------------------------------
 void
 ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
 {
@@ -515,6 +534,15 @@ int main(int argc, char **argv)
 		nnocl.nnpteacher.lpar.eta /= nnp_auf;
 		nnocl.nnpteacher.lpar.eta_output /= nnp_auf;
 	      }
+	}
+
+	if(par.CheckParam("cerr_trace_contents")) {
+	    ParseStatFormat(nnocl.cerrstat,
+			    ParseStatFormat(par("cerr_trace_contents")));
+	}
+	if(par.CheckParam("iderr_trace_contents")) {
+	    ParseStatFormat(nnocl.iderrstat,
+			    ParseStatFormat(par("iderr_trace_contents")));
 	}
 
 	ParseHaltCond(nnocl.cerrstat, par("finish_cerr_cond"));
