@@ -21,20 +21,24 @@
 #define NaSI_MAX	4
 #define NaSI_MIN	5
 #define NaSI_ABSMAX	6
+#define NaSI_TIME	7
+#define NaSI_TINDEX	8
 
-#define NaSI_number	7
+#define NaSI_number	9
 #define NaSI_bad_id	(-1)
 
 #define NaSIdToMask(id)	(1<<(id))
 
 // Statistics mask
-#define NaSM_ABSMEAN	(1<<0)
-#define NaSM_MEAN	(1<<1)
-#define NaSM_RMS	(1<<2)
-#define NaSM_STDDEV	(1<<3)
-#define NaSM_MAX	(1<<4)
-#define NaSM_MIN	(1<<5)
-#define NaSM_ABSMAX	(1<<6)
+#define NaSM_ABSMEAN	NaSIdToMask(NaSI_ABSMEAN)
+#define NaSM_MEAN	NaSIdToMask(NaSI_MEAN)
+#define NaSM_RMS	NaSIdToMask(NaSI_RMS)
+#define NaSM_STDDEV	NaSIdToMask(NaSI_STDDEV)
+#define NaSM_MAX	NaSIdToMask(NaSI_MAX)
+#define NaSM_MIN	NaSIdToMask(NaSI_MIN)
+#define NaSM_ABSMAX	NaSIdToMask(NaSI_ABSMAX)
+#define NaSM_TIME	NaSIdToMask(NaSI_TIME)
+#define NaSM_TINDEX	NaSIdToMask(NaSI_TINDEX)
 
 #define NaSM_ALL	(NaSM_ABSMEAN | NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
 			 NaSM_MAX | NaSM_MIN | NaSM_ABSMAX)
@@ -77,6 +81,8 @@ public:
   //  [4] maximum value: Max(x)
   //  [5] minimum value: Min(x)
   //  [6] absolute maximum value: Max(|Max(x)|,|Min(x)|)
+  //  [7] current time of statistics
+  //  [8] index of the current time of statistics
   NaPetriCnOutput	stat;
 
 

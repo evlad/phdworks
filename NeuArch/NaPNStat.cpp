@@ -10,7 +10,8 @@ static char rcsid[] = "$Id$";
 
 
 static const char	*szId[NaSI_number] = {
-  "ABSMEAN", "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABSMAX"
+  "ABSMEAN", "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABSMAX",
+  "TIME", "TINDEX",
 };
 static const char	*szSign[3] = {
   "<", "=", ">"
@@ -22,7 +23,7 @@ static const char	*szSign[3] = {
 const char*
 NaStatIdToText (int stat_id)
 {
-  if(stat_id < NaSI_ABSMEAN || stat_id > NaSI_ABSMAX)
+  if(stat_id < 0 || stat_id >= NaSI_number)
     return "? bad_id";
 
   return szId[stat_id];
@@ -48,6 +49,10 @@ NaStatTextToId (const char* szStatText)
     return NaSI_MIN;
   else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_ABSMAX)))
     return NaSI_ABSMAX;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_TIME)))
+    return NaSI_TIME;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_TINDEX)))
+    return NaSI_TINDEX;
   return NaSI_bad_id;
 }
 
@@ -300,6 +305,8 @@ NaPNStatistics::action ()
     fAbs = fabs(Max[0]);
 
   int	id, j = 0;
+  NaReal	fTime = net()->timer().CurrentTime();
+  int		iTimeIndex = net()->timer().CurrentIndex();
 
   // put needed statistics to output
   for(id = 0; id < NaSI_number; ++id){
@@ -312,6 +319,8 @@ NaPNStatistics::action ()
       case NaSM_MAX:	stat.data()[j++] = Max[0];	break;
       case NaSM_MIN:	stat.data()[j++] = Min[0];	break;
       case NaSM_ABSMAX:	stat.data()[j++] = fAbs;	break;
+      case NaSM_TIME:	stat.data()[j++] = fTime;	break;
+      case NaSM_TINDEX: stat.data()[j++] = iTimeIndex;	break;
       }
   }
 
@@ -356,6 +365,16 @@ NaPNStatistics::action ()
 	  case NaSM_ABSMAX:
 	    mHaltedBy |=
 	      check_condition(fAbs, HaltCond[id].sign, HaltCond[id].value)
+	      ? NaSIdToMask(id) : 0;
+	    break;
+	  case NaSM_TIME:
+	    mHaltedBy |=
+	      check_condition(fTime, HaltCond[id].sign, HaltCond[id].value)
+	      ? NaSIdToMask(id) : 0;
+	    break;
+	  case NaSM_TINDEX:
+	    mHaltedBy |=
+	      check_condition(iTimeIndex, HaltCond[id].sign, HaltCond[id].value)
 	      ? NaSIdToMask(id) : 0;
 	    break;
 	  }// switch
