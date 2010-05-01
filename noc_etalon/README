@@ -21,6 +21,7 @@ Directories:
 1b_3     - NNC in-the-loop training with new NNP
 2   - NNC out-of-loop training
 3   - NNC in-the-loop training
+3new- NNC in-the-loop training to compare with state of the art (2 May 2010)
 4   - NOC evaluation in the loop
 4a  - NNP and NNC evaluation when plant becomes changed
       at t=500 from plant1.tf to plant2.tf
@@ -50,8 +51,10 @@ Directories:
 6_3 - data refer and noise are prepared (5M)
 6_3a  - run with standard NN-C (see 6_2/res.nnc)
 6_3b  - run with permanent online adoption of NN-P and NN-C
-6_4a  - plant_notst3.cof: offline NN-P then online NN-C adoption
-6_4b  - plant_notst3.cof: online adoption of NN-P and NN-C
+6_4a0 - plant_notst3.cof: gather test data for NN-P training
+6_4a1 - plant_notst3.cof: offline NN-P training
+6_4a2 - plant_notst3.cof: online NN-C adoption (->report_cmp.plt)
+6_4b  - plant_notst3.cof: online adoption of both NN-P and NN-C
 7   - NNP adopted in-the-loop for plant2 separately
 8a  - influence of tau ascent on control MSE in non-adaptive NOC
 8b  - influence of tau descent on control MSE in non-adaptive NOC

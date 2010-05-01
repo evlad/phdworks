@@ -12,29 +12,25 @@ stream_len = 100000
 # (input_kind = stream,file) Auto update frequency; 0 to disable
 nnc_auf = 60
 
-nnp_auf = 200
+nnp_auf = 0
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
 nnc_mode = e+r
 
 # Linear (or combined) plant transfer function
-linplant_tf = ../plant_notst3.cof
-#linplant_tf = ../plant.tf
+#linplant_tf = ../plant_notst3.cof
+linplant_tf = ../plant3.tf
 
 # (input_kind = stream) Input transfer (or combined) functions
 refer_tf = ../refer.tf
 noise_tf = ../noise.tf
 
 # (input_kind = file) Maximum number of epochs; 0 is unlimited
-max_epochs = 11100
+max_epochs = 10000
 
 # (input_kind = file) Input files
-in_r = ../6_3/r.bis
-in_n = ../6_3/n.bis
-
-# Test input files
-#in_r = ../6_3/rS.dat
-#in_n = ../6_3/nS.dat
+in_r = ../6_3/r2.bis
+in_n = ../6_3/n2.bis
 
 # (input_kind = stream) Output files
 out_r = r_out.dat
@@ -52,7 +48,7 @@ c_in = c_in.dat
 p_in = p_in.dat
 
 # Neural net files
-in_nnp_file = ../6_1/nnp_res.nn
+in_nnp_file = ../6_4a1/nnp_res.nn
 in_nnc_file = ../6_2/res.nnc
 out_nnc_file = res.nnc
 out_nnp_file = nnp_adopted.nn
@@ -86,13 +82,15 @@ finish_decrease = 1e-6
 finish_cerr_cond = absmean > 1.0 ; rms > 1.0
 finish_iderr_cond = rms > 6.0
 
-# Learning algorithm setup
+# (OPTIONAL) Scale down eta by auf size if =1 and old behavour otherwise
 eta_scale_by_auf = 1
 
 eta = 0.05
 eta_output = 0.03
+#eta = 0.5
+#eta_output = 0.3
 alpha = 0.0
 
-p_eta = 0.05
-p_eta_output = 0.03
+p_eta = 0.03
+p_eta_output = 0.01
 p_alpha = 0.0

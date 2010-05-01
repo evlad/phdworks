@@ -2,7 +2,7 @@
 ; $Id: plant_notst.cof,v 1.1 2008-06-08 21:04:15 evlad Exp $
 [CombinedFunction main]
 TransferFunction Plant1 0 500
-TransferFunction Plant2 500 -1
+TransferFunction Plant3 500 -1
 
 ; Original plant linear transfer function
 [TransferFunction Plant1]
@@ -10,6 +10,6 @@ polyfrac 0	 ; transfer function
  1 0 /  1 -0.5	 ; num/den
 
 ; Changed plant linear transfer function
-[TransferFunction Plant2]
+[TransferFunction Plant3]
 polyfrac 0	 ; transfer function
  1.4 0 /  1 -0.5 ; num/den
