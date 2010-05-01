@@ -40,6 +40,7 @@ static char rcsid[] = "$Id$";
 
 //---------------------------------------------------------------------------
 NaReal	fPrevMSEc = 0.0, fPrevMSEi = 0.0;
+int	nMaxEpochs = 0;
 
 void
 PrintLog (int iAct, void* pData)
@@ -53,6 +54,13 @@ PrintLog (int iAct, void* pData)
 
   fPrevMSEc = nnocl.cerrstat.RMS[0];
   fPrevMSEi = nnocl.iderrstat.RMS[0];
+
+  if(nMaxEpochs > 0 && iAct >= nMaxEpochs) {
+      printf("Maximum number of epochs %d was reached\n", nMaxEpochs);
+      NaPrintLog("Maximum number of epochs %d was reached\n", nMaxEpochs);
+      /* arbitrary node may be halted to stop the whole network */
+      nnocl.plant.halt();
+  }
 }
 
 
@@ -503,8 +511,9 @@ int main(int argc, char **argv)
     NaReal	fPrevMSE = 0.0;
     int		nnc_auf = 0;
     int		nnp_auf = 0;
-    int		max_epochs = 0;
     bool	bLRbyAUF = false;
+
+    nMaxEpochs = atoi(par("max_epochs"));
 
     bLRbyAUF = !!atoi(par("eta_scale_by_auf"));
 
@@ -564,8 +573,6 @@ int main(int argc, char **argv)
       }
     else /* Update NN-C at the end of iteration */
       {
-	max_epochs = atoi(par("max_epochs"));
-
 	do{
 	  ++iIter;
 	  NaPrintLog("__Iteration_%d__\n", iIter);
@@ -591,7 +598,7 @@ int main(int argc, char **argv)
 
 	  PrintLog(iIter, &nnocl);
 
-	  if(max_epochs > 0 && iIter >= max_epochs){
+	  if(nMaxEpochs > 0 && iIter >= nMaxEpochs){
 	    // Limited number of epochs
 	    nnocl.nncteacher.update_nn();
 	    if(nnp_auf > 0)
@@ -656,7 +663,7 @@ int main(int argc, char **argv)
       break;
 
     default:
-      if(max_epochs > 0 && iIter >= max_epochs)
+      if(nMaxEpochs > 0 && iIter >= nMaxEpochs)
 	szSecond = "maximum number of epochs was reached.";
       else
 	szSecond = "unknown reason.";
