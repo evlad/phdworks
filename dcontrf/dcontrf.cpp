@@ -309,7 +309,7 @@ int main(int argc, char **argv)
     else
       {
 	nnocl.nncontr.set_nn_unit(&au_nnc);
-	nnocl.nncteacher.set_nn(&nnocl.nncontr, iSkip_e);
+	nnocl.nncteacher.set_nn(&nnocl.nncontr, iSkip_e - 1);
       }
 
     nnocl.nnplant.set_nn_unit(&au_nnp);
