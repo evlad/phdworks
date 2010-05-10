@@ -23,8 +23,9 @@
 #define NaSI_ABSMAX	6
 #define NaSI_TIME	7
 #define NaSI_TINDEX	8
+#define NaSI_VALUE	9
 
-#define NaSI_number	9
+#define NaSI_number	10
 #define NaSI_bad_id	(-1)
 
 #define NaSIdToMask(id)	(1<<(id))
@@ -39,10 +40,11 @@
 #define NaSM_ABSMAX	NaSIdToMask(NaSI_ABSMAX)
 #define NaSM_TIME	NaSIdToMask(NaSI_TIME)
 #define NaSM_TINDEX	NaSIdToMask(NaSI_TINDEX)
+#define NaSM_VALUE	NaSIdToMask(NaSI_VALUE)
 
 #define NaSM_ALL	(NaSM_ABSMEAN | NaSM_MEAN | NaSM_RMS | NaSM_STDDEV | \
 			 NaSM_MAX | NaSM_MIN | NaSM_ABSMAX | \
-			 NaSM_TIME | NaSM_TINDEX)
+			 NaSM_TIME | NaSM_TINDEX | NaSM_VALUE)
 
 
 // Stat identifier string<->id conversion
@@ -84,6 +86,7 @@ public:
   //  [6] absolute maximum value: Max(|Max(x)|,|Min(x)|)
   //  [7] current time of statistics
   //  [8] index of the current time of statistics
+  //  [9] input value to calculate statistics
   NaPetriCnOutput	stat;
 
 
@@ -91,10 +94,14 @@ public:
   // Node specific //
   ///////////////////
 
-  // Confugure computation rule as continuos or floating gap
+  // Configure computation rule as continuos or floating gap
   void		set_floating_gap (unsigned gap_width);
 
-  // Confugure output values
+  // Configure output values by string (delimiters may vary)
+  void		configure_output (const char* szStatMask,
+				  const char* szDelim = " ,;");
+
+  // Configure output values by mask
   void		configure_output (int stat_mask = NaSM_ALL);
 
   // Setup net stop condition:
