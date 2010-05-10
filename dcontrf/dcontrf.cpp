@@ -81,26 +81,6 @@ PushNNP (int iAct, void* pData)
 
 //---------------------------------------------------------------------------
 void
-ParseStatFormat (NaPNStatistics& pnstat, char* parvalue)
-{
-    char *token;
-    int resmask = 0;
-
-    for(token = strtok(parvalue, " ,;"); NULL != token;
-	token = strtok(NULL, " ,;"))
-	{
-	    int	id = NaStatTextToId(token);
-
-	    if(id != NaSI_bad_id)
-		resmask |= NaSIdToMask(id);
-	}
-    if(0 != resmask)
-	pnstat.configure_output(resmask);
-}
-
-
-//---------------------------------------------------------------------------
-void
 ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
 {
   char	*token;
@@ -402,11 +382,6 @@ int main(int argc, char **argv)
     // Log files with statistics (file_mode)
     NaDataFile	*dfCErr = NULL, *dfIdErr = NULL;
 
-    NaPrintLog("Writing control error statistics to '%s' file.\n",
-	       par("cerr_trace_file"));
-    NaPrintLog("Writing identification error statistics to '%s' file.\n",
-	       par("iderr_trace_file"));
-
     nnocl.c_in.set_output_filename(par("c_in"));
     nnocl.p_in.set_output_filename(par("p_in"));
 
@@ -424,17 +399,12 @@ int main(int argc, char **argv)
 
 	nnocl.noise_out.set_output_filename(par("out_n"));
 	NaPrintLog("Writing pure noise signal to '%s' file.\n", par("out_n"));
-
-	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
-	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
 	break;
 
       case file_mode:
 	nnocl.setpnt_inp.set_input_filename(par("in_r"));
 	nnocl.noise_inp.set_input_filename(par("in_n"));
 
-	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
-	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
 #if 0
 	dfCErr = OpenOutputDataFile(par("cerr_trace_file"),
 				    bdtAuto, NaSI_number);
@@ -447,6 +417,28 @@ int main(int argc, char **argv)
 	break;
       }
 
+    if(par.CheckParam("cerr_trace_file")) {
+	NaPrintLog("Writing control error statistics to '%s' file.\n",
+		   par("cerr_trace_file"));
+	nnocl.cerr_fout.set_output_filename(par("cerr_trace_file"));
+	if(par.CheckParam("cerr_trace_contents")) {
+	    nnocl.cerrstat.configure_output(par("cerr_trace_contents"));
+	}
+    } else {
+	nnocl.cerr_fout.set_output_filename("/dev/null");
+    }
+
+    if(par.CheckParam("iderr_trace_file")) {
+	NaPrintLog("Writing identification error statistics to '%s' file.\n",
+		   par("iderr_trace_file"));
+	nnocl.iderr_fout.set_output_filename(par("iderr_trace_file"));
+	if(par.CheckParam("iderr_trace_contents")) {
+	    nnocl.iderrstat.configure_output(par("iderr_trace_contents"));
+	}
+    } else {
+	nnocl.iderr_fout.set_output_filename("/dev/null");
+    }
+
     nnocl.nn_u.set_output_filename(par("out_u"));
     NaPrintLog("Writing NNC control force to '%s' file.\n", par("out_u"));
 
@@ -457,13 +449,6 @@ int main(int argc, char **argv)
     nnocl.on_y.set_output_filename(par("out_ny"));
     NaPrintLog("Writing plant + noise observation output to '%s' file.\n",
 	       par("out_ny"));
-
-    if(par.CheckParam("cerr_trace_contents")) {
-	ParseStatFormat(nnocl.cerrstat, par("cerr_trace_contents"));
-    }
-    if(par.CheckParam("iderr_trace_contents")) {
-	ParseStatFormat(nnocl.iderrstat, par("iderr_trace_contents"));
-    }
 
     switch(ckind)
       {
@@ -583,15 +568,19 @@ int main(int argc, char **argv)
 	  int	i;
 	  NaReal	buf[NaSI_number] = {10., 20., 30.};
 
-	  dfCErr->AppendRecord();
-	  nnocl.cerr_qout.get_data(buf);
-	  for(i = 0; i < NaSI_number; ++i)
-	    dfCErr->SetValue(buf[i], i);
+	  if(NULL != dfCErr) {
+	      dfCErr->AppendRecord();
+	      nnocl.cerr_qout.get_data(buf);
+	      for(i = 0; i < NaSI_number; ++i)
+		  dfCErr->SetValue(buf[i], i);
+	  }
 
-	  dfIdErr->AppendRecord();
-	  nnocl.iderr_qout.get_data(buf);
-	  for(i = 0; i < NaSI_number; ++i)
-	    dfIdErr->SetValue(buf[i], i);
+	  if(NULL != dfIdErr) {
+	      dfIdErr->AppendRecord();
+	      nnocl.iderr_qout.get_data(buf);
+	      for(i = 0; i < NaSI_number; ++i)
+		  dfIdErr->SetValue(buf[i], i);
+	  }
 
 	  if(pneError == pnev || pneTerminate == pnev || pneHalted == pnev)
 	    break;
