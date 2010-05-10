@@ -11,7 +11,7 @@ static char rcsid[] = "$Id$";
 
 static const char	*szId[NaSI_number] = {
   "ABSMEAN", "MEAN", "RMS", "STDDEV", "MAX", "MIN", "ABSMAX",
-  "TIME", "TINDEX",
+  "TIME", "TINDEX", "VALUE"
 };
 static const char	*szSign[3] = {
   "<", "=", ">"
@@ -53,6 +53,8 @@ NaStatTextToId (const char* szStatText)
     return NaSI_TIME;
   else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_TINDEX)))
     return NaSI_TINDEX;
+  else if(!strcasecmp(szStatText, NaStatIdToText(NaSI_VALUE)))
+    return NaSI_VALUE;
   return NaSI_bad_id;
 }
 
@@ -78,7 +80,7 @@ NaPNStatistics::NaPNStatistics (const char* szNodeName)
 ///////////////////
 
 //---------------------------------------------------------------------------
-// Confugure computation rule as continuos or floating gap
+// Configure computation rule as continuos or floating gap
 void
 NaPNStatistics::set_floating_gap (unsigned gap_width)
 {
@@ -89,7 +91,33 @@ NaPNStatistics::set_floating_gap (unsigned gap_width)
 
 
 //---------------------------------------------------------------------------
-// Confugure output values
+// Configure output values by string (delimiters may vary)
+void
+NaPNStatistics::configure_output (const char* szStatMask, const char* szDelim)
+{
+    if(NULL == szStatMask || NULL == szDelim)
+	return;
+
+    char *token, *statmask = (char*)alloca(strlen(szStatMask) + 1);
+    int resmask = 0;
+
+    strcpy(statmask, szStatMask);
+
+    for(token = strtok(statmask, szDelim); NULL != token;
+	token = strtok(NULL, szDelim))
+	{
+	    int	id = NaStatTextToId(token);
+
+	    if(id != NaSI_bad_id)
+		resmask |= NaSIdToMask(id);
+	}
+    if(0 != resmask)
+	configure_output(resmask);
+}
+
+
+//---------------------------------------------------------------------------
+// Configure output values by mask
 void
 NaPNStatistics::configure_output (int stat_mask)
 {
@@ -321,6 +349,7 @@ NaPNStatistics::action ()
       case NaSM_ABSMAX:	stat.data()[j++] = fAbs;	break;
       case NaSM_TIME:	stat.data()[j++] = fTime;	break;
       case NaSM_TINDEX: stat.data()[j++] = iTimeIndex;	break;
+      case NaSM_VALUE:  stat.data()[j++] = x[0];	break;
       }
   }
 
