@@ -47,6 +47,12 @@ out_ny = ny.dat
 out_r = r_out.dat
 out_n = n_out.dat
 
+# Tracking control and identification process (order can't be changed):
+# cerr_trace_contents = ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX TIME TINDEX VALUE
+cerr_trace_file = cerr_trace.dat
+# iderr_trace_contents = ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX TIME TINDEX VALUE
+iderr_trace_file = iderr_trace.dat
+
 #
 # NN-P
 #

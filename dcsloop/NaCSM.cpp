@@ -38,7 +38,7 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   cusum("cusum"),
   cusum_out("cusum_out"),
   dodetect("dodetect"),
-  statan_e("statan_e"),
+  statan_cerr("statan_cerr"),
   statan_r("statan_r"),
   nnplant("nnplant"),
   nn_y("nn_y"),
@@ -46,15 +46,16 @@ NaControlSystemModel::NaControlSystemModel (int len, NaControllerKind ckind)
   fill_nn_y("fill_nn_y"),
   bus_p("bus_p"),
   iderrcomp("iderrcomp"),
-  iderrstat("iderrstat"),
+  statan_iderr("statan_iderr"),
   skip_u("skip_u"),
   skip_y("skip_y"),
   delay_u("delay_u"),
   delay_y("delay_y"),
-  iderr_fout("iderr_fout"),
   trdgath("trdgath"),
   tdg_u("tdg_u"),
-  tdg_ny("tdg_ny")
+  tdg_ny("tdg_ny"),
+  cerr_fout("cerr_fout"),
+  iderr_fout("iderr_fout")
 {
   vInitial.init_zero();
 }
@@ -153,8 +154,9 @@ NaControlSystemModel::link_net ()
 	    net.link(&nnplant.y, &fill_nn_y.in);
 	    net.link(&chkpnt_ny.out, &iderrcomp.aux);
 	    net.link(&fill_nn_y.out, &iderrcomp.main);
-	    net.link(&iderrcomp.cmp, &iderrstat.signal);
+	    net.link(&iderrcomp.cmp, &statan_iderr.signal);
 	    net.link(&iderrcomp.cmp, &nn_e.in);
+	    net.link(&statan_iderr.stat, &iderr_fout.in);
 
 	    //net.link(&nnplant.y, &fill_nn_y.in);
 	    net.link(&fill_nn_y.out, &nn_y.in);
@@ -176,7 +178,9 @@ NaControlSystemModel::link_net ()
         net.link(&chkpnt_r.out, &cmp_e.main);
         net.link(&plant.y, &cmp_e.aux);
 
-        net.link(&cmp_e.cmp, &statan_e.signal);
+        net.link(&cmp_e.cmp, &statan_cerr.signal);
+	net.link(&statan_cerr.stat, &cerr_fout.in);
+
         net.link(&chkpnt_r.out, &statan_r.signal);
 
     }catch(NaException ex){

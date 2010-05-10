@@ -204,6 +204,17 @@ int main(int argc, char **argv)
 	NaPrintLog("Run %d (of %d)\n", 1+iRun, nRuns);
 	NaControlSystemModel	csm(len, ckind);
 
+	if(par.CheckParam("cerr_trace_file")) {
+	    NaPrintLog("Writing control error statistics to '%s' file.\n",
+		       par("cerr_trace_file"));
+	    csm.cerr_fout.set_output_filename(par("cerr_trace_file"));
+	    if(par.CheckParam("cerr_trace_contents")) {
+		csm.statan_cerr.configure_output(par("cerr_trace_contents"));
+	    }
+	} else {
+	    csm.cerr_fout.set_output_filename("/dev/null");
+	}
+
 	if(par.CheckParam("tdg_stpardet_len") &&
 	   par.CheckParam("tdg_cells") &&
 	   par.CheckParam("tdg_sigma_num") &&
@@ -252,6 +263,17 @@ int main(int argc, char **argv)
 	    //au_nnp.SetInstance("Plant");
 	    au_nnp.Load(par("in_nnp_file"));
 	    csm.nnplant.set_nn_unit(&au_nnp);
+
+	    if(par.CheckParam("iderr_trace_file")) {
+		NaPrintLog("Writing identification error statistics to '%s' file.\n",
+			   par("iderr_trace_file"));
+		csm.iderr_fout.set_output_filename(par("iderr_trace_file"));
+		if(par.CheckParam("iderr_trace_contents")) {
+		    csm.statan_iderr.configure_output(par("iderr_trace_contents"));
+		}
+	    } else {
+		csm.iderr_fout.set_output_filename("/dev/null");
+	    }
 
 	    // Get NNP delays
 	    unsigned	*input_delays = au_nnp.descr.InputDelays();
@@ -355,7 +377,7 @@ int main(int argc, char **argv)
 
 	NaPNEvent   pnev = csm.run_net();
 
-	printf("\nMean squared error=%g\n", csm.statan_e.RMS[0]);
+	printf("\nMean squared error=%g\n", csm.statan_cerr.RMS[0]);
 
 	NaPrintLog("IMPORTANT: net is dead due to ");
 	switch(pnev){
@@ -411,7 +433,7 @@ int main(int argc, char **argv)
 #endif
 
 	csm.statan_r.print_stat("Statistics of set point:");
-	csm.statan_e.print_stat("Statistics of error:");
+	csm.statan_cerr.print_stat("Statistics of error:");
 
 	csm.net.timer().ResetTime();
 

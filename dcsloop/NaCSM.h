@@ -95,7 +95,7 @@ public:/* data */
     NaPNCheckPoint  chkpnt_ny;
     NaPNSum         onsum;
     NaPNComparator  cmp_e;	// reference minus pure y produces e for MSE
-    NaPNStatistics  statan_e;	// MSE computation
+    NaPNStatistics  statan_cerr;// statistics calculation for control error
     NaPNStatistics  statan_r;
     NaPNBus2i1o     bus;        // (u,e)->NN former
     NaPNDelay       delay;      // (e(i),e(i-1),...e(i-n))->NN delayer-former
@@ -109,16 +109,17 @@ public:/* data */
     NaPNSkip        skip_u;     // skip some u due to y isn't available
     NaPNSkip        skip_ny;    // skip some not meaning n+y values
     NaPNComparator  iderrcomp;  // identification error computer
-    NaPNStatistics  iderrstat;  // identification error statistics
+    NaPNStatistics  statan_iderr;// identification error statistics
     NaPNDelay       delay_y;    // y -> y(-1), y(-2), ...
     NaPNDelay       delay_u;    // u -> u(-1), u(-2), ...
-    NaPNFileOutput  iderr_fout; // output statistics of identif. error (file)
     NaPNFileOutput  nn_y;       // NN plant output
     NaPNFileOutput  nn_e;       // identification error output
     NaPNFill        fill_nn_y;  // fill by zeros nn_y output to fit on_y
     NaPNTrainDataGath trdgath;	// train data gathering
     NaPNFileOutput  tdg_u;      // u series
     NaPNFileOutput  tdg_ny;     // y+n series
+    NaPNFileOutput  cerr_fout;  // output statistics of control error (see statan_cerr)
+    NaPNFileOutput  iderr_fout; // output statistics of identif. error (see statan_iderr)
 
 private:/* data */
 
