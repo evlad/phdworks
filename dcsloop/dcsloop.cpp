@@ -211,6 +211,9 @@ int main(int argc, char **argv)
 	    if(par.CheckParam("cerr_trace_contents")) {
 		csm.statan_cerr.configure_output(par("cerr_trace_contents"));
 	    }
+	    if(par.CheckParam("cerr_avg_base")) {
+		csm.statan_cerr.set_floating_gap(atoi(par("cerr_avg_base")));
+	    }
 	} else {
 	    csm.cerr_fout.set_output_filename("/dev/null");
 	}
@@ -269,7 +272,12 @@ int main(int argc, char **argv)
 			   par("iderr_trace_file"));
 		csm.iderr_fout.set_output_filename(par("iderr_trace_file"));
 		if(par.CheckParam("iderr_trace_contents")) {
-		    csm.statan_iderr.configure_output(par("iderr_trace_contents"));
+		    csm.statan_iderr
+			.configure_output(par("iderr_trace_contents"));
+		}
+		if(par.CheckParam("iderr_avg_base")) {
+		    csm.statan_iderr
+			.set_floating_gap(atoi(par("iderr_avg_base")));
 		}
 	    } else {
 		csm.iderr_fout.set_output_filename("/dev/null");
