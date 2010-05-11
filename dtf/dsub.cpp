@@ -22,14 +22,14 @@ main (int argc, char* argv[])
   if(argc == 1)
     {
       fprintf(stderr, "Error: need arguments\n");
-      fprintf(stderr, "Usage: dsub SignalSeries1 [SignalSeries2 ...]\n");
+      fprintf(stderr, "Usage: DSUB_DELAY=Delay dsub SignalSeries1 [SignalSeries2 ...]\n");
       return 1;
     }
 
   int		i, n = argc - 1;
   NaDataFile	**dfSeries = new NaDataFile*[n];
 
-  NaOpenLogFile("dsum.log");
+  NaOpenLogFile("dsub.log");
 
   for(i = 0; i < n; ++i)
     {
@@ -44,6 +44,27 @@ main (int argc, char* argv[])
 	dfSeries[i] = NULL;
       }
     }
+
+  char *p = getenv("DSUB_DELAY");
+  if(NULL != p) {
+      int	i, j, delay = atoi(p);
+      if(delay > 0) {
+	  if(dfSeries[0] != NULL)
+	      {
+		  NaPrintLog("Feed %d samples from the first input data file\n", delay);
+		  for(i = 0; i < delay; ++i)
+		      dfSeries[0]->GoNextRecord();
+	      }
+      } else if(delay < 0) {
+	  delay *= -1;
+	  for(j = 1; j < n; ++j)
+	      if(dfSeries[j] != NULL) {
+		  NaPrintLog("Feed %d samples from the %dth input data file\n", delay, i+1);
+		  for(i = 0; i < delay; ++i)
+		      dfSeries[j]->GoNextRecord();
+	      }
+      }
+  }
 
   try{
     NaReal	fSum;
