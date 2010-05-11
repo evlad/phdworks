@@ -53,6 +53,13 @@ cerr_trace_file = cerr_trace.dat
 # iderr_trace_contents = ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX TIME TINDEX VALUE
 iderr_trace_file = iderr_trace.dat
 
+# ATTENTION! Setting next two parameters will change error trace data
+# dramatically as well as final result!
+
+# Sliding averaging base to calculate statistical parameters
+# cerr_avg_base = 100
+# iderr_avg_base = 100
+
 #
 # NN-P
 #
