@@ -573,10 +573,6 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 		     node.name(), bActivate?"" :"not ");
 	}
 
-	// Node is timing one
-	if(bActivate && pnaNet[iNode] == pTimingNode)
-	  timer().GoNextTime();
-
       }catch(NaException exCode){
 	NaPrintLog("Step of node activity phase (#7): node '%s' fault.\n"
 		   "Caused by exception: %s\n",
@@ -640,6 +636,10 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 
 	  // Count activations
 	  ++node.nActivations;
+
+	  // Node is timing one - let's update timer
+	  if(pnaNet[iNode] == pTimingNode)
+	      timer().GoNextTime();
 
 	}catch(NaException exCode){
 	  NaPrintLog("True action phase (#8): node '%s' fault.\n"
