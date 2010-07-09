@@ -182,7 +182,7 @@ dataset_preproc (DataSet& ds)
             }
         }
 
-        printf("There are %d values in the file.\n", ds.df->CountOfRecord());
+        printf("There are %ld values in the file.\n", ds.df->CountOfRecord());
 
         // ask user about data range (propose defined)
         ds.min = ask_user_real("Enter low bound for data", ds.min);
