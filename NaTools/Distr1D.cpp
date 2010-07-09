@@ -73,14 +73,21 @@ main(int argc, char **argv)
       ++(distr[i]);
     }
 
+    // normalize distribution
+    NaReal fMax = 0.0;
+    for(i = 0; i < ds.cells; ++i){
+	if(distr[i] > fMax)
+	    fMax = distr[i];
+    }
+
     // print the distr
     int     nCovered = 0;   // number of covered cells
 
     for(i = 0; i < ds.cells; ++i){
       if(NULL != fpGraph)
-	fprintf(fpGraph, "%g\t%d\n",
+	fprintf(fpGraph, "%g\t%d\t%g\n",
 		ds.min + i * ds.step,
-		distr[i]);
+		distr[i], fMax > 0.0? distr[i]/fMax: 0.0 );
 
 	if(distr[i] > 0){
 	  ++nCovered;
@@ -130,7 +137,7 @@ dataset_preproc (DataSet& ds)
             }
         }
 
-        printf("There are %d values in the file.\n", ds.df->CountOfRecord());
+        printf("There are %ld values in the file.\n", ds.df->CountOfRecord());
 
         // ask user about data range (propose defined)
         ds.min = ask_user_real("Enter low bound for data", ds.min);
