@@ -26,7 +26,8 @@ refer_tf = ../refer.tf
 noise_tf = ../noise.tf
 
 # (input_kind = file) Maximum number of epochs; 0 is unlimited
-max_epochs = 11100
+max_epochs = 0
+#11100
 
 # (input_kind = file) Input files
 in_r = ../6_3/r.bis

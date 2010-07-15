@@ -26,11 +26,12 @@ refer_tf = ../refer.tf
 noise_tf = ../noise.tf
 
 # (input_kind = file) Maximum number of epochs; 0 is unlimited
-max_epochs = 10000
+max_epochs = 0
+#10000
 
 # (input_kind = file) Input files
-in_r = ../6_3/r2.bis
-in_n = ../6_3/n2.bis
+in_r = ../6_3/r.bis
+in_n = ../6_3/n.bis
 
 # (input_kind = stream) Output files
 out_r = r_out.dat
@@ -60,10 +61,10 @@ out_nnp_file = nnp_adopted.nn
 # Tracking learning process (order can't be changed):
 # cerr_trace_contents = ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX TIME TINDEX
 cerr_trace_contents = RMS TINDEX
-cerr_trace_file = cerr_trace.dat
+cerr_trace_file = cerr_trace2.dat
 # iderr_trace_contents = ABSMEAN MEAN RMS STDDEV MAX MIN ABSMAX TIME TINDEX
 iderr_trace_contents = RMS TINDEX
-iderr_trace_file = iderr_trace.dat
+iderr_trace_file = iderr_trace2.dat
 
 # Skip up to given number of epochs if MSE growing at start
 skip_growing = 35

@@ -54,6 +54,7 @@ Directories:
 6_4a0 - plant_notst3.cof: gather test data for NN-P training
 6_4a1 - plant_notst3.cof: offline NN-P training
 6_4a2 - plant_notst3.cof: online NN-C adoption (->report_cmp.plt)
+6_4a3 - plant_notst3.cof: just test for NN-C unchanged
 6_4b  - plant_notst3.cof: online adoption of both NN-P and NN-C
 6_5a  - tests with different auf for NN-C and NN-P to reveal the best choice
 7   - NNP adopted in-the-loop for plant2 separately

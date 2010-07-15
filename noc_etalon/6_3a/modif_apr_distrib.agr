@@ -107,7 +107,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Sat Jul 10 01:12:26 2010"
+@timestamp def "Mon Jul 12 22:30:19 2010"
 @r0 off
 @link r0 to g0
 @r0 type above
@@ -228,7 +228,7 @@
 @    yaxis  bar color 1
 @    yaxis  bar linestyle 1
 @    yaxis  bar linewidth 1.0
-@    yaxis  label "Probability"
+@    yaxis  label ""
 @    yaxis  label layout para
 @    yaxis  label place auto
 @    yaxis  label char size 1.000000
@@ -251,7 +251,7 @@
 @    yaxis  tick minor linestyle 2
 @    yaxis  tick minor grid on
 @    yaxis  tick minor size 0.500000
-@    yaxis  ticklabel on
+@    yaxis  ticklabel off
 @    yaxis  ticklabel format general
 @    yaxis  ticklabel prec 5
 @    yaxis  ticklabel formula ""
@@ -312,7 +312,7 @@
 @    s0 symbol skip 0
 @    s0 line type 1
 @    s0 line linestyle 1
-@    s0 line linewidth 1.0
+@    s0 line linewidth 1.5
 @    s0 line color 1
 @    s0 line pattern 1
 @    s0 baseline type 0
@@ -361,7 +361,7 @@
 @    s2 symbol skip 0
 @    s2 line type 1
 @    s2 line linestyle 3
-@    s2 line linewidth 1.0
+@    s2 line linewidth 1.5
 @    s2 line color 1
 @    s2 line pattern 1
 @    s2 baseline type 0
