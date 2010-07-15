@@ -16,8 +16,8 @@ static char rcsid[] = "$Id$";
 
 
 /***********************************************************************
- * Read discrete signal and observed output and compute mean squared
- * error.
+ * Read discrete signal and observed output and compute continous mean
+ * squared error signal.
  ***********************************************************************/
 main (int argc, char* argv[])
 {
@@ -70,19 +70,15 @@ main (int argc, char* argv[])
       else
 	fObserved = 0.;
 
-      //printf("%g\t%g\n", fSignal, fObserved);
       fMSE += (fSignal - fObserved) * (fSignal - fObserved);
       ++nSamples;
+
+      printf("%d\t%g\n", nSamples, fMSE / nSamples);
 
       if(NULL != dfObserved)
 	if(!dfObserved->GoNextRecord())
 	  break;
     }while(dfSignal->GoNextRecord());
-
-    //printf("SS=%g\tN=%d\n", fMSE, nSamples);
-    fMSE = fMSE / nSamples;
-
-    printf("%g\n", fMSE);
 
     if(NULL != dfObserved)
       delete dfObserved;
