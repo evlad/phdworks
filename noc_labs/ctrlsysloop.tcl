@@ -1,5 +1,8 @@
 #
 
+# Oval for adding or subtracting signals depending minusps.
+# It may be "none" for adding and "n", "s", "w", "e" for subtracting
+# from given direction.
 proc DrawGather {c name x y minusps} {
     set hsize 10
     set x1 [expr [$c canvasx $x] - $hsize]
@@ -101,6 +104,7 @@ proc DrawDirection {c block1 ps1 block2 ps2 dirflag} {
     }
 }
 
+# arrflag - may be "none", "first", "last" and "middle"
 proc DrawArrow {c x1 y1 x2 y2 arrflag} {
     if { $arrflag == "middle" } {
 	$c create line $x1 $y1 $x2 $y2 -arrow none
@@ -112,13 +116,20 @@ proc DrawArrow {c x1 y1 x2 y2 arrflag} {
     }
 }
 
+proc Run {pb} {
+    puts "TODO: Run dcsloop"
+    #catch {[exec dcsloop dcsloop.par >/dev/null 2>dcsloop.err]} errCode
+}
+
 proc DrawPanel {w} {
 
-    frame $w.buttons
-    pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.dismiss -text Dismiss -command "destroy $w"
-    #button $w.buttons.code -text "See Code" -command "showCode $w"
-    pack $w.buttons.dismiss -side left -expand 1
+    frame $w.controls
+    pack $w.controls -side bottom -fill x -pady 2m
+    button $w.controls.run -text "Run" -command "Run $w"
+    button $w.controls.series -text "Series"
+    button $w.controls.close -text "Close" -command "destroy ."
+    pack $w.controls.run $w.controls.series \
+	 $w.controls.close -side left -expand 1
 
     frame $w.frame
     pack $w.frame -side top -fill both -expand yes
