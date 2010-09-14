@@ -1,5 +1,46 @@
 package require Plotchart
 
+proc PlotSine {c} {
+    set s [::Plotchart::createXYPlot $c {5.0 25.0 5.0} {-1.5 1.5 0.25}]
+    $s dataconfig series1 -colour "red"
+    set xd 0.1
+    set xold 0.0
+    for { set i 0 } { $i < 200 } { incr i } {
+	set xnew [expr {$xold+$xd}]
+	set ynew [expr {sin($xnew)}]
+	$s plot series1 $xnew $ynew
+	set xold $xnew
+    }
+}
+
+proc doPlot {} {
+    #
+    # Clean up the contents (see also the note below!)
+    #
+    .c delete all
+    #
+    # (Re)draw
+    #
+    PlotSine .c
+}
+
+proc doResize {} {
+    global redo
+    #
+    # To avoid redrawing the plot many times during resizing,
+    # cancel the callback, until the last one is left.
+    #
+    if { [info exists redo] } {
+        after cancel $redo
+    }
+    set redo [after 50 doPlot]
+}
+
+grid [canvas .c -background white -width 600 -height 300] -sticky news
+grid columnconfigure . 0 -weight 1
+grid rowconfigure . 0 -weight 1
+bind .c <Configure> {doResize}
+
 # Plot file to given plotchart
 proc GrSeriesPlotFile {pc filepath} {
     set fd [open $filepath r]
