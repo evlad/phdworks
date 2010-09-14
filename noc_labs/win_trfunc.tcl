@@ -66,7 +66,7 @@ proc TrFuncWindowEdit {w title var} {
 }
 
 proc TrFuncWindowModified {w entry} {
-    puts "Modified: $w $entry"
+    #puts "Modified: $w $entry"
     # Set attributes of modified text contents
     set modifiedFg white
     set modifiedBg red
