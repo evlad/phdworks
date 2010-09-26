@@ -57,7 +57,11 @@ proc GrSeriesPlot {c} {
     upvar 0 $c.props props
 
     puts "GrSeriesPlot $c"
+    if { ! [info exists props(dataSeries)] } return
     set dataSeries $props(dataSeries)
+
+    puts "Number of series: [llength $dataSeries]"
+    if {[llength $dataSeries] == 0 } return
 
     set props(xmin) 0
     set props(xmax) 0
@@ -262,6 +266,9 @@ proc GrSeriesReadFile {filepath} {
 proc GrSeriesAddSeries {p series {name ""}} {
     if {[llength $series] == 0} return
 
+    #puts "series: $series"
+    #puts "name: $name"
+
     set c $p.grseries.graphics.c
 
     global $c.props
@@ -287,7 +294,10 @@ proc GrSeriesAddSeries {p series {name ""}} {
 		set ymax $y
 	    }
 	}
-	lappend props(dataSeries) $series "$ymin $ymax" "$name"
+	#puts "[list $ymin $ymax] $name"
+	set minmax [list $ymin $ymax]
+	lappend props(dataSeries) "[list $series] [list $minmax] $name"
+	#puts "[lindex $props(dataSeries) end]"
     }
 }
 
@@ -339,7 +349,21 @@ proc GrSeriesWindow {p title {filepath ""}} {
 }
 
 #GrSeriesWindow "" "Series plot" testdata/sine1k.dat
-GrSeriesWindow "" "Series plot" testdata/r.dat
+GrSeriesWindow "" "Series plot"
+# testdata/r.dat
+
+set xd 1
+set xold 0.0
+set func {}
+for { set i 0 } { $i < 1000 } { incr i } {
+    set xnew [expr {$xold+$xd}]
+    set ynew [expr {0.7*sin(0.02*$xnew)+pow(cos(0.01*$xnew), 2)}]
+    #set ynew $xnew
+    lappend func $ynew
+    set xold $xnew
+}
+
 GrSeriesAddSeries "" "[lindex [GrSeriesReadFile testdata/sine1k.dat] 0]" "Синус"
+GrSeriesAddSeries "" "$func" "Func"
 #GrSeriesWindow "" "Series plot" testdata/test.dat
 #puts [GrSeriesReadFile testdata/test.dat]
