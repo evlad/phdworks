@@ -63,53 +63,63 @@ proc GrSeriesPlot {c} {
     puts "Number of series: [llength $dataSeries]"
     if {[llength $dataSeries] == 0 } return
 
-    set props(xmin) 0
-    set props(xmax) 0
+    # xmin,xmax,ymin,ymax - outer bounding box of data series
+    # props(*) - view area
+
+    set xmin 0
+    set xmax 0
     set xstep 1.0
 
     for { set iS 0 } { $iS < [llength $dataSeries] } { incr iS } {
 	# find argument range
-	if { $props(xmax) < [llength [lindex $dataSeries $iS 0]] } {
-	    set props(xmax) [llength [lindex $dataSeries $iS 0]]
+	if { $xmax < [llength [lindex $dataSeries $iS 0]] } {
+	    set xmax [llength [lindex $dataSeries $iS 0]]
 	}
 	# find value range
 	if { [llength [lindex $dataSeries $iS]] > 1 && \
 		 [llength [lindex $dataSeries $iS 1]] >= 2 } {
 	    # there is a predefined {min max} pair
-	    if { [info exists props(ymin)] } {
-		if { [lindex $dataSeries $iS 1 0] < $props(ymin) } {
-		    set props(ymin) [lindex $dataSeries $iS 1 0]
+	    if { [info exists ymin] } {
+		if { [lindex $dataSeries $iS 1 0] < $ymin } {
+		    set ymin [lindex $dataSeries $iS 1 0]
 		}
 	    } else {
-		set props(ymin) [lindex $dataSeries $iS 1 0]
+		set ymin [lindex $dataSeries $iS 1 0]
 	    }
-	    if { [info exists props(ymax)] } {
-		if { [lindex $dataSeries $iS 1 1] > $props(ymax) } {
-		    set props(ymax) [lindex $dataSeries $iS 1 1]
+	    if { [info exists ymax] } {
+		if { [lindex $dataSeries $iS 1 1] > $ymax } {
+		    set ymax [lindex $dataSeries $iS 1 1]
 		}
 	    } else {
-		set props(ymax) [lindex $dataSeries $iS 1 1]
+		set ymax [lindex $dataSeries $iS 1 1]
 	    }
 	} else {
 	    # no predefined {min max}, so let's scan the whole series
-	    if { ! [info exists props(ymin)] } {
-		set props(ymin) [lindex $dataSeries $iS 0 0]
+	    if { ! [info exists ymin] } {
+		set ymin [lindex $dataSeries $iS 0 0]
 	    }
-	    if { ! [info exists props(ymax)] } {
-		set props(ymax) [lindex $dataSeries $iS 0 0]
+	    if { ! [info exists ymax] } {
+		set ymax [lindex $dataSeries $iS 0 0]
 	    }
 	    foreach y [lindex $dataSeries $iS 0] {
-		if { $y < $props(ymin) } {
-		    set props(ymin) $y
+		if { $y < $ymin } {
+		    set ymin $y
 		}
-		if { $y > $props(ymax) } {
-		    set props(ymax) $y
+		if { $y > $ymax } {
+		    set ymax $y
 		}
 	    }
 	}
     }
-    puts "x: $props(xmin) $props(xmax)"
-    puts "y: $props(ymin) $props(ymax)"
+    puts "x: $xmin $xmax"
+    puts "y: $ymin $ymax"
+
+    # Copy xmin,xmax,ymin,ymax to props
+    foreach v {xmin xmax ymin ymax} {
+	if {![info exists props($v)]} {
+	    eval set props($v) \$$v
+	}
+    }
 
     set xgrid [GrSeriesGridStep $props(xmin) $props(xmax)]
     set ygrid [GrSeriesGridStep $props(ymin) $props(ymax)]
@@ -140,7 +150,7 @@ proc GrSeriesPlot {c} {
     set pixwidth [winfo width $c]
     set colors {red green blue magenta cyan yellow black brown grey violet}
     set s [::Plotchart::createXYPlot $c \
-	       [list $props(xmin) $props(xmax) $xgrid] \
+	       [list $xmin $xmax $xgrid] \
 	       [list $ymin $ymax $ygrid]]
     if { $bDrawGrid } {
 	$s grid ${xgrid_matrix} ${ygrid_matrix}
@@ -153,8 +163,8 @@ proc GrSeriesPlot {c} {
 	    $s legend series$iS [lindex $dataSeries $iS 2 0]
 	}
 
-	# considering the screen has ~1000 pixels it's not wise to
-	# draw too much data points
+	# considering the screen has limited number of pixels it's not
+	# wise to draw too much data points
 	set iStep [expr int([llength [lindex $dataSeries $iS 0]] / $pixwidth) - 1]
 	if { $iStep <= 0 } {
 	    set iStep 1
