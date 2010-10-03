@@ -118,8 +118,9 @@ proc TrFuncWindow {p title var} {
 
 #	-command "TrFuncWindowEdit $w $title fileName" 
 
-font create myDefaultFont -family Freesans -size 11
-option add *font myDefaultFont
+#font create myDefaultFont -family Freesans -size 11
+#option add *font myDefaultFont
+option readfile noc_labs.ad
 
 source win_textedit.tcl
 

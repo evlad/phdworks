@@ -1,5 +1,8 @@
 package require Plotchart
 
+source data_file.tcl
+source universal.tcl
+
 proc PlotSine {c} {
     set s [::Plotchart::createXYPlot $c {5.0 25.0 5.0} {-1.5 1.5 0.25}]
     $s dataconfig series1 -colour "red"
@@ -52,24 +55,10 @@ proc GrSeriesAxis {minIn maxIn gridIn minOut maxOut gridOut ticksOut} {
     }
 }
 
-proc GrSeriesPlot {c} {
-    global $c.props
-    upvar 0 $c.props props
-
-    puts "GrSeriesPlot $c"
-    if { ! [info exists props(dataSeries)] } return
-    set dataSeries $props(dataSeries)
-
-    puts "Number of series: [llength $dataSeries]"
-    if {[llength $dataSeries] == 0 } return
-
-    # xmin,xmax,ymin,ymax - outer bounding box of data series
-    # props(*) - view area
-
+# Returns xmin xmax ymin ymax
+proc GrSeriesMinMax {dataSeries} {
     set xmin 0
     set xmax 0
-    set xstep 1.0
-
     for { set iS 0 } { $iS < [llength $dataSeries] } { incr iS } {
 	# find argument range
 	if { $xmax < [llength [lindex $dataSeries $iS 0]] } {
@@ -111,24 +100,67 @@ proc GrSeriesPlot {c} {
 	    }
 	}
     }
-    puts "x: $xmin $xmax"
-    puts "y: $ymin $ymax"
+    return [list $xmin $xmax $ymin $ymax]
+}
 
-    # Copy xmin,xmax,ymin,ymax to props
+proc GrSeriesPlot {c} {
+    global $c.props
+    upvar 0 $c.props props
+
+    puts "GrSeriesPlot $c"
+
+    if { ! [info exists props(dataSeries)] } return
+    set dataSeries $props(dataSeries)
+
+    puts "Number of series: [llength $dataSeries]"
+    if {[llength $dataSeries] == 0 } return
+
+    # xmin,xmax,ymin,ymax - outer bounding box of data series
+    # $c.view_* - view area
+
+    unlist [GrSeriesMinMax $dataSeries] xmin xmax ymin ymax
+
+    puts "outer x: $xmin $xmax"
+    puts "outer y: $ymin $ymax"
+
+    # Store bounds of view area
     foreach v {xmin xmax ymin ymax} {
-	if {![info exists props($v)]} {
-	    eval set props($v) \$$v
+	global $c.view_$v
+	if {![info exists $c.view_$v] || [set $c.view_$v] == {}} {
+	    #puts "assign: set $c.view_$v \$$v"
+	    eval set $c.view_$v \$$v
 	}
     }
 
-    set xgrid [GrSeriesGridStep $props(xmin) $props(xmax)]
-    set ygrid [GrSeriesGridStep $props(ymin) $props(ymax)]
+    puts "view x: $xmin $xmax"
+    puts "view y: $ymin $ymax"
+
+    # Copy xmin,xmax,ymin,ymax to props since they are needed to make
+    # ZoomAll action
+    foreach v {xmin xmax ymin ymax} {
+	eval set props($v) \$$v
+    }
+
+    #eval set ${v}grid [GrSeriesGridStep \$$c.view_${v}min \$$c.view_${v}max]
+    set xgrid [GrSeriesGridStep [set $c.view_xmin] [set $c.view_xmax]]
+    set ygrid [GrSeriesGridStep [set $c.view_ymin] [set $c.view_ymax]]
+
     puts "xgrid: $xgrid"
     puts "ygrid: $ygrid"
     set xticks {}
-    GrSeriesAxis $props(xmin) $props(xmax) $xgrid xmin xmax xgrid xticks
     set yticks {}
-    GrSeriesAxis $props(ymin) $props(ymax) $ygrid ymin ymax ygrid yticks
+    GrSeriesAxis [set $c.view_xmin] [set $c.view_xmax] $xgrid \
+	xmin xmax xgrid xticks
+    GrSeriesAxis [set $c.view_ymin] [set $c.view_ymax] $ygrid \
+	ymin ymax ygrid yticks
+
+    # Store slightly changed view limits back
+    foreach v {xmin xmax ymin ymax} {
+	eval set \$c.view_$v \$$v
+    }
+
+    puts "plot x: $xmin $xmax"
+    puts "plot y: $ymin $ymax"
 
     # ticks to grid nodes
     set xgrid_matrix {}
@@ -148,13 +180,16 @@ proc GrSeriesPlot {c} {
     upvar 0 $c.bDrawLegend bDrawLegend $c.bDrawGrid bDrawGrid
 
     set pixwidth [winfo width $c]
+    # Palette a'la Gnuplot
     set colors {red green blue magenta cyan yellow black brown grey violet}
     set s [::Plotchart::createXYPlot $c \
 	       [list $xmin $xmax $xgrid] \
 	       [list $ymin $ymax $ygrid]]
+    # $xmin $xmax
     if { $bDrawGrid } {
 	$s grid ${xgrid_matrix} ${ygrid_matrix}
     }
+    set xstep 1.0
     for { set iS 0 } { $iS < [llength $dataSeries] } { incr iS } {
 	# Draw series iS
 	set iColor [expr {$iS % [llength $colors]}]
@@ -170,7 +205,7 @@ proc GrSeriesPlot {c} {
 	    set iStep 1
 	}
 	#puts "iSeries=$iS -> plotting step $iStep"
-	for { set x $props(xmin); set i 0 } \
+	for { set x $props(xmin); set i $props(xmin) } \
 	    { $i < [llength [lindex $dataSeries $iS 0]] } \
 	    { set x [expr {$props(xmin) + $i * $xstep}]; incr i $iStep } {
 		$s plot series$iS $x [lindex $dataSeries $iS 0 $i]
@@ -194,82 +229,6 @@ proc GrSeriesDoResize {c} {
         after cancel ${GrSeriesDoResize_redo}
     }
     set redo [after 50 "GrSeriesDoPlot $c"]
-}
-
-# Read data series file into {{{col1}{min1
-# max1}{name1}}...{{colN}{minN maxN}{nameN}}} resulting data
-# structure.
-proc GrSeriesReadFile {filepath} {
-    if [ catch {open $filepath r} fd ] {
-	puts stderr "Failed to open $filepath: $fd"
-	return
-    }
-    # read all lines
-    set contents [split [read -nonewline $fd] \n]
-    close $fd
-
-    set fname [file tail $filepath]
-
-    # let's find number of columns in the file
-    set line0 [lindex $contents 0]
-    set tail $line0
-    set numCol 0
-    # parse first numeric field and get the rest part of line
-    #puts "$tail"
-    #while { [regexp {(\-?\d+(\.\d*)?([eE][+-]?\d+)?)\s+(.*)$} $tail match ] }
-    set minmax {}
-    while { [regexp {\s*(\-?\d+(\.\d*)?([eE][+-]?\d+)?)(.*)$} $tail match \
-		 fpnum frac exp rest] } {
-	set resData($numCol) {}
-	incr numCol
-	set tail $rest
-	lappend minmax {}
-	#puts "$numCol: fpnum=$fpnum frac=$frac exp=$exp rest=\"$rest\""
-	#if [ expr $numCol > 10 ] {
-	#    break
-	#}
-    }
-    puts "number of columns: $numCol"
-    set numRow 0
-    foreach line $contents {
-	set tail $line
-	set iCol 0
-	#puts "row=$numRow: $tail"
-	while { [regexp {\s*(\-?\d+(\.\d*)?([eE][+-]?\d+)?)(.*)$} $tail match \
-		     fpnum frac exp rest] } {
-	    set fNum [expr 1.0 * $fpnum]
-	    if { $iCol < $numCol } {
-		lappend resData($iCol) $fNum
-		if { {} == [lindex $minmax $iCol] } {
-		    lset minmax $iCol "$fNum $fNum"
-		} else {
-		    if { $fNum < [lindex $minmax $iCol 0] } {
-			lset minmax $iCol 0 $fNum
-		    }
-		    if { $fNum > [lindex $minmax $iCol 1] } {
-			lset minmax $iCol 1 $fNum
-		    }
-		}
-	    }
-	    #puts "col=$iCol"
-	    incr iCol
-	    set tail $rest
-	}
-	while { $iCol < $numCol } {
-	    # Fill absent values
-	    lappend resData($iCol) [expr 0.0]
-	    incr iCol
-	}
-	incr numRow
-    }
-    puts "number of rows: $numRow ([array names resData])"
-    set resList {}
-    for {set iCol 0} {$iCol < $numCol} {incr iCol} {
-	lappend resList [list $resData($iCol) [lindex $minmax $iCol] \
-			     $fname#$iCol ]
-    }
-    #puts $resList
-    return $resList
 }
 
 # Add series in format {data} or {{data}{min max}{name}}
@@ -311,6 +270,23 @@ proc GrSeriesAddSeries {p series {name ""}} {
     }
 }
 
+proc GrSeriesViewAll {c args} {
+    global $c.props
+    upvar 0 $c.props props
+    set dim $args
+    if { $dim == {} } {
+	set dim {x y}
+    }
+    foreach v $dim {
+	eval puts \"${v} range: \$props(${v}min) \$props(${v}max)\"
+	global $c.view_${v}min
+	global $c.view_${v}max
+	set $c.view_${v}min $props(${v}min)
+	set $c.view_${v}max $props(${v}max)
+    }
+    #GrSeriesDoPlot $c
+}
+
 proc GrSeriesWindow {p title {filepath ""}} {
     #set dataByColumns = ReadSeries $filepath
     set w $p.grseries
@@ -341,21 +317,34 @@ proc GrSeriesWindow {p title {filepath ""}} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK"
-    button $w.buttons.axis -text "Axis..."
-#	-command "TrFuncWindowOk $w $w.file.entry globalFileName"
-    button $w.buttons.cancel -text "Cancel" -command "destroy $w"
+    button $w.buttons.print -text "Screenshot" \
+	-command "$c postscript -pagewidth 297.m -pageheight 210.m -colormode color -file grseries.ps"
+    button $w.buttons.curves -text "Curves..." -command "puts TODO"
 
-    frame $w.buttons.options
-    checkbutton $w.buttons.options.grid -text "Grid" \
+    set o $w.buttons.options
+    frame $o
+    checkbutton $o.grid -text "Grid" \
 	-variable $c.bDrawGrid -command "GrSeriesDoPlot $c"
-    checkbutton $w.buttons.options.legend -text "Legend" \
+    checkbutton $o.legend -text "Legend" \
 	-variable $c.bDrawLegend -command "GrSeriesDoPlot $c"
-    grid $w.buttons.options.grid -sticky w
-    grid $w.buttons.options.legend -sticky w
+    global xmin xmax ymin ymax
+    button $o.xlabel -text "X:" -command "GrSeriesViewAll $c x" -pady 0
+    button $o.ylabel -text "Y:" -command "GrSeriesViewAll $c y" -pady 0
+    foreach v {xmin xmax ymin ymax} {
+	global $c.view_$v
+	#upvar 0 $c.view_$v view_$v
+	entry $o.$v -textvariable $c.view_$v -width 8 -relief sunken
+    }
 
-    pack $w.buttons.ok $w.buttons.axis $w.buttons.options \
-	$w.buttons.cancel -side left -expand 1
+    # after entries to make exact focus order by Tab/Shift-Tab
+    button $w.buttons.redraw -text "Redraw" -command "GrSeriesDoPlot $c"
+    button $w.buttons.close -text "Close" -command "destroy $w"
+
+    grid $o.grid $o.xlabel $o.xmin $o.xmax -sticky w
+    grid $o.legend $o.ylabel $o.ymin $o.ymax -sticky w
+
+    pack $w.buttons.print $w.buttons.curves $o $w.buttons.redraw \
+	$w.buttons.close -side left -expand 1
 }
 
 #GrSeriesWindow "" "Series plot" testdata/sine1k.dat
@@ -373,7 +362,12 @@ for { set i 0 } { $i < 1000 } { incr i } {
     set xold $xnew
 }
 
-GrSeriesAddSeries "" "[lindex [GrSeriesReadFile testdata/sine1k.dat] 0]" "Синус"
-GrSeriesAddSeries "" "$func" "Func"
-#GrSeriesWindow "" "Series plot" testdata/test.dat
+set wholeData [GrSeriesReadFile testdata/r.dat]
+GrSeriesAddSeries "" "[lindex $wholeData 0]" "Var1"
+GrSeriesAddSeries "" "[lindex $wholeData 3]" "Var4"
+GrSeriesAddSeries "" "[lindex $wholeData 5]" "Var6"
+#GrSeriesAddSeries "" "[lindex [GrSeriesReadFile testdata/sine1k.dat] 0]" "Синус"
+#GrSeriesAddSeries "" "$func" "Func"
+GrSeriesWindow "" "Series plot"
+# testdata/r.dat
 #puts [GrSeriesReadFile testdata/test.dat]

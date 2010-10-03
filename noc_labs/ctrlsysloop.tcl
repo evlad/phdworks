@@ -1,5 +1,8 @@
 #
 
+option readfile noc_labs.ad
+#set font "-*-helvetica-*-r-*-*-14-*-*-*-*-*-koi8-*"
+
 # Oval for adding or subtracting signals depending minusps.
 # It may be "none" for adding and "n", "s", "w", "e" for subtracting
 # from given direction.
@@ -33,12 +36,20 @@ proc DrawGather {c name x y minusps} {
 }
 
 proc DrawLargeBlock {c name label x y} {
-    button $c.$name -text $label -padx 1m -pady 1m -font {Freesans 11}
+    button $c.$name -text $label -padx 1m -pady 1m
+    set font [option get $c.$name fontBlock ""]
+    if { $font != "" } {
+	$c.$name config -font $font
+    }
     $c create window $x $y -window $c.$name -tags $name
 }
 
 proc DrawSmallBlock {c name label x y} {
     button $c.$name -text $label -padx 0 -pady 0
+    set font [option get $c.$name fontBlock ""]
+    if { $font != "" } {
+	$c.$name config -font $font
+    }
     $c create window $x $y -window $c.$name -tags $name
 }
 

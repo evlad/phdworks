@@ -116,8 +116,9 @@ proc CheckPntWindow {p title var} {
 
 #	-command "CheckPntWindowEdit $w $title fileName" 
 
-font create myDefaultFont -family Freesans -size 11
-option add *font myDefaultFont
+#font create myDefaultFont -family Freesans -size 11
+#option add *font myDefaultFont
+option readfile noc_labs.ad
 
 source win_textedit.tcl
 
