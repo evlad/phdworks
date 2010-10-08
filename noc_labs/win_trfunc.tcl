@@ -77,6 +77,42 @@ proc TrFuncWindowModified {w entry} {
     return 1
 }
 
+proc TrFuncProbe {w entry} {
+    set nameTrFunc [$entry get]
+    puts "TrFuncProbe: '$nameTrFunc'"
+    if {![file exists $nameTrFunc]} {
+	puts stderr "File '$nameTrFunc' does not exist"
+	return
+    }
+
+    # Prepare probe signal
+    set len0 10
+    set len1 90
+    set nameInput "[file dirname $nameTrFunc][file separator]probe_step.dat"
+    set nameOutput "[file dirname $nameTrFunc][file separator]probe_resp.dat"
+    if [catch {open $nameInput w} fdInput] {
+	puts stderr "Failed to create $nameInput"
+	return
+    }
+    for { set i 0 } { $i <= $len0 + $len1 } {incr i } {
+	if { $i < $len0 } {
+	    puts $fdInput "0"
+	} else {
+	    puts $fdInput "1"
+	}
+    }
+    close $fdInput
+
+    # Execute probing procedure
+    set rc [catch { exec dtf $nameTrFunc $nameInput $nameOutput } dummy]
+    if { $rc == 0 } {
+	# Plot results
+	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "Вход"
+  	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "Выход"
+	GrSeriesWindow $w "Series plot"
+    }
+}
+
 # p - parent widget
 # title - description of the given transfer function
 # var - name of variable where to store filename
@@ -107,7 +143,15 @@ proc TrFuncWindow {p title var} {
     button $w.buttons.edit -text "Edit..." \
 	-command "TextEditWindow $w TITLE \$fileName"
     button $w.buttons.view -text "View..."
-    button $w.buttons.probe -text "Probe..."
+    button $w.buttons.probe -text "Probe..." \
+	-command "TrFuncProbe $w $w.file.entry"
+
+#menubutton $w.body.right -text "Right" -underline 0 -direction right -menu $w.body.right.m -relief raised
+#menu $w.body.right.m -tearoff 0
+#$w.body.right.m add command -label "Right menu: first item" -command "puts \"You have selected the first item from the Right menu.\""
+#$w.body.right.m add command -label "Right menu: second item" -command "puts \"You have selected the second item from the Right menu.\""
+#grid $w.body.right -row 1 -column 0 -sticky w
+
     button $w.buttons.cancel -text "Cancel" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.apply $w.buttons.edit $w.buttons.view \
 	$w.buttons.probe $w.buttons.cancel -side left -expand 1
@@ -123,6 +167,7 @@ proc TrFuncWindow {p title var} {
 option readfile noc_labs.ad
 
 source win_textedit.tcl
+source win_grseries.tcl
 
 #font configure default -family Freesans -size 11
 
