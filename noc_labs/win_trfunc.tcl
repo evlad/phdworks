@@ -77,7 +77,7 @@ proc TrFuncWindowModified {w entry} {
     return 1
 }
 
-proc TrFuncProbe {w entry} {
+proc TrFuncProbe {w entry func} {
     set nameTrFunc [$entry get]
     puts "TrFuncProbe: '$nameTrFunc'"
     if {![file exists $nameTrFunc]} {
@@ -88,17 +88,39 @@ proc TrFuncProbe {w entry} {
     # Prepare probe signal
     set len0 10
     set len1 90
-    set nameInput "[file dirname $nameTrFunc][file separator]probe_step.dat"
-    set nameOutput "[file dirname $nameTrFunc][file separator]probe_resp.dat"
+    set len [expr $len0 + $len1]
+    set nameInput "[file dirname $nameTrFunc][file separator]probe_$func.dat"
+    set nameOutput "[file dirname $nameTrFunc][file separator]response_$func.dat"
     if [catch {open $nameInput w} fdInput] {
 	puts stderr "Failed to create $nameInput"
 	return
     }
-    for { set i 0 } { $i <= $len0 + $len1 } {incr i } {
-	if { $i < $len0 } {
-	    puts $fdInput "0"
-	} else {
-	    puts $fdInput "1"
+    switch -glob $func {
+	sin_* {
+	    #regexp {[a-z]*\((\d+)\)} $func all period
+	    regexp {[a-z]*_(\d+)} $func all period
+	    unset all
+	}
+    }
+    for { set i 0 } { $i <= $len } {incr i } {
+	switch -glob $func {
+	    step {
+		if { $i < $len0 } {
+		    puts $fdInput "0"
+		} else {
+		    puts $fdInput "1"
+		}
+	    }
+	    pulse {
+		if { $i != $len0 } {
+		    puts $fdInput "0"
+		} else {
+		    puts $fdInput "1"
+		}
+	    }
+	    sin_* {
+		puts $fdInput [expr {sin(3.1415926*2*$i/$period)}]
+	    }
 	}
     }
     close $fdInput
@@ -107,8 +129,8 @@ proc TrFuncProbe {w entry} {
     set rc [catch { exec dtf $nameTrFunc $nameInput $nameOutput } dummy]
     if { $rc == 0 } {
 	# Plot results
-	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "Вход"
-  	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "Выход"
+	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "$func"
+  	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "f($func)"
 	GrSeriesWindow $w "Series plot"
     }
 }
@@ -143,14 +165,18 @@ proc TrFuncWindow {p title var} {
     button $w.buttons.edit -text "Edit..." \
 	-command "TextEditWindow $w TITLE \$fileName"
     button $w.buttons.view -text "View..."
-    button $w.buttons.probe -text "Probe..." \
-	-command "TrFuncProbe $w $w.file.entry"
+    #button $w.buttons.probe -text "Probe..." \
+	#-command "TrFuncProbe $w $w.file.entry"
 
-#menubutton $w.body.right -text "Right" -underline 0 -direction right -menu $w.body.right.m -relief raised
-#menu $w.body.right.m -tearoff 0
-#$w.body.right.m add command -label "Right menu: first item" -command "puts \"You have selected the first item from the Right menu.\""
-#$w.body.right.m add command -label "Right menu: second item" -command "puts \"You have selected the second item from the Right menu.\""
-#grid $w.body.right -row 1 -column 0 -sticky w
+    set m $w.buttons.probe.m
+    menubutton $w.buttons.probe -text "Probe..." -underline 0 \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    foreach signal {pulse step sin_4 sin_10 sin_20} {
+	$m add command -label $signal \
+	    -command "TrFuncProbe $w $w.file.entry $signal"
+    }
+    grid $w.buttons.probe -row 1 -column 0 -sticky n
 
     button $w.buttons.cancel -text "Cancel" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.apply $w.buttons.edit $w.buttons.view \
