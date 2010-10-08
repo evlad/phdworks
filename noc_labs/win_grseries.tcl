@@ -287,6 +287,19 @@ proc GrSeriesViewAll {c args} {
     #GrSeriesDoPlot $c
 }
 
+proc GrSeriesDestroy {c} {
+    global $c.props
+    array unset $c.props
+
+    foreach v {xmin xmax ymin ymax} {
+	global $c.view_$v
+	unset $c.view_$v
+    }
+
+    global $c.bDrawLegend $c.bDrawGrid
+    unset $c.bDrawLegend $c.bDrawGrid
+}
+
 proc GrSeriesWindow {p title {filepath ""}} {
     #set dataByColumns = ReadSeries $filepath
     set w $p.grseries
@@ -338,7 +351,8 @@ proc GrSeriesWindow {p title {filepath ""}} {
 
     # after entries to make exact focus order by Tab/Shift-Tab
     button $w.buttons.redraw -text "Redraw" -command "GrSeriesDoPlot $c"
-    button $w.buttons.close -text "Close" -command "destroy $w"
+    button $w.buttons.close -text "Close" \
+	-command "GrSeriesDestroy $c ; destroy $w"
 
     grid $o.grid $o.xlabel $o.xmin $o.xmax -sticky w
     grid $o.legend $o.ylabel $o.ymin $o.ymax -sticky w
@@ -347,27 +361,29 @@ proc GrSeriesWindow {p title {filepath ""}} {
 	$w.buttons.close -side left -expand 1
 }
 
-#GrSeriesWindow "" "Series plot" testdata/sine1k.dat
-GrSeriesWindow "" "Series plot"
-# testdata/r.dat
+proc GrSeriesTest {} {
+    #GrSeriesWindow "" "Series plot" testdata/sine1k.dat
+    GrSeriesWindow "" "Series plot"
+    # testdata/r.dat
 
-set xd 1
-set xold 0.0
-set func {}
-for { set i 0 } { $i < 1000 } { incr i } {
-    set xnew [expr {$xold+$xd}]
-    set ynew [expr {0.7*sin(0.02*$xnew)+pow(cos(0.01*$xnew), 2)}]
-    #set ynew $xnew
-    lappend func $ynew
-    set xold $xnew
+    set xd 1
+    set xold 0.0
+    set func {}
+    for { set i 0 } { $i < 1000 } { incr i } {
+	set xnew [expr {$xold+$xd}]
+	set ynew [expr {0.7*sin(0.02*$xnew)+pow(cos(0.01*$xnew), 2)}]
+	#set ynew $xnew
+	lappend func $ynew
+	set xold $xnew
+    }
+
+    set wholeData [GrSeriesReadFile testdata/r.dat]
+    GrSeriesAddSeries "" "[lindex $wholeData 0]" "Var1"
+    GrSeriesAddSeries "" "[lindex $wholeData 3]" "Var4"
+    GrSeriesAddSeries "" "[lindex $wholeData 5]" "Var6"
+    #GrSeriesAddSeries "" "[lindex [GrSeriesReadFile testdata/sine1k.dat] 0]" "Синус"
+    #GrSeriesAddSeries "" "$func" "Func"
+    GrSeriesWindow "" "Series plot"
+    # testdata/r.dat
+    #puts [GrSeriesReadFile testdata/test.dat]
 }
-
-set wholeData [GrSeriesReadFile testdata/r.dat]
-GrSeriesAddSeries "" "[lindex $wholeData 0]" "Var1"
-GrSeriesAddSeries "" "[lindex $wholeData 3]" "Var4"
-GrSeriesAddSeries "" "[lindex $wholeData 5]" "Var6"
-#GrSeriesAddSeries "" "[lindex [GrSeriesReadFile testdata/sine1k.dat] 0]" "Синус"
-#GrSeriesAddSeries "" "$func" "Func"
-GrSeriesWindow "" "Series plot"
-# testdata/r.dat
-#puts [GrSeriesReadFile testdata/test.dat]
