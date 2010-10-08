@@ -1,4 +1,5 @@
-*font: -*-helvetica-*-r-*-*-18-*-*-*-*-*-koi8-r
-*fontSmallBlock: -*-helvetica-*-r-*-*-12-*-*-*-*-*-koi8-r
-*fontLargeBlock: -*-helvetica-*-r-*-*-14-*-*-*-*-*-koi8-r
-*fontBlock: -*-helvetica-*-r-*-*-12-*-*-*-*-*-koi8-r
+*font: -*-helvetica-medium-r-*-*-18-*-*-*-*-*-koi8-r
+*headlineFont: -*-helvetica-bold-r-*-*-18-*-*-*-*-*-koi8-r
+*fontSmallBlock: -*-helvetica-bold-r-*-*-12-*-*-*-*-*-koi8-r
+*fontLargeBlock: -*-helvetica-bold-r-*-*-14-*-*-*-*-*-koi8-r
+*fontBlock: -*-helvetica-bold-r-*-*-12-*-*-*-*-*-koi8-r
