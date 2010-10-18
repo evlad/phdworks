@@ -14,3 +14,12 @@ proc unlist {listValue args} {
     }
     return $i
 }
+
+# draw hint
+proc hint {p text} {
+    #set w $p.hintWindow
+    #toplevel $w
+    bind $p <Enter> "puts \"$text\""
+    # Nothing
+    #bind $p <Leave> "puts \"$text\""
+}
