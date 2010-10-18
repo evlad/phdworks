@@ -36,6 +36,38 @@ proc TextEditModified {w text} {
     }
 }
 
+# Tag text which matches given regular expression
+proc TextRegexpHighlight {t re tag} {
+    set cur 1.0
+    while 1 {
+	set cur [$t search -regexp -count length $re $cur end]
+	if {$cur == ""} {
+	    break
+	}
+	$t tag add $tag $cur "$cur + $length char"
+	set cur [$t index "$cur + $length char"]
+    }
+}
+
+proc TextSyntaxHighlight {ftype t} {
+    global TextEditTags
+    foreach tag $TextEditTags {
+    $t tag remove $tag 0.0 end
+    }
+
+    switch -exact $ftype {
+	NeuralNet -
+	TrFunc {
+	    TextRegexpHighlight $t {;.*$} comment
+	    TextRegexpHighlight $t {^[:space:]*\[.*\]} section
+	}
+	ProgParams {
+	    TextRegexpHighlight $t {^\s*\#.*$} comment
+	    TextRegexpHighlight $t {^\s*\w+\s*=.*$} parline
+	}
+    }
+}
+
 # w - parent
 # title - text to show
 # filepath - name of variable where to store filename
@@ -47,6 +79,24 @@ proc TextEditWindow {p title filepath} {
     if [ catch {open $filepath {RDWR CREAT} 0666} fd ] {
 	puts stderr "Failed to open/create $filepath: $fd"
 	return
+    }
+
+    switch -exact [file extension $filepath] {
+	".par" {
+	    set ftype ProgParams
+	}
+	".tf" -
+	".cof" {
+	    set ftype TrFunc
+	}
+	".nnp" -
+	".nnc" -
+	".nn" {
+	    set ftype NeuralNet
+	}
+	default {
+	    set ftype Undefined
+	}
     }
 
     set w $p.textedit
@@ -77,9 +127,22 @@ proc TextEditWindow {p title filepath} {
     $f.text insert 1.0 [read -nonewline $fd]
     close $fd
 
+    # Define tags to highlight syntax
+    global TextEditTags
+    set TextEditTags {comment section parline}
+    $f.text tag configure comment -foreground DarkGreen
+    $f.text tag configure section -foreground DarkRed
+    $f.text tag configure parline -foreground NavyBlue
+
+    # Make the first syntax highlight
+    TextSyntaxHighlight $ftype $f.text 
+
     $f.text edit modified 0
-    bind $f.text <<Modified>> "TextEditModified $w %W"
+    bind $f.text <<Modified>> \
+	"TextEditModified $w %W ; TextSyntaxHighlight $ftype %W"
 }
 
 # test
-#TextEditWindow "" "Text editor title" plant.tf
+#TextEditWindow "" "Text editor title" "testdata/plant.tf"
+#TextEditWindow "" "Text editor title" "testdata/dcsloop.par"
+#TextEditWindow "" "Text editor title" "testdata/res.nnc"
