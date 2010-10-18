@@ -348,6 +348,8 @@ proc GrSeriesWindow {p title {filepath ""}} {
 	#upvar 0 $c.view_$v view_$v
 	entry $o.$v -textvariable $c.view_$v -width 8 -relief sunken
     }
+    hint $o.xlabel "Press to set the whole X range"
+    hint $o.ylabel "Press to set the whole Y range"
 
     # after entries to make exact focus order by Tab/Shift-Tab
     button $w.buttons.redraw -text "Redraw" -command "GrSeriesDoPlot $c"
