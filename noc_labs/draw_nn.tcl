@@ -76,16 +76,25 @@ proc ReadNeuralNetFile {filepath} {
 # nnarch = {Inputs {HidNeurons1 HidType1} {HidNeurons2 HidType2} ...
 # {Outputs OutputType}}, where type is "linear" or "tanh"
 proc DrawNeuralNetArch {c nnarch} {
-    #set totalW [winfo width $c]
-    #set totalH [winfo height $c]
-    set totalW [$c cget -width]
-    set totalH [$c cget -height]
+    set totalW [winfo width $c]
+    set totalH [winfo height $c]
+    if { $totalW <= 1 && $totalH <= 1} {
+	# Just for tests because method above gives totalW=1 totalH=1
+	set totalW [$c cget -width]
+	set totalH [$c cget -height]
+    }
+    # Base point to shift the picture
+    set x 0
+    set y 2
+    # To prevent neurons slightly to go out of picture
+    set totalH [expr $totalH - $y * 2]
+
     set inputs [lindex $nnarch 0]
     set layers [lrange $nnarch 1 end]
     set outputLayer [lindex $nnarch end]
     set inputs [lindex $nnarch 0]
 
-    set MaxNeuronsInLayer 1
+    set MaxNeuronsInLayer $inputs
     foreach layer $layers {
 	set num [lindex $layer 0]
 	if {$num > $MaxNeuronsInLayer} {
@@ -94,7 +103,11 @@ proc DrawNeuralNetArch {c nnarch} {
     }
 
     # Calculate size of neuron (and distance between them)
-    set NeuronSize [expr int($totalH / (2 * $MaxNeuronsInLayer - 1))]
+    if {$MaxNeuronsInLayer == 1} {
+	set NeuronSize [expr int($totalH / 8)]
+    } else {
+	set NeuronSize [expr int($totalH / (2 * $MaxNeuronsInLayer - 1))]
+    }
     set HalfNS [expr int($NeuronSize / 2)]
 
     # Calculate distance between layers
@@ -104,10 +117,6 @@ proc DrawNeuralNetArch {c nnarch} {
     # Make new list of layers considering input one with special type
     # of nodes: dots
     set layers [linsert $layers 0 "$inputs dot"]
-
-    # Base point to shift the picture
-    set x 0
-    set y 0
 
     # Draw lines
     set iL 0
@@ -211,3 +220,4 @@ proc TestDrawNeuralNetArch {{nnarch {6 {7 "tanh"} {4 "tanh"} {3 "linear"}}}} {
 
 #TestDrawNeuralNetArch
 #TestDrawNeuralNetArch [ReadNeuralNetFile testdata/test.nn]
+#TestDrawNeuralNetArch {8 {4 "tanh"} {1 "linear"}}
