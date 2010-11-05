@@ -114,6 +114,8 @@ proc CheckPntWindow {p title var} {
     focus $w.file.entry
 }
 
+
+proc CheckPntTest {} {
 #	-command "CheckPntWindowEdit $w $title fileName" 
 
 #font create myDefaultFont -family Freesans -size 11
@@ -129,3 +131,4 @@ set myvar "r.dat"
 #puts $myvar
 CheckPntWindow "" "Reference" myvar
 #puts $myvar
+}
