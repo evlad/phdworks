@@ -1,4 +1,6 @@
 source ctrlsysloop.tcl
+source win_textedit.tcl
+source win_checkpnt.tcl
 
 proc MenuLab1 {p t} {
     set w "$p.lab1_menu"
@@ -72,6 +74,13 @@ proc Lab1Step1 {p t} {
 
     # Draw control system loop schema
     DrawPanel $c
+
+    foreach cp {checkpoint_r checkpoint_u checkpoint_n checkpoint_e \
+		    checkpoint_y} {
+	global $cp
+	eval set \$cp "[WorkDataDir][file separator]$cp.dat"
+	$c.$cp config -command "CheckPntWindow $w $cp $cp"
+    }
 
     # Connect callbacks with visual parameters settings
     # (reference+noise, modelling length) including selection of tf
