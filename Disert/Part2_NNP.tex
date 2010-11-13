@@ -227,12 +227,12 @@ $D_y$, приведены на \figref{fig:nnp_error_DuDy}.  Их анализ позволяет
 \end{enumerate}
 
 \begin{figure}[h]
-\begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}
-\psfig{figure=T1u_D_Du+1_831.ps,angle=270,width=0.46\textwidth} &
-\psfig{figure=T1u_D_Du+2_831.ps,angle=270,width=0.46\textwidth}\\[0pt]
+\begin{tabular}{p{0.46\textwidth}p{0.46\textwidth}}%
+\includegraphics[angle=270,width=0.46\textwidth]{T1u_D_Du+1_831.ps} &
+\includegraphics[angle=270,width=0.46\textwidth]{T1u_D_Du+2_831.ps}\\[0pt]
 \hfil а) $D_y=1$\hfil & \hfil б) $D_y=2$\hfil \\[16pt]
-\psfig{figure=T1u_D_Du+3_831.ps,angle=270,width=0.46\textwidth} &
-\psfig{figure=T1u_D_Du+4_831.ps,angle=270,width=0.46\textwidth}\\[0pt]
+\includegraphics[angle=270,width=0.46\textwidth]{T1u_D_Du+3_831.ps} &
+\includegraphics[angle=270,width=0.46\textwidth]{T1u_D_Du+4_831.ps}\\[0pt]
 \hfil в) $D_y=3$\hfil & \hfil г) $D_y=4$\hfil \\[16pt]
 \end{tabular}
 \caption{Зависимость ошибки модели предсказания НС--О от $D_u$ и $d$}
@@ -353,10 +353,10 @@ $(-1,1)\to(-15,15)$ на выходе.
 
 \begin{figure}[h]
 \begin{tabular}{cc}
-\hbox{\psfig{figure=nnp_step_training.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=nnp_step_trained.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnp_step_training.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnp_step_trained.ps} \\
 а) & б) \\
 \end{tabular}
 \caption{Обучение НС--О по ступенчатому управляющему воздействию (а)
@@ -389,10 +389,10 @@ $(-1,1)\to(-15,15)$ на выходе.
 
 \begin{figure}[h]
 \begin{tabular}{cc}
-\hbox{\psfig{figure=nnp_sin20_training.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=nnp_sin20_trained.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnp_sin20_training.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnp_sin20_trained.ps} \\
 а) & б) \\
 \end{tabular}
 \caption{Обучение НС--О по моногармоническому воздействию (а)
@@ -426,8 +426,8 @@ $U(z)=\frac{z}{z-0.95}$.  Имеют место следующие особенности процедуры
 \end{itemize}
 
 \begin{figure}[h]
-\centerline{\hbox{\psfig{figure=nnp_bad_range.ps,%
-angle=270,width=0.8\textwidth,height=0.3\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+    totalheight=0.3\textheight]{nnp_bad_range.ps}}
 \caption{Контрольная выборка значительно выходит за пределы области
          гарантированного качества НС--О.}
 \label{fig:nnp_bad_range}
@@ -451,9 +451,8 @@ $\{y_k\}_N$ так, чтобы $\bar{u}\approx0$ и $\bar{y}\approx0$.  Однако
 \figref{fig:nnp_mse_freq}.
 
 \begin{figure}[h]
-\centerline{\hbox{\psfig{figure=nnp_mse_freq.ps,%
-                         angle=270,width=0.8\textwidth,%
-                         height=0.3\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+                         totalheight=0.3\textheight]{nnp_mse_freq.ps}}
 \caption{Зависимость среднеквадратичной ошибки предсказания
          нейросетевых моделей от частоты.}
 \label{fig:nnp_mse_freq}
@@ -482,10 +481,10 @@ $\sigma=0.05\ldots0.3$).
 
 \begin{figure}[h]
 \begin{tabular}{cc}
-\hbox{\psfig{figure=step_freq_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=sine_freq_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{step_freq_test.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{sine_freq_test.ps} \\
 а) & б)\\
 \end{tabular}
 \caption{Зависимость среднеквадратичной ошибки предсказания НС--О,
@@ -529,8 +528,8 @@ $-1$ до $0$ и от $0$ до $1$.  Эксперимент показал, что для выбранного
 возможным обучать НС--О для нелинейных объектов.
 
 \begin{figure}[h]
-\centerline{\hbox{\psfig{figure=nnp_ss_map_uy.ps,%
-angle=270,width=0.8\textwidth,height=0.3\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+    totalheight=0.3\textheight]{nnp_ss_map_uy.ps}}
 \caption{Обучающие множества при ступенчатом и стохастическом
          пробных сигналах.}
 \label{fig:nnp_ss_map_uy}
@@ -662,14 +661,14 @@ y_{k-2}$ и текущий сигнал управляющего воздействия $u_k$.
 переобучения.
 
 \begin{figure}[h]
-\centerline{\hbox{\psfig{figure=T6_mse_1+3_1.eps,%
-angle=270,width=0.8\textwidth,height=0.15\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+    totalheight=0.15\textheight]{T6_mse_1+3_1.eps}}
 \centerline{а)}
-\centerline{\hbox{\psfig{figure=T6_mse_1+3_41.eps,%
-angle=270,width=0.8\textwidth,height=0.15\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+    totalheight=0.15\textheight]{T6_mse_1+3_41.eps}}
 \centerline{б)}
-\centerline{\hbox{\psfig{figure=T6_mse_1+3_731.eps,%
-angle=270,width=0.8\textwidth,height=0.15\textheight}}}
+\centerline{\includegraphics[angle=270,width=0.8\textwidth,%
+    totalheight=0.15\textheight]{T6_mse_1+3_731.eps}}
 \centerline{в)}
 \caption{Графики траекторий среднеквадратичной ошибки 10 сеансов
         обучения НС--О с архитектурой $\NN^o_{1+3,1}$ (а),

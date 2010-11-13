@@ -228,10 +228,10 @@ $r_k,e_k$, причем достигнутый уровень ошибки в этом случае оказался
 
 \begin{figure}[h]
 \begin{tabular}{cc}
-\hbox{\psfig{figure=pid_npc_step_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=pid_npc_stoch_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{pid_npc_step_test.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{pid_npc_stoch_test.ps} \\
 а) & б)\\
 \end{tabular}
 \caption{Отклик системы на прямоугольное (а) и стохастическое (б)
@@ -286,8 +286,8 @@ y=\fa(\sum_{j=1}^nw_j x_j)
 
 \begin{figure}[h]
 \centering
-\hbox{\psfig{figure=npc_nob_step_test.ps,angle=270,width=0.8\textwidth,%
-             height=0.35\textheight}}
+\includegraphics[angle=270,width=0.8\textwidth,%
+             totalheight=0.35\textheight]{npc_nob_step_test.ps}
 \caption{Эффекты статической ошибки НС--Р в случаях наличия смещения $w_0$ у
          нейронов сети и в случае его отсутствия.}
 \label{fig:npc_static_error}
@@ -386,10 +386,10 @@ $r\times e$ обучающими парами $r_k,e_k$, чем аналогичная
 \begin{figure}[h]
 \centering
 \begin{tabular}{cc}
-\hbox{\psfig{figure=cerr_trace_1000.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=cerr_trace.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{cerr_trace_1000.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{cerr_trace.ps} \\
 а) & б)\\
 \end{tabular}
 \caption{Примеры графиков среднеквадратичной ошибки при дообучении НС--Р
@@ -469,8 +469,8 @@ $\NN^p_{r+e,5,3,1}$.
 
 \begin{figure}[h]
 \centering
-\hbox{\psfig{figure=noc_epochs.ps,angle=270,width=0.8\textwidth,%
-             height=0.35\textheight}}
+\includegraphics[angle=270,width=0.8\textwidth,%
+             totalheight=0.35\textheight]{noc_epochs.ps}
 \caption{Длительность дообучения НС--Р различных архитектур при различных
          архитектурах НС--О, использовавшихся для инверсии объекта управления.}
 \label{fig:noc_epochs}
@@ -619,10 +619,10 @@ $\MSE_{final}$, на которой обучение было остановлено.  В силу малости
 \begin{figure}[h]
 \centering
 \begin{tabular}{cc}
-\hbox{\psfig{figure=noc_c_tr_mse_L.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=noc_test_mse_L.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{noc_c_tr_mse_L.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{noc_test_mse_L.ps} \\
 а) & б)\\
 \end{tabular}
 \caption{Зависимость $\MSE$ от длительности эпохи по завершении обучения (а)
@@ -659,8 +659,8 @@ $\MSE_{final}$, на которой обучение было остановлено.  В силу малости
 
 \begin{figure}[h]
 \centering
-\hbox{\psfig{figure=noc_id_tr_mse_L.ps,angle=270,width=0.8\textwidth,%
-             height=0.35\textheight}}
+\includegraphics[angle=270,width=0.8\textwidth,%
+             totalheight=0.35\textheight]{noc_id_tr_mse_L.ps}
 \caption{Зависимость ошибки идентификации в последней обучающей эпохе
          от длительности эпохи.}
 \label{fig:id_err(epochlen)}
@@ -680,8 +680,8 @@ $\MSE_{final}$, на которой обучение было остановлено.  В силу малости
 
 \begin{figure}[h]
 \centering
-\hbox{\psfig{figure=noc_tr_dur_L.ps,angle=270,width=0.8\textwidth,%
-             height=0.35\textheight}}
+\includegraphics[angle=270,width=0.8\textwidth,%
+             totalheight=0.35\textheight]{noc_tr_dur_L.ps}
 \caption{Зависимость продолжительности обучения от длительности эпохи.}
 \label{fig:training_dur(epochlen)}
 \end{figure}
@@ -772,16 +772,16 @@ $C^*_{PID_2}$.  На каждом из графиков горизонтальная линия обозначает
 \centering
 \begin{tabular}{cc}
 %\multicolumn{2}{c}{Среднеквадартичная ошибка на эпохе обучения ($L=500$)} \\
-\hbox{\psfig{figure=nnc_ol_cerr_train.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=nnc_bad_ol_cerr_train.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_ol_cerr_train.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_bad_ol_cerr_train.ps} \\
 а) & б)\\
 %\multicolumn{2}{c}{Среднеквадартичная ошибка на тестовой выборке (длина 5000)} \\
-\hbox{\psfig{figure=nnc_ol_cerr_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=nnc_bad_ol_cerr_test.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_ol_cerr_test.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_bad_ol_cerr_test.ps} \\
 в) & г)\\
 \end{tabular}
 \caption{Траектории среднеквадратичной ошибки управления при дообучении НС--Р
@@ -859,10 +859,10 @@ $\MSE_{epoch}(t)$.  Аналогично, фаза дообучения, характеризующаяся
 \begin{figure}[h]
 \centering
 \begin{tabular}{cc}
-\hbox{\psfig{figure=nnc_ol_iderr_train.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} &
-\hbox{\psfig{figure=nnc_bad_ol_iderr_train.ps,angle=270,width=0.45\textwidth,%
-             height=0.25\textheight}} \\
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_ol_iderr_train.ps} &
+\includegraphics[angle=270,width=0.45\textwidth,%
+             totalheight=0.25\textheight]{nnc_bad_ol_iderr_train.ps} \\
 а) & б)\\
 \end{tabular}
 \caption{Траектории среднеквадратичной ошибки идентификации при дообучении НС--Р
