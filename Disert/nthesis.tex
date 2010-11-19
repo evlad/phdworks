@@ -1,0 +1,143 @@
+% -*-coding: utf-8;-*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Главный файл
+\documentclass[12pt]{rusthesis}
+% do not use [draft] otherwise all PS graphics will disappear
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{latexcad}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{eepic}
+\usepackage{epsfig}
+\bibliographystyle{plain}
+
+\language=4
+
+% My macros
+\newcommand\tablref[1]{\cyrt\cyra\cyrb\cyrl.~\ref{#1}}
+\newcommand\figref[1]{\cyrr\cyri\cyrs.~\ref{#1}}
+\newcommand\pgref[1]{\cyrs.~\pageref{#1}}
+%\newcommand\eqref[1]{(\ref{#1})}
+
+\renewcommand{\tan}{\mathop{\rm tg}}
+\renewcommand{\arctan}{\mathop{\rm arctg}}
+\renewcommand{\tanh}{\mathop{\rm th}}
+\newcommand{\DEF}{\mathrel{\mathop=^{\rm def}}}
+\newcommand{\MSE}{\overline{\varepsilon^2}}
+\newcommand{\hatMSE}{\overline{\hat{\varepsilon}^2}}
+\newcommand{\MSEmin}{\overline{\varepsilon^2}_{\rm min}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\NN}{\mathcal{N}}
+\newcommand{\Emax}{|e|_{max}}
+
+% Activation function
+\newcommand{\fa}{\phi}
+
+% Gauss Distribution parameters
+\newcommand{\GaDi}[2]{$(#1;#2)$}
+
+% Позволить переносы двух последних букв слова
+\righthyphenmin=2
+
+% Дополнительные переносы
+\hyphenation{ошиб-ки обыч-но сис-тем не-по-сред-ствен-но-го
+ус-пеш-но раз-бро-са раз-брос ав-то-рег-рес-сии од-но-вре-мен-но
+не-чет-ко-ло-ги-че-ский
+back-pro-pa-ga-tion out-put}
+
+% Нумерация совсем мелких пунктов
+\newcounter{subbbcounter}[subsubsection]
+\renewcommand{\thesubbbcounter}{%
+\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
+\arabic{subbbcounter}}
+\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
+\refstepcounter{subbbcounter}%
+{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
+
+% Выводы
+%\makeatletter
+%\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
+%\newcommand{\conclusion}[1]{\section*{#1}%
+%\addcontentsline{toc}{conclusion}{#1}}
+%\makeatother
+
+\input{RusDoc.tex}
+\input{RusStyle.tex}
+
+\input{txdtools.tex}
+\input{blockdiagram.tex}
+
+% Для макросов texdraw установить умолчательной единицей измерения миллиметры
+%texdraw \everytexdraw{\drawdim mm}
+
+\title{Стохастический квазиоптимальный нейросетевой регулятор}
+
+\author{Елисеев Владимир Леонидович}
+
+\begin{document}
+
+% Титульные страницы
+%\maketitle
+
+% Оглавление
+\setcounter{tocdepth}{4}\tableofcontents
+%\newpage
+
+% Введение
+\chapter*{Введение}
+\addcontentsline{toc}{chapter}{Введение}
+
+%\input{intro.tex}
+
+% Глава 1
+\chapter{Обзор применения нейронных сетей в задачах автоматического управления}
+%\input{part_review.tex}
+
+% Глава 2
+\chapter{Метод синтеза нейросетевого оптимального регулятора}
+%\input{part_noc_synthesis.tex}
+
+% Глава 3
+\chapter{Выбор архитектуры нейронных сетей и параметров их обучения}
+%\input{part_nn_arch_and_params.tex}
+
+% Глава 4
+\chapter{Сравнительный анализ нейросетевого оптимального, ПИД и винеровского регуляторов}
+%\input{part_compare_controllers.tex}
+
+% Глава 5
+\chapter{Нейросетевое управление в нестационарных условиях}
+%\input{part_non_steady_conditions.tex}
+
+% Глава 6
+\chapter{Нейросетевое управление мобильным роботом}
+%\input{part_mobile_robot.tex}
+
+% Глава 7
+\chapter{Программный комплекс для обучения методам нейросетевого управления в учебном процессе}
+\input{part_lab_works.tex}
+
+% Заключение
+\chapter*{Заключение}
+\addcontentsline{toc}{chapter}{Заключение}
+
+% Библиография
+\bibliography{Bibliogr}
+
+% Приложения
+%\appendix
+
+% Приложение 1 - Эксперименты
+%\section{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+%         оптимальными регуляторами}
+%\input{Appendix1.tex}
+
+%\chapter{Вывод кинематических уравнений движения маяка в поле
+%         зрения видеокамеры мобильного робота}
+%\input{AppendixMobotKin.tex}
+
+\end{document}
+
+% Конец главного файла
