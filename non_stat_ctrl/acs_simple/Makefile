@@ -1,4 +1,4 @@
-PROGRAM	=acs_simple
+PROGRAM	=acstest
 
 NADIR	=../..
 
