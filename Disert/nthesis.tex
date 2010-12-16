@@ -1,11 +1,22 @@
 % -*-coding: utf-8;-*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Главный файл
+%
+% To produce nthesis.dvi run:
+%   $ latex nthesis.tex
+% To produce nthesis.pdf run:
+%   $ pdflatex nthesis.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[12pt]{rusthesis}
 % do not use [draft] otherwise all PS graphics will disappear
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{epstopdf} 
+% Now its possible to \includegraphics{file} without extension and
+% file.eps or file.pdf will be found depending latex or pdflatex run.
+% Moreover, if epstopdf is installed then file.eps is converted to
+% file-eps-converted-to.pdf automatically
 \usepackage{latexcad}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -14,8 +25,18 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usepackage{pstricks}
+
 \bibliographystyle{plain}
 
+\usepackage[ps2pdf,bookmarks=true,bookmarksnumbered=true,hypertexnames=false,linkbordercolor={0 0 1},unicode]{hyperref} 
+
+\hypersetup{
+pdfauthor = {Vladimir Eliseev},
+pdftitle = {Ph.D. thesis},
+pdfsubject = {Stochastic quasi-optimal neural network control},
+pdfkeywords = {neural network, automated control},
+pdfcreator = {LaTeX with hyperref package},
+pdfproducer = {pdflatex}}
 \language=4
 
 % My macros
