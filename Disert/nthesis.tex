@@ -6,6 +6,8 @@
 %   $ latex nthesis.tex
 % To produce nthesis.pdf run:
 %   $ pdflatex nthesis.tex
+% To produce nthesis.rtf run:
+%   $ latex2rtf -i russian -M 12 -S nthesis.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[12pt]{rusthesis}
 % do not use [draft] otherwise all PS graphics will disappear
@@ -72,14 +74,16 @@ pdfproducer = {pdflatex}}
 back-pro-pa-ga-tion out-put}
 
 % Нумерация совсем мелких пунктов
-\setcounter{secnumdepth}{4}
-\newcounter{subbbcounter}[subsubsection]
-\renewcommand{\thesubbbcounter}{%
-\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
-\arabic{subbbcounter}}
-\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
-\refstepcounter{subbbcounter}%
-{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
+% Не нумеровать параграфы
+\setcounter{secnumdepth}{3}
+
+%\newcounter{subbbcounter}[subsubsection]
+%\renewcommand{\thesubbbcounter}{%
+%\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
+%\arabic{subbbcounter}}
+%\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
+%\refstepcounter{subbbcounter}%
+%{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
 
 % Выводы
 %\makeatletter
@@ -107,7 +111,8 @@ back-pro-pa-ga-tion out-put}
 %\maketitle
 
 % Оглавление
-\setcounter{tocdepth}{4}\tableofcontents
+% Не вставлять параграфы в оглавление
+\setcounter{tocdepth}{3}\tableofcontents
 %\newpage
 
 % Введение
