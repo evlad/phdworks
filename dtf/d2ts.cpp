@@ -39,6 +39,11 @@ main (int argc, char* argv[])
   try{
     NaDataFile	*dfIn = OpenInputDataFile(in_file);
     NaDataFile	*dfOut = OpenOutputDataFile(out_file, bdtAuto, 1);
+    if(NULL == dfOut) {
+	fprintf(stderr, "Failed to create '%s'; maybe, unknown extension?\n",
+		out_file);
+	return 2;
+    }
     NaReal	t;
 
     dfIn->GoStartRecord();
