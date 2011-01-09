@@ -18,7 +18,7 @@ stream_len = 5000
 linplant_tf = ../plant.tf
 
 # (contr_kind = lin) Linear controller transfer function
-lincontr_tf = ../dpid_bad.tf
+lincontr_tf = ../pid_bad.tf
 
 # (contr_kind = nnc) Neural net controller
 nncontr = stoch/pre.nnc
