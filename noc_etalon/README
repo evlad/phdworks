@@ -20,6 +20,9 @@ Directories:
 1b_1test - test for new NNP in loop
 1b_3     - NNC in-the-loop training with new NNP
 2   - NNC out-of-loop training
+2_1      - influence of probe signals to quality and finding optimal length
+2_2      - influence of NN architecture to quality
+2_3      - frequency to control error dependence
 3   - NNC in-the-loop training
 3new- NNC in-the-loop training to compare with state of the art (2 May 2010)
 4   - NOC evaluation in the loop
