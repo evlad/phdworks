@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     if(argn > 0)
       {
 	--argn;		/* used argument */
-	nnd.nFeedbackDepth = atoi(args[6]);  ++args;
+	nnd.nFeedbackDepth = atoi(args[0]);  ++args;
 	printf("Feedback depth: %d\n", nnd.nFeedbackDepth);
       }
     else
