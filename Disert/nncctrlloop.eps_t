@@ -1,5 +1,5 @@
 \begin{picture}(0,0)%
-\includegraphics{rawctrlloop}%
+\includegraphics{nncctrlloop}%
 \end{picture}%
 \setlength{\unitlength}{4144sp}%
 %
@@ -22,6 +22,6 @@
 }}}}
 \put(4501,-781){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}\CYRO\cyrb\cyrhrdsn\cyre\cyrk\cyrt}%
 }}}}
-\put(2836,-781){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}\CYRR\cyre\cyrg\cyru\cyrl\cyrya\cyrt\cyro\cyrr}%
+\put(2836,-781){\makebox(0,0)[b]{\smash{{\SetFigFont{12}{14.4}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}\CYRN\CYRS--\CYRR}%
 }}}}
 \end{picture}%
