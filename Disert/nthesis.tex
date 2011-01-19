@@ -18,7 +18,11 @@
 % Now its possible to \includegraphics{file} without extension and
 % file.eps or file.pdf will be found depending latex or pdflatex run.
 % Moreover, if epstopdf is installed then file.eps is converted to
-% file-eps-converted-to.pdf automatically
+% file-eps-converted-to.pdf automatically.
+%
+% Convert landscape oriented .ps files (created by gnuplot) to .eps
+% not by default but using next parameters:
+% ps2eps -R + -l -B -f nnp_step_trained.ps nnp_step_trained.ps
 \usepackage{latexcad}
 \usepackage{amsmath}
 \usepackage{amssymb}
