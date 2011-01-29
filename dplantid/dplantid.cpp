@@ -55,8 +55,6 @@ main (int argc, char* argv[])
     NaNNRegrPlantLearn	nnroe(NaEvaluationAlgorithm, "nnpe");
 
     // Configure nodes
-    nnrol.nnteacher.set_nn(&au_nn);
-
     unsigned	*input_delays = au_nn.descr.InputDelays();
     unsigned	*output_delays = au_nn.descr.OutputDelays();
 
@@ -96,6 +94,8 @@ main (int argc, char* argv[])
     NaPrintLog("Total %d testing data files\n", nTest);
 
     nnrol.nnplant.set_transfer_func(&au_nn);
+    nnrol.nnteacher.set_nn(&nnrol.nnplant);
+
     nnrol.delay_u.set_delay(au_nn.descr.nInputsRepeat, input_delays);
     nnrol.delay_y.set_delay(au_nn.descr.nOutputsRepeat, output_delays);
 
@@ -257,7 +257,7 @@ main (int argc, char* argv[])
 	      au_nn = rPrevNN;
 	      fLastMSE = fNormMSE;
 	      nnrol.nnplant.set_transfer_func(&au_nn);
-	      nnrol.nnteacher.reset_nn();
+	      nnrol.nnteacher.reset_training();
 
 	      printf(" -> repeat with (%g, %g, %g)\n",
 		     nnrol.nnteacher.lpar.eta,

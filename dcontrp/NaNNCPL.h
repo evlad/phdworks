@@ -66,7 +66,7 @@ public:/* data */
     NaPNFileInput   in_e;       // control error
     NaPNFileInput   in_u;       // target control force
     NaPNFileOutput  nn_u;       // NN output control force
-    NaPNTransfer    nncontr;    // NN controller
+    NaPNNNUnit      nncontr;    // NN controller
     NaPNTeacher     nnteacher;  // NN teacher
     NaPNComparator  errcomp;    // error computer
     NaPNStatistics  statan;     // error estimator

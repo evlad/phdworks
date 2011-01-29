@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     // Configure nodes
     nncpl.nncontr.set_transfer_func(&au_nnc);
-    nncpl.nnteacher.set_nn(&au_nnc);
+    nncpl.nnteacher.set_nn(&nncpl.nncontr);
 
     switch(ckind)
       {
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 	      au_nnc = rPrevNN;
 	      fLastMSE = fNormMSE;
 	      nncpl.nncontr.set_transfer_func(&au_nnc);
-	      nncpl.nnteacher.reset_nn();
+	      nncpl.nnteacher.reset_training();
 
 	      printf(" -> repeat with (%g, %g, %g)\n",
 		     nncpl.nnteacher.lpar.eta,

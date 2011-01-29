@@ -63,7 +63,7 @@ public:/* data */
   NaPNFetcher		fetch_y;	// fetch y(k+1) used for training
   NaPNFileOutput	tr_y;		// training input at y(k+1)
   NaPNFileOutput	nn_y;		// NN plant output at y(k+1)
-  NaPNTransfer		nnplant;	// NN plant
+  NaPNNNUnit		nnplant;	// NN plant
   NaPNTeacher		nnteacher;	// NN teacher
   NaPNBus2i1o		bus;		// ((x,y),e)->NN former
   NaPNComparator	errcomp;	// error computer
