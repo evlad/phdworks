@@ -1,0 +1,28 @@
+;NeuCon combined function 1.1
+; PID controller with limited output
+[CombinedFunction main]
+TransferFunction pid
+CustomFunction saturat
+
+[TransferFunction pid]
+sum 3		 ; Kp + Ki*(z/z-1) + Kd*(z2-2z+1/z(z-1))
+polyfrac 0	 ; <=== Proportional term
+ 2 /  1		 ; Kp
+product 2	 ; <=== Integral term
+polyfrac 0
+ 6 /  1		 ; Ki
+polyfrac 0
+ 1 0 /  1 -1
+product 2	 ; <=== Differencial term
+polyfrac 0
+ 0.4 /  1	 ; Kd
+polyfrac 0
+ 1 -2 1 / 1 -1 0
+
+[CustomFunction saturat]
+;              .so/.dll depending the OS
+file    saturat
+;Limit Gain
+options 20 1
+;Dummy initial (deadzone object skips this vector)
+initial
