@@ -1,15 +1,15 @@
 //-*-C++-*-
-/* nosense.h */
-/* $Id: nosense.h,v 1.2 2003-01-06 10:15:14 vlad Exp $ */
+/* deadzone.h */
+/* $Id: deadzone.h,v 1.2 2003-01-06 10:15:14 vlad Exp $ */
 //---------------------------------------------------------------------------
-#ifndef __nosense_h
-#define __nosense_h
+#ifndef __deadzone_h
+#define __deadzone_h
 
 #include <NaExFunc.h>
 
 
 //---------------------------------------------------------------------------
-// Class for external function which implements no-sensitive area
+// Class for external function which implements no-sensitive area (dead-zone)
 //            ^
 //            |      /
 //            |     /
@@ -19,22 +19,22 @@
 //      /     |<-->
 //     /      | HalfWidth
 //
-class NaNoSenseAreaFunc : public NaExternFunc
+class NaDeadZoneFunc : public NaExternFunc
 {
 public:
 
   // Make empty (y=x) function
-  NaNoSenseAreaFunc ();
+  NaDeadZoneFunc ();
 
   // Make function with given options and initial vector
   // options: HalfWidth Gain
   //          HalfWidth - floating point number
   //          Gain      - floating point number
   // initial: -
-  NaNoSenseAreaFunc (char* szOptions, NaVector& vInit);
+  NaDeadZoneFunc (char* szOptions, NaVector& vInit);
 
   // Destructor
-  virtual ~NaNoSenseAreaFunc ();
+  virtual ~NaDeadZoneFunc ();
 
   // Reset operations, that must be done before new modelling
   // session will start.  It's guaranteed that this reset will be
@@ -57,4 +57,4 @@ protected:
 
 
 //---------------------------------------------------------------------------
-#endif // __nosense_h
+#endif // __deadzone_h

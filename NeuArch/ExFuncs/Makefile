@@ -1,29 +1,31 @@
-PROGRAMS=nosense.so \
+PROGRAMS=deadzone.so \
 	saturat.so \
 	luft.so \
-	sine.so
+	sine.so \
+	watertank.so
 
 SYSLIBS	=-lm
 LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
 
-SRCS	=nosense.cpp \
+SRCS	=deadzone.cpp \
 	saturat.cpp \
 	luft.cpp \
 	sine.cpp
 
-OBJS	=$(nosense_OBJS) \
+OBJS	=$(deadzone_OBJS) \
 	$(saturat_OBJS) \
 	$(luft_OBJS) \
-	$(sine_OBJS)
+	$(sine_OBJS) \
+	$(watertank_OBJS)
 
 LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
 
 all:	$(PROGRAMS)
 
-nosense_OBJS	=nosense.o
-nosense.so:	$(nosense_OBJS) $(LIBS)
-	$(LINK.so) -o $@ $(nosense_OBJS) $(LIBS) $(SYSLIBS)
+deadzone_OBJS	=deadzone.o
+deadzone.so:	$(deadzone_OBJS) $(LIBS)
+	$(LINK.so) -o $@ $(deadzone_OBJS) $(LIBS) $(SYSLIBS)
 
 saturat_OBJS	=saturat.o
 saturat.so:	$(saturat_OBJS) $(LIBS)
@@ -37,6 +39,10 @@ sine_OBJS	=sine.o
 sine.so:	$(sine_OBJS) $(LIBS)
 	$(LINK.so) -o $@ $(sine_OBJS) $(LIBS) $(SYSLIBS)
 
+watertank_OBJS	=watertank.o
+watertank.so:	$(watertank_OBJS) $(LIBS)
+	$(LINK.so) -o $@ $(watertank_OBJS) $(LIBS) $(SYSLIBS)
+
 clean:
 	rm -f $(PROGRAMS) $(OBJS)
 
@@ -44,7 +50,8 @@ clean:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
 ###
-nosense.o:	nosense.h
+deadzone.o:	deadzone.h
 saturat.o:	saturat.h
 luft.o:	luft.h
 sine.o:	sine.h
+watertank.o:	watertank.h

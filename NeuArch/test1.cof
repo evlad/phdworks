@@ -1,16 +1,16 @@
 ;NeuCon combined function 1.1
 ; $Id: test1.cof,v 1.1 2003-06-11 19:11:11 vlad Exp $
 [CombinedFunction main]
-;CustomFunction nosense 0 2
+;CustomFunction deadzone 0 2
 TransferFunction p 0 2
 TransferFunction inv 2
 
-[CustomFunction nosense]
+[CustomFunction deadzone]
 ;              .so/.dll depending the OS
-file    nosense
+file    deadzone
 ;HalfWidth Gain
 options 0.5 2
-;Dummy initial (nosense object skips this vector)
+;Dummy initial (deadzone object skips this vector)
 initial 1 2 3
 
 ; Simple P controller

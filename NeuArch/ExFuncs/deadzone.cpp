@@ -1,10 +1,10 @@
-/* nosense.cpp */
-static char rcsid[] = "$Id: nosense.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
+/* deadzone.cpp */
+static char rcsid[] = "$Id: deadzone.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
 
 #include <stdlib.h>
 
 #define __NaSharedExternFunction
-#include "nosense.h"
+#include "deadzone.h"
 
 
 //-----------------------------------------------------------------------
@@ -12,13 +12,13 @@ static char rcsid[] = "$Id: nosense.cpp,v 1.1 2002-02-16 21:34:41 vlad Exp $";
 extern "C" NaExternFunc*
 NaCreateExternFunc (char* szOptions, NaVector& vInit)
 {
-  return new NaNoSenseAreaFunc(szOptions, vInit);
+  return new NaDeadZoneFunc(szOptions, vInit);
 }
 
 
 //-----------------------------------------------------------------------
 // Make empty (y=x) function
-NaNoSenseAreaFunc::NaNoSenseAreaFunc ()
+NaDeadZoneFunc::NaDeadZoneFunc ()
   : fGain(1.0), fHalfWidth(0.0)
 {
   // Nothing to do more
@@ -27,8 +27,8 @@ NaNoSenseAreaFunc::NaNoSenseAreaFunc ()
 
 //-----------------------------------------------------------------------
 // Make function with given options and initial vector
-NaNoSenseAreaFunc::NaNoSenseAreaFunc (char* szOptions,
-				      NaVector& vInit)
+NaDeadZoneFunc::NaDeadZoneFunc (char* szOptions,
+				NaVector& vInit)
   : fGain(1.0), fHalfWidth(0.0)
 {
   char		*szRest, *szGain, *szHalfWidth = szOptions;
@@ -46,7 +46,7 @@ NaNoSenseAreaFunc::NaNoSenseAreaFunc (char* szOptions,
 
 //-----------------------------------------------------------------------
 // Destructor
-NaNoSenseAreaFunc::~NaNoSenseAreaFunc ()
+NaDeadZoneFunc::~NaDeadZoneFunc ()
 {
   // Nothing to do
 }
@@ -57,7 +57,7 @@ NaNoSenseAreaFunc::~NaNoSenseAreaFunc ()
 // session will start.  It's guaranteed that this reset will be
 // called just after Timer().ResetTime().
 void
-NaNoSenseAreaFunc::Reset ()
+NaDeadZoneFunc::Reset ()
 {
   // Nothing to do
 }
@@ -71,7 +71,7 @@ NaNoSenseAreaFunc::Reset ()
 // Compute output on the basis of internal parameters,
 // stored state and external input: y=F(x,t,p)
 void
-NaNoSenseAreaFunc::Function (NaReal* x, NaReal* y)
+NaDeadZoneFunc::Function (NaReal* x, NaReal* y)
 {
   if(NULL == x || NULL == y)
     return;
