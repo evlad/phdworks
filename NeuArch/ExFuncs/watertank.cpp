@@ -20,8 +20,8 @@ NaCreateExternFunc (char* szOptions, NaVector& vInit)
 ///-----------------------------------------------------------------------
 /// Make empty (y=x) function
 NaWaterTankFunc::NaWaterTankFunc ()
-    : A(0.0), F(0.0), b(0.0), a(0.0), h0(0.0),
-      Afile(NULL), Ffile(NULL), bfile(NULL), afile(NULL)
+    : A(0.0), F(0.0), b(0.0), a(0.0), q(0.0), h0(0.0),
+      Afile(NULL), Ffile(NULL), bfile(NULL), afile(NULL), qfile(NULL)
 {
 }
 
@@ -33,10 +33,11 @@ NaWaterTankFunc::NaWaterTankFunc ()
 ///  -  F  - output flow (0 is allowed)
 ///  -  b  - input flow characteristic
 ///  -  a  - output pipe characteristic
+///  -  q  - number of output tubes or output quota
 /// initial: vInit[0] - initial water level (0 by default)
 NaWaterTankFunc::NaWaterTankFunc (char* szOptions, NaVector& vInit)
-    : A(0.0), F(0.0), b(0.0), a(0.0), h0(0.0),
-      Afile(NULL), Ffile(NULL), bfile(NULL), afile(NULL)
+    : A(0.0), F(0.0), b(0.0), a(0.0), q(0.0), h0(0.0),
+      Afile(NULL), Ffile(NULL), bfile(NULL), afile(NULL), qfile(NULL)
 {
     char	*szToken, *szRest, *szThis = strdup(szOptions);
     NaReal	fTest;
@@ -69,6 +70,13 @@ NaWaterTankFunc::NaWaterTankFunc (char* szOptions, NaVector& vInit)
     else
 	afile = OpenInputDataFile(szToken);
 
+    szToken = strtok(NULL, " ");
+    fTest = strtod(szToken, &szRest);
+    if(szToken != szRest)
+	q = fTest;
+    else
+	qfile = OpenInputDataFile(szToken);
+
   if(vInit.dim() > 0)
       h0 = vInit[0];
 }
@@ -82,6 +90,7 @@ NaWaterTankFunc::~NaWaterTankFunc ()
     delete Ffile;
     delete bfile;
     delete afile;
+    delete qfile;
 }
 
 
@@ -101,6 +110,8 @@ NaWaterTankFunc::Reset ()
 	bfile->GoStartRecord();
     if(afile)
 	afile->GoStartRecord();
+    if(qfile)
+	qfile->GoStartRecord();
 
     h = h0;
     NaPrintLog("watertank: h(t=0)=%g  dt=%g\n", h, dt);
@@ -126,26 +137,28 @@ NaWaterTankFunc::Function (NaReal* x, NaReal* y)
 	b = bfile->GetValue();
     if(afile)
 	a = afile->GetValue();
+    if(qfile)
+	q = qfile->GetValue();
 
-    if(A <= 0.0 || b <= 0.0 || a <= 0.0) {
-	NaPrintLog("watertank: zero or negative parameters: A=%g b=%g a=%g\n",
-		   A, b, a);
+    if(A <= 0.0 || b <= 0.0 || a <= 0.0 || q < 0.0) {
+	NaPrintLog("watertank: zero or negative parameters: A=%g b=%g a=%g q=%gx\n",
+		   A, b, a, q);
 	y[0] = h;
 	return;
     }
 
-    NaPrintLog("watertank: h(t=%g)=%g: A=%g F=%g b=%g a=%g\n",
-	       Timer().CurrentTime(), h, A, F, b, a);
-
     // h'=b*u/A-(a*sqrt(h)+F)/A
     NaReal u = x[0], &h1 = y[0];
+
     if(h <= 0)
 	h1 = 0.0;
     else
-	h1 = dt * (b*u - (a * sqrt(h) + F))/A;
-    if(h1 < 0)
-	h1 = 0;
-    h = h1;
+	h1 = h + dt * (b*u - q*(a * sqrt(h) + F))/A;
+
+#if 0
+    NaPrintLog("watertank: h(t=%g)=%g: u=%g A=%g F=%g b=%g a=%g q=%g => h=%g\n",
+	       Timer().CurrentTime(), h, u, A, F, b, a, q, h1);
+#endif
 
     if(Afile)
 	Afile->GoNextRecord();
@@ -155,4 +168,6 @@ NaWaterTankFunc::Function (NaReal* x, NaReal* y)
 	bfile->GoNextRecord();
     if(afile)
 	afile->GoNextRecord();
+    if(qfile)
+	qfile->GoNextRecord();
 }

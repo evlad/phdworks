@@ -16,7 +16,7 @@
 //    |    |_
 //    |______==> F
 //
-// Plant equation: h'=b*u/A-(a*sqrt(h)+F)/A
+// Plant equation: h'=b*u/A-q*(a*sqrt(h)+F)/A
 // where:
 //  h' - change of water level in time
 //  h  - current water level
@@ -24,6 +24,7 @@
 //  F  - output flow 
 //  b  - input flow characteristic
 //  a  - output pipe characteristic
+//  q  - number of output tubes or output quota
 //  u  - controllable input flow
 //
 // Example:
@@ -32,6 +33,8 @@
 //  F=0.0153 m^3/s
 //  a=9 m^2.5/s
 //  b=2 m^3*A*s (depends of u unit of measure)
+//  q=0 t<t1  (output flow is closed)
+//  q=1 t>=t1 (output flow is open)
 
 class NaWaterTankFunc : public NaExternFunc
 {
@@ -41,11 +44,12 @@ public:
     NaWaterTankFunc ();
 
     /// Make function with given options and initial vector
-    /// options (numbers or data files): A F b a
+    /// options (numbers or data files): A F b a q
     ///  -  A  - characteristic of tank base area
     ///  -  F  - output flow 
     ///  -  b  - input flow characteristic
     ///  -  a  - output pipe characteristic
+    ///  -  q  - number of output tubes or output quota
     /// initial: vInit[0] - initial water level (0 by default)
     NaWaterTankFunc (char* szOptions, NaVector& vInit);
 
@@ -82,6 +86,10 @@ protected:
     /// Output pipe characteristic
     NaReal	a;
     NaDataFile  *afile;
+
+    /// Output quota
+    NaReal	q;
+    NaDataFile  *qfile;
 
     /// The initial level of water in tank
     NaReal	h0;
