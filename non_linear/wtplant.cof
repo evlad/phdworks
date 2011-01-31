@@ -11,9 +11,8 @@ file    deadzone
 [CustomFunction watertank]
 ;              .so/.dll depending the OS
 file    watertank
-;h'=b*u/A-(a*sqrt(h)+F)/A
-;A F b a
-options 95 outflow.dat 9 2
-;options 95 0.0153 9 2
+;h'=b*u/A-q*(a*sqrt(h)+F)/A
+;A F b a q
+options 95 0.0153 9 2 outquota.dat
 ;Optional initial (watertank takes h(t=0) as initial or 0 by default)
 initial 5
