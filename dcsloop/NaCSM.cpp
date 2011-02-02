@@ -202,9 +202,7 @@ NaControlSystemModel::run_net ()
         chkpnt_y.out.set_starter(vInitial);
 	onsum.set_gain(rMain, rAux);
 
-	net.set_timing_node((0==nSeriesLen)?
-			    (NaPetriNode*)&setpnt_inp:
-			    (NaPetriNode*)&setpnt_gen);
+	net.set_timing_node((NaPetriNode*)&cmp);
 
         // Prepare petri net engine
         if(!net.prepare()){
