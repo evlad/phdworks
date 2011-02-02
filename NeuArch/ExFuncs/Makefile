@@ -2,7 +2,8 @@ PROGRAMS=deadzone.so \
 	saturat.so \
 	luft.so \
 	sine.so \
-	watertank.so
+	watertank.so \
+	polynomial.so
 
 SYSLIBS	=-lm
 LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
@@ -10,13 +11,16 @@ LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
 SRCS	=deadzone.cpp \
 	saturat.cpp \
 	luft.cpp \
-	sine.cpp
+	sine.cpp \
+	watertank.cpp \
+	polynomial.cpp
 
 OBJS	=$(deadzone_OBJS) \
 	$(saturat_OBJS) \
 	$(luft_OBJS) \
 	$(sine_OBJS) \
-	$(watertank_OBJS)
+	$(watertank_OBJS) \
+	$(polynomial_OBJS)
 
 LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
@@ -43,6 +47,10 @@ watertank_OBJS	=watertank.o
 watertank.so:	$(watertank_OBJS) $(LIBS)
 	$(LINK.so) -o $@ $(watertank_OBJS) $(LIBS) $(SYSLIBS)
 
+polynomial_OBJS	=polynomial.o
+polynomial.so:	$(polynomial_OBJS) $(LIBS)
+	$(LINK.so) -o $@ $(polynomial_OBJS) $(LIBS) $(SYSLIBS)
+
 clean:
 	rm -f $(PROGRAMS) $(OBJS)
 
@@ -55,3 +63,4 @@ saturat.o:	saturat.h
 luft.o:	luft.h
 sine.o:	sine.h
 watertank.o:	watertank.h
+polynomial.o:	polynomial.h
