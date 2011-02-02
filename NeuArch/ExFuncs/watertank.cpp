@@ -77,6 +77,8 @@ NaWaterTankFunc::NaWaterTankFunc (char* szOptions, NaVector& vInit)
     else
 	qfile = OpenInputDataFile(szToken);
 
+    free(szThis);
+
   if(vInit.dim() > 0)
       h0 = vInit[0];
 }
