@@ -23,8 +23,11 @@ public:
     NaCSTRFunc ();
 
     /// Make function with given options and initial vector
-    /// options: cstr.par [state.dat]
-    /// where state is defined as six variables: time, c_A, c_B, c_C, T, T_c
+    /// options: cstrpar.def [state.dat]
+    /// where
+    /// - cstrpar.defhas NaParams format (do not use .par extension due to
+    ///   switching to new log file!)
+    /// - state is defined as seven variables: time, c_A, c_B, c_C, T, T_c, q_c
     /// initial: c_A, c_B, c_C, T, T_c (at time=0)
     NaCSTRFunc (char* szOptions, NaVector& vInit);
 

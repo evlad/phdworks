@@ -26,8 +26,11 @@ NaCSTRFunc::NaCSTRFunc ()
 
 ///-----------------------------------------------------------------------
 /// Make function with given options and initial vector
-/// options: cstr.par [state.dat]
-/// where state is defined as six variables: time, c_A, c_B, c_C, T, T_c
+/// options: cstrpar.def [state.dat]
+/// where
+/// - cstrpar.defhas NaParams format (do not use .par extension due to
+///   switching to new log file!)
+/// - state is defined as seven variables: time, c_A, c_B, c_C, T, T_c, q_c
 /// initial: c_A, c_B, c_C, T, T_c (at time=0)
 NaCSTRFunc::NaCSTRFunc (char* szOptions, NaVector& vInit)
     : par(NULL), out(NULL)
@@ -75,6 +78,7 @@ NaCSTRFunc::NaCSTRFunc (char* szOptions, NaVector& vInit)
 	NaPrintLog("cstr: no parameters file is specified; using defaults\n");
     } else {
 	try{
+	    NaPrintLog("cstr: try to open parameters in file '%s'\n", szParFile);
 	    par = new NaParams(szParFile);
 	} catch(...) {
 	    NaPrintLog("cstr: failed to open parameters file '%s'; using defaults\n", szParFile);
@@ -163,17 +167,18 @@ NaCSTRFunc::Function (NaReal* x, NaReal* y)
     cur.var.c_C += dt*((c_Cv - prev.var.c_C)*q/V + k2*prev.var.c_A);
     cur.var.T += dt*((T_v - prev.var.T)*q/V
 		     + (Q - A*k*(prev.var.T-prev.var.T_c))/(V*rho*Cp));
-    cur.var.T_c += dt*((T_vc-prev.var.T_c)*q_c/V_c
+    cur.var.T_c += dt*((T_vc - prev.var.T_c)*q_c/V_c
 		       + A*k*(prev.var.T-prev.var.T_c)/(V_c*rho_c*Cp_c));
 
     if(NULL != out) {
 	out->AppendRecord();
 	out->SetValue(time, 0);
-	out->SetValue(prev.var.c_A, 1);
-	out->SetValue(prev.var.c_B, 2);
-	out->SetValue(prev.var.c_C, 3);
-	out->SetValue(prev.var.T, 4);
-	out->SetValue(prev.var.T_c, 5);
+	out->SetValue(cur.var.c_A, 1);
+	out->SetValue(cur.var.c_B, 2);
+	out->SetValue(cur.var.c_C, 3);
+	out->SetValue(cur.var.T, 4);
+	out->SetValue(cur.var.T_c, 5);
+	out->SetValue(q_c, 6);
     }
 
     *y = cur.var.T;
