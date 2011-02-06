@@ -24,7 +24,8 @@ stream_len = 5000
 linplant_tf = cstrplant.cof
 
 # (contr_kind = lin) Linear (or combined) controller transfer function
-lincontr_tf = pid.tf
+lincontr_tf = pid.cof
+#lincontr_tf = pid.tf
 
 # (contr_kind = nnc) Neural net controller
 nncontr = nnc.nn

@@ -5,6 +5,6 @@ CustomFunction cstr
 [CustomFunction cstr]
 ;           .so/.dll depending the OS
 file    cstr
-options cstr.par cstr_out.dat
+options cstrpar.def cstr_out.dat
 ;Dummy initial (using defaults)
 initial
