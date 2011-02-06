@@ -10,14 +10,27 @@
 
 //---------------------------------------------------------------------------
 // Class for external function which implements saturation with linear part
+//
+// Symmetric Limit:
 //            ^
-//            |  --------
-//            | /       ^ Limit
-//            |/ Gain   |
+//            |    --------
+//            |  /       ^ Limit
+//            |/ Gain    |
 // -----------+------------>
 //           /|
-//          / |
+//         /  |
+// -------    |
+//
+//
+// Assymmetric Limit:
+//            ^
+//            |    --------
+//            |  /       ^ Limit
+//            |/ Gain    |
+// -----------+------------>
+//  |        /|
 // ---------  |
+//  ^ Limit2
 //
 class NaSaturationFunc : public NaExternFunc
 {
@@ -27,9 +40,10 @@ public:
   NaSaturationFunc ();
 
   // Make function with given options and initial vector
-  // options: Limit Gain
+  // options: Limit Gain [Limit2]
   //          Limit     - floating point number (0 means infinity)
   //          Gain      - floating point number
+  //          Limit2    - floating point number (absence means symmetic)
   // initial: -
   NaSaturationFunc (char* szOptions, NaVector& vInit);
 
@@ -53,6 +67,7 @@ protected:
 
   NaReal	fLimit;		// saturation threshold (0 means infinity)
   NaReal	fGain;		// gain coefficient y=k*x
+  NaReal	fLimit2;	// negative saturation threshold (-fLimit)
 };
 
 

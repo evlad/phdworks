@@ -19,7 +19,7 @@ NaCreateExternFunc (char* szOptions, NaVector& vInit)
 //-----------------------------------------------------------------------
 // Make empty (y=x) function
 NaSaturationFunc::NaSaturationFunc ()
-  : fGain(1.0), fLimit(0.0)
+  : fGain(1.0), fLimit(0.0), fLimit2(0.0)
 {
   // Nothing to do more
 }
@@ -28,18 +28,24 @@ NaSaturationFunc::NaSaturationFunc ()
 //-----------------------------------------------------------------------
 // Make function with given options and initial vector
 NaSaturationFunc::NaSaturationFunc (char* szOptions, NaVector& vInit)
-  : fGain(1.0), fLimit(0.0)
+  : fGain(1.0), fLimit(0.0), fLimit2(0.0)
 {
-  char		*szRest, *szGain, *szLimit = szOptions;
+  char		*szRest, *szLimit2, *szGain, *szLimit = szOptions;
   NaReal	fTest;
 
   fTest = strtod(szLimit, &szGain);
   if(szLimit != szGain)
     fLimit = fTest;
 
-  fTest = strtod(szGain, &szRest);
-  if(szGain != szRest)
+  fTest = strtod(szGain, &szLimit2);
+  if(szGain != szLimit2)
     fGain = fTest;
+
+  fTest = strtod(szLimit2, &szRest);
+  if(szLimit2 != szRest)
+    fLimit2 = fTest;
+  else
+    fLimit2 = - fLimit;
 }
 
 
@@ -81,7 +87,7 @@ NaSaturationFunc::Function (NaReal* x, NaReal* y)
     {
       if(*y > fLimit)
 	*y = fLimit;
-      else if(*y < - fLimit)
-	*y = - fLimit;
+      else if(*y < fLimit2)
+	*y = fLimit2;
     }
 }
