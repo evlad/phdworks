@@ -16,6 +16,7 @@ static char rcsid[] = "$Id$";
 #include <NaCoFunc.h>
 #include <NaTrFunc.h>
 #include <NaDataIO.h>
+#include <NaTimer.h>
 
 
 /***********************************************************************
@@ -67,6 +68,8 @@ main (int argc, char* argv[])
 
       dfOut->AppendRecord();
       dfOut->SetValue(fOut);
+
+      TheTimer.GoNextTime();
     }while(dfIn->GoNextRecord());
 
     delete dfOut;
