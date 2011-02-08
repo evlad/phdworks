@@ -16,11 +16,11 @@ polyfrac 0	 ; <=== Proportional term
  -0.003 /  1		 ; Kp
 product 2	 ; <=== Integral term
 polyfrac 0
- 0 /  1		 ; Ki
+ -0.0000018 /  1		 ; Ki
 polyfrac 0
  1 0 /  1 -1
 product 2	 ; <=== Differencial term
 polyfrac 0
- 0 /  1		 ; Kd
+ -0.00007 /  1		 ; Kd
 polyfrac 0
  1 -2 1 / 1 -1 0

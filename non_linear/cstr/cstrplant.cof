@@ -6,5 +6,5 @@ CustomFunction cstr
 ;           .so/.dll depending the OS
 file    cstr
 options cstrpar.def cstr_out.dat
-;Dummy initial (using defaults)
-initial
+; Steady state
+initial 0.486938 2.002389 1.730673 363.700000 357.706961
