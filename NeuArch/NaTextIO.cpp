@@ -188,7 +188,7 @@ void    NaTextStreamFile::AppendRecord ()
         // Append previous
         int    i;
         for(i = 0; i < nVar; ++i){
-            fprintf(fp, " %f", fCurVal[i]);
+            fprintf(fp, " %g", fCurVal[i]);
         }
         fputc('\n', fp);
     }
