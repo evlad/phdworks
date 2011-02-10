@@ -152,8 +152,8 @@ NaCSTRFunc::Function (NaReal* x, NaReal* y)
     if(NULL == x || NULL == y)
 	return;
 
-    NaReal dt = Timer().GetSamplingRate() / 60;	// minutes
-    NaReal time = Timer().CurrentTime() / 60;	// minutes
+    NaReal dt = Timer().GetSamplingRate();	// seconds
+    NaReal time = Timer().CurrentTime();	// seconds
 
     prev = cur;
 
