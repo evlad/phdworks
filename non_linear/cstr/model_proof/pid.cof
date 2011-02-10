@@ -9,18 +9,42 @@ file saturat
 options 0.02 1 0
 initial
 
+; Two equivalent forms of PID contollers: using times and only
+; coefficients
+
 [TransferFunction pid]
-; Speed form of a discrete PID controller
-sum 3		 ; Kp + Ki*(z/z-1) + Kd*(z2-2z+1/z(z-1))
-polyfrac 0	 ; <=== Proportional term
- -0.003 /  1		 ; Kp
+; dt=1m
+; Time form of a discrete PID controller
+product 2	 ; Kp*(1 + (z/z-1)/Ti + (z2-2z+1/z(z-1)*Td)
+polyfrac 0	 ; <=== Common proportional coefficient
+ -0.003 /  1		; Kp
+sum 3
+polyfrac 0       ; <=== Proportional term
+ 1 /  1
 product 2	 ; <=== Integral term
 polyfrac 0
- -0.0000018 /  1		 ; Ki
+ 1 / 28			; 1/Ti
 polyfrac 0
  1 0 /  1 -1
 product 2	 ; <=== Differencial term
 polyfrac 0
- -0.00007 /  1		 ; Kd
+ 1.41 / 1		; Td/1
+polyfrac 0
+ 1 -2 1 / 1 -1 0
+
+[TransferFunction pid_speed]
+; dt=1s
+; Speed form of a discrete PID controller
+sum 3		 ; Kp + Ki*(z/z-1) + Kd*(z2-2z+1/z(z-1))
+polyfrac 0	 ; <=== Proportional term
+ -0.003 /  1		; Kp
+product 2	 ; <=== Integral term
+polyfrac 0
+ -0.0036 /  1		; Ki
+polyfrac 0
+ 1 0 /  1 -1
+product 2	 ; <=== Differencial term
+polyfrac 0
+ -0.003 /  1		; Kd
 polyfrac 0
  1 -2 1 / 1 -1 0

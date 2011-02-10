@@ -37,7 +37,7 @@ noise_tf = noise.tf
 # (input_kind = file) Input files
 in_r = steps.dat
 #steady.dat
-#steps2.dat
+#steps.dat
 in_n = zeros.dat
 
 # Output files
