@@ -199,7 +199,7 @@ NaControlSystemModel::run_net ()
 	rMain.init_value(1.);
 	rAux.init_value(-1.);
 
-        chkpnt_y.out.set_starter(vInitial);
+	cmp.cmp.set_starter(vInitial);
 	onsum.set_gain(rMain, rAux);
 
 	net.set_timing_node((NaPetriNode*)&cmp);
