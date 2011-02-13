@@ -4,7 +4,8 @@ PROGRAMS=deadzone.so \
 	sine.so \
 	watertank.so \
 	polynomial.so \
-	cstr.so
+	cstr.so \
+	randmeander.so
 
 SYSLIBS	=-lm
 LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
@@ -15,7 +16,8 @@ SRCS	=deadzone.cpp \
 	sine.cpp \
 	watertank.cpp \
 	polynomial.cpp \
-	cstr.cpp
+	cstr.cpp \
+	randmeander.cpp
 
 OBJS	=$(deadzone_OBJS) \
 	$(saturat_OBJS) \
@@ -23,7 +25,8 @@ OBJS	=$(deadzone_OBJS) \
 	$(sine_OBJS) \
 	$(watertank_OBJS) \
 	$(polynomial_OBJS) \
-	$(cstr_OBJS)
+	$(cstr_OBJS) \
+	$(randmeander_OBJS)
 
 LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
@@ -57,6 +60,10 @@ polynomial.so:	$(polynomial_OBJS) $(LIBS)
 cstr_OBJS	=cstr.o
 cstr.so:	$(cstr_OBJS) $(LIBS)
 	$(LINK.so) -o $@ $(cstr_OBJS) $(LIBS) $(SYSLIBS)
+
+randmeander_OBJS	=randmeander.o
+randmeander.so:	$(randmeander_OBJS) $(LIBS)
+	$(LINK.so) -o $@ $(randmeander_OBJS) $(LIBS) $(SYSLIBS)
 
 clean:
 	rm -f $(PROGRAMS) $(OBJS)
