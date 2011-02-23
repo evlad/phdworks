@@ -212,7 +212,7 @@ NaPNDelay::relate_connectors ()
 bool
 NaPNDelay::verify ()
 {
-    return 1 == sync.data().dim()
+    return ((sync.links() > 0)? 1 == sync.data().dim(): true)
         && dout.data().dim() == in.data().dim() * nOutDim;
 }
 
