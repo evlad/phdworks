@@ -20,7 +20,8 @@ enum NaControllerKind
   NaLinearContr,
   NaNeuralContrDelayedE,
   NaNeuralContrER,
-  NaNeuralContrEdE
+  NaNeuralContrEdE,
+  NaNeuralContrRDelayedE,
 };
 
 
