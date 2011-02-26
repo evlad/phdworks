@@ -25,6 +25,7 @@ SRCS	=NaConLaw.cpp \
 	NaPID.cpp \
 	NaPNAct.cpp \
 	NaPNBu21.cpp \
+	NaPNBu12.cpp \
 	NaPNChPt.cpp \
 	NaPNCmp.cpp \
 	NaPNCnst.cpp \
