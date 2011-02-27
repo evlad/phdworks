@@ -61,6 +61,9 @@ public:
     // Set value to substitute output in sleep time
     void                set_sleep_value (NaReal fValue);
 
+    // Set the 1st value to substitute output in sleep time
+    void                set_sleep_value_1st ();
+
     // Print actual status
     void                print_status ();
 
@@ -111,6 +114,9 @@ protected:/* data */
 
     // Sleep value flag
     bool                bSleepValue;
+
+    // Use sleep value as the 1st input one
+    bool                bSleepValue1st;
 
     // Sleep value
     NaReal              fSleepValue;

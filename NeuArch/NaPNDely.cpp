@@ -10,6 +10,7 @@ static char rcsid[] = "$Id$";
 NaPNDelay::NaPNDelay (const char* szNodeName)
 : NaPetriNode(szNodeName), piOutMap(NULL), nOutDim(0),
   nMaxLag(0), nMinLag(0), bSleepValue(false), fSleepValue(0.0),
+  bSleepValue1st(false),
   ////////////////
   // Connectors //
   ////////////////
@@ -39,8 +40,12 @@ NaPNDelay::print_status ()
   NaPrintLog("  nMaxLag=%u,  nMinLag=%u\n", nMaxLag, nMinLag);
   NaPrintLog("  nActiveSleep=%u\n", nActiveSleep);
   NaPrintLog("  bAwaken=%s\n", bAwaken?"true":"false");
-  NaPrintLog("  bSleepValue=%s,  fSleepValue=%g\n",
-	     bSleepValue?"true":"false", fSleepValue);
+  if(!bSleepValue)
+      NaPrintLog("  bSleepValue=false\n");
+  else if(bSleepValue1st)
+      NaPrintLog("  bSleepValue=true,  fSleepValue=(First)\n");
+  else
+      NaPrintLog("  bSleepValue=true,  fSleepValue=%g\n", fSleepValue);
   NaPrintLog("  delays map:");
   for(i = 0; i < nOutDim; ++i)
     NaPrintLog(" %u", piOutMap[i]);
@@ -165,6 +170,18 @@ NaPNDelay::set_sleep_value (NaReal fValue)
 
 
 //---------------------------------------------------------------------------
+// Set the 1st value to substitute output in sleep time
+void
+NaPNDelay::set_sleep_value_1st ()
+{
+  check_tunable();
+
+  bSleepValue = true;    // don't sleep for this case
+  bSleepValue1st = true; // don't sleep for this case
+}
+
+
+//---------------------------------------------------------------------------
 // Return true is passive sleep time is over and false otherwise
 bool
 NaPNDelay::awake ()
@@ -226,8 +243,8 @@ NaPNDelay::initialize (bool& starter)
     nActiveSleep = nMaxLag + 1;
   else
     nActiveSleep = 0;
-  dout.data().init_value(fSleepValue);
   vBuffer.new_dim((1 + nMaxLag) * in.data().dim());
+  vBuffer.init_value(fSleepValue);
 }
 
 
@@ -274,6 +291,13 @@ NaPNDelay::action ()
       {
         vBuffer[i] = in.data()[i];
       }
+
+    // If 1st input should be used for all delays
+    if(bSleepValue && bSleepValue1st && 0 == activations()) {
+	for(j = 1; j <= nMaxLag; ++j)
+	    for(i = 0; i < nSize; ++i)
+		vBuffer[i + nSize * j] = vBuffer[i];
+    }
 
     // Copy selected portions of stored data to output
     for(j = 0; j < nOutDim; ++j)
