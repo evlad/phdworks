@@ -29,11 +29,11 @@ public:
     // Input (mainstream)
     NaPetriCnInput      in;
 
-    // Output #1 (mainstream)
+    // Output #1
     NaPetriCnOutput     out1;
 
     // Output #2
-    NaPetriCnInput      out2;
+    NaPetriCnOutput     out2;
 
 
     ///////////////////
@@ -50,8 +50,8 @@ public:
     // Quick linkage //
     ///////////////////
 
-    // Return mainstream output connector (the only output or NULL)
-    virtual NaPetriConnector*   main_output_cn ();
+    // Return mainstream input connector (the only input or NULL)
+    virtual NaPetriConnector*   main_input_cn ();
 
     
     ///////////////////////

@@ -50,11 +50,11 @@ NaPNBus1i2o::set_out_dim_proportion (int n1, int n2)
 ///////////////////
 
 //---------------------------------------------------------------------------
-// Return mainstream output connector (the only output or NULL)
+// Return mainstream input connector (the only input or NULL)
 NaPetriConnector*
-NaPNBus1i2o::main_output_cn ()
+NaPNBus1i2o::main_input_cn ()
 {
-    return &out1;
+    return &in;
 }
 
 
