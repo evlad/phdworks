@@ -5,9 +5,11 @@
 #define NaPNNNCoH
 
 #include <NaPNNNUn.h>
+#include <NaPNDerv.h>
 #include <NaPNDely.h>
 #include <NaPNBu12.h>
 #include <NaPNBu21.h>
+#include <NaPNSkip.h>
 
 //---------------------------------------------------------------------------
 // Applied Petri net node: neural net controller unit with related units.
@@ -27,21 +29,34 @@ public:
     // Inside nodes //
     //////////////////
 
-    NaPNBus1i2o		split_er;
-    NaPNDelay		delay_e;
-    NaPNDelay		delay_r;
-    NaPNBus2i1o		merge_er;
-    NaPNNNUnit		nnunit;
+    NaPNBus1i2o		split_er;	///< [e,r]->[e],[r]
+    NaPNDelay		delay_e;	///< [e]->[e,e/z,e/z^2,...]
+    NaPNDelay		delay_r;	///< [r]->[r,r/z,r/z^2,...]
+    NaPNSkip		skip_e;		///< make equal delay for both r and e
+    NaPNSkip		skip_r;		///< make equal delay for both r and e
+    NaPNBus2i1o		merge_er;	///< [e,...],[r,...]->[e,...,r,...]
+    NaPNNNUnit		nnunit;		///< u=NN(e,...,r,...)
+    NaPNDerivative	delta_e;	///< (1-1/z)*e(k) - N/A
 
     ////////////////
     // Connectors //
     ////////////////
 
-    // Input (mainstream)
+    // Input (mainstream) - split_er.in
     NaPetriCnInput	&x;
 
     // Output (mainstream) - nnunit.y
     NaPetriCnOutput	&y;
+
+    ///////////////////
+    // Quick linkage //
+    ///////////////////
+
+    // Return mainstream input connector (the only input or NULL)
+    virtual NaPetriConnector*   main_input_cn ();
+
+    // Return mainstream output connector (the only output or NULL)
+    virtual NaPetriConnector*   main_output_cn ();
 
 
     ///////////////////
@@ -80,14 +95,11 @@ public:
     // Phases of network //
     ///////////////////////
 
+    // 0. Called once when the node becomes part of Petri network
+    virtual void	attend_network ();
+
     // 5. Verification to be sure all is OK (true)
     virtual bool        verify ();
-
-protected:/* methods */
-
-    // Called once when the node becomes part of network and when
-    // net() started to be not NULL
-    virtual void	attend_net ();
 
 };
 
