@@ -189,9 +189,6 @@ NaPetriNet::prepare (bool bDoPrintouts)
     }
 
     for(iNode = 0; iNode < pnaNet.count(); ++iNode){
-        // Setup pointer to the network
-        pnaNet[iNode]->pNet = this;
-
         // Disallow changes of node parameters
         pnaNet[iNode]->bTunable = false;
 
@@ -931,6 +928,12 @@ NaPetriNet::add (NaPetriNode* pNode)
         return;
     }
     pnaNet.addh(pNode);
+
+    // Setup pointer to the network
+    pNode->pNet = this;
+
+    // Perform some actions in new attendee
+    pNode->attend_net();
 }
 
 

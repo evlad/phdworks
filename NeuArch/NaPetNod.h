@@ -139,6 +139,10 @@ protected:/* methods */
     bool                ask_for_cn (NaPetriConnector* pCn,
                                     int* pIndex = NULL);
 
+    // Called once when the node becomes part of network and when
+    // net() started to be not NULL
+    virtual void	attend_net ();
+
 protected:/* data */
 
     // Node's name

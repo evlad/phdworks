@@ -314,6 +314,16 @@ NaPetriNode::ask_for_cn (NaPetriConnector* pCn, int* pIndex)
 
 
 //---------------------------------------------------------------------------
+// Called once when the node becomes part of network and when net()
+// started to be not NULL
+void
+NaPetriNode::attend_net ()
+{
+    // Nothing to do
+}
+
+
+//---------------------------------------------------------------------------
 
 ///////////////////////
 // Phases of network //
