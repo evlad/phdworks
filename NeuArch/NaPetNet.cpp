@@ -556,20 +556,28 @@ NaPetriNet::step_alive (bool bDoPrintouts)
 	NaPetriNode &node = *pnaNet[iNode];
 
 	// 7. Do one step of node activity and return true if succeeded
-	if(bDoPrintouts || node.is_verbose()){
-	  NaPrintLog("node '%s' try to activate.\n",
-		     node.name());
+	if(0 == node.connectors()) {
+	    if(bDoPrintouts || node.is_verbose()){
+		NaPrintLog("node '%s' does not have connectors: skip it.\n",
+			   node.name());
+	    }
 	}
-	bActivate = node.activate();
+	else {
+	    if(bDoPrintouts || node.is_verbose()){
+		NaPrintLog("node '%s' try to activate.\n",
+			   node.name());
+	    }
 
-	// Count calls
-	++node.nCalls;
+	    bActivate = node.activate();
 
-	if(bDoPrintouts || node.is_verbose()){
-	  NaPrintLog("node '%s' is %sactivated.\n",
-		     node.name(), bActivate?"" :"not ");
+	    // Count calls
+	    ++node.nCalls;
+
+	    if(bDoPrintouts || node.is_verbose()){
+		NaPrintLog("node '%s' is %sactivated.\n",
+			   node.name(), bActivate?"" :"not ");
+	    }
 	}
-
       }catch(NaException exCode){
 	NaPrintLog("Step of node activity phase (#7): node '%s' fault.\n"
 		   "Caused by exception: %s\n",
@@ -824,6 +832,10 @@ NaPetriNet::link (NaPetriConnector* pcSrc, NaPetriConnector* pcDst)
     if(NULL == pcSrc || NULL == pcDst)
         throw(na_null_pointer);
 
+    NaPrintLog("Link %s.%s & %s.%s\n",
+               pcSrc->host()->name(), pcSrc->name(),
+               pcDst->host()->name(), pcDst->name());
+
 #if 1
     // Why not?
     if(pcSrc->host() == pcDst->host())
@@ -837,10 +849,6 @@ NaPetriNet::link (NaPetriConnector* pcSrc, NaPetriConnector* pcDst)
     if(!pcSrc->link(pcDst) || !pcDst->link(pcSrc))
         // Can't link together two connectors of different type
         throw(na_not_compatible);
-
-    NaPrintLog("Link %s.%s & %s.%s\n",
-               pcSrc->host()->name(), pcSrc->name(),
-               pcDst->host()->name(), pcDst->name());
 }
 
 
@@ -898,10 +906,10 @@ NaPetriNet::link_nodes (NaPetriNode* pNode0, ...)
             try{
                 if(NULL == pNodePrev->main_output_cn()){
                     NaPrintLog("Undefined mainstream output connector"
-                               " for node '%s'", pNodePrev->name());
+                               " for node '%s'\n", pNodePrev->name());
                 }else if(NULL == pNodeCur->main_input_cn()){
                     NaPrintLog("Undefined mainstream input connector"
-                               " for node '%s'", pNodeCur->name());
+                               " for node '%s'\n", pNodeCur->name());
                 }else{
                     link(pNodePrev->main_output_cn(),
                          pNodeCur->main_input_cn());
@@ -927,13 +935,16 @@ NaPetriNet::add (NaPetriNode* pNode)
         // Don't add the same node twice
         return;
     }
+
+    NaPrintLog("Add node %s to network %s\n", pNode->name(), name());
+
     pnaNet.addh(pNode);
 
     // Setup pointer to the network
     pNode->pNet = this;
 
     // Perform some actions in new attendee
-    pNode->attend_net();
+    pNode->attend_network();
 }
 
 

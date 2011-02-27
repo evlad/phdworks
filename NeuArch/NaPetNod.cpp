@@ -314,20 +314,19 @@ NaPetriNode::ask_for_cn (NaPetriConnector* pCn, int* pIndex)
 
 
 //---------------------------------------------------------------------------
-// Called once when the node becomes part of network and when net()
-// started to be not NULL
-void
-NaPetriNode::attend_net ()
-{
-    // Nothing to do
-}
-
-
-//---------------------------------------------------------------------------
 
 ///////////////////////
 // Phases of network //
 ///////////////////////
+
+//---------------------------------------------------------------------------
+// 0. Called once when the node becomes part of Petri network
+void
+NaPetriNode::attend_network ()
+{
+    // N/A
+}
+
 
 //---------------------------------------------------------------------------
 // 1. Open input data and get their dimensions

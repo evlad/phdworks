@@ -97,6 +97,9 @@ public:
     // Phases of network //
     ///////////////////////
 
+    // 0. Called once when the node becomes part of Petri network
+    virtual void	attend_network ();
+
     // 1. Open input data (pure output nodes) and get their dimensions
     virtual void        open_input_data ();
 
@@ -138,10 +141,6 @@ protected:/* methods */
     // Ask for connector's index or return -1
     bool                ask_for_cn (NaPetriConnector* pCn,
                                     int* pIndex = NULL);
-
-    // Called once when the node becomes part of network and when
-    // net() started to be not NULL
-    virtual void	attend_net ();
 
 protected:/* data */
 
