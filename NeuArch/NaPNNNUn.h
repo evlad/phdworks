@@ -60,8 +60,8 @@ public:
   // Phases of network //
   ///////////////////////
 
-  // 2. Link connectors inside the node
-  virtual void	relate_connectors ();
+  // 1. Open input data and get their dimensions
+  virtual void  open_input_data ();
 
   // 5. Verification to be sure all is OK (true)
   virtual bool	verify ();

@@ -115,9 +115,9 @@ NaPNNNUnit::pop_nn (NaNNUnit& nnunit)
 ///////////////////////
 
 //---------------------------------------------------------------------------
-// 2. Link connectors inside the node
+// 1. Open input data and get their dimensions
 void
-NaPNNNUnit::relate_connectors ()
+NaPNNNUnit::open_input_data ()
 {
   if(NULL != nn){
     x.data().new_dim(nn->InputDim());
