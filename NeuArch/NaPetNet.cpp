@@ -52,6 +52,7 @@ NaPetriNet::NaPetriNet (const char* szNetName)
     pTimingNode = NULL;
 
     fpMap = NULL;
+    fpDig = NULL;
 
     if(NULL == szNetName)
         szName = autoname("pnet", iNetNumber);
@@ -69,6 +70,7 @@ NaPetriNet::NaPetriNet (const char* szNetName)
 	bStepPrintout = false;				// step_alive(???)
 	bTermPrintout = false;				// terminate(???)
 	bMapPrintout = false;				// no activation map
+	bDigPrintout = true;				// no digraph output
       }
     else
       {
@@ -78,7 +80,25 @@ NaPetriNet::NaPetriNet (const char* szNetName)
 	bStepPrintout = !!strchr(szEnvValue, 's');	// step_alive(true)
 	bTermPrintout = !!strchr(szEnvValue, 't');	// terminate(true)
 	bMapPrintout = !!strchr(szEnvValue, 'm');	// print activation map
+	bDigPrintout = !!strchr(szEnvValue, 'g');	// digraph output
       }
+
+    if(bDigPrintout) {
+	char	*szDigName = new char[strlen(name()) + sizeof(".dot")];
+	sprintf(szDigName, "%s.dot", name());
+	fpDig = fopen(szDigName, "w");
+	if(NULL == fpDig){
+	    NaPrintLog("Failed to write digraph output\n");
+	}else{
+	    NaPrintLog("Digraph output will be put to '%s'\n", szDigName);
+	}
+	delete[] szDigName;
+
+	fprintf(fpDig, "digraph %s {\n"\
+		"  graph [ rankdir = LR ] ;\n"\
+		"  node [ shape = record ] ;\n\n",
+		name());
+    }
 }
 
 
@@ -86,6 +106,8 @@ NaPetriNet::NaPetriNet (const char* szNetName)
 // Destroy the network
 NaPetriNet::~NaPetriNet ()
 {
+    if(NULL != fpDig)
+	fclose(fpDig);
     delete dfTimeChart;
     delete[] szName;
 }
@@ -144,6 +166,13 @@ NaPetriNet::prepare (bool bDoPrintouts)
 
     if(bPrepPrintout)
       bDoPrintouts = bPrepPrintout;
+
+    if(NULL != fpDig) {
+	// Digraph is created already
+	fprintf(fpDig, "}\n");
+	fclose(fpDig);
+	fpDig = NULL;
+    }
 
     /* Create activation map file */
     if(bMapPrintout){
@@ -832,6 +861,12 @@ NaPetriNet::link (NaPetriConnector* pcSrc, NaPetriConnector* pcDst)
     if(NULL == pcSrc || NULL == pcDst)
         throw(na_null_pointer);
 
+    if(NULL != fpDig) {
+	fprintf(fpDig, "  %s:%s -> %s:%s ;\n",
+		pcSrc->host()->name(), pcSrc->name(),
+		pcDst->host()->name(), pcDst->name());
+    }
+
     NaPrintLog("Link %s.%s & %s.%s\n",
                pcSrc->host()->name(), pcSrc->name(),
                pcDst->host()->name(), pcDst->name());
@@ -934,6 +969,42 @@ NaPetriNet::add (NaPetriNode* pNode)
     if(ask_for_node(pNode)){
         // Don't add the same node twice
         return;
+    }
+
+    if(NULL != fpDig) {
+	if(pNode->connectors() > 0) {
+	    fprintf(fpDig, "  %s [\n    label=\"%s|{",
+		    pNode->name(), pNode->name());
+	    int nInputs = 0;
+	    for(int i = 0; i < pNode->connectors(); ++i) {
+		NaPetriConnector *pCn = pNode->connector(i);
+		if(pckInput == pCn->kind()) {
+		    if(0 == nInputs)
+			fprintf(fpDig, "{<%s>%s", pCn->name(), pCn->name());
+		    else
+			fprintf(fpDig, "|<%s>%s", pCn->name(), pCn->name());
+		    ++nInputs;
+		}
+	    }
+	    if(nInputs > 0)
+		fprintf(fpDig, "}");
+	    int nOutputs = 0;
+	    for(int i = 0; i < pNode->connectors(); ++i) {
+		NaPetriConnector *pCn = pNode->connector(i);
+		if(pckOutput == pCn->kind()) {
+		    if(0 == nOutputs && 0 == nInputs)
+			fprintf(fpDig, "{<%s>%s", pCn->name(), pCn->name());
+		    else if(0 == nOutputs)
+			fprintf(fpDig, "|{<%s>%s", pCn->name(), pCn->name());
+		    else
+			fprintf(fpDig, "|<%s>%s", pCn->name(), pCn->name());
+		    ++nOutputs;
+		}
+	    }
+	    if(nOutputs > 0)
+		fprintf(fpDig, "}");
+	    fprintf(fpDig, "}\"\n  ] ;\n");
+	}
     }
 
     NaPrintLog("Add node %s to network %s\n", pNode->name(), name());

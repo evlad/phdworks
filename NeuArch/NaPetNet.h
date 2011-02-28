@@ -132,6 +132,7 @@ protected:/* data */
     bool		bStepPrintout;	// step_alive(true)
     bool		bTermPrintout;	// terminate(true)
     bool		bMapPrintout;	// activation map
+    bool		bDigPrintout;	// digraph represented in dot language
 
     // In addition it's possible to make some node to be verbose() by
     // setting env. variable with name szNodeName_verbose to not an
@@ -153,6 +154,9 @@ protected:/* data */
 
     // Activation map
     FILE		*fpMap;
+
+    // Digraph output (dot language for graphviz)
+    FILE		*fpDig;
 
     // Autoname facility counter
     static int          iNetNumber;
