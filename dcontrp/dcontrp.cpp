@@ -56,12 +56,16 @@ int main(int argc, char **argv)
     else
       ckind = NaNeuralContrER;
     // Explicit rule
-    if(!strcmp(par("nnc_mode"), "e+r"))
+    const char* nnc_mode = par("nnc_mode");
+    if(!strcmp(nnc_mode, "e+r") ||
+       !strcmp(nnc_mode, "r+e"))
       ckind = NaNeuralContrER;
-    else if(!strcmp(par("nnc_mode"), "e+de"))
+    else if(!strcmp(nnc_mode, "e+de"))
       ckind = NaNeuralContrEdE;
-    else if(!strcmp(par("nnc_mode"), "e+e+..."))
+    else if(!strcmp(nnc_mode, "e+e+..."))
       ckind = NaNeuralContrDelayedE;
+    else if(!strcmp(nnc_mode, "r+e+e+..."))
+      ckind = NaNeuralContrRDelayedE;
 
     // Additional log files
     NaDataFile  *nnllog = OpenOutputDataFile(par("trace_file"), bdtAuto, 8);
@@ -79,22 +83,28 @@ int main(int argc, char **argv)
     nncpl.nncontr.set_transfer_func(&au_nnc);
     nncpl.nnteacher.set_nn(&nncpl.nncontr);
 
+    nncpl.in_r.set_input_filename(par("in_r"));
+    nncpe.in_r.set_input_filename(par("test_in_r"));
+
     switch(ckind)
       {
       case NaNeuralContrER:
-	nncpl.in_r.set_input_filename(par("in_r"));
-	nncpe.in_r.set_input_filename(par("test_in_r"));
-	break;
-
       case NaNeuralContrEdE:
 	// Nothing special
 	break;
 
       case NaNeuralContrDelayedE:
 	nncpl.delay.set_delay(au_nnc.descr.nInputsRepeat - 1);
-	//nncpl.delay.set_sleep_value(0.0);
+	nncpl.delay.set_sleep_value(0.0);
 	nncpe.delay.set_delay(au_nnc.descr.nInputsRepeat - 1);
-	//nncpe.delay.set_sleep_value(0.0);
+	nncpe.delay.set_sleep_value(0.0);
+	break;
+
+      case NaNeuralContrRDelayedE:
+	nncpl.delay.set_delay(au_nnc.descr.nInputsRepeat - 2);
+	nncpl.delay.set_sleep_value(0.0);
+	nncpe.delay.set_delay(au_nnc.descr.nInputsRepeat - 2);
+	nncpe.delay.set_sleep_value(0.0);
 	break;
       }
 
@@ -154,6 +164,7 @@ int main(int argc, char **argv)
     NaReal	fPrevMSE = 0.0, fLastMSE = 0.0;
     NaReal	fPrevTestMSE = 0.0;
     int		nGrowingMSE = 0;
+    int		nDescentingMSE = 0;
     NaNNUnit	rPrevNN(au_nnc);
     bool	bTeach;
 
@@ -212,6 +223,7 @@ int main(int argc, char **argv)
 		     nncpl.nnteacher.lpar.alpha);
 
 	      bTeach = false;
+	      nDescentingMSE = 0;
 	    }
 	  else
 	    {
@@ -219,7 +231,29 @@ int main(int argc, char **argv)
 	      fLastMSE = fPrevMSE = fNormMSE;
 	      rPrevNN = au_nnc;
 	      nncpl.nnteacher.update_nn();
-	      printf(" -> teach NN\n");
+
+	      /* continuous descenting MSE on learning set */
+	      if(nDescentingMSE > 10) {
+		  double coef = 1.10; // +10% every 10 turns
+		  nncpl.nnteacher.lpar.eta *= coef;
+		  nncpl.nnteacher.lpar.eta_output *= coef;
+		  nncpl.nnteacher.lpar.alpha *= coef;
+
+		  NaPrintLog("Learning parameters: "
+			     "lrate=%g  lrate(out)=%g  momentum=%g\n",
+			     nncpl.nnteacher.lpar.eta,
+			     nncpl.nnteacher.lpar.eta_output,
+			     nncpl.nnteacher.lpar.alpha);
+
+		  nDescentingMSE = 0;
+		  printf(" -> teach NN and apply (%g, %g, %g)\n",
+			 nncpl.nnteacher.lpar.eta,
+			 nncpl.nnteacher.lpar.eta_output,
+			 nncpl.nnteacher.lpar.alpha);
+	      } else {
+		  ++nDescentingMSE;
+		  printf(" -> teach NN\n");
+	      }
 	      bTeach = true;
 	    }
 	}
