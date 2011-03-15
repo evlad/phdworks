@@ -6,12 +6,6 @@
 #contr_kind = nnc
 contr_kind = lin
 
-# NNC INPUT MODE: "e+r", "e+de", "e+e+..."
-nnc_mode = e+de
-
-# Initial state of a plant
-plant_initial_state = 0
-
 ########################################
 # Mode of the modeling
 #input_kind = stream
@@ -22,6 +16,9 @@ stream_len = 5000
 
 # Linear (or combined) plant transfer function
 linplant_tf = model_proof/cstrplant.cof
+
+# Initial state of a plant
+plant_initial_state = 0
 
 # (contr_kind = lin) Linear (or combined) controller transfer function
 lincontr_tf = model_proof/pid.cof
