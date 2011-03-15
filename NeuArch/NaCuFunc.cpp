@@ -259,8 +259,8 @@ NaCustomFunc::Load (NaDataStream& ds)
     NaPrintLog("Loading '%s' ...\n", filepath);
     so = dlopen(filepath, RTLD_LAZY);
     if(NULL == so)
-      NaPrintLog("Can't find shared object '%s' due to %s.\n",
-		 filepath, strerror(errno));
+      NaPrintLog("Can't find shared object '%s': %s\n",
+		 filepath, dlerror());
     delete[] filepath;
   }
 
