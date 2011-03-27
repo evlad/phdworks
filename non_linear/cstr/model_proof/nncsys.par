@@ -3,11 +3,11 @@
 
 ########################################
 # Type of controller
-#contr_kind = nnc
-contr_kind = lin
+contr_kind = nnc
+#contr_kind = lin
 
 # NNC INPUT MODE: "e+r", "e+de", "e+e+..."
-nnc_mode = e+de
+# OBSOLETE: nnc_mode = e+de
 
 # Initial state of a plant
 plant_initial_state = 0
@@ -28,7 +28,7 @@ lincontr_tf = pid.cof
 #lincontr_tf = pid.tf
 
 # (contr_kind = nnc) Neural net controller
-nncontr = nnc.nn
+nncontr = ../pid2nnc/nnc_e5r1_95_1.nn
 
 # (input_kind = stream) Input transfer functions
 refer_tf = refer.tf
@@ -41,10 +41,10 @@ in_r = steps.dat
 in_n = zeros.dat
 
 # Output files
-out_u = pid_u.dat
-out_e = pid_e.dat
-out_y = pid_y.dat
-out_ny = pid_ny.dat
+out_u = nnc_u.dat
+out_e = nnc_e.dat
+out_y = nnc_y.dat
+out_ny = nnc_ny.dat
 
 # (input_kind = stream) Output files
 out_r = r_out.dat
