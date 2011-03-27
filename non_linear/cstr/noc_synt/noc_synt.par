@@ -2,23 +2,24 @@
 # $Id: dcontrf.par,v 2.7 2009-02-14 20:28:06 evlad Exp $
 
 ########################################
+# Type of controller
+contr_kind = nnc
+#contr_kind = lin
+
+########################################
 # Mode of the modeling
 input_kind = stream
 #input_kind = file
 
 # (input_kind = stream) Length of series
-stream_len = 200000
+stream_len = 100000
 
 # (input_kind = stream,file) Auto update frequency; 0 to disable
-nnc_auf = 1000
+nnc_auf = 400
 
 # >0 means turn on NNP learning
-#nnp_auf = 100
-
-# NNC INPUT MODE: "e+r", "e+de", "e+e+...", "tradcontr"
-# "tradcontr" means using traditional controller instead of neural one
-# to teach NNP online
-nnc_mode = e+r
+nnp_auf = 0
+#2000
 
 # Traditional controller
 tradcontr = pid.tf
@@ -27,7 +28,8 @@ tradcontr = pid.tf
 linplant_tf = ../model_proof/cstrplant.cof
 
 # (input_kind = stream) Input transfer (or combined) functions
-refer_tf = refer_rndm.cof
+refer_tf = refer_rndu.cof
+#refer_tf = refer_rndm.cof
 noise_tf = zero_noise.tf
 
 # (input_kind = file) Maximum number of epochs; 0 is unlimited
@@ -55,8 +57,8 @@ p_in = p_in.dat
 # Neural net files
 in_nnp_file = ../nnp_model/nnp_2+2_1.nn
 out_nnp_file = nnp_2+2_2.nn
-in_nnc_file = ../pid2nnc/nnc_er_1.nn
-out_nnc_file = nnc_er_2.nn
+in_nnc_file = ../pid2nnc/nnc_e5r1_95_1.nn
+out_nnc_file = nnc_e5r1_95_2.nn
 
 # Optional to list inputs of NN-P as a error conductor in
 # backpropagation chain.  Defined automatically by default as a scalar.
@@ -94,7 +96,7 @@ finish_decrease = 1e-6
 #   Cond     ::= "<" | "=" | ">"
 #   Value    ::= FloatingPointNumber
 # Separated for control and identification error statistics
-finish_cerr_cond = absmean > 1.0 ; rms > 1.0
+finish_cerr_cond = rms < 0.02
 finish_iderr_cond = rms > 6.0
 
 # (OPTIONAL) Scale down eta by auf size if =1 and old behavour otherwise
@@ -106,6 +108,6 @@ eta_output = 0.000001
 alpha = 0.0
 
 # Learning algorithm setup for NN-P
-p_eta = 0.005
-p_eta_output = 0.0005
+p_eta = 0.00005
+p_eta_output = 0.000005
 p_alpha = 0.0
