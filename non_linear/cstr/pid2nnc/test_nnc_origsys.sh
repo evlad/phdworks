@@ -1,16 +1,23 @@
 #!/bin/sh
 
-# Mode:
-nnc="nncontr=nnc_e5r1_95_1.nn"
+nnarch=$1
+pidtf=$1
+dataset=${2:-test}
 
-dcsloop.new origsys.par contr_kind=nnc $nnc \
-  linplant_tf=../model_proof/cstrplant.cof \
-  lincontr_tf=../model_proof/pid.cof \
-  in_r=r_learn.bis in_n=n_learn.bis \
-  out_u=nn_u_learn.dat out_e=nn_e_learn.dat out_ny=nn_ny_learn.dat
+nnc1=nnc_${nnarch}_1.nn
+if [ -f "$nnc1" ] ; then
+  echo "Test NN-C in loop: $nnc1"
+  root="${dataset}_${nnarch}"
+  mode="contr_kind=nnc nncontr=$nnc1 out_u=nnc_u_$root.dat out_e=nnc_e_$root.dat out_ny=nnc_ny_$root.dat"
+elif [ -f "$pidtf" ] ; then
+  echo "Test PID in loop: $pidtf"
+  root="${dataset}"
+  mode="contr_kind=lin lincontr_tf=$pidtf out_u=pid_u_$root.dat out_e=pid_e_$root.dat out_ny=pid_ny_$root.dat"
+else
+  echo "Usage: $0 [nnarch|pid.tf] [learn|test]"
+  exit 1
+fi
 
-dcsloop.new origsys.par contr_kind=nnc $nnc \
+dcsloop.new origsys.par $mode \
   linplant_tf=../model_proof/cstrplant.cof \
-  lincontr_tf=../model_proof/pid.cof \
-  in_r=r_test.bis in_n=n_test.bis \
-  out_u=nn_u_test.dat out_e=nn_e_test.dat out_ny=nn_ny_test.dat
+  in_r=r_${dataset}.bis in_n=n_${dataset}.bis

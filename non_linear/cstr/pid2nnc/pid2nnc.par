@@ -5,17 +5,20 @@
 # New design - no NNC INPUT MODE: "e+r", "e+de", "e+e+..."!!!!!
 #
 
-in_nnc_file = nnc_e5r1_95_0.nn
-out_nnc_file = nnc_e5r1_95_1.nn
-trace_file = nnc_e5r1_95_trace.dat
+# Tracking learning process:
+# LearnME LearnSDE LearnMSE TestME TestSDE TestMSE NormLearnMSE NormTestMSE
+
+#in_nnc_file = nnc_e5r1_95_0.nn
+#out_nnc_file = nnc_e5r1_95_1.nn
+#trace_file = nnc_e5r1_95_trace.dat
 
 #in_nnc_file = nnc_e3r1_74_0.nn
 #out_nnc_file = nnc_e3r1_74_1.nn
 #trace_file = nnc_e3r1_74_trace.dat
 
-#in_nnc_file = nnc_e1r1_74_0.nn
-#out_nnc_file = nnc_e1r1_74_1.nn
-#trace_file = nnc_e1r1_trace.dat
+in_nnc_file = nnc_e1r1_74_0.nn
+out_nnc_file = nnc_e1r1_74_1.nn
+trace_file = nnc_e1r1_74_trace.dat
 
 # NNC TEACHING
 # Input files
@@ -24,7 +27,7 @@ in_e = e_learn.bis
 in_u = u_learn.bis
 
 # Output files
-nn_u = nn_u_learn.dat
+nn_u = nn_u_learn_e1r1_74.dat
 
 # NNC TESTING
 # Input files
@@ -33,17 +36,13 @@ test_in_e = e_test.bis
 test_in_u = u_test.bis
 
 # Output files
-test_nn_u = nn_u_test.dat
-
-# Tracking learning process:
-# LearnME LearnSDE LearnMSE TestME TestSDE TestMSE NormLearnMSE NormTestMSE
-#trace_file = nnc_trace.dat
+test_nn_u = nn_u_test_e1r1_74.dat
 
 # Stop learning if...
-finish_decrease=1e-11
+#finish_decrease=1e-11
 finish_on_value=1e-12
 finish_on_grow=20
-finish_max_epoch=500
+finish_max_epoch=2000
 
 # Learning algorithm setup
 eta = 3e-3
