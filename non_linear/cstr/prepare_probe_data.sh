@@ -1,58 +1,52 @@
 #!/bin/sh
 
 # Take starting point to be close to initial conditions
-#                                    __________ 
+echo "*** Take initial conditions for model_proof/cstrplant.cof:"
 # initial 0.486938 2.002389 1.730673 363.700000 357.706961
 Tinit=`grep initial model_proof/cstrplant.cof | head -1 | awk '{printf "%g\n", $5}'`
-echo "Tinit=$Tinit"
+echo "*** Tinit=$Tinit"
 
-LearnLen=2000
-TestLen=1000
+learn_len=5000
+test_len=1000
+check_len=3000
 
-#
-# Prepare learning data
-#
+# For every series type
+for st in learn test check ; do
+  len=$(eval echo \$${st}_len)
+  recalc=""
 
-# Replace level of the first step by Tinit
-drandmea $LearnLen 60 300 352 366 >/tmp/drandmea.dat
-Told=`head -1 /tmp/drandmea.dat`
-sed "s/^$Told\$/$Tinit/" /tmp/drandmea.dat >r_learn.dat
+  # Prepare input series
+  if [ ! -s r_${st}.dat ] ; then
+    echo "*** Generate r_${st}.dat and n_${st}.dat ($len samples)"
 
-drand $LearnLen 0 0 >n_learn.dat
+    # Replace level of the first step by Tinit
+    drandmea $len 60 300 352 366 >/tmp/drandmea.dat
+    Told=`head -1 /tmp/drandmea.dat`
+    sed "s/^$Told\$/$Tinit/" /tmp/drandmea.dat >r_${st}.dat
 
-FileCvt r_learn.dat r_learn.bis
-FileCvt n_learn.dat n_learn.bis
+    DRAND_SAFE=1 drand $len 0 0 >n_${st}.dat
 
-# Run modeling
-dcsloop origsys.par in_r=r_learn.bis in_n=n_learn.bis \
-  out_u=u_learn.dat out_e=e_learn.dat out_ny=ny_learn.dat
-mv cstr_out.dat cstr_learn.dat
+    FileCvt r_${st}.dat r_${st}.bis
+    FileCvt n_${st}.dat n_${st}.bis
 
-FileCvt u_learn.dat u_learn.bis
-FileCvt e_learn.dat e_learn.bis
-FileCvt ny_learn.dat ny_learn.bis
+    recalc="yes"
+  fi
 
-#
-# Prepare test data
-#
+  # Run modeling
+  if [ "$recalc" = yes -o \
+    ! -s u_${st}.dat -o ! -s e_${st}.dat -o ! -s ny_${st}.dat ] ; then
+    echo "*** Modeling for u_${st}.dat, e_${st}.dat, ny_${st}.dat ..."
+    dcsloop origsys.par in_r=r_${st}.bis in_n=n_${st}.bis \
+      out_u=u_${st}.dat out_e=e_${st}.dat out_ny=ny_${st}.dat
+    mv cstr_out.dat cstr_${st}.dat
 
-# Replace level of the first step by Tinit
-drandmea $TestLen 60 300 352 366 >/tmp/drandmea.dat
-Told=`head -1 /tmp/drandmea.dat`
-sed "s/^$Told\$/$Tinit/" /tmp/drandmea.dat >r_test.dat
+    paste r_${st}.dat e_${st}.dat u_${st}.dat|head -n -1 >reu_${st}.dat
 
-drand $TestLen 0 0 >n_test.dat
+    FileCvt u_${st}.dat u_${st}.bis
+    FileCvt e_${st}.dat e_${st}.bis
+    FileCvt ny_${st}.dat ny_${st}.bis
+  fi
+done
 
-FileCvt r_test.dat r_test.bis
-FileCvt n_test.dat n_test.bis
-
-# Run modeling
-dcsloop origsys.par in_r=r_test.bis in_n=n_test.bis \
-  out_u=u_test.dat out_e=e_test.dat out_ny=ny_test.dat
-mv cstr_out.dat cstr_test.dat
-
-FileCvt u_test.dat u_test.bis
-FileCvt e_test.dat e_test.bis
-FileCvt ny_test.dat ny_test.bis
 
 # End of file
