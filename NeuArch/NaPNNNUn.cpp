@@ -78,6 +78,10 @@ NaPNNNUnit::push_nn ()
 	    --skip_rest;
 	}else{
 	    deck.addh(*nn);
+	    //NaPrintLog("$$$ NaPNNNUnit::push_nn() nn: $$$\n");
+	    //nn->PrintLog();
+	    //NaPrintLog("$$$ NaPNNNUnit::push_nn() deck: $$$\n");
+	    //deck(deck.count()-1).PrintLog();
 	}
     } else {
 	// do nothing?
@@ -102,6 +106,11 @@ NaPNNNUnit::pop_nn (NaNNUnit& nnunit)
 	// requested
 	nnunit = *get_nn_unit();
     }
+
+    //NaPrintLog("$$$ NaPNNNUnit::pop_nn() nn before: $$$\n");
+    //nn->PrintLog();
+    //NaPrintLog("$$$ NaPNNNUnit::pop_nn() from deck: $$$\n");
+    //nnunit.PrintLog();
     if(is_verbose())
 	NaPrintLog("NaPNNNUnit::pop_nn(%p, %s[%s]) --> %u items stored left\n",
 		   this, name(), nnunit.GetInstance(), deck.count());
