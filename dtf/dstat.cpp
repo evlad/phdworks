@@ -21,12 +21,15 @@ main (int argc, char* argv[])
 {
   if(argc == 1)
     {
-      fprintf(stderr, "Error: need arguments\n");
+      fprintf(stderr, "Error: need arguments.\n");
       fprintf(stderr,
 	      "Usage: dstat [ColNum] SignalSeries1 [SignalSeries2 ...]\n");
       fprintf(stderr,
 	      " DSTAT_EOF=t - stop at EOF in any series\n"\
 	      " DSTAT_EOF=f - continue generating resulting series (default)\n");
+      fprintf(stderr,
+	      "Output: _        2        ____\n"\
+	      "        x sd n Sx Sx S|x| S|x|\n");
       return 1;
     }
 
@@ -72,13 +75,14 @@ main (int argc, char* argv[])
 
   try{
     unsigned	nVal;
-    NaReal	fVal, fSum, fSumSq;
+    NaReal	fVal, fSum, fSumSq, fSumAbs;
     bool	bEOF = false;
-    do{
-      nVal = 0;
-      fSum = 0.0;
-      fSumSq = 0.0;
+    nVal = 0;
+    fSum = 0.0;
+    fSumSq = 0.0;
+    fSumAbs = 0.0;
 
+    do{
       for(i = 0; i < argn; ++i)
 	if(NULL != dfSeries[i])
 	  {
@@ -86,31 +90,30 @@ main (int argc, char* argv[])
 	    fVal = dfSeries[i]->GetValue(iCol);
 	    fSum += fVal;
 	    fSumSq += fVal * fVal;
+	    fSumAbs += fabs(fVal);
 	    if(!dfSeries[i]->GoNextRecord())
 	      {
 		if(bStopEOF)
 		  bEOF = true;
-		else
-		  {
-		    delete dfSeries[i];
-		    dfSeries[i]= NULL;
-		  }
+
+		delete dfSeries[i];
+		dfSeries[i]= NULL;
 	      }
 	  }
 
       if(0 == nVal)
 	bEOF = true;
       else if(1 == nVal)
-	/*       _         2   *
-	 *       x sd  n Sx Sx */
-	printf("%g %g %d %g %g\n",
-	       fSum, 0.0, nVal, fSumSq, fSum);
+	/*       _        2        ____
+	 *       x sd n Sx Sx S|x| S|x| */
+	printf("%g %g %d %g %g %g %g\n",
+	       fSum, 0.0, nVal, fSumSq, fSum, fSumAbs, fSumAbs/nVal);
       else /* if(1 < nVal) */
-	/*       _         2   *
-	 *       x sd  n Sx Sx */
-	printf("%g %g %d %g %g\n",
+	/*       _        2        ____
+	 *       x sd n Sx Sx S|x| S|x| */
+	printf("%g %g %d %g %g %g %g\n",
 	       fSum/nVal, sqrt(fSumSq/nVal - (fSum*fSum)/(nVal*nVal)),
-	       nVal, fSumSq, fSum);
+	       nVal, fSumSq, fSum, fSumAbs, fSumAbs/nVal);
 
     }while(!bEOF);
 
