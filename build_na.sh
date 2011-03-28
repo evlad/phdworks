@@ -4,7 +4,7 @@
 # $Id: build_na.sh,v 1.2 2006-03-25 15:23:09 evlad Exp $
 
 libdirs='Matrix.041 NeuArch'
-progdirs='NaTools dtf dcsloop dplantid dcontrp dcontrf'
+progdirs='NaTools dtools dcsloop dplantid dcontrp dcontrf'
 
 echo "#######################"
 echo "### Build libraries ###"
