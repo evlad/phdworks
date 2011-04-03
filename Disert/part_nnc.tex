@@ -876,8 +876,8 @@ $e_{k-1},\ldots,e_{k-5}$ действительно несут полезную 
 Проверка нейронных сетей обеих архитектур вне контура управления не
 выявляет качественного различия, хотя ошибка имитации сети
 $\NN^p_{r_k+e_k+\ldots+e_{k-5},9,5}$ прогнозируемо несколько меньше,
-чем у $\NN^p_{r_k+e_k,7,4}$ --- $2.89\times 10^-7$ против $4.85\times
-10^-7$ (см. также~\figref{fig:cstr_e5r1_vs_e1r1_training}а).  Однако в
+чем у $\NN^p_{r_k+e_k,7,4}$ --- $2.89\times 10^{-7}$ против $4.85\times
+10^{-7}$ (см. также~\figref{fig:cstr_e5r1_vs_e1r1_training}а).  Однако в
 контуре управления поведение нейросетевых регуляторов кардинально
 различается~(\figref{fig:cstr_e5r1_vs_e1r1_training}б): НС--Р с памятью
 прошлых значений ошибки ведет себя качественно эквивалентно ПИД
@@ -888,16 +888,16 @@ $\NN^p_{r_k+e_k+\ldots+e_{k-5},9,5}$ прогнозируемо нескольк
 
 \begin{figure}[h]
   \centering
-  \begin{tabular}{c}
-    \includegraphics[width=0.9\textwidth,%
-      totalheight=0.4\textheight]{cstr_e5r1_vs_e1r1_outloop_rus} \\
-    а) \\
-    \includegraphics[width=0.9\textwidth,%
-      totalheight=0.4\textheight]{cstr_e5r1_vs_e1r1_inloop_rus} \\
-    б)
+  \begin{tabular}{cc}
+    \includegraphics[width=0.45\textwidth,%
+      totalheight=0.25\textheight]{cstr_e5r1_vs_e1r1_outloop_rus}
+    &
+    \includegraphics[width=0.45\textwidth,%
+      totalheight=0.25\textheight]{cstr_e5r1_vs_e1r1_inloop_rus} \\
+    а) & б) \\
   \end{tabular}
   \caption{Сравнение качества имитации НС--Р разных архитектур вне контура (а) и в контуре управления (б).}%
-  \label{fig:cstr_e5r1_vs_e1r1_training}
+  \label{fig:cstr_pid_vs_nnc_inloop_rus}
 \end{figure}
 
 Графики, позволяющие визуально оценить качество управления ПИД и его

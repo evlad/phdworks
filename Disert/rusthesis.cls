@@ -362,7 +362,7 @@
 	\medskip
 
 %
-	\Russian
+%	\Russian
 	\begin{flushright}		
 		{\bfseries \CYRN\cyra\ \cyrp\cyrr\cyra\cyrv\cyra\cyrh\ \cyrr\cyru\cyrk\cyro\cyrp\cyri\cyrs\cyri \par}
 %
