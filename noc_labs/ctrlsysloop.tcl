@@ -41,7 +41,7 @@ proc DrawPanel {c} {
 #    DrawArrow $c 11c 2c 11c 5c last
 }
 
-proc TestPanel {c} {
+proc TestPanel {w} {
     option readfile noc_labs.ad
 
     frame $w.controls

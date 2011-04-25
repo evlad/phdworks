@@ -11,6 +11,7 @@ wm iconname . "Labs main menu"
 
 option readfile noc_labs.ad
 
+source files_loc.tcl
 source lab1.tcl
 
 set menuContent {
@@ -20,12 +21,16 @@ set menuContent {
   "Лабораторная работа №4" "Нейросетевое управление нестационарным объектом"
 }
 
+pack [button $w.user_button \
+  -text "Перед началом\nВыбор/создание нового пользователя" \
+  -command "NewUser \"$w\""] -fill x -side top -expand yes -pady 2
+
 set i 0
 foreach {label title} $menuContent {
   incr i
   set text "$label\n$title"
   pack [button $w.lab${i}_button -text "$text" \
-    -command "MenuLab$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
+    -command "CheckGoodEnv \"$w\" ; MenuLab$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
 }
 
 button $w.quit_button -text "Выход" -command { exit }
