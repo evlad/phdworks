@@ -1,7 +1,9 @@
-package require Plotchart
+package provide win_grseries 1.0
 
-source data_file.tcl
-source universal.tcl
+package require Tk
+package require Plotchart
+package require data_file
+package require universal
 
 proc PlotSine {c} {
     set s [::Plotchart::createXYPlot $c {5.0 25.0 5.0} {-1.5 1.5 0.25}]
@@ -105,7 +107,7 @@ proc GrSeriesMinMax {dataSeries} {
 
 proc GrSeriesPlot {c} {
     global $c.props
-    upvar 0 $c.props props
+    upvar #0 $c.props props
 
     puts "GrSeriesPlot $c"
 
@@ -177,7 +179,7 @@ proc GrSeriesPlot {c} {
     #puts ${ygrid_matrix}
 
     global $c.bDrawLegend $c.bDrawGrid
-    upvar 0 $c.bDrawLegend bDrawLegend $c.bDrawGrid bDrawGrid
+    upvar #0 $c.bDrawLegend bDrawLegend $c.bDrawGrid bDrawGrid
 
     set pixwidth [winfo width $c]
     # Palette a'la Gnuplot
@@ -241,7 +243,7 @@ proc GrSeriesAddSeries {p series {name ""}} {
     set c $p.grseries.graphics.c
 
     global $c.props
-    upvar 0 $c.props props
+    upvar #0 $c.props props
 
     if {[llength $series] > 1 && [llength [lindex $series 0]] > 1 &&
 	[llength [lindex $series 1]] >= 2} {
@@ -272,7 +274,7 @@ proc GrSeriesAddSeries {p series {name ""}} {
 
 proc GrSeriesViewAll {c args} {
     global $c.props
-    upvar 0 $c.props props
+    upvar #0 $c.props props
     set dim $args
     if { $dim == {} } {
 	set dim {x y}
@@ -315,7 +317,7 @@ proc GrSeriesWindow {p title {filepath ""}} {
     pack $w.graphics -expand yes -fill both -side top
 
     global $c.props
-    upvar 0 $c.props props
+    upvar #0 $c.props props
     if { $filepath != "" } {
 	set props(dataSeries) [GrSeriesReadFile $filepath]
     }

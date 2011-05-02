@@ -11,7 +11,9 @@ wm iconname . "Labs main menu"
 
 option readfile noc_labs.ad
 
-source files_loc.tcl
+#lappend auto_path [path-to-packages]
+
+package require files_loc
 source lab1.tcl
 
 set menuContent {

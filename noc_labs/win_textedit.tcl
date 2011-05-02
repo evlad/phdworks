@@ -1,3 +1,7 @@
+# Simple text editor window with some syntax highlighting
+package require Tk
+package provide win_textedit 1.0
+
 proc TextEditSave {w filepath} {
     if [ catch {open $filepath {WRONLY CREAT TRUNC} 0666} fd ] {
 	puts stderr "Failed to save $filepath: $fd"

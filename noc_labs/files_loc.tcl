@@ -1,3 +1,5 @@
+package provide files_loc 1.0
+
 # Name of the undefined session directory
 set undefSession "undefined"
 
@@ -26,11 +28,15 @@ proc RelPath {basedir abspath} {
 }
 
 # Create or select new user directory
-proc NewUser {w} {
+proc NewUser {w {user ""}} {
     set basedir [UserBaseDir]
     global curUserDir
-    set curUserDir [tk_chooseDirectory \
-			-initialdir $basedir -title "Choose user directory"]
+    if {$user != ""} {
+	set curUserDir [file join $basedir $user]
+    } else {
+	set curUserDir [tk_chooseDirectory \
+			    -initialdir $basedir -title "Choose user directory"]
+    }
     if {$curUserDir eq "" || [file isfile $curUserDir]} {
 	return ""
     }
@@ -38,6 +44,7 @@ proc NewUser {w} {
 	file mkdir $curUserDir
     }
     # Create standard new session directory
+    global undefSession
     set newSessionDir [file join $curUserDir $undefSession]
     if {![file exists $newSessionDir]} {
 	file mkdir $newSessionDir
@@ -58,11 +65,25 @@ proc UserBaseDir {} {
     global env
     if {![info exists env(NOCLABUSERDIR)]} {
 	# Not defined special place -> let's use the default one
-	set dir "$env(HOME)[file separator]noc_labs"
+	set dir [file join $env(HOME) noc_labs]
     } else {
 	set dir $env(NOCLABUSERDIR)
     }
     file mkdir $dir
+    return $dir
+}
+
+# Return system directory
+proc SystemDir {} {
+    global env
+    if {![info exists env(NOCLABSYSDIR)]} {
+	# Not defined special place -> let's use the default one
+	set dir "$env(HOME)[file separator]nocsystem"
+    } else {
+	set dir $env(NOCLABSYSDIR)
+    }
+    puts "System directory is expected at $dir"
+    #file mkdir $dir
     return $dir
 }
 
@@ -83,13 +104,13 @@ proc SessionDir {s} {
 
 # Return directory path to the data directory
 proc WorkDataDir {} {
-    set wdd "[file join [pwd] labworks]"
+    set wdd [file join [SystemDir] labworks]
     file mkdir $wdd
     return $wdd
 }
 
 # Return directory path to the template directory
 proc TemplateDir {} {
-    set td "[file join [pwd] templates]"
+    set td [file join [SystemDir] templates]
     return $td
 }

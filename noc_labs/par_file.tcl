@@ -1,3 +1,5 @@
+package provide par_file 1.0
+
 # Assign all parameters set in params array to fields in $filepath
 # saving structure of the file and comments.
 proc ParFileAssign {filepath params} {

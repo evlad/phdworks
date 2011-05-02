@@ -1,3 +1,7 @@
+package provide draw_prim 1.0
+
+package require Tk
+
 # Oval for adding or subtracting signals depending minusps.
 # It may be "none" for adding and "n", "s", "w", "e" for subtracting
 # from given direction.

@@ -44,7 +44,7 @@ proc CheckPntWindowOk {w entry var} {
 }
 
 proc CheckPntWindowApply {w entry var} {
-    upvar $var fileName
+    upvar #0 $var fileName
     set fileName [$entry get]
     puts "CheckPntWindowApply: '$fileName'"
 
@@ -60,7 +60,7 @@ proc CheckPntWindowApply {w entry var} {
 }
 
 proc CheckPntWindowEdit {w title var} {
-    upvar $var fileName
+    upvar #0 $var fileName
     TextEditWindow $w "$title" $fileName
 }
 
@@ -80,7 +80,7 @@ proc CheckPntWindowModified {w entry} {
 # title - description of the given transfer function
 # var - name of variable where to store filename
 proc CheckPntWindow {p title var} {
-    upvar $var globalFileName
+    upvar #0 $var globalFileName
     set fileName $globalFileName
     set w $p.checkpnt
     catch {destroy $w}

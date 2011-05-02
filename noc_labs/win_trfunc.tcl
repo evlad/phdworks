@@ -1,11 +1,17 @@
+package provide win_trfunc 1.0
+
+package require Tk
+package require win_textedit
+package require win_grseries
+
 proc TrFuncFileDialog {w ent operation filepath} {
     #   Type names		Extension(s)	Mac File Type(s)
     #
     #---------------------------------------------------------
     set types {
-	{"Linear chains"	{.tf}	}
-	{"Arbitrary chains"	{.cof}	}
-	{"All files"		*	}
+	{"Линейные звенья"	{.tf}	}
+	{"Произвольные функции"	{.cof}	}
+	{"Все файлы"		*	}
     }
     set initdir [file dirname $filepath]
     set initfile [file tail $filepath]
@@ -45,7 +51,7 @@ proc TrFuncWindowOk {w entry var} {
 }
 
 proc TrFuncWindowApply {w entry var} {
-    upvar $var fileName
+    upvar #0 $var fileName
     set fileName [$entry get]
     puts "TrFuncWindowApply: '$fileName'"
 
@@ -56,12 +62,12 @@ proc TrFuncWindowApply {w entry var} {
     set activeFg [$w.buttons.cancel cget -activeforeground]
     $w.buttons.ok configure -bg $normalBg -fg $normalFg \
 	-activebackground $activeBg -activeforeground $activeFg
-    $w.buttons.apply configure -bg $normalBg -fg $normalFg \
-	-activebackground $activeBg -activeforeground $activeFg
+    #$w.buttons.apply configure -bg $normalBg -fg $normalFg \
+#	-activebackground $activeBg -activeforeground $activeFg
 }
 
 proc TrFuncWindowEdit {w title var} {
-    upvar $var fileName
+    upvar #0 $var fileName
     TextEditWindow $w "$title" $fileName
 }
 
@@ -72,8 +78,8 @@ proc TrFuncWindowModified {w entry} {
     set modifiedBg red
     $w.buttons.ok configure -bg $modifiedBg -fg $modifiedFg \
 	-activebackground $modifiedBg -activeforeground $modifiedFg
-    $w.buttons.apply configure -bg $modifiedBg -fg $modifiedFg \
-	-activebackground $modifiedBg -activeforeground $modifiedFg
+#    $w.buttons.apply configure -bg $modifiedBg -fg $modifiedFg \
+#	-activebackground $modifiedBg -activeforeground $modifiedFg
     return 1
 }
 
@@ -89,8 +95,8 @@ proc TrFuncProbe {w entry func} {
     set len0 10
     set len1 90
     set len [expr $len0 + $len1]
-    set nameInput "[file dirname $nameTrFunc][file separator]probe_$func.dat"
-    set nameOutput "[file dirname $nameTrFunc][file separator]response_$func.dat"
+    set nameInput [file join [file dirname $nameTrFunc] probe_$func.dat]
+    set nameOutput [file join [file dirname $nameTrFunc] response_$func.dat]
     if [catch {open $nameInput w} fdInput] {
 	puts stderr "Failed to create $nameInput"
 	return
@@ -127,6 +133,7 @@ proc TrFuncProbe {w entry func} {
 
     # Execute probing procedure
     set rc [catch { exec dtf $nameTrFunc $nameInput $nameOutput } dummy]
+    puts "rc=$rc; dummy=$dummy"
     if { $rc == 0 } {
 	# Plot results
 	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "$func"
@@ -135,11 +142,77 @@ proc TrFuncProbe {w entry func} {
     }
 }
 
+# Call file transfer function editor
+proc TrFuncEdit {p title var} {
+    upvar #0 $var globalFileName
+    set fileName $globalFileName
+    if {[file exists $fileName] && [file isfile $fileName]} {
+	# Let's determine type of the file
+	switch -glob -- $fileName {
+	    *.tf {
+		set descr [TrFuncParseFile $fileName]
+		if {[llength $descr] == 4 &&
+		    [lindex $descr 0] != {} && [lindex $descr 1] != {} &&
+		    [lindex $descr 2] != {} && [lindex $descr 3] != {}} {
+		    # The whole definition is in the file
+		    set ftype trfunc
+		} elseif {[llength $descr] == 4 &&
+			  [lindex $descr 0] != {}} {
+		    # Only idname was found: let's use template
+		    set descr [TrFuncParseTemplate [lindex $descr 0]]
+		    if {$descr != {}} {
+			set ftype trfunc
+		    } else {
+			set ftype undefined
+		    }
+		} else {
+		    set ftype undefined
+		}
+	    }
+	    default {
+		set ftype undefined
+	    }
+	}
+	switch -exact --  $ftype {
+	    trfunc {
+		array set params {}
+		set fd [open $fileName]
+		set ftext [split [read $fd] \n]
+		close $fd
+		set idname [lindex $descr 0]
+		set type [lindex $descr 1]
+		set label [lindex $descr 2]
+		set key_pos [lindex $descr 3]
+		TrFuncLoadConfig params $descr $ftext
+		if {[TrFuncEditor $p params $descr]} {
+		    set headLineFields [split [lindex $ftext 0]]
+		    set fd [open $fileName "w"]
+		    if {[lindex $headLineFields 0] != ";NeuCon" &&
+			[lindex $headLineFields 1] != "transfer" } {
+			puts $fd ";NeuCon transfer 1.0"
+			puts $fd "\[$type $idname\]"
+		    }
+		    TrFuncSaveConfig params $descr $fd $ftext
+		    flush $fd
+		    close $fd
+		}
+		# otherwise no changes took place
+	    }
+	    undefined {
+		TextEditWindow $p "$title" $fileName
+	    }
+	}
+    } else {
+	# New file must be created; let's ask about its type
+	puts "TODO"
+    }
+}
+
 # p - parent widget
 # title - description of the given transfer function
 # var - name of variable where to store filename
 proc TrFuncWindow {p title var} {
-    upvar $var globalFileName
+    upvar #0 $var globalFileName
     set fileName $globalFileName
     set w $p.trfunc
     catch {destroy $w}
@@ -147,10 +220,10 @@ proc TrFuncWindow {p title var} {
     wm title $w $title
 
     frame $w.file
-    label $w.file.label -text "File name:" -anchor w
+    label $w.file.label -text "Имя файла:" -anchor w
     entry $w.file.entry -width 40 -textvariable fileName
     $w.file.entry insert 0 $fileName
-    button $w.file.button -text "Browse..." \
+    button $w.file.button -text "Выбор..." \
 	-command "TrFuncFileDialog $w $w.file.entry open $fileName"
     pack $w.file.label $w.file.entry -side left
     pack $w.file.button -side left -pady 5 -padx 10
@@ -160,16 +233,16 @@ proc TrFuncWindow {p title var} {
     pack $w.buttons -side bottom -fill x -pady 2m
     button $w.buttons.ok -text "OK" \
 	-command "TrFuncWindowOk $w $w.file.entry globalFileName"
-    button $w.buttons.apply -text "Apply" \
-	-command "TrFuncWindowApply $w $w.file.entry globalFileName"
-    button $w.buttons.edit -text "Edit..." \
-	-command "TextEditWindow $w TITLE \$fileName"
-    button $w.buttons.view -text "View..."
+    #button $w.buttons.apply -text "Apply" \
+    #	-command "TrFuncWindowApply $w $w.file.entry globalFileName"
+    button $w.buttons.edit -text "Редактировать..." \
+	-command "TrFuncEdit $w TITLE \$fileName"
+    #button $w.buttons.view -text "View..."
     #button $w.buttons.probe -text "Probe..." \
 	#-command "TrFuncProbe $w $w.file.entry"
 
     set m $w.buttons.probe.m
-    menubutton $w.buttons.probe -text "Probe..." -underline 0 \
+    menubutton $w.buttons.probe -text "Отклик" -underline 0 \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     foreach signal {pulse step sin_4 sin_10 sin_20} {
@@ -178,8 +251,8 @@ proc TrFuncWindow {p title var} {
     }
     grid $w.buttons.probe -row 1 -column 0 -sticky n
 
-    button $w.buttons.cancel -text "Cancel" -command "destroy $w"
-    pack $w.buttons.ok $w.buttons.apply $w.buttons.edit $w.buttons.view \
+    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
+    pack $w.buttons.ok $w.buttons.edit \
 	$w.buttons.probe $w.buttons.cancel -side left -expand 1
 
     $w.file.entry configure -validate key -vcmd "TrFuncWindowModified $w %W"
@@ -192,13 +265,10 @@ proc TrFuncWindow {p title var} {
 #option add *font myDefaultFont
 option readfile noc_labs.ad
 
-source win_textedit.tcl
-source win_grseries.tcl
-
 #font configure default -family Freesans -size 11
 
 #set myvar "../d.cf"
-set myvar "d.tf"
+set myvar "pid.tf"
 #puts $myvar
 TrFuncWindow "" "Plant function" myvar
 #puts $myvar
