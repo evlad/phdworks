@@ -52,3 +52,42 @@ proc focusAndFlash {W fg bg {count 9}} {
 	after 200 [list focusAndFlash $W $fg $bg [expr {$count-1}]]
     }
 }
+
+# Display file selection box for listed types of files
+# - w - parent widget;
+# - operation - open or new;
+# - filepath - predefined file path;
+# - types - { {label extension} ... } (OPTIONAL).
+# Return: selected file path
+proc fileSelectionBox {w operation filepath {types {{"Все файлы" *}}}} {
+    set initdir [file dirname $filepath]
+    set initfile [file tail $filepath]
+    set initext [file extension $filepath]
+    if { $initext == "" } {
+	# Let's use the first extension among
+	set initext [lindex 0 1 $types]
+	if {$initext == "*"} {
+	    # No extension
+	    set initext ""
+	}
+    } else {
+	foreach {name ext} $types {
+	    set i [lsearch -exact $ext $initext]
+	    if { $i >= 0 } {
+		set initext [lindex $ext $i]
+		break
+	    }
+	}
+    }
+
+    if {$operation == "open"} {
+	set filepath [tk_getOpenFile -filetypes $types -parent $w \
+			  -initialdir $initdir -initialfile $initfile \
+			  -defaultextension $initext ]
+    } else {
+	set filepath [tk_getSaveFile -filetypes $types -parent $w \
+			  -initialdir $initdir -initialfile $initfile \
+			  -defaultextension $initext ]
+    }
+    return $filepath
+}
