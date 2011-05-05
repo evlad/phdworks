@@ -6,8 +6,16 @@ set undefSession "undefined"
 # Strip absolute path to the relative one if possible.
 # Examples:
 # basedir="/home/evlad/noc_labs/1"
-# abspath="/home/evlad/noc_labs/2/u.dat" => relpath="../2/u.dat"
+# abspath="/home/evlad/noc_labs/2/u.dat"
+# => relpath="../2/u.dat"
+# basedir="/home/evlad/noc_labs/1"
+# abspath="u.dat"
+# => relpath="u.dat"
 proc RelPath {basedir abspath} {
+    # Do not normalize implicitly current directory location
+    if {[file split $abspath] == $abspath} {
+	return $abspath
+    }
     set bdparts [file split [file normalize $basedir]]
     set apparts [file split [file normalize $abspath]]
     set rpparts {}

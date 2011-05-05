@@ -1,6 +1,5 @@
 package require win_textedit
-
-source ctrlsysloop.tcl
+package require win_dcsloop
 source win_checkpnt.tcl
 
 proc MenuLab1 {p t} {

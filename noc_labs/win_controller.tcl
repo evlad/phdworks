@@ -1,9 +1,9 @@
-package provide win_trfunc 1.0
+package provide win_controller 1.0
 
 package require Tk
 package require universal
 package require win_textedit
-
+package require trfunc
 
 proc ContrWindowOk {w entry var} {
     ContrWindowApply $w $entry $var
@@ -44,14 +44,13 @@ proc ContrWindowModified {w entry} {
 }
 
 # Call file transfer function editor
-proc ContrEdit {p title var} {
-    upvar #0 $var globalFileName
-    set fileName $globalFileName
+proc ContrEdit {p sessionDir title fileRelPath} {
+    set fileName [file join $sessionDir [RelPath $sessionDir $fileRelPath]]
     if {[file exists $fileName] && [file isfile $fileName]} {
 	# Let's determine type of the file
 	switch -glob -- $fileName {
 	    *.tf {
-		set descr [ContrParseFile $fileName]
+		set descr [TrFuncParseFile $fileName]
 		if {[llength $descr] == 4 &&
 		    [lindex $descr 0] != {} && [lindex $descr 1] != {} &&
 		    [lindex $descr 2] != {} && [lindex $descr 3] != {}} {
@@ -60,7 +59,7 @@ proc ContrEdit {p title var} {
 		} elseif {[llength $descr] == 4 &&
 			  [lindex $descr 0] != {}} {
 		    # Only idname was found: let's use template
-		    set descr [ContrParseTemplate [lindex $descr 0]]
+		    set descr [TrFuncParseTemplate [lindex $descr 0]]
 		    if {$descr != {}} {
 			set ftype trfunc
 		    } else {
@@ -74,7 +73,7 @@ proc ContrEdit {p title var} {
 		set ftype undefined
 	    }
 	}
-	switch -exact --  $ftype {
+	switch -exact -- $ftype {
 	    trfunc {
 		array set params {}
 		set fd [open $fileName]
@@ -84,8 +83,8 @@ proc ContrEdit {p title var} {
 		set type [lindex $descr 1]
 		set label [lindex $descr 2]
 		set key_pos [lindex $descr 3]
-		ContrLoadConfig params $descr $ftext
-		if {[ContrEditor $p params $descr]} {
+		TrFuncLoadConfig params $descr $ftext
+		if {[TrFuncEditor $p params $descr]} {
 		    set headLineFields [split [lindex $ftext 0]]
 		    set fd [open $fileName "w"]
 		    if {[lindex $headLineFields 0] != ";NeuCon" &&
@@ -93,7 +92,7 @@ proc ContrEdit {p title var} {
 			puts $fd ";NeuCon transfer 1.0"
 			puts $fd "\[$type $idname\]"
 		    }
-		    ContrSaveConfig params $descr $fd $ftext
+		    TrFuncSaveConfig params $descr $fd $ftext
 		    flush $fd
 		    close $fd
 		}
@@ -105,19 +104,53 @@ proc ContrEdit {p title var} {
 	}
     } else {
 	# New file must be created; let's ask about its type
-	puts "TODO"
+	puts "ContrEdit:TODO - new file"
     }
 }
 
+
+# Select file for traditional controller and store new value to var
+# global variable.
+proc ContrSelectTrFile {p sessionDir var} {
+    global $var
+    upvar #0 $var fileRelPath
+    puts "sessionDir=$sessionDir"
+    puts "fileRelPath=$fileRelPath"
+    set fileName [file join $sessionDir [RelPath $sessionDir $fileRelPath]]
+    set trfuncfiletypes {
+	{"Линейные звенья" {.tf}}
+	{"Произвольные функции" {.cof}}
+	{"Все файлы" *}
+    }
+    set fileName [fileSelectionBox $p open $fileName $trfuncfiletypes]
+}
+
+
+# Select file for neural net controller and store new value to var
+# global variable.
+proc ContrSelectNNFile {p sessionDir var} {
+    global $var
+    upvar #0 $var fileRelPath
+    set fileName [file join $sessionDir [RelPath $sessionDir $fileRelPath]]
+    set nnfiletypes {
+	{"Нейронные сети" {.nn}}
+	{"Все файлы" *}
+    }
+    set fileName 
+    set fileName [fileSelectionBox $p open [file join SessionDir $fileName] $nnfiletypes]
+}
+
+
 # Create dialog window with controller settings.
 # - p - parent widget;
+# - sessionDir - current session directory (for relative paths mostly);
 # - arref - name of global array variable where to store settings;
 # - ckind - index of controller kind parameter;
-# - stdfile - index of standard (not nn) controller file;
+# - trcfile - index of traditional (not nn) controller file;
 # - nncfile - index of nn controller file;
 # - nncinputs - index of nn controller inputs architecture.
 # Return: 1 if some changes took place and 0 otherwise.
-proc ContrWindow {p arref ckind stdfile nncfile nncinputs} {
+proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     upvar $arref arvar
 
     set w $p.contr
@@ -125,11 +158,18 @@ proc ContrWindow {p arref ckind stdfile nncfile nncinputs} {
     toplevel $w
     wm title $w "Controller settings"
 
-    global var_ckind var_stdfile var_nncfile var_nncinputs
+    puts "arvar($trcfile)=$arvar($trcfile)"
+
+    global var_ckind var_trcfile var_nncfile var_nncinputs
     set var_ckind $arvar($ckind)
-    set var_stdfile $arvar($stdfile)
-    set var_nncfile $arvar($nncfile)
+    set var_trcfile [RelPath $sessionDir $arvar($trcfile)]
+    set var_nncfile [RelPath $sessionDir $arvar($nncfile)]
     set var_nncinputs $arvar($nncinputs)
+
+    puts "var_trcfile=$var_trcfile"
+
+    global $w.applyChanges
+    set $w.applyChanges 0
 
     set f $w.p
     frame $f
@@ -137,11 +177,13 @@ proc ContrWindow {p arref ckind stdfile nncfile nncinputs} {
     radiobutton $f.lin_rb -text "Традиционный контроллер" \
 	-variable var_ckind -value lin
     label $f.lin_fl -text "Имя файла:" -anchor w
-    entry $f.lin_fe -width 30 -textvariable var_stdfile
-    button $f.lin_fb -text "Выбор..." \
-	-command "puts TODO"
+    entry $f.lin_fe -width 30 -textvariable var_trcfile
+    button $f.lin_fsel -text "Выбор..." \
+	-command "ContrSelectTrFile $w $sessionDir var_trcfile"
+    button $f.lin_fedit -text "Изменить..." \
+	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile"
     grid $f.lin_rb
-    grid $f.lin_fl $f.lin_fe $f.lin_fb
+    grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit
     grid $f.lin_rb -sticky nw
     grid $f.lin_fl -sticky e
 
@@ -149,16 +191,16 @@ proc ContrWindow {p arref ckind stdfile nncfile nncinputs} {
 	-variable var_ckind -value nnc
     label $f.nnc_fl -text "Имя файла:"
     entry $f.nnc_fe -width 30 -textvariable var_nncfile
-    button $f.nnc_fb -text "Выбор..." \
-	-command "puts TODO"
+    button $f.nnc_fsel -text "Выбор..." \
+	-command "ContrSelectNNFile $w $sessionDir var_nncfile"
     label $f.inp_l -text "Входы:"
     frame $f.inputs
-    foreach {n v} {re "r+e" eee "e+e+..." ede "e+de"} {
+    foreach {n v} {re "e+r" eee "e+e+..." ede "e+de"} {
 	radiobutton $f.inputs.$n -variable var_nncinputs -value $v -text $v
 	pack $f.inputs.$n -padx 2 -side left
     }
     grid $f.nnc_rb
-    grid $f.nnc_fl $f.nnc_fe $f.nnc_fb
+    grid $f.nnc_fl $f.nnc_fe $f.nnc_fsel
     grid $f.inp_l -row 4 -column 0
     grid $f.inputs -row 4 -column 1 -columnspan 2
     grid $f.nnc_rb -sticky nw
@@ -171,28 +213,34 @@ proc ContrWindow {p arref ckind stdfile nncfile nncinputs} {
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
     button $w.buttons.ok -text "OK" \
-	-command "puts TODO"
+	-command "set $w.applyChanges 1 ; destroy $w"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.cancel -side left -expand 1
 
     tkwait window $w
 
     set changed 0
-    if {$var_ckind != $arvar($ckind)} {
-	set arvar($ckind) $var_ckind
-	set changed 1
+    if {[set $w.applyChanges]} {
+	puts "dcsloop: apply changes"
+	if {$var_ckind != $arvar($ckind)} {
+	    set arvar($ckind) $var_ckind
+	    set changed 1
+	}
+	if {$var_trcfile != $arvar($trcfile)} {
+	    set arvar($trcfile) [RelPath $sessionDir $var_trcfile]
+	    set changed 1
+	}
+	if {$var_nncfile != $arvar($nncfile)} {
+	    set arvar($nncfile) [RelPath $sessionDir $var_nncfile]
+	    set changed 1
+	}
+	if {$var_nncinputs != $arvar($nncinputs)} {
+	    set arvar($nncinputs) $var_nncinputs
+	    set changed 1
+	}
     }
-    if {$var_stdfile != $arvar($stdfile)} {
-	set arvar($stdfile) $var_stdfile
-	set changed 1
-    }
-    if {$var_nncfile != $arvar($nncfile)} {
-	set arvar($nncfile) $var_nncfile
-	set changed 1
-    }
-    if {$var_nncinputs != $arvar($nncinputs)} {
-	set arvar($nncinputs) $var_nncinputs
-	set changed 1
+    if {$changed == 0} {
+	puts "dcsloop: no changes"
     }
     return $changed
 }

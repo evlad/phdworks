@@ -1,4 +1,4 @@
-#
+package provide win_dcsloop 1.0
 
 #set font "-*-helvetica-*-r-*-*-14-*-*-*-*-*-koi8-*"
 
@@ -6,14 +6,10 @@ package require files_loc
 package require draw_prim
 package require par_file
 package require win_textedit
-package require win_trfunc
-package require trfunc
-
-# Custom function implementation
-set ClassId dcsloop
+package require win_controller
 
 # Draw panel contents in given canvas
-proc $ClassId.DrawPanel {this c} {
+proc dcsloopDrawPanel {this c} {
     DrawLargeBlock $c reference "Уставка" 1.8c 4c
     DrawSmallBlock $c checkpoint_r "r" 3.5c 4c
     DrawGather $c cerr 4.5c 4c "s"
@@ -47,7 +43,7 @@ proc $ClassId.DrawPanel {this c} {
 
 
 # 8. Run the program in its session directory
-proc $ClassId.Run {p sessionDir parFile} {
+proc dcsloopRun {p sessionDir parFile} {
     puts "Run dcsloop"
     catch {cd $sessionDir} errCode1
     puts "rc=$errCode1 [pwd]"
@@ -64,10 +60,8 @@ proc $ClassId.Run {p sessionDir parFile} {
 }
 
 # Create window with panel and controls.  Returns this instance.
-proc $ClassId.CreateWindow {p} {
-    option readfile noc_labs.ad
-    global ClassId
-    set w $p.$ClassId
+proc dcsloopCreateWindow {p title} {
+    set w $p.dcsloop
 
     # Don't create the window twice
     if {[winfo exists $w]} return
@@ -77,23 +71,24 @@ proc $ClassId.CreateWindow {p} {
     wm iconname $w "CSLoop"
 
     # 1. Create session directory and remember it
-    global $ClassId.sessionDir
-    upvar #0 $ClassId.sessionDir sessionDir
-    set sessionDir [SessionDir "1"]
+    global curSessionDir
+    set curSessionDir [SessionDir "1"]
  
-    # 2. Create default parameters from templates
-    set parFile [file join $sessionDir dcsloop.par]
-    file copy -force [file join [TemplateDir] dcsloop.par] $parFile
+    set parFile [file join $curSessionDir dcsloop.par]
+    if {![file exists $parFile]} {
+	# 2. Create default parameters from templates
+	file copy -force [file join [TemplateDir] dcsloop.par] $parFile
+    }
 
     # 3. Assign parameters from file
-    global $ClassId.params
-    upvar #0 $ClassId.params params
-    array set params {}
-    ParFileFetch $parFile params
+    global dcsloop_params
+    #upvar #0 dcsloopparams params
+    array set dcsloop_params {}
+    ParFileFetch $parFile dcsloop_params
 
     # ADHOC
-    global controller
-    set controller "pid_std.tf"
+    #global controller
+    #set controller "pid_std.tf"
 
     # 4. Draw control system loop schema
     frame $w.controls
@@ -101,10 +96,10 @@ proc $ClassId.CreateWindow {p} {
     button $w.controls.params -text "Параметры" \
 	-command "TextEditWindow $w \"$parFile\" \"$parFile\""
     button $w.controls.run -text "Запустить" \
-	-command "$ClassId.Run $w $sessionDir $parFile"
-    button $w.controls.log -text "Протокол" -command "puts Nothing"
+	-command "dcsloopRun $w $curSessionDir $parFile"
+    button $w.controls.log -text "Протокол" -command "puts $w.controls.log:TODO"
     button $w.controls.series -text "Графики" \
-	-command "puts \"Series $w\""
+	-command "puts $w.controls.series:TODO"
     button $w.controls.close -text "Закрыть" \
 	-command "destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \
@@ -118,19 +113,19 @@ proc $ClassId.CreateWindow {p} {
 	-background white
     pack $c -side top -fill both -expand yes
 
-    set t "Some text"
+    #set t "Моделирование системы автоматического управления"
     set textFont [option get $c fontLargeBlock ""]
-    $c create text 0.5c 0.5c -text "$t" -justify left -anchor nw \
+    $c create text 0.5c 0.2c -text "$title" -justify left -anchor nw \
 	-fill DarkGreen -font "$textFont"
 
-    $ClassId.DrawPanel {} $c
+    dcsloopDrawPanel {} $c
 
     # 5. Connect callbacks with visual parameters settings
     # (reference+noise, modelling length) including selection of tf
     $c.reference configure -command "puts reference"
     $c.checkpoint_r configure -command "puts checkpoint_r"
     $c.checkpoint_e configure -command "puts checkpoint_e"
-    $c.controller configure -command "TrFuncWindow $w TrFunc controller"
+    $c.controller configure -command "ContrWindow $w $curSessionDir dcsloop_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign $parFile dcsloop_params"
     $c.checkpoint_u configure -command "puts checkpoint_u"
     $c.plant configure -command "puts plant"
     $c.noise configure -command "puts noise"
@@ -146,13 +141,11 @@ proc $ClassId.CreateWindow {p} {
     # Drawing series may be tuned on and off in custom manner
 }
 
-proc $ClassId.Single {} {
-    global ClassId
-    NewUser "" user1
-    $ClassId.CreateWindow ""
-}
+#proc dcsloopSingle {} {
+#    NewUser "" user1
+#    dcsloopCreateWindow ""
+#}
 
-$ClassId.Single
+#dcsloopSingle
 
-unset ClassId
 # End of file

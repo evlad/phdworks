@@ -39,7 +39,6 @@ proc TrFuncParseFile {filepath} {
 
     # Empty description
     set descr {{} {} {} {}}
-    lset descr 0 $idname
 
     foreach line $tmpl {
 	# Let's exclude empty items to get fields
@@ -51,7 +50,7 @@ proc TrFuncParseFile {filepath} {
 	}
 	if {[lindex $fields 0] != ";"} continue
 	switch -- [lindex $fields 1] {
-	    #idname: { lset descr 0 [lindex $fields 2] }
+	    idname: { lset descr 0 [lindex $fields 2] }
 	    type: { lset descr 1 [lindex $fields 2] }
 	    label: { lset descr 2 [concat [lrange $fields 2 end]] }
 	    key_pos: { lset descr 3 [lrange $fields 2 end] }
@@ -64,7 +63,7 @@ proc TrFuncParseFile {filepath} {
 # Take given name, find the template, extracts the whole description
 # and return it.
 proc TrFuncParseTemplate {idname} {
-    return TrFuncParseFile [file join [TemplateDir] "$idname.tf"]
+    return [TrFuncParseFile [file join [TemplateDir] "$idname.tf"]]
 }
 
 

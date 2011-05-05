@@ -51,8 +51,8 @@ proc ParFileAssign {filepath params} {
     }
     # Sort and remove possible duplicates among encountered names
     set foundNames [lsort -unique $foundNames]
-    puts "foundNames: $foundNames"
-    puts "arrayNames: [array names parArray]"
+    #puts "foundNames: $foundNames"
+    #puts "arrayNames: [array names parArray]"
 
     # Let's add array items which were not found in the file
     foreach index [array names parArray] {
