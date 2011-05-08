@@ -91,3 +91,36 @@ proc fileSelectionBox {w operation filepath {types {{"Все файлы" *}}}} {
     }
     return $filepath
 }
+
+# Return directory for temporal files.
+proc temporalDirectory {} {
+    # TODO: make OS dependent!
+    if {[file isdirectory /tmp]} {
+	return /tmp
+    }
+    # Return current directory
+    return .
+}
+
+# List for temporal files
+set tempFileList {}
+
+# Return temporal file with given suffix at special location.
+proc temporalFileName {suffix} {
+    global tempFileList
+    set tempFileCounter [llength $tempFileList]
+    incr tempFileCounter
+    set fileName [file join [temporalDirectory] neucon_[pid]_${tempFileCounter}$suffix]
+    lappend tempFileList $fileName
+    return $fileName
+}
+
+
+# Remove all temporal file names at the end of program.
+proc removeTemporalFiles {} {
+    global tempFileList
+    foreach fileName $tempFileList {
+	file delete -force $fileName
+    }
+    set tempFileList {}
+}

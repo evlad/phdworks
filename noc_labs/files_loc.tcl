@@ -35,6 +35,13 @@ proc RelPath {basedir abspath} {
     return [eval file join $rpparts]
 }
 
+
+# Return the shortest absolute path.
+proc AbsPath {basedir relpath} {
+    return [file join $basedir [RelPath $basedir $relpath]]
+}
+
+
 # Create or select new user directory
 proc NewUser {w {user ""}} {
     set basedir [UserBaseDir]

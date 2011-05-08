@@ -1,4 +1,7 @@
-source draw_nn.tcl
+package provide win_nnpedit 1.0
+
+package require Tk
+package require draw_nn.tcl
 
 proc NNPEditSave {w filepath} {
 }
@@ -171,6 +174,6 @@ $f.numneurons1 $f.numneurons2 $f.numneurons3" {
 }
 
 # test
-NNPEditWindow "" "Neural network editor" "testdata/res.nnc"
+#NNPEditWindow "" "Neural network editor" "testdata/res.nnc"
 #NNPEditWindow "" "Text editor title" "testdata/dcsloop.par"
 #NNPEditWindow "" "Text editor title" "testdata/res.nnc"

@@ -1,3 +1,7 @@
+package provide draw_nn 1.0
+
+package require Tk
+
 # Return architecture in format acceptable for DrawNeuralNetArch
 proc ReadNeuralNetFile {filepath} {
     if [ catch {open $filepath r} fd ] {
@@ -205,6 +209,20 @@ proc DrawNeuralNetArch {c nnarch} {
 	}
 	incr iL
     }
+}
+
+proc DisplayNeuralNetArch {p title nnFilePath} {
+    set w $p.display_nnarch
+    catch {destroy $w}
+    toplevel $w
+
+    wm title $w $title
+
+    button $w.close -text "Закрыть" -command "destroy $w"
+    canvas $w.c -width 400 -height 200
+    pack $w.close -side bottom -expand 1
+    pack $w.c -fill both -expand yes
+    DrawNeuralNetArch $w.c [ReadNeuralNetFile $nnFilePath]
 }
 
 proc TestDrawNeuralNetArch {{nnarch {6 {7 "tanh"} {4 "tanh"} {3 "linear"}}}} {

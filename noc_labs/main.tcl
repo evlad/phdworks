@@ -18,6 +18,7 @@ pkg_mkIndex .
 lappend auto_path .
 
 package require files_loc
+package require universal
 package require win_dcsloop
 
 #source lab1.tcl
@@ -42,7 +43,7 @@ foreach {label title} $menuContent {
 	      -command "CheckGoodEnv \"$w\" ; MenuLab$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
 }
 
-button $w.quit_button -text "Выход" -command { exit }
+button $w.quit_button -text "Выход" -command { removeTemporalFiles ; exit }
 pack $w.quit_button -side top -expand yes -pady 2
 
 # End of file

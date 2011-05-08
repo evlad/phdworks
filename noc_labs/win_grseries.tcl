@@ -215,6 +215,13 @@ proc GrSeriesPlot {c} {
     }
 }
 
+# Force external redraw
+proc GrSeriesRedraw {p} {
+    set c $p.grseries.graphics.c
+    GrSeriesDoPlot $c
+}
+
+
 proc GrSeriesDoPlot {c} {
     # Clean up the contents (see also the note below!)
     $c delete all
@@ -302,6 +309,17 @@ proc GrSeriesDestroy {c} {
     unset $c.bDrawLegend $c.bDrawGrid
 }
 
+proc GrSeriesCheckPresence {p} {
+    set w $p.grseries
+    if {[catch {$w cget -menu} rc]} {
+	# It's not a toplevel or does not exist
+	return 0
+    } else {
+	# There is a toplevel with such name
+	return 1
+    }
+}
+
 proc GrSeriesWindow {p title {filepath ""}} {
     #set dataByColumns = ReadSeries $filepath
     set w $p.grseries
@@ -332,15 +350,15 @@ proc GrSeriesWindow {p title {filepath ""}} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.print -text "Screenshot" \
-	-command "$c postscript -pagewidth 297.m -pageheight 210.m -colormode color -file grseries.ps"
-    button $w.buttons.curves -text "Curves..." -command "puts TODO"
+    button $w.buttons.print -text "Снимок экрана" \
+	-command "$c postscript -pagewidth 297.m -pageheight 210.m -colormode color -file screenshot.ps"
+    button $w.buttons.curves -text "Ряды..." -command "puts TODO"
 
     set o $w.buttons.options
     frame $o
-    checkbutton $o.grid -text "Grid" \
+    checkbutton $o.grid -text "Сетка" \
 	-variable $c.bDrawGrid -command "GrSeriesDoPlot $c"
-    checkbutton $o.legend -text "Legend" \
+    checkbutton $o.legend -text "Легенда" \
 	-variable $c.bDrawLegend -command "GrSeriesDoPlot $c"
     global xmin xmax ymin ymax
     button $o.xlabel -text "X:" -command "GrSeriesViewAll $c x" -pady 0
@@ -354,8 +372,8 @@ proc GrSeriesWindow {p title {filepath ""}} {
     hint $o.ylabel "Press to set the whole Y range"
 
     # after entries to make exact focus order by Tab/Shift-Tab
-    button $w.buttons.redraw -text "Redraw" -command "GrSeriesDoPlot $c"
-    button $w.buttons.close -text "Close" \
+    button $w.buttons.redraw -text "Обновить" -command "GrSeriesDoPlot $c"
+    button $w.buttons.close -text "Закрыть" \
 	-command "GrSeriesDestroy $c ; destroy $w"
 
     grid $o.grid $o.xlabel $o.xmin $o.xmax -sticky w
@@ -367,7 +385,7 @@ proc GrSeriesWindow {p title {filepath ""}} {
 
 proc GrSeriesTest {} {
     #GrSeriesWindow "" "Series plot" testdata/sine1k.dat
-    GrSeriesWindow "" "Series plot"
+    #GrSeriesWindow "" "Series plot"
     # testdata/r.dat
 
     set xd 1

@@ -7,6 +7,8 @@ package require draw_prim
 package require par_file
 package require win_textedit
 package require win_controller
+package require win_plant
+package require win_signal
 
 # Draw panel contents in given canvas
 proc dcsloopDrawPanel {this c} {
@@ -44,11 +46,13 @@ proc dcsloopDrawPanel {this c} {
 
 # 8. Run the program in its session directory
 proc dcsloopRun {p sessionDir parFile} {
+    set cwd [pwd]
     puts "Run dcsloop"
     catch {cd $sessionDir} errCode1
     puts "rc=$errCode1 [pwd]"
     catch {exec dcsloop $parFile >/dev/null 2>dcsloop.err} errCode2
     puts "rc=$errCode2"
+    cd $cwd
 
     # 9. Refresh state of controls
     # TODO
@@ -57,6 +61,31 @@ proc dcsloopRun {p sessionDir parFile} {
     set logFile [file rootname $parFile].log
     $p.controls.log configure \
 	-command "TextEditWindow $p \"$logFile\" \"$logFile\""
+}
+
+# Add given checkpoint to plotter window or display the data file.
+proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
+    set filePath [AbsPath $sessionDir $fileName]
+    global dcsloop_grSeries
+    if {[GrSeriesCheckPresence $p]} {
+	# Avoid adding one series several times
+	if {[lsearch -exact $dcsloop_grSeries $fileName] == -1} {
+	    if {[file exists $filePath]} {
+		set wholeData [GrSeriesReadFile $filePath]
+		GrSeriesAddSeries $p "[lindex $wholeData 0]" $label
+		GrSeriesRedraw $p
+		lappend dcsloop_grSeries $fileName
+	    }
+	}
+    } else {
+	# Make empty list of series to plot
+	set dcsloop_grSeries {}
+
+	# Display file contents
+	if {[file exists $filePath]} {
+	    TextEditWindow $p "Series $fileName" $filePath
+	}
+    }
 }
 
 # Create window with panel and controls.  Returns this instance.
@@ -86,9 +115,8 @@ proc dcsloopCreateWindow {p title} {
     array set dcsloop_params {}
     ParFileFetch $parFile dcsloop_params
 
-    # ADHOC
-    #global controller
-    #set controller "pid_std.tf"
+    global dcsloop_grSeries
+    set dcsloop_grSeries {}
 
     # 4. Draw control system loop schema
     frame $w.controls
@@ -97,9 +125,9 @@ proc dcsloopCreateWindow {p title} {
 	-command "TextEditWindow $w \"$parFile\" \"$parFile\""
     button $w.controls.run -text "Запустить" \
 	-command "dcsloopRun $w $curSessionDir $parFile"
-    button $w.controls.log -text "Протокол" -command "puts $w.controls.log:TODO"
+    button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "puts $w.controls.series:TODO"
+	-command "GrSeriesWindow $w \"Series plot\""
     button $w.controls.close -text "Закрыть" \
 	-command "destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \
@@ -122,15 +150,22 @@ proc dcsloopCreateWindow {p title} {
 
     # 5. Connect callbacks with visual parameters settings
     # (reference+noise, modelling length) including selection of tf
-    $c.reference configure -command "puts reference"
-    $c.checkpoint_r configure -command "puts checkpoint_r"
-    $c.checkpoint_e configure -command "puts checkpoint_e"
-    $c.controller configure -command "ContrWindow $w $curSessionDir dcsloop_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign $parFile dcsloop_params"
-    $c.checkpoint_u configure -command "puts checkpoint_u"
-    $c.plant configure -command "puts plant"
-    $c.noise configure -command "puts noise"
-    $c.checkpoint_n configure -command "puts checkpoint_n"
-    $c.checkpoint_y configure -command "puts checkpoint_y"
+    $c.reference configure \
+	-command "SignalWindow $w $curSessionDir refer dcsloop_params input_kind in_r refer_tf stream_len ; ParFileAssign $parFile dcsloop_params"
+    $c.controller configure \
+	-command "ContrWindow $w $curSessionDir dcsloop_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign $parFile dcsloop_params"
+    $c.plant configure \
+	-command "PlantWindow $w $curSessionDir dcsloop_params linplant_tf ; ParFileAssign $parFile dcsloop_params"
+    $c.noise configure \
+	-command "SignalWindow $w $curSessionDir noise dcsloop_params input_kind in_n noise_tf stream_len ; ParFileAssign $parFile dcsloop_params"
+
+    # Assign name of check point output files
+    foreach {chkpnt parname} {checkpoint_r out_r checkpoint_n out_n
+	checkpoint_u out_u checkpoint_e out_e checkpoint_y out_ny} {
+	set label [$c.$chkpnt cget -text]
+	$c.$chkpnt configure \
+	    -command "dcsloopCheckPoint $w $chkpnt $curSessionDir $dcsloop_params($parname) \"$label\""
+    }
 
     # 
     # Prepare template parameters file
