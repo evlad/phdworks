@@ -47,7 +47,7 @@ proc ContrWindowModified {w entry} {
 # Call file transfer function editor
 proc ContrEdit {p sessionDir title fileRelPath} {
     puts "ContrEdit: $sessionDir $fileRelPath"
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     if {![file exists $fileName]} {
 	# New file must be created; let's ask about its type
 	# Let's determine type of the file
@@ -133,14 +133,16 @@ proc ContrSelectTrFile {p sessionDir var} {
     upvar #0 $var fileRelPath
     puts "sessionDir=$sessionDir"
     puts "fileRelPath=$fileRelPath"
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set trfuncfiletypes {
 	{"Линейные звенья" {.tf}}
 	{"Произвольные функции" {.cof}}
 	{"Все файлы" *}
     }
     set fileName [fileSelectionBox $p open $fileName $trfuncfiletypes]
-    set fileRelPath [RelPath $sessionDir $fileName]
+    if {$fileName != {}} {
+	set fileRelPath [SessionRelPath $sessionDir $fileName]
+    }
 }
 
 
@@ -149,13 +151,15 @@ proc ContrSelectTrFile {p sessionDir var} {
 proc ContrSelectNNFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set nnfiletypes {
 	{"Нейронные сети" {.nn}}
 	{"Все файлы" *}
     }
     set fileName [fileSelectionBox $p open [file join SessionDir $fileName] $nnfiletypes]
-    set fileRelPath [RelPath $sessionDir $fileName]
+    if {$fileName != {}} {
+	set fileRelPath [SessionRelPath $sessionDir $fileName]
+    }
 }
 
 
@@ -163,7 +167,7 @@ proc ContrSelectNNFile {p sessionDir var} {
 proc ContrlViewNNFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    DisplayNeuralNetArch $p $fileRelPath [AbsPath $sessionDir $fileRelPath]
+    DisplayNeuralNetArch $p $fileRelPath [SessionAbsPath $sessionDir $fileRelPath]
 }
 
 
@@ -188,8 +192,8 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 
     global var_ckind var_trcfile var_nncfile var_nncinputs
     set var_ckind $arvar($ckind)
-    set var_trcfile [RelPath $sessionDir $arvar($trcfile)]
-    set var_nncfile [RelPath $sessionDir $arvar($nncfile)]
+    set var_trcfile [SessionRelPath $sessionDir $arvar($trcfile)]
+    set var_nncfile [SessionRelPath $sessionDir $arvar($nncfile)]
     set var_nncinputs $arvar($nncinputs)
 
     puts "var_trcfile=$var_trcfile"
@@ -259,11 +263,11 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 	    set changed 1
 	}
 	if {$var_trcfile != $arvar($trcfile)} {
-	    set arvar($trcfile) [RelPath $sessionDir $var_trcfile]
+	    set arvar($trcfile) [SessionRelPath $sessionDir $var_trcfile]
 	    set changed 1
 	}
 	if {$var_nncfile != $arvar($nncfile)} {
-	    set arvar($nncfile) [RelPath $sessionDir $var_nncfile]
+	    set arvar($nncfile) [SessionRelPath $sessionDir $var_nncfile]
 	    set changed 1
 	}
 	if {$var_nncinputs != $arvar($nncinputs)} {

@@ -111,8 +111,8 @@ proc TextEditWindow {p title filepath} {
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
     button $w.buttons.ok -text "OK" -command "TextEditOk $w $filepath"
-    button $w.buttons.save -text "Save" -command "TextEditSave $w $filepath"
-    button $w.buttons.cancel -text "Cancel" -command "destroy $w"
+    button $w.buttons.save -text "Сохранить" -command "TextEditSave $w $filepath"
+    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
     set f [frame $w.textarea]

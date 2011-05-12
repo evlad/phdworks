@@ -309,6 +309,13 @@ proc GrSeriesDestroy {c} {
     unset $c.bDrawLegend $c.bDrawGrid
 }
 
+proc GrSeriesScreenshot {w c} {
+    set fileName screenshot.ps
+    $c postscript -pagewidth 297.m -pageheight 210.m \
+	-colormode color -file $fileName
+    puts "See screenshot in [file join [pwd] $fileName]"
+}
+
 proc GrSeriesCheckPresence {p} {
     set w $p.grseries
     if {[catch {$w cget -menu} rc]} {
@@ -319,6 +326,7 @@ proc GrSeriesCheckPresence {p} {
 	return 1
     }
 }
+
 
 proc GrSeriesWindow {p title {filepath ""}} {
     #set dataByColumns = ReadSeries $filepath
@@ -351,7 +359,7 @@ proc GrSeriesWindow {p title {filepath ""}} {
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
     button $w.buttons.print -text "Снимок экрана" \
-	-command "$c postscript -pagewidth 297.m -pageheight 210.m -colormode color -file screenshot.ps"
+	-command "GrSeriesScreenshot $w $c"
     button $w.buttons.curves -text "Ряды..." -command "puts TODO"
 
     set o $w.buttons.options

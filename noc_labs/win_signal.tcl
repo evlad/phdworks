@@ -47,7 +47,7 @@ proc SignalWindowModified {w entry} {
 # Call file transfer function editor
 proc SignalEditFilter {p sessionDir title fileRelPath} {
     puts "SignalEditFilter: $sessionDir $fileRelPath"
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     if {![file exists $fileName]} {
 	# New file must be created; let's ask about its type
 	# Let's determine type of the file
@@ -130,7 +130,7 @@ proc SignalEditFilter {p sessionDir title fileRelPath} {
 proc SignalViewDataFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    GrSeriesWindow $p $fileRelPath [AbsPath $sessionDir $fileRelPath]
+    GrSeriesWindow $p $fileRelPath [SessionAbsPath $sessionDir $fileRelPath]
 }
 
 
@@ -140,14 +140,16 @@ proc SignalSelectFiltFile {p sessionDir var} {
     upvar #0 $var fileRelPath
     puts "sessionDir=$sessionDir"
     puts "fileRelPath=$fileRelPath"
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set trfuncfiletypes {
 	{"Линейные звенья" {.tf}}
 	{"Произвольные функции" {.cof}}
 	{"Все файлы" *}
     }
     set fileName [fileSelectionBox $p open $fileName $trfuncfiletypes]
-    set fileRelPath [RelPath $sessionDir $fileName]
+    if {$fileName != {}} {
+	set fileRelPath [SessionRelPath $sessionDir $fileName]
+    }
 }
 
 
@@ -156,13 +158,15 @@ proc SignalSelectFiltFile {p sessionDir var} {
 proc SignalSelectDataFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set nnfiletypes {
 	{"Файлы данных" {.dat}}
 	{"Все файлы" *}
     }
-    set fileName [fileSelectionBox $p open [file join SessionDir $fileName] $nnfiletypes]
-    set fileRelPath [RelPath $sessionDir $fileName]
+    set fileName [fileSelectionBox $p open [file join $fileName] $nnfiletypes]
+    if {$fileName != {}} {
+	set fileRelPath [SessionRelPath $sessionDir $fileName]
+    }
 }
 
 
@@ -186,8 +190,8 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
     global var_sigsrc var_datafile_$signal var_filtfile_$signal var_filtlen
     set var_sigsrc $arvar($sigsrc)
     set var_filtlen $arvar($filtlen)
-    set var_filtfile_$signal [RelPath $sessionDir $arvar($filtfile)]
-    set var_datafile_$signal [RelPath $sessionDir $arvar($datafile)]
+    set var_filtfile_$signal [SessionRelPath $sessionDir $arvar($filtfile)]
+    set var_datafile_$signal [SessionRelPath $sessionDir $arvar($datafile)]
 
     global $w.applyChanges
     set $w.applyChanges 0
@@ -265,11 +269,11 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
 	    set changed 1
 	}
 	if {[set var_datafile_$signal] != $arvar($datafile)} {
-	    set arvar($datafile) [RelPath $sessionDir [set var_datafile_$signal]]
+	    set arvar($datafile) [SessionRelPath $sessionDir [set var_datafile_$signal]]
 	    set changed 1
 	}
 	if {[set var_filtfile_$signal] != $arvar($filtfile)} {
-	    set arvar($filtfile) [RelPath $sessionDir [set var_filtfile_$signal]]
+	    set arvar($filtfile) [SessionRelPath $sessionDir [set var_filtfile_$signal]]
 	    set changed 1
 	}
 	if {$var_filtlen != $arvar($filtlen)} {

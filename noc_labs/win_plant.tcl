@@ -47,7 +47,7 @@ proc PlantWindowModified {w entry} {
 # Call file transfer function editor
 proc PlantEdit {p sessionDir title fileRelPath} {
     puts "PlantEdit: $sessionDir $fileRelPath"
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     if {![file exists $fileName]} {
 	# New file must be created; let's ask about its type
 	# Let's determine type of the file
@@ -130,14 +130,16 @@ proc PlantEdit {p sessionDir title fileRelPath} {
 proc PlantSelectTrFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    set fileName [AbsPath $sessionDir $fileRelPath]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set trfuncfiletypes {
 	{"Линейные звенья" {.tf}}
 	{"Произвольные функции" {.cof}}
 	{"Все файлы" *}
     }
     set fileName [fileSelectionBox $p open $fileName $trfuncfiletypes]
-    set fileRelPath [RelPath $sessionDir $fileName]
+    if {$fileName != {}} {
+	set fileRelPath [SessionRelPath $sessionDir $fileName]
+    }
 }
 
 
@@ -156,7 +158,7 @@ proc PlantWindow {p sessionDir arref plantfile} {
     wm title $w "Plant settings"
 
     global var_plantfile
-    set var_plantfile [RelPath $sessionDir $arvar($plantfile)]
+    set var_plantfile [SessionRelPath $sessionDir $arvar($plantfile)]
 
     global $w.applyChanges
     set $w.applyChanges 0

@@ -65,7 +65,7 @@ proc dcsloopRun {p sessionDir parFile} {
 
 # Add given checkpoint to plotter window or display the data file.
 proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
-    set filePath [AbsPath $sessionDir $fileName]
+    set filePath [SessionAbsPath $sessionDir $fileName]
     global dcsloop_grSeries
     if {[GrSeriesCheckPresence $p]} {
 	# Avoid adding one series several times
@@ -89,21 +89,20 @@ proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
 }
 
 # Create window with panel and controls.  Returns this instance.
-proc dcsloopCreateWindow {p title} {
+proc dcsloopCreateWindow {p title sessionDir} {
     set w $p.dcsloop
 
     # Don't create the window twice
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w "Control system loop modeling"
-    wm iconname $w "CSLoop"
+    wm title $w "Control system loop modeling; (session $sessionDir)"
+    wm iconname $w "$sessionDir"
 
-    # 1. Create session directory and remember it
-    global curSessionDir
-    set curSessionDir [SessionDir "1"]
+    # 1. Use current session directory
+    set curSessionDir $sessionDir
  
-    set parFile [file join $curSessionDir dcsloop.par]
+    set parFile [file join [SessionDir $curSessionDir] dcsloop.par]
     if {![file exists $parFile]} {
 	# 2. Create default parameters from templates
 	file copy -force [file join [TemplateDir] dcsloop.par] $parFile
@@ -143,8 +142,8 @@ proc dcsloopCreateWindow {p title} {
 
     #set t "Моделирование системы автоматического управления"
     set textFont [option get $c fontLargeBlock ""]
-    $c create text 0.5c 0.2c -text "$title" -justify left -anchor nw \
-	-fill DarkGreen -font "$textFont"
+    $c create text 0.5c 0.2c -text "$title\nСеанс $sessionDir" \
+	-justify left -anchor nw -fill DarkGreen -font "$textFont"
 
     dcsloopDrawPanel {} $c
 

@@ -1,5 +1,7 @@
 package provide files_loc 1.0
 
+package require universal
+
 # Name of the undefined session directory
 set undefSession "undefined"
 
@@ -36,9 +38,21 @@ proc RelPath {basedir abspath} {
 }
 
 
+# Relative path to the given session dir.
+proc SessionRelPath {sessionDir abspath} {
+    return [RelPath [SessionDir $sessionDir] $abspath]
+}
+
+
 # Return the shortest absolute path.
 proc AbsPath {basedir relpath} {
     return [file join $basedir [RelPath $basedir $relpath]]
+}
+
+
+# Absolute path to the given session dir.
+proc SessionAbsPath {sessionDir relpath} {
+    return [AbsPath [SessionDir $sessionDir] $relpath]
 }
 
 
@@ -97,7 +111,7 @@ proc SystemDir {} {
     } else {
 	set dir $env(NOCLABSYSDIR)
     }
-    puts "System directory is expected at $dir"
+    #puts "System directory is expected at $dir"
     #file mkdir $dir
     return $dir
 }
@@ -128,4 +142,90 @@ proc WorkDataDir {} {
 proc TemplateDir {} {
     set td [file join [SystemDir] templates]
     return $td
+}
+
+
+proc NewSessionOk {w l} {
+    global curSessionDir
+    # Here the first the digits (or the first word) must be taken
+    set curSessionDir [$l get [$l curselection]]
+    if {$curSessionDir != {}} {
+	destroy $w
+    }
+}
+
+# Create or select session directory of given type (markfile should present)
+proc NewSession {p markfile} {
+    global curUserDir curSessionDir
+
+    if {[catch {glob -tails -directory $curUserDir -types d \
+		    "\[0-9\]\[0-9\]\[0-9\]"} sessionList]} {
+	set curSessionDir NEW
+	set lastNum "000"
+    } else {
+	set lastNum [lindex [lsort $sessionList] end]
+
+	# Let's allow user to select session
+	set matchedSessionList {}
+	foreach sessionDir $sessionList {
+	    if {[file exists [file join $curUserDir $sessionDir $markfile]]} {
+		lappend matchedSessionList $sessionDir
+		# It's possible to append comments too
+	    }
+	}
+	set sessionList [lsort $matchedSessionList]
+	if {$sessionList == {}} {
+	    set curSessionDir NEW
+	} else {
+	    # There are matched sessions
+	    set w $p.selectSession
+
+	    # Don't create the window twice
+	    if {[winfo exists $w]} return
+
+	    toplevel $w
+	    wm title $w "Select session"
+	    wm iconname $w "Select"
+
+	    global curSessionDir
+	    set curSessionDir {}
+
+	    label $w.title -text "Выберите сеанс"
+	    pack $w.title -side top -fill x
+
+	    frame $w.list
+	    set l [Scrolled_Listbox $w.list.sessions -width 20 -height 5 \
+		       -selectmode single]
+	    foreach it  $sessionList {
+		$l insert end $it
+	    }
+	    # Select and show the last item
+	    $l selection set end
+	    $l yview moveto 1.0
+
+	    pack $w.list.sessions -side left -expand true -fill both
+	    pack $w.list -side top -fill x -pady 2m
+
+	    frame $w.buttons
+	    pack $w.buttons -side bottom -fill x -pady 2m
+	    button $w.buttons.ok -text "OK" -command "NewSessionOk $w $l"
+	    button $w.buttons.new -text "Новый" -command "set curSessionDir NEW ; destroy $w"
+	    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
+	    pack $w.buttons.ok $w.buttons.new $w.buttons.cancel -side left -expand 1
+	    bind $l <Double-1> "NewSessionOk $w $l"
+
+	    tkwait window $w
+
+	    if {$curSessionDir == {}} {
+		return {}
+	    }
+	}
+    }
+    puts "curSessionDir=$curSessionDir"
+    if {$curSessionDir == "NEW"} {
+	scan $lastNum "%d" lastNum
+	set curSessionDir [format "%03d" [incr lastNum]]
+    }
+    puts "==> curSessionDir=$curSessionDir"
+    return $curSessionDir
 }

@@ -12,7 +12,7 @@ package require win_grseries
 # ; label: Bla-bla-bla
 # [type idname_N]
 # ...
-# ... pos ... ; key
+# ... pos ... ; key1 key2
 # ...
 #
 
@@ -57,6 +57,7 @@ proc TrFuncParseFile {filepath} {
 	    key_pos: { lset descr 3 [lrange $fields 2 end] }
 	}
     }
+    puts "Parse $filepath: descr=$descr"
     return $descr
 }
 
@@ -140,13 +141,14 @@ proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
 	#puts "Fields: $fields"
 	# Let's try to find key in the line
 	foreach {key pos} $key_pos {
-	    # Key is the last field when the previous is ;
-	    if {[lindex $fields end-1] == ";" && \
-		    [lindex $fields end] == $key && \
-		    $this($key) != {}} {
-		lset fields $pos $this($key)
-		puts "$key=$this($key)"
-		break
+	    # Key presents somewhere after ;
+	    set cindex [lsearch -exact $fields ";"]
+	    if {[info exists this($key)] && $cindex > 0} {
+		# There is a comment, let's find keyword
+		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
+		    lset fields $pos $this($key)
+		    puts "$key=$this($key)"
+		}
 	    }
 	}
 	# Let's produce output line
@@ -174,13 +176,16 @@ proc TrFuncLoadConfig {thisvar descr ftext} {
 	    }
 	}
 	# Let's try to find key in the line
+	puts "this: [array get this]"
 	foreach {key pos} $key_pos {
-	    # Key is the last field when the previous is ;
-	    if {[lindex $fields end-1] == ";" && \
-		    [lindex $fields end] == $key} {
-		set this($key) [lindex $fields $pos]
-		puts "[lindex $fields $pos] ==> $key=$this($key)"
-		break
+	    # Key presents somewhere after ;
+	    set cindex [lsearch -exact $fields ";"]
+	    if {$cindex > 0} {
+		# There is a comment, let's find all keywords
+		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
+		    set this($key) [lindex $fields $pos]
+		    puts "[lindex $fields $pos] ==> $key=$this($key)"
+		}
 	    }
 	}
     }
@@ -290,15 +295,20 @@ proc TrFuncEditor {p thisvar descr} {
     set save_all_vars $w.save_all_vars
     global $save_all_vars
     set $save_all_vars ""
+    puts "key_pos: $key_pos"
     foreach {key pos} $key_pos {
 	label $w.parameters.label_$key -text $key
 	set e $w.parameters.value_$key
 	# This variable is global
 	set evar $w.var_$key
 	global $evar
-	set $evar $this($key)
+	if {[info exists this($key)]} {
+	    set $evar $this($key)
+	} else {
+	    set $evar ""
+	}
 	entry $e -width 12 -validate focus -vcmd {string is double %P}
-	$e insert 0 $this($key)
+	$e insert 0 [set $evar]
 	set $save_all_vars "set $evar \[$e get\] ; [set $save_all_vars]"
 	$e configure -invalidcommand "focusAndFlash %W [$e cget -fg] [$e cget -bg]"
 	grid $w.parameters.label_$key $e

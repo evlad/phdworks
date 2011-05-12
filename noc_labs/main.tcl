@@ -28,7 +28,11 @@ set menuContent {
 }
 
 proc MenuLab1 {w title} {
-    dcsloopCreateWindow $w $title
+    # Create or use session directory and remember it
+    set sessionDir [NewSession $w dcsloop.par]
+    if {$sessionDir != {}} {
+	dcsloopCreateWindow $w $title $sessionDir
+    }
 }
 
 pack [button $w.user_button \
