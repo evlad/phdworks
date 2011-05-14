@@ -5,7 +5,7 @@ package require Tk
 # Return architecture in format acceptable for DrawNeuralNetArch
 proc ReadNeuralNetFile {filepath} {
     if [ catch {open $filepath r} fd ] {
-	puts stderr "Failed to open $filepath: $fd"
+	error "Failed to open $filepath: $fd"
 	return
     }
     # read all lines

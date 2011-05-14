@@ -1,93 +1,205 @@
+# Transfer function implementation
 package provide win_trfunc 1.0
 
 package require Tk
-package require win_textedit
+package require files_loc
+package require universal
 package require win_grseries
 
-proc TrFuncFileDialog {w ent operation filepath} {
-    #   Type names		Extension(s)	Mac File Type(s)
-    #
-    #---------------------------------------------------------
-    set types {
-	{"Линейные звенья"	{.tf}	}
-	{"Произвольные функции"	{.cof}	}
-	{"Все файлы"		*	}
+# ; idname: 
+# ; label: Bla-bla-bla
+# ; label: Bla-bla-bla
+# ; label: Bla-bla-bla
+# [type idname_N]
+# ...
+# ... pos ... ; key1 key2
+# ...
+#
+
+# idname.tf contains template for the object.  Also, idname.ppm
+# contains visual representation of the trfunc for the user.
+
+# Object description must contain:
+# idname - how to distinguish this object among other of this type
+# type - type of the function 
+# label - how to title the object
+# {key pos ...} - the position of the value in the line with key
+
+# For example,
+# {pid1 TransferFunc "ПИД регулятор (Kp Ki Kd)" {{Kp 0} {Ki 0} {Kd 0}}}
+
+# Take file path, find keywords in it, extracts the whole description
+# and return it.
+proc TrFuncParseFile {filepath} {
+    if [ catch {open $filepath} fdtmpl ] {
+	error "Failed to open $filepath: $fdtmpl"
+	return
     }
-    set initdir [file dirname $filepath]
-    set initfile [file tail $filepath]
-    set initext [file extension $filepath]
-    if { $initext == "" } {
-	set initext .tf
-    } else {
-	foreach {name ext} $types {
-	    set i [lsearch -exact $ext $initext]
-	    if { $i >= 0 } {
-		set initext [lindex $ext $i]
-		break
+    set tmpl [split [read $fdtmpl] \n]
+    close $fdtmpl
+
+    # Empty description
+    set descr {{} {} {} {}}
+
+    foreach line $tmpl {
+	# Let's exclude empty items to get fields
+	set fields {}
+	foreach f [split $line] {
+	    if {$f != {}} {
+		lappend fields $f
+	    }
+	}
+	if {[lindex $fields 0] != ";"} continue
+	switch -- [lindex $fields 1] {
+	    idname: { lset descr 0 [lindex $fields 2] }
+	    type: { lset descr 1 [lindex $fields 2] }
+	    label: { lset descr 2 [concat [lrange $fields 2 end]] }
+	    key_pos: { lset descr 3 [lrange $fields 2 end] }
+	}
+    }
+    #puts "Parse $filepath: descr=$descr"
+    return $descr
+}
+
+
+# Take given name, find the template, extracts the whole description
+# and return it.
+proc TrFuncParseTemplate {idname} {
+    return [TrFuncParseFile [file join [TemplateDir] "$idname.tf"]]
+}
+
+
+# Copy given template to pointed file.
+proc TrFuncUseTemplate {idname filePath} {
+    file copy -force [file join [TemplateDir] "$idname.tf"] $filePath
+}
+
+
+# Save to temporal file given variables and return the file path.
+proc TrFuncSaveToTemporal {thisvar descr} {
+    upvar $thisvar this
+
+    # Create temporal file with parameters
+    set idname [lindex $descr 0]
+    set type [lindex $descr 1]
+    set label [lindex $descr 2]
+    set key_pos [lindex $descr 3]
+    set fileName [temporalFileName .tf]
+    TrFuncUseTemplate $idname $fileName
+
+    # Store parameters to the temporal file
+    array set dummy {}
+    set fd [open $fileName]
+    set ftext [split [read $fd] \n]
+    close $fd
+    set headLineFields [split [lindex $ftext 0]]
+    set fd [open $fileName "w"]
+    if {[lindex $headLineFields 0] != ";NeuCon" &&
+	[lindex $headLineFields 1] != "transfer" } {
+	puts $fd ";NeuCon transfer 1.0"
+	puts $fd "\[$type $idname\]"
+    }
+    TrFuncSaveConfig this $descr $fd $ftext
+    flush $fd
+    close $fd
+    return $fileName
+}
+
+
+# Save object to given file descriptor.
+# - this - object internal data (array with keys);
+# - descr - object description;
+# - fd - file descriptor to output (.tf or .cof format);
+# - tmpl - contents of the template file (optional).
+proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
+    upvar $thisvar this
+    set idname [lindex $descr 0]
+    set type [lindex $descr 1]
+    set label [lindex $descr 2]
+    set key_pos [lindex $descr 3]
+
+    # Take template
+    if {$tmpl == {}} {
+	set filepath [file join [TemplateDir] "$idname.tf"]
+	if [ catch {open $filepath} fdtmpl ] {
+	    error "Failed to open template $filepath: $fdtmpl"
+	    return
+	}
+	set tmpl [split [read $fdtmpl] \n]
+	close $fdtmpl
+    }
+
+    # It's suggested:
+    #puts $fd ";NeuCon transfer 1.0"
+    #puts $fd "\[$type $idname\]"
+    foreach line $tmpl {
+	#puts "Line: $line"
+	# Let's exclude empty items to get fields
+	set fields {}
+	foreach f [split $line] {
+	    if {$f != {}} {
+		lappend fields $f
+	    }
+	}
+	#puts "Fields: $fields"
+	# Let's try to find key in the line
+	foreach {key pos} $key_pos {
+	    # Key presents somewhere after ;
+	    set cindex [lsearch -exact $fields ";"]
+	    if {[info exists this($key)] && $cindex > 0} {
+		# There is a comment, let's find keyword
+		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
+		    lset fields $pos $this($key)
+		    #puts "$key=$this($key)"
+		}
+	    }
+	}
+	# Let's produce output line
+	puts $fd [join $fields]
+    }
+}
+
+# Load object from given text taken from file.
+# - this - object internal data (array with keys) - result;
+# - descr - object description;
+# - ftext - file contents to parse (.tf or .cof format).
+proc TrFuncLoadConfig {thisvar descr ftext} {
+    upvar $thisvar this
+    set idname [lindex $descr 0]
+    set type [lindex $descr 1]
+    set label [lindex $descr 2]
+    set key_pos [lindex $descr 3]
+
+    foreach line $ftext {
+	# Let's exclude empty items to get fields
+	set fields {}
+	foreach f [split $line] {
+	    if {$f != {}} {
+		lappend fields $f
+	    }
+	}
+	# Let's try to find key in the line
+	#puts "this: [array get this]"
+	foreach {key pos} $key_pos {
+	    # Key presents somewhere after ;
+	    set cindex [lsearch -exact $fields ";"]
+	    if {$cindex > 0} {
+		# There is a comment, let's find all keywords
+		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
+		    set this($key) [lindex $fields $pos]
+		    #puts "[lindex $fields $pos] ==> $key=$this($key)"
+		}
 	    }
 	}
     }
-    #puts "Extension: $initext"
-
-    if {$operation == "open"} {
-	set filepath [tk_getOpenFile -filetypes $types -parent $w \
-			  -initialdir $initdir -initialfile $initfile \
-			  -defaultextension $initext ]
-    } else {
-	set filepath [tk_getSaveFile -filetypes $types -parent $w \
-			  -initialdir $initdir -initialfile $initfile \
-			  -defaultextension $initext ]
-    }
-    if {[string compare $filepath ""]} {
-	$ent delete 0 end
-	$ent insert 0 $filepath
-	$ent xview end
-    }
 }
 
-proc TrFuncWindowOk {w entry var} {
-    TrFuncWindowApply $w $entry $var
-    destroy $w
-}
 
-proc TrFuncWindowApply {w entry var} {
-    upvar #0 $var fileName
-    set fileName [$entry get]
-    puts "TrFuncWindowApply: '$fileName'"
-
-    # Restore normal attributes
-    set normalBg [$w.buttons.cancel cget -bg]
-    set normalFg [$w.buttons.cancel cget -fg]
-    set activeBg [$w.buttons.cancel cget -activebackground]
-    set activeFg [$w.buttons.cancel cget -activeforeground]
-    $w.buttons.ok configure -bg $normalBg -fg $normalFg \
-	-activebackground $activeBg -activeforeground $activeFg
-    #$w.buttons.apply configure -bg $normalBg -fg $normalFg \
-#	-activebackground $activeBg -activeforeground $activeFg
-}
-
-proc TrFuncWindowEdit {w title var} {
-    upvar #0 $var fileName
-    TextEditWindow $w "$title" $fileName
-}
-
-proc TrFuncWindowModified {w entry} {
-    #puts "Modified: $w $entry"
-    # Set attributes of modified text contents
-    set modifiedFg white
-    set modifiedBg red
-    $w.buttons.ok configure -bg $modifiedBg -fg $modifiedFg \
-	-activebackground $modifiedBg -activeforeground $modifiedFg
-#    $w.buttons.apply configure -bg $modifiedBg -fg $modifiedFg \
-#	-activebackground $modifiedBg -activeforeground $modifiedFg
-    return 1
-}
-
-proc TrFuncProbe {w entry func} {
-    set nameTrFunc [$entry get]
-    puts "TrFuncProbe: '$nameTrFunc'"
-    if {![file exists $nameTrFunc]} {
-	puts stderr "File '$nameTrFunc' does not exist"
+# Display response of the transfer function stored in given file to
+# the given probe signal.
+proc TrFuncProbe {w trFilePath probe} {
+    if {![file exists $trFilePath]} {
+	error "File '$trFilePath' does not exist"
 	return
     }
 
@@ -95,21 +207,21 @@ proc TrFuncProbe {w entry func} {
     set len0 10
     set len1 90
     set len [expr $len0 + $len1]
-    set nameInput [file join [file dirname $nameTrFunc] probe_$func.dat]
-    set nameOutput [file join [file dirname $nameTrFunc] response_$func.dat]
+    set nameInput [file join [file dirname $trFilePath] probe_$probe.dat]
+    set nameOutput [file join [file dirname $trFilePath] response_$probe.dat]
     if [catch {open $nameInput w} fdInput] {
-	puts stderr "Failed to create $nameInput"
+	error "Failed to create $nameInput: $fdInput"
 	return
     }
-    switch -glob $func {
+    switch -glob $probe {
 	sin_* {
-	    #regexp {[a-z]*\((\d+)\)} $func all period
-	    regexp {[a-z]*_(\d+)} $func all period
+	    #regexp {[a-z]*\((\d+)\)} $probe all period
+	    regexp {[a-z]*_(\d+)} $probe all period
 	    unset all
 	}
     }
     for { set i 0 } { $i <= $len } {incr i } {
-	switch -glob $func {
+	switch -glob $probe {
 	    step {
 		if { $i < $len0 } {
 		    puts $fdInput "0"
@@ -132,143 +244,215 @@ proc TrFuncProbe {w entry func} {
     close $fdInput
 
     # Execute probing procedure
-    set rc [catch { exec dtf $nameTrFunc $nameInput $nameOutput } dummy]
+    set cwd [pwd]
+    cd [temporalDirectory]
+    exec cat $trFilePath
+    set rc [catch { exec dtf $trFilePath $nameInput $nameOutput } dummy]
+    cd $cwd
     puts "rc=$rc; dummy=$dummy"
     if { $rc == 0 } {
 	# Plot results
-	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "$func"
-  	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "f($func)"
+	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "$probe"
+  	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "f($probe)"
 	GrSeriesWindow $w "Series plot"
     }
 }
 
-# Call file transfer function editor
-proc TrFuncEdit {p title var} {
-    upvar #0 $var globalFileName
-    set fileName $globalFileName
-    if {[file exists $fileName] && [file isfile $fileName]} {
-	# Let's determine type of the file
-	switch -glob -- $fileName {
-	    *.tf {
-		set descr [TrFuncParseFile $fileName]
-		if {[llength $descr] == 4 &&
-		    [lindex $descr 0] != {} && [lindex $descr 1] != {} &&
-		    [lindex $descr 2] != {} && [lindex $descr 3] != {}} {
-		    # The whole definition is in the file
-		    set ftype trfunc
-		} elseif {[llength $descr] == 4 &&
-			  [lindex $descr 0] != {}} {
-		    # Only idname was found: let's use template
-		    set descr [TrFuncParseTemplate [lindex $descr 0]]
-		    if {$descr != {}} {
-			set ftype trfunc
-		    } else {
-			set ftype undefined
-		    }
-		} else {
-		    set ftype undefined
-		}
-	    }
-	    default {
-		set ftype undefined
-	    }
-	}
-	switch -exact --  $ftype {
-	    trfunc {
-		array set params {}
-		set fd [open $fileName]
-		set ftext [split [read $fd] \n]
-		close $fd
-		set idname [lindex $descr 0]
-		set type [lindex $descr 1]
-		set label [lindex $descr 2]
-		set key_pos [lindex $descr 3]
-		TrFuncLoadConfig params $descr $ftext
-		if {[TrFuncEditor $p params $descr]} {
-		    set headLineFields [split [lindex $ftext 0]]
-		    set fd [open $fileName "w"]
-		    if {[lindex $headLineFields 0] != ";NeuCon" &&
-			[lindex $headLineFields 1] != "transfer" } {
-			puts $fd ";NeuCon transfer 1.0"
-			puts $fd "\[$type $idname\]"
-		    }
-		    TrFuncSaveConfig params $descr $fd $ftext
-		    flush $fd
-		    close $fd
-		}
-		# otherwise no changes took place
-	    }
-	    undefined {
-		TextEditWindow $p "$title" $fileName
-	    }
-	}
-    } else {
-	# New file must be created; let's ask about its type
-	puts "TODO"
+# Take current values from GUI and test obtained function by given
+# probe signal.
+proc TrFuncProbeTemporal {w descr probesignal} {
+    # Create temporal file with parameters
+    set idname [lindex $descr 0]
+    set type [lindex $descr 1]
+    set label [lindex $descr 2]
+    set key_pos [lindex $descr 3]
+
+    set fileName [temporalFileName .tf]
+    TrFuncUseTemplate $idname $fileName
+
+    # Obtain parameters from GUI
+    array set this {}
+    foreach {key pos} $key_pos {
+	#set evar $w.var_$key
+	#global $evar
+	set e $w.parameters.value_$key
+	set this($key) [$e get]
     }
+
+    set fileName [TrFuncSaveToTemporal this $descr]
+    puts "fileName=$fileName"
+    TrFuncProbe $w $fileName $probesignal
 }
 
-# p - parent widget
-# title - description of the given transfer function
-# var - name of variable where to store filename
-proc TrFuncWindow {p title var} {
-    upvar #0 $var globalFileName
-    set fileName $globalFileName
-    set w $p.trfunc
+
+# Display parameters of the object
+# - p - parent widget
+# - thisvar - name of the array in calling context to list name=value pairs
+# - descr - description of the function: name, type, label, parameters
+# Returns: 1 - if there were changes; 0 - there were not changes in
+# parameters
+proc TrFuncEditor {p thisvar descr} {
+    set w $p.tfeditor
     catch {destroy $w}
     toplevel $w
-    wm title $w $title
 
-    frame $w.file
-    label $w.file.label -text "Имя файла:" -anchor w
-    entry $w.file.entry -width 40 -textvariable fileName
-    $w.file.entry insert 0 $fileName
-    button $w.file.button -text "Выбор..." \
-	-command "TrFuncFileDialog $w $w.file.entry open $fileName"
-    pack $w.file.label $w.file.entry -side left
-    pack $w.file.button -side left -pady 5 -padx 10
-    pack $w.file -side top
+    upvar $thisvar this
+    set idname [lindex $descr 0]
+    set type [lindex $descr 1]
+    set label [lindex $descr 2]
+    set key_pos [lindex $descr 3]
+
+    wm title $w "$idname parameters"
+
+    frame $w.common
+    label $w.common.main_label -text $label -anchor w
+    pack $w.common.main_label
+
+    # Let's find image to illustrate the function
+    foreach ext {gif ppm pgm} {
+	set imgfile [file join [TemplateDir] "$idname.$ext"]
+	#puts "check for $imgfile"
+	if {[file exists $imgfile]} {
+	    set img [image create photo -file $imgfile]
+	    label $w.common.image -image $img
+	    pack $w.common.image -side top -padx 3 -pady 3
+	    break
+	}
+    }
+    pack $w.common -side top
+
+    frame $w.parameters
+    # This variable consist of all operations to store state of dialog
+    set save_all_vars $w.save_all_vars
+    global $save_all_vars
+    set $save_all_vars ""
+    foreach {key pos} $key_pos {
+	label $w.parameters.label_$key -text $key
+	set e $w.parameters.value_$key
+	# This variable is global
+	set evar $w.var_$key
+	global $evar
+	if {[info exists this($key)]} {
+	    set $evar $this($key)
+	} else {
+	    set $evar ""
+	}
+	entry $e -width 12 -validate focus -vcmd {string is double %P}
+	$e insert 0 [set $evar]
+	set $save_all_vars "set $evar \[$e get\] ; [set $save_all_vars]"
+	$e configure -invalidcommand "focusAndFlash %W [$e cget -fg] [$e cget -bg]"
+	grid $w.parameters.label_$key $e
+    }
+    pack $w.parameters -side top
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" \
-	-command "TrFuncWindowOk $w $w.file.entry globalFileName"
-    #button $w.buttons.apply -text "Apply" \
-    #	-command "TrFuncWindowApply $w $w.file.entry globalFileName"
-    button $w.buttons.edit -text "Редактировать..." \
-	-command "TrFuncEdit $w TITLE \$fileName"
-    #button $w.buttons.view -text "View..."
-    #button $w.buttons.probe -text "Probe..." \
-	#-command "TrFuncProbe $w $w.file.entry"
+    button $w.buttons.ok -text "OK" -command "[set $save_all_vars] destroy $w"
+    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
 
     set m $w.buttons.probe.m
     menubutton $w.buttons.probe -text "Отклик" -underline 0 \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
-    foreach signal {pulse step sin_4 sin_10 sin_20} {
-	$m add command -label $signal \
-	    -command "TrFuncProbe $w $w.file.entry $signal"
+    foreach probesignal {pulse step sin_4 sin_10 sin_20} {
+	$m add command -label $probesignal \
+	    -command "TrFuncProbeTemporal $w [list $descr] $probesignal"
     }
     grid $w.buttons.probe -row 1 -column 0 -sticky n
 
-    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
-    pack $w.buttons.ok $w.buttons.edit \
-	$w.buttons.probe $w.buttons.cancel -side left -expand 1
 
-    $w.file.entry configure -validate key -vcmd "TrFuncWindowModified $w %W"
-    focus $w.file.entry
+    pack $w.buttons.ok $w.buttons.probe $w.buttons.cancel -side left -expand 1
+
+    tkwait window $w
+
+    # Assign stored state
+    set changed 0
+    foreach {key pos} $key_pos {
+	set evar $w.var_$key
+	global $evar
+	if {$this($key) != [set $evar]} {
+	    set this($key) [set $evar]
+	    #puts "$key=$this($key)"
+	    set changed 1
+	}
+    }
+    return $changed
 }
 
-#	-command "TrFuncWindowEdit $w $title fileName" 
 
-#font create myDefaultFont -family Freesans -size 11
-#option add *font myDefaultFont
-option readfile noc_labs.ad
+proc TrFuncSelectOk {w} {
+    global trfunc_selected
+    set cursel [$w.common.funclist curselection]
+    if {$cursel != {}} {
+	set trfunc_selected [$w.common.funclist get $cursel]
+    }
+    destroy $w
+}
 
-#font configure default -family Freesans -size 11
 
-#set myvar "../d.cf"
-set myvar "pid.tf"
-#puts $myvar
-TrFuncWindow "" "Plant function" myvar
-#puts $myvar
+# Let's list all different functions defined in templates and allow
+# user to select one of them.
+# - p - parent widget
+# Returns: idname of selected function.
+proc TrFuncSelect {p} {
+    set w $p.tfselect
+    catch {destroy $w}
+    toplevel $w
+
+    set width 0
+    set height 0
+    array set label2idname {}
+    foreach trf [glob -directory [TemplateDir] -nocomplain *.tf] {
+	set descr [TrFuncParseFile $trf]
+	if {{{} {} {} {}} != $descr} {
+	    #puts "$trf - ok"
+	    # Proper template must contain idname, label, type and key_pos
+	    set idname [lindex $descr 0]
+	    set type [lindex $descr 1]
+	    set label [lindex $descr 2]
+	    set key_pos [lindex $descr 3]
+	    incr height
+	    set len [string length $label]
+	    if {$width < $len} {
+		set width $len
+	    }
+	    set label2idname($label) $idname
+	} else {
+	    puts "$trf - bad template"
+	}
+    }
+
+    # List item which is selected
+    global trfunc_selected
+    set trfunc_selected {}
+
+    wm title $w "Function selection"
+
+    frame $w.common
+    label $w.common.title -text "Выберите тип функции" -anchor w
+    listbox $w.common.funclist -width $width -height $height \
+	-selectmode single
+    foreach trflabel [lsort [array names label2idname]] {
+	$w.common.funclist insert end $trflabel
+    }
+    $w.common.funclist activate 0
+    pack $w.common.title $w.common.funclist -side top
+    pack $w.common -side top
+
+    frame $w.buttons
+    pack $w.buttons -side bottom -fill x -pady 2m
+    button $w.buttons.ok -text "OK" -command "TrFuncSelectOk $w"
+    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
+
+    pack $w.buttons.ok $w.buttons.cancel -side left -expand 1
+
+    tkwait window $w
+
+    if {$trfunc_selected == {}} {
+	return {}
+    }
+    return $label2idname($trfunc_selected)
+}
+
+
+# End of file

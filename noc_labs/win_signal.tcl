@@ -4,7 +4,7 @@ package require Tk
 package require universal
 package require win_textedit
 package require win_grseries
-package require trfunc
+package require win_trfunc
 
 proc SignalWindowOk {w entry var} {
     SignalWindowApply $w $entry $var

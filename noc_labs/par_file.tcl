@@ -7,11 +7,11 @@ proc ParFileAssign {filepath params} {
 
     file rename -force $filepath $filepath.bak
     if [catch {open $filepath.bak r} fd1] {
-	puts stderr "Failed to read $filepath.bak"
+	error "Failed to read $filepath.bak"
 	return
     }
     if [catch {open $filepath w} fd2] {
-	puts stderr "Failed to create $filepath"
+	error "Failed to create $filepath"
 	close $fd1
 	return
     }
@@ -73,7 +73,7 @@ proc ParFileFetch {filepath params} {
     upvar $params parArray
 
     if [catch {open $filepath r} fd] {
-	puts stderr "Failed to read $filepath"
+	error "Failed to read $filepath"
 	return
     }
 

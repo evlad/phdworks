@@ -4,7 +4,8 @@
 ; type:    TransferFunction
 ; label:   ПИД регулятор (Kp Ki Kd)
 ; key_pos: Kp 0 Ki 0 Kd 0
-sum 3 ; Kp + Ki*(z/z-1) + Kd*(z2-2z+1/z(z-1))
+; formula: Kp + Ki*(z/z-1) + Kd*(z2-2z+1/z(z-1))
+sum 3
 polyfrac 0 ; <=== Proportional term
  1.0 / 1   ; Kp
 product 2  ; <=== Integral term

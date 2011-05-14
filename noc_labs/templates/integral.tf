@@ -4,7 +4,8 @@
 ; type:    TransferFunction
 ; label:   Суммирующее звено
 ; key_pos: K 0 d 3
-product 2 ; K/(z-d)
+; formula: K/(z-d)
+product 2
 polyfrac 0
 1 / 1   ; K
 polyfrac 0

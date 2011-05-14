@@ -2,9 +2,6 @@ package provide files_loc 1.0
 
 package require universal
 
-# Name of the undefined session directory
-set undefSession "undefined"
-
 # Strip absolute path to the relative one if possible.
 # Examples:
 # basedir="/home/evlad/noc_labs/1"
@@ -18,6 +15,8 @@ proc RelPath {basedir abspath} {
     if {[file split $abspath] == $abspath} {
 	return $abspath
     }
+    set cwd [pwd]
+    cd $basedir
     set bdparts [file split [file normalize $basedir]]
     set apparts [file split [file normalize $abspath]]
     set rpparts {}
@@ -34,13 +33,21 @@ proc RelPath {basedir abspath} {
     foreach ap [lrange $apparts $i end] {
 	lappend rpparts $ap
     }
+    cd $cwd
     return [eval file join $rpparts]
 }
 
 
 # Relative path to the given session dir.
-proc SessionRelPath {sessionDir abspath} {
-    return [RelPath [SessionDir $sessionDir] $abspath]
+proc SessionRelPath {sessionDir path} {
+    switch -glob [file pathtype $path] {
+	absolute {
+	    return [RelPath [SessionDir $sessionDir] $path]
+	}
+	*relative {
+	    return $path
+	}
+    }
 }
 
 
@@ -51,8 +58,15 @@ proc AbsPath {basedir relpath} {
 
 
 # Absolute path to the given session dir.
-proc SessionAbsPath {sessionDir relpath} {
-    return [AbsPath [SessionDir $sessionDir] $relpath]
+proc SessionAbsPath {sessionDir path} {
+    switch -glob [file pathtype $path] {
+	absolute {
+	    return $path
+	}
+	*relative {
+	    return [AbsPath [SessionDir $sessionDir] $path]
+	}
+    }
 }
 
 
@@ -72,12 +86,6 @@ proc NewUser {w {user ""}} {
     if {![file exists $curUserDir]} {
 	file mkdir $curUserDir
     }
-    # Create standard new session directory
-    global undefSession
-    set newSessionDir [file join $curUserDir $undefSession]
-    if {![file exists $newSessionDir]} {
-	file mkdir $newSessionDir
-    }
     return $curUserDir
 }
 
@@ -94,7 +102,7 @@ proc UserBaseDir {} {
     global env
     if {![info exists env(NOCLABUSERDIR)]} {
 	# Not defined special place -> let's use the default one
-	set dir [file join $env(HOME) noc_labs]
+	set dir [file join $env(HOME) labworks]
     } else {
 	set dir $env(NOCLABUSERDIR)
     }
@@ -107,7 +115,7 @@ proc SystemDir {} {
     global env
     if {![info exists env(NOCLABSYSDIR)]} {
 	# Not defined special place -> let's use the default one
-	set dir "$env(HOME)[file separator]nocsystem"
+	set dir [file join $env(HOME) nocsystem]
     } else {
 	set dir $env(NOCLABSYSDIR)
     }
@@ -129,13 +137,6 @@ proc SessionDir {s} {
 	error "Session is not a directory"
     }
     return $sessionDir
-}
-
-# Return directory path to the data directory
-proc WorkDataDir {} {
-    set wdd [file join [SystemDir] labworks]
-    file mkdir $wdd
-    return $wdd
 }
 
 # Return directory path to the template directory
@@ -221,11 +222,11 @@ proc NewSession {p markfile} {
 	    }
 	}
     }
-    puts "curSessionDir=$curSessionDir"
+    #puts "curSessionDir=$curSessionDir"
     if {$curSessionDir == "NEW"} {
 	scan $lastNum "%d" lastNum
 	set curSessionDir [format "%03d" [incr lastNum]]
     }
-    puts "==> curSessionDir=$curSessionDir"
+    #puts "==> curSessionDir=$curSessionDir"
     return $curSessionDir
 }

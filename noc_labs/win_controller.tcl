@@ -3,7 +3,7 @@ package provide win_controller 1.0
 package require Tk
 package require universal
 package require win_textedit
-package require trfunc
+package require win_trfunc
 package require draw_nn
 
 proc ContrWindowOk {w entry var} {
@@ -44,30 +44,48 @@ proc ContrWindowModified {w entry} {
     return 1
 }
 
-# Call file transfer function editor
-proc ContrEdit {p sessionDir title fileRelPath} {
-    puts "ContrEdit: $sessionDir $fileRelPath"
+
+# Create controller of new type at given file path
+proc ContrNewType {p sessionDir fileRelPath {force false}} {
     set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    if {![file exists $fileName]} {
-	# New file must be created; let's ask about its type
-	# Let's determine type of the file
-	switch -glob -- $fileName {
-	    *.tf {
-		set ftype trfunc
-		puts "ContrEdit:TODO - new .tf file"
-		set idname [TrFuncSelect $p]
-		if {$idname != {}} {
-		    TrFuncUseTemplate $idname $fileName
-		}
-	    }
-	    default {
-		set ftype undefined
-		puts "ContrEdit:TODO - undefined"
-		return
+    if {[file exists $fileName] && !$force} {
+	# Not created
+	return {}
+    }
+
+    # New file must be created; let's ask about its type
+    # Let's determine type of the file
+    switch -glob -- $fileName {
+	*.tf {
+	    set ftype trfunc
+	    puts "ContrNewType: - new .tf file"
+	    set idname [TrFuncSelect $p]
+	    if {$idname != {}} {
+		TrFuncUseTemplate $idname $fileName
 	    }
 	}
-	# Now it's possible to edit the file
+	default {
+	    set ftype undefined
+	    puts "ContrNewType: - undefined"
+	    # Let's create empty file
+	    if [catch {open $fileName w} fdNewFile] {
+		close $fdNewFile
+	    }
+	}
     }
+    return $ftype
+}
+
+
+# Call file transfer function editor
+# - forceNew - boolean: true to create new file anyway
+# - asText - boolean: true to edit as text file
+proc ContrEdit {p sessionDir title fileRelPath {forceNew false} {asText false}} {
+    puts "ContrEdit: $sessionDir $fileRelPath"
+    set ftype [ContrNewType $p $sessionDir $fileRelPath $forceNew]
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
+    # Now it's possible to edit the file
+
     # Let's determine type of the file
     switch -glob -- $fileName {
 	*.tf {
@@ -93,6 +111,10 @@ proc ContrEdit {p sessionDir title fileRelPath} {
 	default {
 	    set ftype undefined
 	}
+    }
+    # Let's call edit method
+    if {$asText} {
+	set ftype undefined
     }
     switch -exact -- $ftype {
 	trfunc {
@@ -214,8 +236,18 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     entry $f.lin_fe -width 30 -textvariable var_trcfile
     button $f.lin_fsel -text "Выбор..." \
 	-command "ContrSelectTrFile $w $sessionDir var_trcfile"
-    button $f.lin_fedit -text "Изменить..." \
+
+    set m $f.lin_fedit.m
+    menubutton $f.lin_fedit -text "Изменить..."  -underline 0 \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    $m add command -label "Тип звена" \
+	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile true"
+    $m add command -label "Параметры" \
 	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile"
+    $m add command -label "Как текст" \
+	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile false true"
+
     grid $f.lin_rb
     grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit
     grid $f.lin_rb -sticky nw

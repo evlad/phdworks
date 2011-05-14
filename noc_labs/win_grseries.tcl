@@ -122,8 +122,8 @@ proc GrSeriesPlot {c} {
 
     unlist [GrSeriesMinMax $dataSeries] xmin xmax ymin ymax
 
-    puts "outer x: $xmin $xmax"
-    puts "outer y: $ymin $ymax"
+    #puts "outer x: $xmin $xmax"
+    #puts "outer y: $ymin $ymax"
 
     # Store bounds of view area
     foreach v {xmin xmax ymin ymax} {
@@ -134,8 +134,8 @@ proc GrSeriesPlot {c} {
 	}
     }
 
-    puts "view x: $xmin $xmax"
-    puts "view y: $ymin $ymax"
+    #puts "view x: $xmin $xmax"
+    #puts "view y: $ymin $ymax"
 
     # Copy xmin,xmax,ymin,ymax to props since they are needed to make
     # ZoomAll action
@@ -147,8 +147,8 @@ proc GrSeriesPlot {c} {
     set xgrid [GrSeriesGridStep [set $c.view_xmin] [set $c.view_xmax]]
     set ygrid [GrSeriesGridStep [set $c.view_ymin] [set $c.view_ymax]]
 
-    puts "xgrid: $xgrid"
-    puts "ygrid: $ygrid"
+    #puts "xgrid: $xgrid"
+    #puts "ygrid: $ygrid"
     set xticks {}
     set yticks {}
     GrSeriesAxis [set $c.view_xmin] [set $c.view_xmax] $xgrid \
@@ -161,8 +161,8 @@ proc GrSeriesPlot {c} {
 	eval set \$c.view_$v \$$v
     }
 
-    puts "plot x: $xmin $xmax"
-    puts "plot y: $ymin $ymax"
+    #puts "plot x: $xmin $xmax"
+    #puts "plot y: $ymin $ymax"
 
     # ticks to grid nodes
     set xgrid_matrix {}

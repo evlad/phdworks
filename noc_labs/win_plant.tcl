@@ -3,7 +3,7 @@ package provide win_plant 1.0
 package require Tk
 package require universal
 package require win_textedit
-package require trfunc
+package require win_trfunc
 package require draw_nn
 
 proc PlantWindowOk {w entry var} {

@@ -5,7 +5,7 @@ package provide data_file 1.0
 # structure.
 proc GrSeriesReadFile {filepath} {
     if [ catch {open $filepath r} fd ] {
-	puts stderr "Failed to open $filepath: $fd"
+	error "Failed to open $filepath: $fd"
 	return
     }
     # read all lines
@@ -13,6 +13,7 @@ proc GrSeriesReadFile {filepath} {
     close $fd
 
     set fname [file tail $filepath]
+    puts "Reading data file $filepath:"
 
     # let's find number of columns in the file
     set line0 [lindex $contents 0]
@@ -33,7 +34,7 @@ proc GrSeriesReadFile {filepath} {
 	#    break
 	#}
     }
-    puts "number of columns: $numCol"
+    puts ">> number of columns: $numCol"
     set numRow 0
     foreach line $contents {
 	set tail $line
@@ -41,7 +42,8 @@ proc GrSeriesReadFile {filepath} {
 	#puts "row=$numRow: $tail"
 	while { [regexp {\s*(\-?\d+(\.\d*)?([eE][+-]?\d+)?)(.*)$} $tail match \
 		     fpnum frac exp rest] } {
-	    set fNum [expr 1.0 * $fpnum]
+	    #set fNum [expr 1.0 * $fpnum]
+	    scan $fpnum "%g" fNum
 	    if { $iCol < $numCol } {
 		lappend resData($iCol) $fNum
 		if { {} == [lindex $minmax $iCol] } {
@@ -66,7 +68,7 @@ proc GrSeriesReadFile {filepath} {
 	}
 	incr numRow
     }
-    puts "number of rows: $numRow ([array names resData])"
+    puts ">> number of rows: $numRow ([array names resData])"
     set resList {}
     for {set iCol 0} {$iCol < $numCol} {incr iCol} {
 	lappend resList [list $resData($iCol) [lindex $minmax $iCol] \

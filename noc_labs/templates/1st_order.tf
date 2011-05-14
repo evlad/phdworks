@@ -3,9 +3,10 @@
 ; idname:  1st_order
 ; type:    TransferFunction
 ; label:   Звено 1-го порядка
-; key_pos: K 0 d 4
-product 2 ; K*(z/z-d)
+; key_pos: K 0 d1 1 d2 4
+; formula: K*(z-d1)/(z-d2)
+product 2
 polyfrac 0
 1 / 1   ; K
 polyfrac 0
- -1 0 / -1 0.5 ; d
+ -1 0 / -1 0.5 ; d1 d2

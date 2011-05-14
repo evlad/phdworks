@@ -48,11 +48,17 @@ proc dcsloopDrawPanel {this c} {
 proc dcsloopRun {p sessionDir parFile} {
     set cwd [pwd]
     puts "Run dcsloop"
-    catch {cd $sessionDir} errCode1
-    puts "rc=$errCode1 [pwd]"
-    catch {exec dcsloop $parFile >/dev/null 2>dcsloop.err} errCode2
-    puts "rc=$errCode2"
-    cd $cwd
+    catch {cd [SessionDir $sessionDir]} errCode1
+    if {$errCode1 != ""} {
+	error $errCode1
+	return
+    } else {
+	catch {exec dcsloop $parFile >/dev/null} errCode2
+	if {$errCode2 != ""} {
+	    error $errCode2
+	}
+	cd $cwd
+    }
 
     # 9. Refresh state of controls
     # TODO
@@ -88,6 +94,13 @@ proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
     }
 }
 
+# Load parameters from given file.
+proc dcsloopLoadParams {parFile} {
+    global dcsloop_params
+    array set dcsloop_params {}
+    ParFileFetch $parFile dcsloop_params
+}
+
 # Create window with panel and controls.  Returns this instance.
 proc dcsloopCreateWindow {p title sessionDir} {
     set w $p.dcsloop
@@ -110,9 +123,8 @@ proc dcsloopCreateWindow {p title sessionDir} {
 
     # 3. Assign parameters from file
     global dcsloop_params
-    #upvar #0 dcsloopparams params
     array set dcsloop_params {}
-    ParFileFetch $parFile dcsloop_params
+    dcsloopLoadParams $parFile
 
     global dcsloop_grSeries
     set dcsloop_grSeries {}
@@ -121,7 +133,7 @@ proc dcsloopCreateWindow {p title sessionDir} {
     frame $w.controls
     pack $w.controls -side bottom -fill x -pady 2m
     button $w.controls.params -text "Параметры" \
-	-command "TextEditWindow $w \"$parFile\" \"$parFile\""
+	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcsloopLoadParams"
     button $w.controls.run -text "Запустить" \
 	-command "dcsloopRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"

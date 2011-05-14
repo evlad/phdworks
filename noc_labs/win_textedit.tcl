@@ -2,14 +2,19 @@
 package require Tk
 package provide win_textedit 1.0
 
-proc TextEditSave {w filepath} {
+# onSave - command to execute when file were saved.
+proc TextEditSave {w filepath {onSave {}}} {
     if [ catch {open $filepath {WRONLY CREAT TRUNC} 0666} fd ] {
-	puts stderr "Failed to save $filepath: $fd"
+	error "Failed to save $filepath: $fd"
 	return
     }
     puts -nonewline $fd [$w.textarea.text get 1.0 end]
     flush $fd
     close $fd
+    if {$onSave != {}} {
+	catch {eval $onSave $filepath} res
+	puts "onSave: $res"
+    }
 
     # Restore normal attributes
     set normalBg [$w.buttons.cancel cget -bg]
@@ -22,8 +27,9 @@ proc TextEditSave {w filepath} {
 	-activebackground $activeBg -activeforeground $activeFg
 }
 
-proc TextEditOk {w filepath} {
-    TextEditSave $w $filepath
+# onSave - command to execute when file were saved.
+proc TextEditOk {w filepath {onSave {}}} {
+    TextEditSave $w $filepath $onSave
     destroy $w
 }
 
@@ -72,16 +78,17 @@ proc TextSyntaxHighlight {ftype t} {
     }
 }
 
-# w - parent
-# title - text to show
-# filepath - name of variable where to store filename
-proc TextEditWindow {p title filepath} {
+# w - parent;
+# title - text to show;
+# filepath - name of variable where to store filename;
+# onSave - command to execute when file were saved.
+proc TextEditWindow {p title filepath {onSave {}}} {
     if { [file exists $filepath] && ! [file isfile $filepath] } {
-	puts "$filepath is not a file!"
+	error "$filepath is not a file!"
 	return
     }
     if [ catch {open $filepath {RDWR CREAT} 0666} fd ] {
-	puts stderr "Failed to open/create $filepath: $fd"
+	error "Failed to open/create $filepath: $fd"
 	return
     }
 
@@ -110,8 +117,8 @@ proc TextEditWindow {p title filepath} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "TextEditOk $w $filepath"
-    button $w.buttons.save -text "Сохранить" -command "TextEditSave $w $filepath"
+    button $w.buttons.ok -text "OK" -command "TextEditOk $w $filepath $onSave"
+    button $w.buttons.save -text "Сохранить" -command "TextEditSave $w $filepath $onSave"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
