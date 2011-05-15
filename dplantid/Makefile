@@ -4,7 +4,8 @@ PROGRAMS	=dplantid \
 all:	$(PROGRAMS)
 
 install:	$(PROGRAMS)
-	cp $(PROGRAMS) $(HOME)/bin
+	install -d $(PREFIX)/bin
+	install -m 775 -t $(PREFIX)/bin $(PROGRAMS)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 

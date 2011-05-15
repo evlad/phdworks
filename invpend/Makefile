@@ -3,7 +3,8 @@ PROGRAM	=invpend
 all:	$(PROGRAM)
 
 install:	$(PROGRAM)
-	cp $(PROGRAM) $(HOME)/bin
+	install -d $(PREFIX)/bin
+	install -m 775 -t $(PREFIX)/bin $(PROGRAM)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 

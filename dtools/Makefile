@@ -9,7 +9,8 @@ LD	=g++
 all:	$(PROGRAMS)
 
 install:	$(SCRIPTS) $(PROGRAMS)
-	cp $(SCRIPTS) $(PROGRAMS) $(HOME)/bin
+	install -d $(PREFIX)/bin
+	install -m 775 -t $(PREFIX)/bin $(SCRIPTS) $(PROGRAMS)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 

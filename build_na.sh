@@ -3,8 +3,12 @@
 # Build all NeuroArchitector parts
 # $Id: build_na.sh,v 1.2 2006-03-25 15:23:09 evlad Exp $
 
+# Set appropriate path
+targetdir=$HOME/nnacs
+mkdir -p $targetdir
+
 libdirs='Matrix.041 NeuArch'
-progdirs='NaTools dtools dcsloop dplantid dcontrp dcontrf'
+progdirs='NaTools dtools dcsloop dplantid dcontrp dcontrf noc_labs'
 
 echo "#######################"
 echo "### Build libraries ###"
@@ -13,7 +17,7 @@ for dir in $libdirs
 do
   cd $dir && {
       echo "### $dir ###"
-      make FLAGS="$FLAGS" $* all
+      make PREFIX=$targetdir FLAGS="$FLAGS" $* all
       cd ..
   }
 done
@@ -25,7 +29,7 @@ for dir in $progdirs
 do
   cd $dir && {
       echo "### $dir ###"
-      make FLAGS="$FLAGS" $* install
+      make PREFIX=$targetdir FLAGS="$FLAGS" $* install
       cd ..
   }
 done

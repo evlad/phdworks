@@ -1,4 +1,4 @@
-PROGRAMS=deadzone.so \
+EXFUNCMODULES=deadzone.so \
 	saturat.so \
 	luft.so \
 	sine.so \
@@ -34,7 +34,10 @@ OBJS	=$(deadzone_OBJS) \
 LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
 
-all:	$(PROGRAMS)
+all:	$(EXFUNCMODULES)
+
+install:	$(EXFUNCMODULES)
+	install -m 664 $(EXFUNCMODULES) $(PREFIX)/lib
 
 deadzone_OBJS	=deadzone.o
 deadzone.so:	$(deadzone_OBJS) $(LIBS)
@@ -73,7 +76,7 @@ randunified.so:	$(randunified_OBJS) $(LIBS)
 	$(LINK.so) -o $@ $(randunified_OBJS) $(LIBS) $(SYSLIBS)
 
 clean:
-	rm -f $(PROGRAMS) $(OBJS)
+	rm -f $(EXFUNCMODULES) $(OBJS)
 
 .cpp.o:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
