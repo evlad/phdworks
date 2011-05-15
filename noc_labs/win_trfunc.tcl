@@ -247,7 +247,7 @@ proc TrFuncProbe {w trFilePath probe} {
     set cwd [pwd]
     cd [temporalDirectory]
     exec cat $trFilePath
-    set rc [catch { exec dtf $trFilePath $nameInput $nameOutput } dummy]
+    set rc [catch { exec [file join [SystemDir] bin dtf] $trFilePath $nameInput $nameOutput } dummy]
     cd $cwd
     puts "rc=$rc; dummy=$dummy"
     if { $rc == 0 } {

@@ -100,11 +100,11 @@ proc CheckGoodEnv {w} {
 # Return base directory of user data
 proc UserBaseDir {} {
     global env
-    if {![info exists env(NOCLABUSERDIR)]} {
+    if {![info exists env(NNACSUSERDIR)]} {
 	# Not defined special place -> let's use the default one
 	set dir [file join $env(HOME) labworks]
     } else {
-	set dir $env(NOCLABUSERDIR)
+	set dir $env(NNACSUSERDIR)
     }
     file mkdir $dir
     return $dir
@@ -113,11 +113,11 @@ proc UserBaseDir {} {
 # Return system directory
 proc SystemDir {} {
     global env
-    if {![info exists env(NOCLABSYSDIR)]} {
+    if {![info exists env(NNACSSYSDIR)]} {
 	# Not defined special place -> let's use the default one
-	set dir [file join $env(HOME) nocsystem]
+	set dir [file join $env(HOME) noclab]
     } else {
-	set dir $env(NOCLABSYSDIR)
+	set dir $env(NNACSSYSDIR)
     }
     #puts "System directory is expected at $dir"
     #file mkdir $dir
@@ -149,14 +149,23 @@ proc TemplateDir {} {
 proc NewSessionOk {w l} {
     global curSessionDir
     # Here the first the digits (or the first word) must be taken
-    set curSessionDir [$l get [$l curselection]]
+    set curSessionDir [lindex [split [$l get [$l curselection]]] 0]
+    if {$curSessionDir != {}} {
+	destroy $w
+    }
+}
+
+proc NewSessionCopy {w l} {
+    global curSessionDir
+    # Here the first the digits (or the first word) must be taken
+    set curSessionDir "NEW [lindex [split [$l get [$l curselection]]] 0]"
     if {$curSessionDir != {}} {
 	destroy $w
     }
 }
 
 # Create or select session directory of given type (markfile should present)
-proc NewSession {p markfile} {
+proc NewSession {p markfile {title ""}} {
     global curUserDir curSessionDir
 
     if {[catch {glob -tails -directory $curUserDir -types d \
@@ -169,7 +178,7 @@ proc NewSession {p markfile} {
 	# Let's allow user to select session
 	set matchedSessionList {}
 	foreach sessionDir $sessionList {
-	    if {[file exists [file join $curUserDir $sessionDir $markfile]]} {
+	    if {[file exists [file join [SessionDir $sessionDir] $markfile]]} {
 		lappend matchedSessionList $sessionDir
 		# It's possible to append comments too
 	    }
@@ -191,14 +200,21 @@ proc NewSession {p markfile} {
 	    global curSessionDir
 	    set curSessionDir {}
 
-	    label $w.title -text "Выберите сеанс"
+	    if {$title != ""} {
+		label $w.title -text "$title\nВыберите сеанс:"
+	    } else {
+		label $w.title -text "Выберите сеанс:"
+	    }
 	    pack $w.title -side top -fill x
 
 	    frame $w.list
 	    set l [Scrolled_Listbox $w.list.sessions -width 20 -height 5 \
 		       -selectmode single]
 	    foreach it  $sessionList {
-		$l insert end $it
+		set comment [ParFileFetchParameter \
+				 [file join [SessionDir $it] $markfile] \
+				 comment]
+		$l insert end "$it - $comment"
 	    }
 	    # Select and show the last item
 	    $l selection set end
@@ -211,8 +227,9 @@ proc NewSession {p markfile} {
 	    pack $w.buttons -side bottom -fill x -pady 2m
 	    button $w.buttons.ok -text "OK" -command "NewSessionOk $w $l"
 	    button $w.buttons.new -text "Новый" -command "set curSessionDir NEW ; destroy $w"
+	    button $w.buttons.copy -text "Копия" -command "NewSessionCopy $w $l"
 	    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
-	    pack $w.buttons.ok $w.buttons.new $w.buttons.cancel -side left -expand 1
+	    pack $w.buttons.ok $w.buttons.new $w.buttons.copy $w.buttons.cancel -side left -expand 1
 	    bind $l <Double-1> "NewSessionOk $w $l"
 
 	    tkwait window $w
@@ -223,9 +240,20 @@ proc NewSession {p markfile} {
 	}
     }
     #puts "curSessionDir=$curSessionDir"
-    if {$curSessionDir == "NEW"} {
-	scan $lastNum "%d" lastNum
-	set curSessionDir [format "%03d" [incr lastNum]]
+    switch -glob $curSessionDir {
+	NEW* {
+	    set origSession [lindex [split $curSessionDir] 1]
+	    scan $lastNum "%d" lastNum
+	    set curSessionDir [format "%03d" [incr lastNum]]
+	    if {$origSession != {}} {
+		puts "copy $origSession to $curSessionDir"
+		catch {file copy [SessionDir $origSession] [file join $curUserDir $curSessionDir]} err
+		if {$err != {}} {
+		    error "Failed to make copy of session $origNum: $err"
+		    return {}
+		}
+	    }
+	}
     }
     #puts "==> curSessionDir=$curSessionDir"
     return $curSessionDir

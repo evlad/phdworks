@@ -1,37 +1,26 @@
-#
-#!/bin/sh
-# \
-#exec wish "$0" ${1+"$@"}
-
 package require Tk
 
 set w ""
-#catch {destroy .}
-#toplevel $w
 wm title . "Main menu of laboratory works"
 wm iconname . "Labs main menu"
-#positionWindow $w
-
-option readfile noc_labs.ad
-
-pkg_mkIndex .
-lappend auto_path .
 
 package require files_loc
 package require universal
 package require win_dcsloop
 
-#source lab1.tcl
+set ScriptsDir [file join [SystemDir] scripts]
+option readfile [file join $ScriptsDir nnacs.ad]
 
 set menuContent {
     "dcsloop" "Моделирование системы автоматического управления"
 }
 
-proc MenuLab1 {w title} {
+proc MenuLab1 {w label} {
     # Create or use session directory and remember it
-    set sessionDir [NewSession $w dcsloop.par]
+    set title [lindex [split "$label" \n] 1]
+    set sessionDir [NewSession $w dcsloop.par "$title"]
     if {$sessionDir != {}} {
-	dcsloopCreateWindow $w $title $sessionDir
+	dcsloopCreateWindow $w "$title" $sessionDir
     }
 }
 

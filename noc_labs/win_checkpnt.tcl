@@ -120,7 +120,7 @@ proc CheckPntTest {} {
 
 #font create myDefaultFont -family Freesans -size 11
 #option add *font myDefaultFont
-option readfile noc_labs.ad
+option readfile nnacs.ad
 
 source win_textedit.tcl
 

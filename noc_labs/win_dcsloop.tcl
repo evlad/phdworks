@@ -53,7 +53,7 @@ proc dcsloopRun {p sessionDir parFile} {
 	error $errCode1
 	return
     } else {
-	catch {exec dcsloop $parFile >/dev/null} errCode2
+	catch {exec [file join [SystemDir] bin dcsloop] $parFile >/dev/null} errCode2
 	if {$errCode2 != ""} {
 	    error $errCode2
 	}
@@ -125,9 +125,37 @@ proc dcsloopCreateWindow {p title sessionDir} {
     global dcsloop_params
     array set dcsloop_params {}
     dcsloopLoadParams $parFile
+    if {![info exists dcsloop_params(comment)]} {
+	set dcsloop_params(comment) ""
+    }
 
     global dcsloop_grSeries
     set dcsloop_grSeries {}
+
+    # Headline
+    set hl $w.headline
+    frame $hl
+    set titleFont [option get $hl headlineFont ""]
+    label $hl.s -text "Сеанс $sessionDir" \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    label $hl.t -text $title \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    pack $hl.s $hl.t -side left
+    pack $hl -side top -fill x -pady 2m
+
+    # User comment
+    set uc $w.usercomment
+    frame $uc
+    set titleFont [option get $hl headlineFont ""]
+    label $uc.l -text "Описание:" \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    entry $uc.e -textvariable dcsloop_params(comment) \
+	-width 30 -relief flat -font $titleFont -bg white
+    bind $uc.e <Return> "ParFileAssign $parFile dcsloop_params"
+    bind $uc.e <FocusOut> "ParFileAssign $parFile dcsloop_params"
+    pack $uc.l -side left
+    pack $uc.e -side left -fill x -expand true
+    pack $uc -side top -fill x -pady 2m
 
     # 4. Draw control system loop schema
     frame $w.controls
@@ -140,7 +168,7 @@ proc dcsloopCreateWindow {p title sessionDir} {
     button $w.controls.series -text "Графики" \
 	-command "GrSeriesWindow $w \"Series plot\""
     button $w.controls.close -text "Закрыть" \
-	-command "destroy $w"
+	-command "array set dcsloop_params {} ; destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \
 	$w.controls.series $w.controls.close -side left -expand 1
 
@@ -153,9 +181,9 @@ proc dcsloopCreateWindow {p title sessionDir} {
     pack $c -side top -fill both -expand yes
 
     #set t "Моделирование системы автоматического управления"
-    set textFont [option get $c fontLargeBlock ""]
-    $c create text 0.5c 0.2c -text "$title\nСеанс $sessionDir" \
-	-justify left -anchor nw -fill DarkGreen -font "$textFont"
+    #set textFont [option get $c fontLargeBlock ""]
+    #$c create text 0.5c 0.2c -text "$title\nСеанс $sessionDir" \
+	#	-justify left -anchor nw -fill DarkGreen -font "$textFont"
 
     dcsloopDrawPanel {} $c
 

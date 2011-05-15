@@ -105,6 +105,33 @@ proc ParFileFetch {filepath params} {
 }
 
 
+# Fetch one parameter value from given file and return it.
+proc ParFileFetchParameter {filepath parname} {
+    if [catch {open $filepath r} fd] {
+	error "Failed to read $filepath"
+	return {}
+    }
+
+    # Scan all lines of the file and fetch parameter values
+    set fileContents [split [read $fd] \n]
+    close $fd
+    set parvalue {}
+    foreach line $fileContents {
+	switch -regexp -- $line {
+	    {^\s*\w+\s*=.*$} {
+		# Parameter name = value - lets try to find substitute
+		if {[regexp {\s*(\w+)\s*=\s*(.*)$} $line input name value]} {
+		    if {$parname == $name} {
+			set parvalue $value
+		    }
+		}
+	    }
+	} 
+    }
+    return $parvalue
+}
+
+
 proc ParFileAssignTest {} {
     array set params {aa 177 dd "another text" ee "NEW TEXT"}
 
