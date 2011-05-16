@@ -9,7 +9,7 @@ contr_kind = lin
 ########################################
 # Mode of the modeling
 #input_kind = stream
-input_kind = file
+input_kind = stream
 
 # (input_kind = stream) Length of series
 stream_len = 1000
@@ -28,8 +28,8 @@ refer_tf = ../refer.tf
 noise_tf = ../noise.tf
 
 # (input_kind = file) Input files
-in_r = ../004/r.dat
-in_n = ../004/n.dat
+in_r = refer.dat
+in_n = noise.dat
 
 # Output files
 out_u = u_woc.dat
@@ -38,14 +38,18 @@ out_y = y_woc.dat
 out_ny = ny_woc.dat
 
 # (input_kind = stream) Output files
-out_r = r_out.dat
-out_n = n_out.dat
+out_r = refer.dat
+out_n = noise.dat
 
 nnc_mode = e+r
 
 
 
 comment = Оптимальный ПИД регулятор
+
+
+
+
 
 
 

@@ -9,7 +9,6 @@ TCLSCRIPTS	=nnacs.ad \
 		universal.tcl \
 		win_controller.tcl \
 		win_dcsloop.tcl \
-		win_filter.tcl \
 		win_grseries.tcl \
 		win_nnpedit.tcl \
 		win_plant.tcl \
