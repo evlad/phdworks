@@ -226,11 +226,11 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     set f $w.p
     frame $f
 
-    label $f.title -text "Контроллер"
+    label $f.title -text "Регулятор"
     grid $f.title
     grid $f.title -row 0 -column 0 -columnspan 4
 
-    radiobutton $f.lin_rb -text "Традиционный контроллер" \
+    radiobutton $f.lin_rb -text "Традиционный регулятор" \
 	-variable var_ckind -value lin
     label $f.lin_fl -text "Имя файла:" -anchor w
     entry $f.lin_fe -width 30 -textvariable var_trcfile
@@ -253,7 +253,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     grid $f.lin_rb -sticky nw
     grid $f.lin_fl -sticky e
 
-    radiobutton $f.nnc_rb -text "Нейросетевой контроллер" \
+    radiobutton $f.nnc_rb -text "Нейросетевой регулятор" \
 	-variable var_ckind -value nnc
     label $f.nnc_fl -text "Имя файла:"
     entry $f.nnc_fe -width 30 -textvariable var_nncfile
