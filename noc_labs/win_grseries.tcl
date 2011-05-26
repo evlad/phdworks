@@ -109,7 +109,7 @@ proc GrSeriesPlot {c} {
     global $c.props
     upvar #0 $c.props props
 
-    puts "GrSeriesPlot $c"
+    #puts "GrSeriesPlot $c"
 
     if { ! [info exists props(dataSeries)] } return
     set dataSeries $props(dataSeries)
@@ -309,11 +309,51 @@ proc GrSeriesDestroy {c} {
     unset $c.bDrawLegend $c.bDrawGrid
 }
 
-proc GrSeriesScreenshot {w c} {
-    set fileName screenshot.ps
-    $c postscript -pagewidth 297.m -pageheight 210.m \
-	-colormode color -file $fileName
-    puts "See screenshot in [file join [pwd] $fileName]"
+# w - widget
+# c - canvas to screenshot
+# workDir - where to store file
+# type - image type to store
+proc GrSeriesScreenshot {w c workDir type} {
+    # Calculate next free number, considering file names have format
+    # ${rootName}##.*, where ## - two digits
+    set rootName "grplot"
+    set ls [glob -nocomplain -tails -directory $workDir -types f "$rootName\[0-9\]\[0-9\].*"]
+    set lastName [lindex [lsort $ls] end]
+    if {$lastName == ""} {
+	set nextNum 0
+    } elseif {[regexp "^${rootName}(..)\..*\$" $lastName rest lastNum]} {
+	scan $lastNum "%d" nextNum
+	incr nextNum
+    } else {
+	set nextNum 0
+    }
+
+    # Let's compose path
+    set rootPath [file join $workDir [format "%s%02d" $rootName $nextNum]]
+    switch $type {
+	postscript {
+	    set filePath "$rootPath.ps"
+	    # Margins one the page (mm)
+	    set xmar 20
+	    set ymar 20
+	    $c postscript -colormode color -file $filePath \
+		-pagewidth [expr 297 - $xmar].m \
+		-pageheight [expr 210 - $ymar].m
+	}
+	jpeg {
+	    set filePath "$rootPath.jpg"
+	    set img [image create photo -format window -data $c]
+	    $img write -format $type $filePath
+	}
+	default {
+	    # type and file name extension are the same
+	    set filePath "$rootPath.$type"
+	    set img [image create photo -format window -data $c]
+	    $img write -format $type $filePath
+	}
+    }
+    tk_messageBox -parent $w -icon info -type ok -title "Screenshot competed" \
+	-message  "Снимок сохранен в файл\n$filePath"
 }
 
 proc GrSeriesCheckPresence {p} {
@@ -328,12 +368,27 @@ proc GrSeriesCheckPresence {p} {
 }
 
 
-proc GrSeriesWindow {p title {filepath ""}} {
+# p - parent widget
+# title - window title
+# path - first data file or working directory
+proc GrSeriesWindow {p title {path ""}} {
     #set dataByColumns = ReadSeries $filepath
     set w $p.grseries
     catch {destroy $w}
     toplevel $w
     wm title $w $title
+
+    # Determine work directory for screenshots
+    if {$path == ""} {
+	set workDir [pwd]
+	set filepath $path
+    } elseif {[file isdirectory $path]} {
+	set workDir $path
+	set filepath ""
+    } else {
+	set workDir [file dirname $path]
+	set filepath $path
+    }
 
     set c $w.graphics.c
     frame $w.graphics
@@ -358,8 +413,23 @@ proc GrSeriesWindow {p title {filepath ""}} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.print -text "Снимок экрана" \
-	-command "GrSeriesScreenshot $w $c"
+
+    set m $w.buttons.print.m
+    menubutton $w.buttons.print -text "Снимок экрана" \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    set imgfmts {postscript gif}
+    if {0 == [catch {package require Img} res]} {
+	# It's possible to use wide variety of image formats
+	lappend imgfmts png jpeg bmp
+    }
+    foreach imgfmt $imgfmts {
+	$m add command -label $imgfmt \
+	    -command "GrSeriesScreenshot $w $c $workDir $imgfmt"
+    }
+
+    #button $w.buttons.print -text "Снимок экрана" \
+    #	-command "GrSeriesScreenshot $w $c"
     button $w.buttons.curves -text "Ряды..." -command "puts TODO"
 
     set o $w.buttons.options

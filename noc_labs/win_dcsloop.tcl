@@ -166,7 +166,7 @@ proc dcsloopCreateWindow {p title sessionDir} {
 	-command "dcsloopRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"Series plot\""
+	-command "GrSeriesWindow $w \"Control loop modeling series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcsloop_params {} ; destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \

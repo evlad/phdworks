@@ -221,7 +221,7 @@ proc NewSession {p markfile {title ""}} {
 	    $l yview moveto 1.0
 
 	    pack $w.list.sessions -side left -expand true -fill both
-	    pack $w.list -side top -fill x -pady 2m
+	    pack $w.list -side top -expand true -fill x -pady 2m
 
 	    frame $w.buttons
 	    pack $w.buttons -side bottom -fill x -pady 2m

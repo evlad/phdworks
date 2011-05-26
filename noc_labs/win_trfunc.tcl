@@ -254,7 +254,7 @@ proc TrFuncProbe {w trFilePath probe} {
 	# Plot results
 	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameInput] 0]" "$probe"
   	GrSeriesAddSeries $w "[lindex [GrSeriesReadFile $nameOutput] 0]" "f($probe)"
-	GrSeriesWindow $w "Series plot"
+	GrSeriesWindow $w "Probe and response plot" [file dirname $trFilePath]
     }
 }
 
@@ -351,7 +351,7 @@ proc TrFuncEditor {p thisvar descr} {
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
 
     set m $w.buttons.probe.m
-    menubutton $w.buttons.probe -text "Отклик" -underline 0 \
+    menubutton $w.buttons.probe -text "Отклик" \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     foreach probesignal {pulse step sin_4 sin_10 sin_20} {
