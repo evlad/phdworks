@@ -134,6 +134,14 @@ proc SignalViewDataFile {p sessionDir var} {
 }
 
 
+# Display statistics
+proc SignalStatAnDataFile {p sessionDir var} {
+    global $var
+    upvar #0 $var fileRelPath
+    StatAnDataFile $p $sessionDir $fileRelPath
+}
+
+
 # Select file for filter and store new value to var global variable.
 proc SignalSelectFiltFile {p sessionDir var} {
     global $var
@@ -159,11 +167,11 @@ proc SignalSelectDataFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
     set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    set nnfiletypes {
+    set datafiletypes {
 	{"Файлы данных" {.dat}}
 	{"Все файлы" *}
     }
-    set fileName [fileSelectionBox $p open [file join $fileName] $nnfiletypes]
+    set fileName [fileSelectionBox $p open $fileName $datafiletypes]
     if {$fileName != {}} {
 	set fileRelPath [SessionRelPath $sessionDir $fileName]
     }
@@ -223,11 +231,21 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
     entry $f.data_fe -width 30 -textvariable var_datafile_$signal
     button $f.data_fsel -text "Выбор..." \
 	-command "SignalSelectDataFile $w $sessionDir var_datafile_$signal"
-    button $f.data_fview -text "Показать..." \
+
+    set m $f.data_foper.m
+    menubutton $f.data_foper -text "Операции" \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    $m add command -label "Показать..." \
 	-command "SignalViewDataFile $w $sessionDir var_datafile_$signal"
+    #$m add command -label "Создать..." -command "puts TODO"
+    $m add command -label "Статистика..." \
+	-command "SignalStatAnDataFile $w $sessionDir var_datafile_$signal"
+
+#SignalViewDataFile $w $sessionDir var_datafile_$signal
 
     grid $f.data_rb
-    grid $f.data_fl $f.data_fe $f.data_fsel $f.data_fview
+    grid $f.data_fl $f.data_fe $f.data_fsel $f.data_foper
     grid $f.data_rb -sticky nw
     grid $f.data_fl -sticky e
 

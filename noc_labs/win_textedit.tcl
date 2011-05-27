@@ -123,10 +123,12 @@ proc TextEditWindow {p title filepath {onSave {}}} {
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
     set f [frame $w.textarea]
+    set font [option get $w fontMono ""]
     text $f.text -relief sunken -bd 2 -wrap none \
 	-xscrollcommand "$f.xscroll set" \
 	-yscrollcommand "$f.yscroll set" \
-	-setgrid 1 -width 40 -height 15 -undo 1 -autosep 1
+	-setgrid 1 -width 40 -height 15 -undo 1 -autosep 1 \
+	-background white -font $font
     scrollbar $f.xscroll -orient horizontal -command "$f.text xview"
     scrollbar $f.yscroll -orient vertical -command "$f.text yview"
     grid $f.text $f.yscroll -sticky news

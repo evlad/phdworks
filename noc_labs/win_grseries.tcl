@@ -452,18 +452,12 @@ proc GrSeriesWindow {p title {path ""}} {
 	    -command "GrSeriesScreenshot $w $c $workDir $imgfmt"
     }
 
-    frame $w.curves
-    pack $w.curves -side bottom -fill x -pady 2m
-
     set m $w.buttons.curves.m
-    menubutton $w.buttons.curves -text "Ряды..." \
+    menubutton $w.buttons.curves -text "Ряды" \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
-    $m add command -label "Добавить" \
+    $m add command -label "Добавить..." \
 	-command "GrSeriesAddFile $p $workDir"
-
-    #button $w.buttons.curves -text "Добавить" \
-#	-command "GrSeriesAddFile $p $workDir"
 
     set o $w.buttons.options
     frame $o

@@ -173,3 +173,51 @@ proc Scrolled_Listbox {f args} {
     grid columnconfigure $f 0 -weight 1
     return $f.list
 }
+
+
+proc StatAnDataFile {p sessionDir fileRelPath} {
+    set filePath [SessionAbsPath $sessionDir $fileRelPath]
+    if {![file isfile $filePath]} {
+	error "File $filePath does not exist"
+	return
+    }
+    set cwd [pwd]
+    puts "Run StatAn"
+    catch {cd [SessionDir $sessionDir]} errCode1
+    if {$errCode1 != ""} {
+	error $errCode1
+	return
+    }
+
+    if {[catch {exec [file join [SystemDir] bin StatAn] $filePath} \
+	     output]} {
+	error $output
+	return
+    }
+    cd $cwd
+
+    # Counter for unique names
+    global statan
+    if {![info exists statan]} {
+	set statan 0
+    } else {
+	incr statan
+    }
+    set w $p.statan$statan
+    catch {destroy $w}
+    toplevel $w
+    wm title $w "Statistics: $fileRelPath"
+    set f $w
+    label $f.l -text "Статистика по файлу:"
+    pack $f.l
+
+    button $f.b -text "Закрыть" -command "destroy $w"
+    pack $f.b -side bottom
+
+    set font [option get $w fontMono ""]
+    text $f.t -state normal -background white -width 80 -height 8 \
+	-font $font
+    $f.t insert 0.end $output
+    $f.t configure -state disabled
+    pack $f.t -side top -fill both -expand true
+}
