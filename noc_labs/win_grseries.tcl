@@ -356,6 +356,31 @@ proc GrSeriesScreenshot {w c workDir type} {
 	-message  "Снимок сохранен в файл\n$filePath"
 }
 
+proc GrSeriesAddFile {p workDir {filePath ""}} {
+    set w $p.grseries
+    if {$filePath != ""} {
+	if {![file exists $filePath]} {
+	    error "Failed to open $filePath"
+	    return
+	}
+    } else {
+	set dataFileTypes {
+	    {"Файлы данных" {.dat}}
+	    {"Все файлы" *}
+	}
+	set filePath [fileSelectionBox $w open [file join $workDir ""] $dataFileTypes]
+	if {$filePath == ""} {
+	    # User cancel
+	    return
+	}
+    }
+    set wholeData [GrSeriesReadFile $filePath]
+    set label [SessionRelPath $workDir $filePath]
+    GrSeriesAddSeries $p "[lindex $wholeData 0]" $label
+    GrSeriesRedraw $p
+}
+
+
 proc GrSeriesCheckPresence {p} {
     set w $p.grseries
     if {[catch {$w cget -menu} rc]} {
@@ -366,7 +391,6 @@ proc GrSeriesCheckPresence {p} {
 	return 1
     }
 }
-
 
 # p - parent widget
 # title - window title
@@ -428,9 +452,18 @@ proc GrSeriesWindow {p title {path ""}} {
 	    -command "GrSeriesScreenshot $w $c $workDir $imgfmt"
     }
 
-    #button $w.buttons.print -text "Снимок экрана" \
-    #	-command "GrSeriesScreenshot $w $c"
-    button $w.buttons.curves -text "Ряды..." -command "puts TODO"
+    frame $w.curves
+    pack $w.curves -side bottom -fill x -pady 2m
+
+    set m $w.buttons.curves.m
+    menubutton $w.buttons.curves -text "Ряды..." \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    $m add command -label "Добавить" \
+	-command "GrSeriesAddFile $p $workDir"
+
+    #button $w.buttons.curves -text "Добавить" \
+#	-command "GrSeriesAddFile $p $workDir"
 
     set o $w.buttons.options
     frame $o
