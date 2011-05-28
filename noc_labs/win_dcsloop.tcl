@@ -82,15 +82,16 @@ proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
 		GrSeriesRedraw $p
 		lappend dcsloop_grSeries $fileName
 	    }
+	} else {
+	    # If series already plotted then let's show statistics,
+	    StatAnDataFile $p $sessionDir $fileName
 	}
     } else {
 	# Make empty list of series to plot
 	set dcsloop_grSeries {}
 
-	# Display file contents
-	if {[file exists $filePath]} {
-	    TextEditWindow $p "Series $fileName" $filePath
-	}
+	# If plot does not exist let's show statistics
+	StatAnDataFile $p $sessionDir $fileName
     }
 }
 
