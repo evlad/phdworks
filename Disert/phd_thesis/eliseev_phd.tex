@@ -1,0 +1,225 @@
+% -*-coding: cp1251;-*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Главный файл
+%
+% To produce eliseev_phd.dvi run:
+%   $ latex eliseev_phd.tex
+% To produce eliseev_phd.pdf run:
+%   $ pdflatex eliseev_phd.tex
+% To produce eliseev_phd.rtf run:
+%   $ latex2rtf -i russian -M 12 -S eliseev_phd.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[candidate,subf,href,colorlinks=false
+%,openright
+%,fixint=false
+%,times
+%,facsimile
+%,classified
+]{disser}
+
+\usepackage[
+  a4paper, mag=1000, includefoot,
+  left=3cm, right=1cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm
+]{geometry}
+
+\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{epstopdf} 
+% Now its possible to \includegraphics{file} without extension and
+% file.eps or file.pdf will be found depending latex or pdflatex run.
+% Moreover, if epstopdf is installed then file.eps is converted to
+% file-eps-converted-to.pdf automatically.
+%
+% Convert landscape oriented .ps files (created by gnuplot) to .eps
+% not by default but using next parameters:
+% ps2eps -R + -l -B -f nnp_step_trained.ps nnp_step_trained.ps
+\usepackage{latexcad}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epsfig}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{pstricks}
+\usepackage{array}
+\usepackage{longtable}
+
+%\usepackage[ps2pdf,bookmarks=true,bookmarksnumbered=true,hypertexnames=false,linkbordercolor={0 0 1},unicode]{hyperref} 
+
+\usepackage[english,russian]{babel}
+\ifpdf\usepackage{epstopdf}\fi
+
+\hypersetup{
+pdfauthor = {Vladimir Eliseev},
+pdftitle = {Vladimir Eliseev - Ph.D. thesis},
+pdfsubject = {Research of artificial neural networks applications in
+  control systems},
+pdfkeywords = {neural network, automated control, optimal control,
+  control system},
+pdfcreator = {LaTeX with hyperref package},
+pdfproducer = {pdflatex}}
+\language=4
+
+%\bibliographystyle{plain}
+%  $ bibtex eliseev_phd.aux
+
+% disser package is needed to get sorted bibliography
+%  $ bibtex8 -H -c cp1251 eliseev_phd.aux
+\bibliographystyle{gost705s}
+
+% My macros
+\newcommand\tablref[1]{\cyrt\cyra\cyrb\cyrl.~\ref{#1}}
+\newcommand\figref[1]{\cyrr\cyri\cyrs.~\ref{#1}}
+\newcommand\pgref[1]{\cyrs.~\pageref{#1}}
+%\newcommand\eqref[1]{(\ref{#1})}
+
+\renewcommand{\tan}{\mathop{\rm tg}}
+\renewcommand{\arctan}{\mathop{\rm arctg}}
+\renewcommand{\tanh}{\mathop{\rm th}}
+\newcommand{\DEF}{\mathrel{\mathop=^{\rm def}}}
+\newcommand{\MSE}{\overline{\varepsilon^2}}
+\newcommand{\hatMSE}{\overline{\hat{\varepsilon}^2}}
+\newcommand{\MSEmin}{\overline{\varepsilon^2}_{\rm min}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\NN}{\mathcal{N}}
+\newcommand{\Emax}{|e|_{max}}
+
+% For disser:
+\newcommand{\bbljan}{\cyrya\cyrn\cyrv\cyra\cyrr\cyrsftsn}
+\newcommand{\bblfeb}{\cyrf\cyre\cyrv\cyrr\cyra\cyrl\cyrsftsn}
+\newcommand{\bblmar}{\cyrm\cyra\cyrr\cyrt}
+\newcommand{\bblapr}{\cyra\cyrp\cyrr\cyre\cyrl\cyrsftsn}
+\newcommand{\bblmay}{\cyrm\cyra\cyrishrt}
+\newcommand{\bbljun}{\cyri\cyryu\cyrn\cyrsftsn}
+\newcommand{\bbljul}{\cyri\cyryu\cyrl\cyrsftsn}
+\newcommand{\bblaug}{\cyra\cyrv\cyrg\cyru\cyrs\cyrt}
+\newcommand{\bblsep}{\cyrs\cyre\cyrn\cyrt\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bbloct}{\cyro\cyrk\cyrt\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bblnov}{\cyrn\cyro\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bbldec}{\cyrd\cyre\cyrk\cyra\cyrb\cyrr\cyrsftsn}
+
+% Activation function
+\newcommand{\fa}{\phi}
+
+% Gauss Distribution parameters
+\newcommand{\GaDi}[2]{$(#1;#2)$}
+
+% Позволить переносы двух последних букв слова
+\righthyphenmin=2
+
+% Дополнительные переносы
+\hyphenation{ошиб-ки обыч-но сис-тем не-по-сред-ствен-но-го
+ус-пеш-но раз-бро-са раз-брос ав-то-рег-рес-сии од-но-вре-мен-но
+не-чет-ко-ло-ги-че-ский на-уч-но-ис-сле-до-ва-тель-ских
+back-pro-pa-ga-tion out-put}
+
+% Нумерация совсем мелких пунктов
+% Не нумеровать параграфы
+\setcounter{secnumdepth}{3}
+
+%\newcounter{subbbcounter}[subsubsection]
+%\renewcommand{\thesubbbcounter}{%
+%\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
+%\arabic{subbbcounter}}
+%\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
+%\refstepcounter{subbbcounter}%
+%{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
+
+% Выводы
+%\makeatletter
+%\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
+%\newcommand{\conclusion}[1]{\section*{#1}%
+%\addcontentsline{toc}{conclusion}{#1}}
+%\makeatother
+
+\input{txdtools.tex}
+\input{blockdiagram.tex}
+
+% Для макросов texdraw установить умолчательной единицей измерения миллиметры
+%texdraw \everytexdraw{\drawdim mm}
+
+\begin{document}
+
+\institution{Министерство образования и науки Российской Федерации\\
+  Московский энергетический институт (Технический университет)}
+\topic{Исследование вопросов применения искусственных нейронных сетей
+  в системах автоматического управления}
+\author{Елисеев Владимир Леонидович}
+\specnum{05.13.01}
+\spec{Системный анализ, управление и обработка информации}
+\sa{Филаретов Геннадий Федорович}
+\sastatus{доктор технических наук, профессор}
+\city{Москва}
+\date{\number\year}
+\title{ДИССЕРТАЦИЯ\\
+на соискание ученой степени\\
+кандидата кандидата технических наук}
+
+% Титульные страницы
+\maketitle
+
+% Оглавление
+% Не вставлять параграфы в оглавление
+\setcounter{tocdepth}{3}\tableofcontents
+%\newpage
+
+% Введение
+\chapter*{Введение}
+\addcontentsline{toc}{chapter}{Введение}
+\input{intro.tex}
+
+% Глава 1
+\chapter{Обзор применений нейронных сетей в задачах автоматического управления}
+\input{part_review.tex}
+
+% Глава 2
+\chapter{Замена линейного регулятора на нейросетевой}%
+\label{linear_to_neural}
+\input{part_nnc.tex}
+
+% Глава 3
+\chapter{Синтез нейросетевого оптимального регулятора}%
+\label{neural_optimal_control}
+\input{part_noc.tex}
+
+% Глава 4
+\chapter{Нейросетевое управление нестационарным объектом}%
+\label{nonst_neural_control}
+\input{part_nonst.tex}
+
+% Глава 5
+\chapter{Нейросетевое управление мобильным роботом}%
+\label{mobile_robot}
+\input{part_mobot.tex}
+
+% Глава 6
+\chapter{Программный пакет для моделирования и обучения методам нейросетевого управления}%
+\label{lab_works}
+\input{part_lab.tex}
+
+% Заключение
+\chapter*{Заключение}
+\addcontentsline{toc}{chapter}{Заключение}
+\label{conclusion}
+\input{conclusion.tex}
+
+% Библиография
+%\bibliographystyle{gost705s}
+\bibliography{bibliogr,mypapers}
+
+% Приложения
+%\appendix
+
+% Приложение 1 - Эксперименты
+%\section{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
+%         оптимальными регуляторами}
+%\input{Appendix1.tex}
+
+%\chapter{Вывод кинематических уравнений движения маяка в поле
+%         зрения видеокамеры мобильного робота}
+%\input{AppendixMobotKin.tex}
+
+\end{document}
+
+% Конец главного файла
