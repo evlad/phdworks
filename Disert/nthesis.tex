@@ -35,7 +35,8 @@
 \usepackage{array}
 \usepackage{longtable}
 
-\bibliographystyle{plain}
+%\bibliographystyle{plain}
+\bibliographystyle{gost705s}
 
 \usepackage[ps2pdf,bookmarks=true,bookmarksnumbered=true,hypertexnames=false,linkbordercolor={0 0 1},unicode]{hyperref} 
 
@@ -66,6 +67,21 @@ pdfproducer = {pdflatex}}
 \newcommand{\dt}{\Delta t}
 \newcommand{\NN}{\mathcal{N}}
 \newcommand{\Emax}{|e|_{max}}
+
+% For disser:
+\newcommand{\cyr}{ }
+\newcommand{\bbljan}{\cyrya\cyrn\cyrv\cyra\cyrr\cyrsftsn}
+\newcommand{\bblfeb}{\cyrf\cyre\cyrv\cyrr\cyra\cyrl\cyrsftsn}
+\newcommand{\bblmar}{\cyrm\cyra\cyrr\cyrt}
+\newcommand{\bblapr}{\cyra\cyrp\cyrr\cyre\cyrl\cyrsftsn}
+\newcommand{\bblmay}{\cyrm\cyra\cyrishrt}
+\newcommand{\bbljun}{\cyri\cyryu\cyrn\cyrsftsn}
+\newcommand{\bbljul}{\cyri\cyryu\cyrl\cyrsftsn}
+\newcommand{\bblaug}{\cyra\cyrv\cyrg\cyru\cyrs\cyrt}
+\newcommand{\bblsep}{\cyrs\cyre\cyrn\cyrt\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bbloct}{\cyro\cyrk\cyrt\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bblnov}{\cyrn\cyro\cyrya\cyrb\cyrr\cyrsftsn}
+\newcommand{\bbldec}{\cyrd\cyre\cyrk\cyra\cyrb\cyrr\cyrsftsn}
 
 % Activation function
 \newcommand{\fa}{\phi}
@@ -177,7 +193,7 @@ back-pro-pa-ga-tion out-put}
 %\chapter{Методические рекомендации по замене линейного регулятора на нейросетевой}%
 \chapter{Замена линейного регулятора на нейросетевой}%
 \label{linear_to_neural}
-\input{part_nnc.tex}
+%\input{part_nnc.tex}
 
 % Глава 3
 \chapter{Синтез нейросетевого оптимального регулятора}%
@@ -205,8 +221,11 @@ back-pro-pa-ga-tion out-put}
 % Заключение
 \chapter*{Заключение}
 \addcontentsline{toc}{chapter}{Заключение}
+\label{conclusion}
+\input{conclusion.tex}
 
 % Библиография
+%\bibliographystyle{gost705s}
 \bibliography{bibliogr,mypapers}
 
 % Приложения
