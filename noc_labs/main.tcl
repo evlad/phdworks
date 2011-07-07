@@ -7,26 +7,40 @@ wm iconname . "Labs main menu"
 package require files_loc
 package require universal
 package require win_dcsloop
+package require win_dcontrp
 
 set ScriptsDir [file join [SystemDir] scripts]
 option readfile [file join $ScriptsDir nnacs.ad]
 
 set menuContent {
     "dcsloop" "Моделирование системы автоматического управления"
+    "dcontrp" "Обучение нейросетевого регулятора вне контура"
 }
 
 proc MenuLab1 {w label} {
     # Create or use session directory and remember it
     set title [lindex [split "$label" \n] 1]
-    set sessionDir [NewSession $w dcsloop.par "$title"]
+    set sessionDir [NewSession $w "dcsloop.par" "$title"]
     if {$sessionDir != {}} {
 	dcsloopCreateWindow $w "$title" $sessionDir
     }
 }
 
+proc MenuLab2 {w label} {
+    # Create or use session directory and remember it
+    set title [lindex [split "$label" \n] 1]
+    #set sessionDir [NewSession $w "dcontrp.par" "$title"]
+    #if {$sessionDir != {}} {
+	dcontrpCreateWindow $w "$title" 010
+#$sessionDir
+    #}
+}
+
 pack [button $w.user_button \
 	  -text "Перед началом\nВыбор/создание нового пользователя" \
 	  -command "NewUser \"$w\""] -fill x -side top -expand yes -pady 2
+
+set curUserDir "/home/user/labworks/EliseevVL"
 
 set i 0
 foreach {label title} $menuContent {

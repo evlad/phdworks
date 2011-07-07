@@ -24,11 +24,11 @@ proc DrawGather {c name x y minusps} {
     } else {
 	$c create arc $x1 $y1 $x2 $y2 -start 225 -extent 90 -style pieslice
     }
-    if { $minusps == "w" } {
+    if { $minusps == "e" } {
 	$c create arc $x1 $y1 $x2 $y2 -start 315 -extent 90 -style pieslice \
 	    -fill black
     }
-    if { $minusps == "e" } {
+    if { $minusps == "w" } {
 	$c create arc $x1 $y1 $x2 $y2 -start 135 -extent 90 -style pieslice \
 	    -fill black
     }
@@ -86,20 +86,30 @@ proc BBoxSpecPoint {bb ps} {
 
 # ps1, ps2 - point specification.  May be "n", "s", "w", "e" as well
 # as "[ns][we]".
-# dirflag - arrow flag for direct arrow link and two addition values:
-# "hor" and "ver", which means arrow should go to target point
-# horizontally (vertically) the first.
+# dirflag - arrow flag for direct arrow link and 4 addition values:
+# "hor" and "ver", which mean arrow should go to target point
+# horizontally (vertically) the first; "horOnly" and "verOnly", which
+# mean arrow should go to target point horizontally (vertically) only
+# and avoiding another direction at all.
 proc DrawDirection {c block1 ps1 block2 ps2 dirflag} {
     set bb1 [$c bbox $block1]
     set bb2 [$c bbox $block2]
     set p1 [BBoxSpecPoint $bb1 $ps1]
     set p2 [BBoxSpecPoint $bb2 $ps2]
     switch -exact $dirflag {
+	"horOnly" {
+	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
+		[lindex $p2 0] [lindex $p1 1] last
+	}
 	"hor" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
 		[lindex $p2 0] [lindex $p1 1] middle
 	    DrawArrow $c [lindex $p2 0] [lindex $p1 1] \
 		[lindex $p2 0] [lindex $p2 1] middle
+	}
+	"verOnly" {
+	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
+		[lindex $p1 0] [lindex $p2 1] last
 	}
 	"ver" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \

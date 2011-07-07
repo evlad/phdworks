@@ -77,8 +77,10 @@ proc ReadNeuralNetFile {filepath} {
     return {}
 }
 
-# nnarch = {Inputs {HidNeurons1 HidType1} {HidNeurons2 HidType2} ...
-# {Outputs OutputType}}, where type is "linear" or "tanh"
+# nnarch = {{Inputs [InputLabels]} {HidNeurons1 HidType1} {HidNeurons2
+# HidType2} ...  {Outputs OutputType OutputLabels}}, where type is
+# "linear" or "tanh" and InputLabels or/and OutputLabels may be
+# absent.
 proc DrawNeuralNetArch {c nnarch} {
     set totalW [winfo width $c]
     set totalH [winfo height $c]
@@ -93,10 +95,13 @@ proc DrawNeuralNetArch {c nnarch} {
     # To prevent neurons slightly to go out of picture
     set totalH [expr $totalH - $y * 2]
 
-    set inputs [lindex $nnarch 0]
+    set inputs [lindex $nnarch 0 0]
     set layers [lrange $nnarch 1 end]
     set outputLayer [lindex $nnarch end]
-    set inputs [lindex $nnarch 0]
+    set inputLabels [lindex $nnarch 0 1]
+    set outputLabels [lindex $nnarch end 2]
+    # Distance in pixels between end of line and label
+    set labelHorOffset 3
 
     set MaxNeuronsInLayer $inputs
     foreach layer $layers {
@@ -129,12 +134,18 @@ proc DrawNeuralNetArch {c nnarch} {
 	set type [lindex $layer 1]
 	set yL [expr $y + ($totalH - $NeuronSize * (2 * $num - 1)) / 2]
 	if {![info exist prevNum]} {
+	    # Inputs
 	    for {set iN 0} {$iN < $num} {incr iN} {
 		set finalX [expr $x + $LayersDist]
 		set finalY [expr $yL + $HalfNS + 2 * $iN * $NeuronSize]
 		$c create line $HalfLD $finalY $finalX $finalY
 		#$c create oval [expr $finalX - 2] [expr $finalY - 2] \
 		#    [expr $finalX + 2] [expr $finalY + 2] -fill black
+		set label [lindex $inputLabels $iN]
+		if {$label != ""} {
+		    $c create text [expr $HalfLD - $labelHorOffset] $finalY \
+			-justify right -anchor e -text $label
+		}
 	    }
 	} else {
 	    set yP [expr $y + ($totalH - $NeuronSize * (2 * $prevNum - 1)) / 2]
@@ -160,6 +171,11 @@ proc DrawNeuralNetArch {c nnarch} {
 	set startX [expr $x + $iL * $LayersDist]
 	set startY [expr $yL + $HalfNS + 2 * $iN * $NeuronSize]
 	$c create line $startX $startY [expr $startX + $HalfLD] $startY
+	set label [lindex $outputLabels $iN]
+	if {$label != ""} {
+	    $c create text [expr $startX + $HalfLD + $labelHorOffset] $startY \
+		-justify left -anchor w -text $label
+	}
     }
 
     # Draw neurons
@@ -238,4 +254,4 @@ proc TestDrawNeuralNetArch {{nnarch {6 {7 "tanh"} {4 "tanh"} {3 "linear"}}}} {
 
 #TestDrawNeuralNetArch
 #TestDrawNeuralNetArch [ReadNeuralNetFile testdata/test.nn]
-#TestDrawNeuralNetArch {8 {4 "tanh"} {1 "linear"}}
+#TestDrawNeuralNetArch {{8 {i1 i2 i3 i4 i5 i6 i7 i8}} {4 "tanh"} {1 "linear" {o1}}}

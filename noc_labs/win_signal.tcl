@@ -178,7 +178,7 @@ proc SignalSelectDataFile {p sessionDir var} {
 }
 
 
-# Create dialog window with controller settings.
+# Create dialog window with signal settings.
 # - p - parent widget;
 # - sessionDir - current session directory (for relative paths mostly);
 # - signal - type of the signal ("refer" or "noise");
@@ -281,7 +281,7 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
 
     set changed 0
     if {[set $w.applyChanges]} {
-	puts "dcsloop: apply changes"
+	puts "win_signal: apply changes"
 	if {$var_sigsrc != $arvar($sigsrc)} {
 	    set arvar($sigsrc) $var_sigsrc
 	    set changed 1
@@ -300,7 +300,7 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
 	}
     }
     if {$changed == 0} {
-	puts "dcsloop: no changes"
+	puts "win_signal: no changes"
     }
     return $changed
 }

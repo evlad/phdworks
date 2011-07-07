@@ -186,7 +186,7 @@ proc ContrSelectNNFile {p sessionDir var} {
 
 
 # Display neural network where filepath is referred by var.
-proc ContrlViewNNFile {p sessionDir var} {
+proc ContrViewNNFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
     DisplayNeuralNetArch $p $fileRelPath [SessionAbsPath $sessionDir $fileRelPath]
@@ -210,7 +210,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     toplevel $w
     wm title $w "Controller settings"
 
-    puts "arvar($trcfile)=$arvar($trcfile)"
+    #puts "arvar($trcfile)=$arvar($trcfile)"
 
     global var_ckind var_trcfile var_nncfile var_nncinputs
     set var_ckind $arvar($ckind)
@@ -218,7 +218,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     set var_nncfile [SessionRelPath $sessionDir $arvar($nncfile)]
     set var_nncinputs $arvar($nncinputs)
 
-    puts "var_trcfile=$var_trcfile"
+    #puts "var_trcfile=$var_trcfile"
 
     global $w.applyChanges
     set $w.applyChanges 0
@@ -260,7 +260,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     button $f.nnc_fsel -text "Выбор..." \
 	-command "ContrSelectNNFile $w $sessionDir var_nncfile"
     button $f.nnc_fview -text "Показать..." \
-	-command "ContrlViewNNFile $w $sessionDir var_nncfile"
+	-command "ContrViewNNFile $w $sessionDir var_nncfile"
     label $f.inp_l -text "Входы:"
     frame $f.inputs
     foreach {n v} {re "e+r" eee "e+e+..." ede "e+de"} {
@@ -289,7 +289,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 
     set changed 0
     if {[set $w.applyChanges]} {
-	puts "dcsloop: apply changes"
+	puts "win_controller: apply changes"
 	if {$var_ckind != $arvar($ckind)} {
 	    set arvar($ckind) $var_ckind
 	    set changed 1
@@ -308,7 +308,7 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 	}
     }
     if {$changed == 0} {
-	puts "dcsloop: no changes"
+	puts "win_controller: no changes"
     }
     return $changed
 }

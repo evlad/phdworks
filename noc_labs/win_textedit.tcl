@@ -62,7 +62,7 @@ proc TextRegexpHighlight {t re tag} {
 proc TextSyntaxHighlight {ftype t} {
     global TextEditTags
     foreach tag $TextEditTags {
-    $t tag remove $tag 0.0 end
+	$t tag remove $tag 0.0 end
     }
 
     switch -exact $ftype {
@@ -73,6 +73,11 @@ proc TextSyntaxHighlight {ftype t} {
 	}
 	ProgParams {
 	    TextRegexpHighlight $t {^\s*\#.*$} comment
+	    TextRegexpHighlight $t {^\s*\w+\s*=.*$} parline
+	}
+	LogFile {
+	    TextRegexpHighlight $t {^EXCEPTION:.*$} error
+	    TextRegexpHighlight $t {^[eE]rror.*$} error
 	    TextRegexpHighlight $t {^\s*\w+\s*=.*$} parline
 	}
     }
@@ -95,6 +100,9 @@ proc TextEditWindow {p title filepath {onSave {}}} {
     switch -exact [file extension $filepath] {
 	".par" {
 	    set ftype ProgParams
+	}
+	".log" {
+	    set ftype LogFile
 	}
 	".tf" -
 	".cof" {
@@ -146,6 +154,7 @@ proc TextEditWindow {p title filepath {onSave {}}} {
     $f.text tag configure comment -foreground DarkGreen
     $f.text tag configure section -foreground DarkRed
     $f.text tag configure parline -foreground NavyBlue
+    $f.text tag configure error -foreground red
 
     # Make the first syntax highlight
     TextSyntaxHighlight $ftype $f.text 

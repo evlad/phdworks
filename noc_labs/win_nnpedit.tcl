@@ -1,7 +1,7 @@
 package provide win_nnpedit 1.0
 
 package require Tk
-package require draw_nn.tcl
+package require draw_nn
 
 proc NNPEditSave {w filepath} {
 }
@@ -127,7 +127,7 @@ proc NNPEditWindow {p title filepath} {
     grid [label $f.numlayers_l -text "Hidden layers" -justify left] \
 	[spinbox $f.numlayers -from 0 -to 3 -width 4 -validate key \
 	     -textvariable $f.numlayers_var -justify right]
-    upvar $f.numlayers_var numlayers
+    upvar 0 $f.numlayers_var numlayers
     foreach i {1 2 3} {
 	grid [label $f.numneurons${i}_l -text "Hidden layer #$i" \
 		  -justify left] \
