@@ -79,6 +79,9 @@ proc TextSyntaxHighlight {ftype t} {
 	    TextRegexpHighlight $t {^EXCEPTION:.*$} error
 	    TextRegexpHighlight $t {^[eE]rror.*$} error
 	    TextRegexpHighlight $t {^\s*\w+\s*=.*$} parline
+	    TextRegexpHighlight $t {'[^']*'} section
+	    TextRegexpHighlight $t {'\?[^']*'} error
+	    TextRegexpHighlight $t {^IMPORTANT:.*$} comment
 	}
     }
 }
