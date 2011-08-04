@@ -52,14 +52,9 @@ proc dcsloopRun {p sessionDir parFile} {
     if {$errCode1 != ""} {
 	error $errCode1
 	return
-    } else {
-	catch {exec [file join [SystemDir] bin dcsloop] $parFile >/dev/null} errCode2
-	if {$errCode2 != ""} {
-	    error $errCode2
-	}
-	cd $cwd
     }
 
+    catch {exec [file join [SystemDir] bin dcsloop] $parFile >/dev/null} errCode2
     # 9. Refresh state of controls
     # TODO
 
@@ -67,6 +62,14 @@ proc dcsloopRun {p sessionDir parFile} {
     set logFile [file rootname $parFile].log
     $p.controls.log configure \
 	-command "TextEditWindow $p \"$logFile\" \"$logFile\""
+
+    if {$errCode2 != ""} {
+	set storedBg [$p.controls.log cget -background]
+	$p.controls.log configure -background "red"
+	after 1500 "$p.controls.log configure -background \"$storedBg\""
+	error $errCode2
+    }
+    cd $cwd
 }
 
 # Add given checkpoint to plotter window or display the data file.
