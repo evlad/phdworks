@@ -5,6 +5,7 @@ package require draw_prim
 package require par_file
 package require win_textedit
 package require win_nncontr
+package require win_nntpar
 
 # Draw panel contents in given canvas
 proc dcontrpDrawPanel {this c} {
@@ -233,6 +234,9 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	-command "NNContrWindow $w $curSessionDir dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrp_params"
     $c.test_nnc configure \
 	-command "NNContrWindow $w $curSessionDir dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrp_params"
+
+    $c.learn_training configure \
+	-command "NNTeacherParWindow $w dcontrp_params; ParFileAssign $parFile dcontrp_params"
 
     # Assign name of check point output files
     foreach {chkpnt parname} { learn_checkpoint_r in_r
