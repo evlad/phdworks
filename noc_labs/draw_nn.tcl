@@ -18,7 +18,7 @@ proc ReadNeuralNetFile {filepath} {
 	    continue
 	}
 	if [regexp {^\s*\[\s*NeuralNet\s*[^\]]*\]} $line match] {
-	    if {[info exist nnName]} {
+	    if {[info exists nnName]} {
 		# error
 		puts stderr "Not the only NeuralNet in file!"
 		return
@@ -27,7 +27,7 @@ proc ReadNeuralNetFile {filepath} {
 	    set lineNo 0
 	    continue
 	}
-	if {![info exist nnName]} {
+	if {![info exists nnName]} {
 	    # before [NeuralNet] anything is allowed
 	    continue
 	}
@@ -49,7 +49,7 @@ proc ReadNeuralNetFile {filepath} {
 		set listHidLayers {}
 	    }
 	    default {
-		if {[info exist iHidLayer]} {
+		if {[info exists iHidLayer]} {
 		    if {$iHidLayer < $nHidLayers} {
 			regexp {^\s*(\d+)} $line match num
 			lappend listHidLayers "$num tanh"
@@ -64,10 +64,11 @@ proc ReadNeuralNetFile {filepath} {
 	    }
 	}
     }
-    if {[info exist nnName] && [info exist nInputs] && [info exist nInpRep] && \
-	    [info exist nOutRep] && [info exist nFeedback] && \
-	    [info exist nHidLayers] && [info exist listHidLayers] && \
-	    [info exist eOutType] && [info exist nOutputs]} {
+    if {[info exists nnName] && [info exists nInputs] && \
+	    [info exists nInpRep] && \
+	    [info exists nOutRep] && [info exists nFeedback] && \
+	    [info exists nHidLayers] && [info exists listHidLayers] && \
+	    [info exists eOutType] && [info exists nOutputs]} {
 	set nnArch "[expr $nInputs * $nInpRep + $nOutputs * $nOutRep] \
 	    $listHidLayers"
 	lappend nnArch "$nOutputs $eOutType"
@@ -133,7 +134,7 @@ proc DrawNeuralNetArch {c nnarch} {
 	set num [lindex $layer 0]
 	set type [lindex $layer 1]
 	set yL [expr $y + ($totalH - $NeuronSize * (2 * $num - 1)) / 2]
-	if {![info exist prevNum]} {
+	if {![info exists prevNum]} {
 	    # Inputs
 	    for {set iN 0} {$iN < $num} {incr iN} {
 		set finalX [expr $x + $LayersDist]

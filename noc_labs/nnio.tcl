@@ -39,7 +39,7 @@ proc NNReadFile {filepath} {
 	    continue
 	}
 	if [regexp {^\s*\[\s*NeuralNet\s*[^\]]*\]} $line match] {
-	    if {[info exist nnName]} {
+	    if {[info exists nnName]} {
 		# error
 		puts stderr "Not the only NeuralNet in file!"
 		return
@@ -48,7 +48,7 @@ proc NNReadFile {filepath} {
 	    set lineNo 0
 	    continue
 	}
-	if {![info exist nnName]} {
+	if {![info exists nnName]} {
 	    # before [NeuralNet] anything is allowed
 	    continue
 	}
@@ -102,7 +102,7 @@ proc NNReadFile {filepath} {
 		    incr iLayer
 		    # Next layer will have current layer's neurons as input
 		    set nLayerInputs $num
-		} elseif {![info exist eOutType] && ![info exist nOutputs]} {
+		} elseif {![info exists eOutType] && ![info exists nOutputs]} {
 		    regexp {^\s*(\w+)\s+(\d+)} $line match eOutType nOutputs
 		    set nnar(nOutNeurons) $nOutputs
 		    set nnar(eLastActFunc) $eOutType
@@ -152,10 +152,11 @@ proc NNReadFile {filepath} {
 	    }
 	}
     }
-    if {[info exist nnName] && [info exist nInputs] && [info exist nInpRep] && \
-	    [info exist nOutRep] && [info exist nFeedback] && \
-	    [info exist nHidLayers] && [info exist listHidLayers] && \
-	    [info exist eOutType] && [info exist nOutputs]} {
+    if {[info exists nnName] && [info exists nInputs] && \
+	    [info exists nInpRep] && \
+	    [info exists nOutRep] && [info exists nFeedback] && \
+	    [info exists nHidLayers] && [info exists listHidLayers] && \
+	    [info exists eOutType] && [info exists nOutputs]} {
 	return [array get nnar]
     }
     puts stderr "Wrong NeuralNet format!"

@@ -36,7 +36,7 @@ proc ParFileAssign {filepath params} {
 		if {[regexp {\s*(\w+)\s*=\s*(.*)$} $line input name value]} {
 		    # Remember encountered name
 		    lappend foundNames $name
-		    if {[info exist parArray($name)]} {
+		    if {[info exists parArray($name)]} {
 			# Let's replace by new value
 			set line "$name = $parArray($name)"
 		    }
