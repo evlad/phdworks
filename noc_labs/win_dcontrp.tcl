@@ -6,6 +6,7 @@ package require par_file
 package require win_textedit
 package require win_nncontr
 package require win_nntpar
+package require win_rtseries
 
 # Draw panel contents in given canvas
 proc dcontrpDrawPanel {this c} {
@@ -61,19 +62,77 @@ proc dcontrpDrawPanel {this c} {
     DrawDirection $c test_cmp "s" test_training "n" last
 }
 
+# Read given descriptor until Test: and return both learn and test
+# MSE.  At the EOF return {}.
+# Example:
+# Iteration 3   , MSE=4.45605 (4.51003) -> repeat with (0.01, 0.001, 0)
+# Iteration 1   , MSE=1.03622 (1.04878) -> teach NN
+#           Test: MSE=0.90438 (1.01375) -> grows
+proc dcontrpReader {fd} {
+    set i 0
+    global etaHidden$fd etaOutput$fd
+    while {[gets $fd line] >= 0} {
+	#puts "reader: $line"
+	switch -regexp -- $line {
+	    {^Iteration.*repeat with} {
+		regexp {MSE=([^ ]*) .*repeat with *\(([^,]*), ([^,]*),} $line dummy learnMSE etaHidden$fd etaOutput$fd
+	    }
+	    {^Iteration} {
+		regexp {MSE=([^ ]*) } $line dummy learnMSE
+	    }
+	    {^[ ]*Test:} {
+		regexp {MSE=([^ ]*) } $line dummy testMSE
+		return "$learnMSE $testMSE [set etaHidden$fd] [set etaOutput$fd]"
+	    }
+	}
+	incr i
+    }
+    return {}
+}
+
 # 8. Run the program in its session directory
 proc dcontrpRun {p sessionDir parFile} {
     set cwd [pwd]
-    puts "Run dcontrp"
+    puts "Run dcontrp in [SessionDir $sessionDir]"
     catch {cd [SessionDir $sessionDir]} errCode1
     if {$errCode1 != ""} {
 	error $errCode1
 	return
     } else {
-	catch {exec [file join [SystemDir] bin dcontrp] $parFile >/dev/null} errCode2
-	if {$errCode2 != ""} {
-	    error $errCode2
+	set exepath [file join [SystemDir] bin dcontrp]
+	if {![file executable $exepath]} {
+	    error "$exepath is not executable"
 	}
+
+	global dcontrp_params
+	set params {
+	    winWidth 600
+	    winHeight 250
+	    yMin 1e-5
+	    yMax 10
+	    yScale log
+	}
+	set series { LearnMSE TestMSE EtaHidden EtaOutput }
+	set pipe [open "|$exepath $parFile" r]
+	fconfigure $pipe -buffering line
+
+	set pipepar [fconfigure $pipe]
+	puts $pipepar
+
+	lappend params \
+	    timeLen $dcontrp_params(finish_max_epoch) \
+	    stopCmd "close $pipe"
+
+	global etaHidden$pipe etaOutput$pipe
+	set etaHidden$pipe $dcontrp_params(eta)
+	set etaOutput$pipe $dcontrp_params(eta_output)
+	RtSeriesWindow $p "NN training" "dcontrpReader $pipe" $params $series
+	close $pipe
+
+	#catch {exec  $parFile >/dev/null} errCode2
+	#if {$errCode2 != ""} {
+	#    error $errCode2
+	#}
 	cd $cwd
     }
 
