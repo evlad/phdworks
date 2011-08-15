@@ -234,6 +234,7 @@ main (int argc, char* argv[])
 	  rPrevNN = au_nn;
 	  nnrol.nnteacher.update_nn();
 	  printf(" -> teach NN\n");
+	  fflush(stdout);
 	  bTeach = true;
 	}
       else
@@ -263,6 +264,7 @@ main (int argc, char* argv[])
 		     nnrol.nnteacher.lpar.eta,
 		     nnrol.nnteacher.lpar.eta_output,
 		     nnrol.nnteacher.lpar.alpha);
+	      fflush(stdout);
 
 	      bTeach = false;
 	    }
@@ -295,9 +297,12 @@ main (int argc, char* argv[])
 			 nnrol.nnteacher.lpar.eta,
 			 nnrol.nnteacher.lpar.eta_output,
 			 nnrol.nnteacher.lpar.alpha);
+		  fflush(stdout);
 		}
-	      else
+	      else {
 		printf(" -> teach NN\n");
+		fflush(stdout);
+	      }
 	    }
 	}
 
@@ -359,6 +364,7 @@ main (int argc, char* argv[])
 			 fFinishOnReachMSE);
 	      printf(" -> reached preset value %g -> stop\n",
 		     fFinishOnReachMSE);
+	      fflush(stdout);
 	      break;
 	    }
 	  if(fPrevTestMSE < fNormTestMSE)
@@ -370,15 +376,18 @@ main (int argc, char* argv[])
 		  NaPrintLog("Test MSE was growing for %d epoch -> stop\n",
 			     nFinishOnGrowMSE);
 		  printf(" -> grew for %d epochs -> stop\n", nFinishOnGrowMSE);
+		  fflush(stdout);
 		  break;
 		}
 	      printf(" -> grows\n", nFinishOnGrowMSE);
+	      fflush(stdout);
 	    }
 	  else
 	    {
 	      /* Reset counter */
 	      nGrowingMSE = 0;
 	      printf(" -> descents\n");
+	      fflush(stdout);
 	    }
 
 	  if(nFinishOnMaxEpoch != 0 && iEpoch >= nFinishOnMaxEpoch)
@@ -386,6 +395,7 @@ main (int argc, char* argv[])
 	      NaPrintLog("Max number of epoch %d is reached -> stop\n",
 			 nFinishOnMaxEpoch);
 	      printf(" %d epochs is over -> stop\n", nFinishOnMaxEpoch);
+	      fflush(stdout);
 	      break;
 	    }
 

@@ -194,6 +194,7 @@ int main(int argc, char **argv)
 	  rPrevNN = au_nnc;
 	  nncpl.nnteacher.update_nn();
 	  printf(" -> teach NN\n");
+	  fflush(stdout);
 	  bTeach = true;
 	}
       else
@@ -221,6 +222,7 @@ int main(int argc, char **argv)
 		     nncpl.nnteacher.lpar.eta,
 		     nncpl.nnteacher.lpar.eta_output,
 		     nncpl.nnteacher.lpar.alpha);
+	      fflush(stdout);
 
 	      bTeach = false;
 	      nDescentingMSE = 0;
@@ -250,9 +252,11 @@ int main(int argc, char **argv)
 			 nncpl.nnteacher.lpar.eta,
 			 nncpl.nnteacher.lpar.eta_output,
 			 nncpl.nnteacher.lpar.alpha);
+		  fflush(stdout);
 	      } else {
 		  ++nDescentingMSE;
 		  printf(" -> teach NN\n");
+		  fflush(stdout);
 	      }
 	      bTeach = true;
 	    }
@@ -297,6 +301,7 @@ int main(int argc, char **argv)
 			 fFinishOnReachMSE);
 	      printf(" -> reached preset value %g -> stop\n",
 		     fFinishOnReachMSE);
+	      fflush(stdout);
 	      break;
 	    }
 	  if(fFinishOnDecrease != 0 &&
@@ -319,15 +324,18 @@ int main(int argc, char **argv)
 		  NaPrintLog("Test MSE was growing for %d epoch -> stop\n",
 			     nFinishOnGrowMSE);
 		  printf(" -> grew for %d epochs -> stop\n", nFinishOnGrowMSE);
+		  fflush(stdout);
 		  break;
 		}
 	      printf(" -> grows\n", nFinishOnGrowMSE);
+	      fflush(stdout);
 	    }
 	  else
 	    {
 	      /* Reset counter */
 	      nGrowingMSE = 0;
 	      printf(" -> descents\n");
+	      fflush(stdout);
 	    }
 
 	  if(nFinishOnMaxEpoch != 0 && iEpoch >= nFinishOnMaxEpoch)
@@ -335,6 +343,7 @@ int main(int argc, char **argv)
 	      NaPrintLog("Max number of epoch %d is reached -> stop\n",
 			 nFinishOnMaxEpoch);
 	      printf(" %d epochs is over -> stop\n", nFinishOnMaxEpoch);
+	      fflush(stdout);
 	      break;
 	    }
 
