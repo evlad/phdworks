@@ -128,8 +128,8 @@ proc DrawDirection {c block1 ps1 block2 ps2 dirflag} {
 proc DrawArrow {c x1 y1 x2 y2 arrflag} {
     if { $arrflag == "middle" } {
 	$c create line $x1 $y1 $x2 $y2 -arrow none
-	set midx [expr ([$c canvasx $x1] + [$c canvasx $x2]) / 2 ]
-	set midy [expr ([$c canvasy $y1] + [$c canvasy $y2]) / 2 ]
+	set midx [expr ([$c canvasx $x1] + 2 * [$c canvasx $x2]) / 3 ]
+	set midy [expr ([$c canvasy $y1] + 2 * [$c canvasy $y2]) / 3 ]
 	$c create line $x1 $y1 $midx $midy -arrow last
     } else {
 	$c create line $x1 $y1 $x2 $y2 -arrow $arrflag
