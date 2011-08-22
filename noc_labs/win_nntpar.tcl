@@ -3,19 +3,39 @@ package provide win_nntpar 1.0
 package require Tk
 package require universal
 
+# Good for dcontrp and dplantid
+set OfflineNNTeacherPar {
+    -1 "Параметры обучения"
+    eta "Скорость обучения скрытых нейронов"
+    eta_output "Скорость обучения выходных нейронов"
+    alpha "Коэффициент инерции обучения (моментум)"
+    -2 "Параметры останова"
+    finish_on_value "Нижняя граница ошибки на тестовой выборке"
+    finish_on_decrease "Нижняя граница изменения ошибки на тестовой выборке"
+    finish_on_grow "Предельное количество эпох с ростом тестовой ошибки"
+    finish_max_epoch "Предельное количество эпох обучения"
+}
+
+# Good for dcontrf
+set OnlineNNTeacherPar {
+    -1 "Параметры обучения"
+    nnc_auf "Шаг обновления НС-Р по времени"
+    eta "Скорость обучения скрытых нейронов"
+    eta_output "Скорость обучения выходных нейронов"
+    alpha "Коэффициент инерции обучения (моментум)"
+    -2 "Параметры останова"
+    skip_growing "Пропустить в начале указанное количество эпох с ростом ошибки"
+    finish_decrease "Нижняя граница изменения ошибки управления"
+    finish_on_grow "Предельное количество эпох с ростом ошибки управления"
+    max_epochs "Предельное количество эпох обучения"
+}
+
 # Create dialog window with NN training parameters.
 # - p - parent widget;
 # - arref - name of global array variable where to store settings
-#           under nex tnames:
-# -- finish_on_value - stop training when test MSE reaches the value;
-# -- finish_on_decrease - stop training when MSE test decrease becomes
-#           less than given value;
-# -- finish_on_grow - stop training if test MSE starts growing;
-# -- finish_max_epoch - stop training if given epochs are over;
-# -- eta - learning rate for hidden neurons;
-# -- eta_output - learning rate for output neurons;
-# -- alpha - momentum;
-proc NNTeacherParWindow {p arref} {
+#           under next names:
+# - parlist - list of parameters and their labels.
+proc NNTeacherParWindow {p arref parlist} {
     upvar $arref arvar
 
     set w $p.nntpar
@@ -24,15 +44,7 @@ proc NNTeacherParWindow {p arref} {
     wm title $w "NN training parameters"
 
     global $w.parvalue
-    array set pardescr {
-	finish_on_value "Нижняя граница ошибки на тестовой выборке"
-	finish_on_decrease "Нижняя граница изменения ошибки на тестовой выборке"
-	finish_on_grow "Предельное количество эпох с ростом тестовой ошибки"
-	finish_max_epoch "Предельное количество эпох обучения"
-	eta "Скорость обучения скрытых нейронов"
-	eta_output "Скорость обучения выходных нейронов"
-	alpha "Коэффициент инерции обучения (моментум)"
-    }
+    array set pardescr $parlist
 
     # Make local copy
     foreach par [array names pardescr] {
@@ -46,25 +58,21 @@ proc NNTeacherParWindow {p arref} {
     set f $w.p
     frame $f
 
-    label $f.learn_title -text "Параметры обучения"
-    grid $f.learn_title
-    grid $f.learn_title -row 0 -column 0 -columnspan 2
-
-    foreach par {eta eta_output alpha} {
-	label $f.label_$par -text $pardescr($par) -anchor w
-	entry $f.entry_$par -textvariable $w.parvalue($par) -width 10
-	grid $f.label_$par $f.entry_$par -sticky nw
-    }
-
-    label $f.stop_title -text "Параметры останова"
-    grid $f.stop_title
-    grid $f.stop_title -row 4 -column 0 -columnspan 2
-
-    foreach par {finish_max_epoch finish_on_grow
-	finish_on_value finish_on_decrease} {
-	label $f.label_$par -text $pardescr($par) -anchor w
-	entry $f.entry_$par -textvariable $w.parvalue($par) -width 10
-	grid $f.label_$par $f.entry_$par -sticky nw
+    set row 0
+    foreach {par parlabel} $parlist {
+	switch -glob -- $par {
+	    -* { # Title
+		label $f.title$par -text $pardescr($par)
+		grid $f.title$par
+		grid $f.title$par -row $row -column 0 -columnspan 2
+	    }
+	    default {
+		label $f.label_$par -text $pardescr($par) -anchor w
+		entry $f.entry_$par -textvariable $w.parvalue($par) -width 10
+		grid $f.label_$par $f.entry_$par -sticky nw
+	    }
+	}
+	incr row
     }
 
     pack $f -side top
