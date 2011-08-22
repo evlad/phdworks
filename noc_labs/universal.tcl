@@ -221,3 +221,12 @@ proc StatAnDataFile {p sessionDir fileRelPath} {
     $f.t configure -state disabled
     pack $f.t -side top -fill both -expand true
 }
+
+
+# Display list of stack
+proc backtrace {{file stdout}} {
+    puts $file "TclCallTrace"
+    for {set x [expr [info level]-1]} {$x > 0} {incr x -1} {
+	puts $file "$x: [info level $x]"
+    }
+}
