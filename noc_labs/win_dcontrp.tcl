@@ -35,7 +35,7 @@ proc dcontrpDrawPanel {this c} {
     DrawDirection $c learn_control "w" learn_checkpoint_u "e" last
     DrawDirection $c learn_checkpoint_u "w" learn_cmp "e" last
     DrawDirection $c learn_cmp "s" learn_training "n" last
-    DrawDirection $c learn_training "w" learn_nnc "se" last
+    DrawDirection $c learn_training "w" learn_nnc "se" last {color "red"}
 
     $c create text 0.5c 4.8c -text "Проверка нейронной сети (НС-Р):" \
 	-justify left -anchor nw -fill black -font "$textFont"
@@ -111,6 +111,7 @@ proc dcontrpRun {p sessionDir parFile} {
 	    yMin 1e-5
 	    yMax 10
 	    yScale log
+	    timeLabel "Epoch:"
 	}
 	set series { LearnMSE TestMSE EtaHidden EtaOutput }
 	set pipe [open "|$exepath $parFile" r]
@@ -283,8 +284,12 @@ proc dcontrpCreateWindow {p title sessionDir} {
 
     # 5. Connect callbacks with visual parameters settings
     foreach {dataSource parName} {
-	learn_reference in_r learn_error in_e learn_control in_u
-	test_reference test_in_r test_error test_in_e test_control test_in_u } {
+	learn_reference in_r
+	learn_error in_e
+	learn_control in_u
+	test_reference test_in_r
+	test_error test_in_e
+	test_control test_in_u } {
 	$c.$dataSource configure \
 	    -command "dcontrpDataFile $w $curSessionDir dcontrp_params $parName ; ParFileAssign $parFile dcontrp_params"
     }
@@ -295,16 +300,29 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	-command "NNContrWindow $w $curSessionDir dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrp_params"
 
     $c.learn_training configure \
-	-command "NNTeacherParWindow $w dcontrp_params; ParFileAssign $parFile dcontrp_params"
+	-command "NNTeacherParWindow $w dcontrp_params \$OfflineNNTeacherPar; ParFileAssign $parFile dcontrp_params"
 
     # Assign name of check point output files
-    foreach {chkpnt parname} { learn_checkpoint_r in_r
-	learn_checkpoint_e in_e learn_checkpoint_nu nn_u learn_checkpoint_u in_u
-	test_checkpoint_r test_in_r test_checkpoint_e test_in_e
-	test_checkpoint_nu test_nn_u test_checkpoint_u test_in_u } {
+    foreach {chkpnt parname} {
+	learn_checkpoint_r in_r
+	learn_checkpoint_e in_e
+	learn_checkpoint_nu nn_u
+	learn_checkpoint_u in_u
+	test_checkpoint_r test_in_r
+	test_checkpoint_e test_in_e
+	test_checkpoint_nu test_nn_u
+	test_checkpoint_u test_in_u } {
 	set label [$c.$chkpnt cget -text]
+	switch -glob $chkpnt {
+	    learn_* {
+		set label [format "learn(%s)" $label]
+	    }
+	    test_* {
+		set label [format "test(%s)" $label]
+	    }
+	}
 	$c.$chkpnt configure \
-	    -command "dcontrpCheckPoint $w $chkpnt $curSessionDir dcontrp_params $parname \"$label\""
+	    -command "dcontrpCheckPoint $w $chkpnt $curSessionDir dcontrp_params $parname \{$label\}"
     }
 
     # 

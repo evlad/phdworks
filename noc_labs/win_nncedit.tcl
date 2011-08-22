@@ -1,11 +1,11 @@
+#pkg_mkIndex .
+#lappend auto_path .
 package provide win_nncedit 1.0
 
 package require Tk
 package require draw_nn
 
 proc NNCEditSave {w filepath nncinputs} {
-    puts "TODO: NNCEditSave $filepath $nncinputs"
-
     set f $w.nnarch
     upvar #0 $f.inputrep_var inputrep
     upvar #0 $f.outputrep_var outputrep
@@ -18,7 +18,7 @@ proc NNCEditSave {w filepath nncinputs} {
     upvar #0 $f.outputlabels_var outputlabels
 
     set args $filepath
-    lappend args Controller
+    lappend args "Controller"
     if {$nncinputs == "e+r" || $nncinputs == "e+de"} {
 	lappend args 2 1
     } else {
@@ -170,11 +170,10 @@ proc NNCEditWindow {p title filepath nncinputs} {
 	$f.outputfunc_var $f.inputlabels_var $f.outputlabels_var
 
     set nnarch {}
-    if {[file exist $filepath]} {
+    if {[file exists $filepath]} {
 	set nnarch [ReadNeuralNetFile $filepath]
     }
-    if {$nnarch != {}} {
-    } else {
+    if {$nnarch == {}} {
 	# Default parameters
 	set $f.inputrep_var 2
 	set $f.outputrep_var 0
@@ -264,6 +263,4 @@ $f.numneurons1 $f.numneurons2 $f.numneurons3" {
 }
 
 # test
-#NNCEditWindow "" "Neural network editor" "testdata/res.nnc"
-#NNCEditWindow "" "Text editor title" "testdata/dcsloop.par"
-#NNCEditWindow "" "Text editor title" "testdata/res.nnc"
+#NNCEditWindow "" "Neural network editor" "testdata/test.nn" "e+r"

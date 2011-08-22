@@ -203,11 +203,15 @@ proc dcsloopCreateWindow {p title sessionDir} {
 	-command "SignalWindow $w $curSessionDir noise dcsloop_params input_kind in_n noise_tf stream_len ; ParFileAssign $parFile dcsloop_params"
 
     # Assign name of check point output files
-    foreach {chkpnt parname} {checkpoint_r out_r checkpoint_n out_n
-	checkpoint_u out_u checkpoint_e out_e checkpoint_y out_ny} {
+    foreach {chkpnt parname} {
+	checkpoint_r out_r
+	checkpoint_n out_n
+	checkpoint_u out_u
+	checkpoint_e out_e
+	checkpoint_y out_ny} {
 	set label [$c.$chkpnt cget -text]
 	$c.$chkpnt configure \
-	    -command "dcsloopCheckPoint $w $chkpnt $curSessionDir $dcsloop_params($parname) \"$label\""
+	    -command "dcsloopCheckPoint $w $chkpnt $curSessionDir $dcsloop_params($parname) \{$label\}"
     }
 
     # 

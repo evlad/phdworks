@@ -8,6 +8,8 @@ package require files_loc
 package require universal
 package require win_dcsloop
 package require win_dcontrp
+package require win_dplantid
+package require win_dcontrf
 
 set ScriptsDir [file join [SystemDir] scripts]
 option readfile [file join $ScriptsDir nnacs.ad]
@@ -15,6 +17,8 @@ option readfile [file join $ScriptsDir nnacs.ad]
 set menuContent {
     "dcsloop" "Моделирование системы автоматического управления"
     "dcontrp" "Обучение нейросетевого регулятора вне контура"
+    "dplantid" "Обучение нейросетевой модели объекта управления"
+    "dcontrf" "Обучение нейросетевого регулятора в контуре"
 }
 
 proc MenuLab1 {w label} {
@@ -32,6 +36,26 @@ proc MenuLab2 {w label} {
     #set sessionDir [NewSession $w "dcontrp.par" "$title"]
     #if {$sessionDir != {}} {
 	dcontrpCreateWindow $w "$title" 010
+#$sessionDir
+    #}
+}
+
+proc MenuLab3 {w label} {
+    # Create or use session directory and remember it
+    set title [lindex [split "$label" \n] 1]
+    #set sessionDir [NewSession $w "dplantid.par" "$title"]
+    #if {$sessionDir != {}} {
+	dplantidCreateWindow $w "$title" 011
+#$sessionDir
+    #}
+}
+
+proc MenuLab4 {w label} {
+    # Create or use session directory and remember it
+    set title [lindex [split "$label" \n] 1]
+    #set sessionDir [NewSession $w "dcontrf.par" "$title"]
+    #if {$sessionDir != {}} {
+	dcontrfCreateWindow $w "$title" 012
 #$sessionDir
     #}
 }

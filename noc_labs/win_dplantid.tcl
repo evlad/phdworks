@@ -7,15 +7,16 @@ package require files_loc
 package require draw_prim
 package require par_file
 package require win_textedit
-#package require win_nnplant
-package require win_nncontr
+package require win_nnplant
 package require win_nntpar
 package require win_rtseries
 
 # Draw panel contents in given canvas
 proc dplantidDrawPanel {this c} {
-    set textFont -*-helvetica-bold-r-*-*-14-*-*-*-*-*-koi8-r
-    #[option get $c fontLargeBlock ""]
+    #set textFont -*-helvetica-bold-r-*-*-14-*-*-*-*-*-koi8-r
+    set textFont [option get $c fontLargeBlock ""]
+    set delaynimg [image create photo -file \
+		       [file join [SystemDir] templates simple_delayn.gif] ]
 
     $c create text 0.5c 0.8c -text "Обучение нейронной сети (НС-О):" \
 	-justify left -anchor nw -fill black -font "$textFont"
@@ -26,8 +27,10 @@ proc dplantidDrawPanel {this c} {
     DrawSmallBlock $c learn_checkpoint_y "y" 5.1c 3c
     DrawLargeBlock $c learn_nnp "\nНС-О\n" 6.5c 2.5c
     DrawSmallBlock $c learn_checkpoint_nny "y'" 8c 2.5c
-    DrawGather $c learn_cmp 8c 4c "n"
+    DrawGather $c learn_cmp 8c 4.1c "n"
     DrawLargeBlock $c learn_training "Обучение" 9c 1c
+    DrawImageBlock $c learn_delayn $delaynimg 5.1c 4.1c
+    DrawSmallBlock $c learn_checkpoint_yd "y\"" 6.5c 4.1c
 
     DrawDirection $c learn_control "e" learn_checkpoint_u "w" last
     DrawDirection $c learn_checkpoint_u "e" learn_nnp "w" horOnly
@@ -35,11 +38,13 @@ proc dplantidDrawPanel {this c} {
     DrawDirection $c learn_checkpoint_y "e" learn_nnp "w" horOnly
     DrawDirection $c learn_nnp "e" learn_checkpoint_nny "w" last
     DrawDirection $c learn_checkpoint_nny "s" learn_cmp "n" last
-    DrawDirection $c learn_checkpoint_y "s" learn_cmp "w" ver
+    DrawDirection $c learn_checkpoint_y "s" learn_delayn "n" last
+    DrawDirection $c learn_delayn "e" learn_checkpoint_yd "w" last
+    DrawDirection $c learn_checkpoint_yd "e" learn_cmp "w" last
     DrawDirection $c learn_cmp "e" learn_training "s" hor
-    DrawDirection $c learn_training "w" learn_nnp "ne" last
+    DrawDirection $c learn_training "sw" learn_nnp "ne" last {color "red"}
 
-    $c create text 0.5c 4.8c -text "Проверка нейронной сети (НС-Р):" \
+    $c create text 0.5c 4.8c -text "Проверка нейронной сети (НС-О):" \
      	-justify left -anchor nw -fill black -font "$textFont"
 
     DrawLargeBlock $c test_control "Управление" 3c 6c
@@ -48,8 +53,10 @@ proc dplantidDrawPanel {this c} {
     DrawSmallBlock $c test_checkpoint_y "y" 5.1c 7c
     DrawLargeBlock $c test_nnp "\nНС-О\n" 6.5c 6.5c
     DrawSmallBlock $c test_checkpoint_nny "y'" 8c 6.5c
-    DrawGather $c test_cmp 8c 8c "n"
-    DrawLargeBlock $c test_check "Проверка" 10c 8c
+    DrawGather $c test_cmp 8c 8.1c "n"
+    DrawLargeBlock $c test_check "Проверка" 10c 8.1c
+    DrawImageBlock $c test_delayn $delaynimg 5.1c 8.1c
+    DrawSmallBlock $c test_checkpoint_yd "y\"" 6.5c 8.1c
 
     DrawDirection $c test_control "e" test_checkpoint_u "w" last
     DrawDirection $c test_checkpoint_u "e" test_nnp "w" horOnly
@@ -57,9 +64,12 @@ proc dplantidDrawPanel {this c} {
     DrawDirection $c test_checkpoint_y "e" test_nnp "w" horOnly
     DrawDirection $c test_nnp "e" test_checkpoint_nny "w" last
     DrawDirection $c test_checkpoint_nny "s" test_cmp "n" last
-    DrawDirection $c test_checkpoint_y "s" test_cmp "w" ver
+    DrawDirection $c test_checkpoint_y "s" test_delayn "n" last
+    DrawDirection $c test_delayn "e" test_checkpoint_yd "w" last
+    DrawDirection $c test_checkpoint_yd "e" test_cmp "w" last
     DrawDirection $c test_cmp "e" test_check "w" hor
 }
+
 
 # Read given descriptor until Test: and return both learn and test
 # MSE.  At the EOF return {}.
@@ -110,6 +120,7 @@ proc dplantidRun {p sessionDir parFile} {
 	    yMin 1e-5
 	    yMax 10
 	    yScale log
+	    timeLabel "Epoch:"
 	}
 	set series { LearnMSE TestMSE EtaHidden EtaOutput }
 	set pipe [open "|$exepath $parFile" r]
@@ -207,7 +218,7 @@ proc dplantidCreateWindow {p title sessionDir} {
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w "Neural network controller training out-of-loop; (session $sessionDir)"
+    wm title $w "Neural network plant model training out-of-loop; (session $sessionDir)"
     wm iconname $w "$sessionDir"
 
     # 1. Use current session directory
@@ -264,7 +275,7 @@ proc dplantidCreateWindow {p title sessionDir} {
 	-command "dplantidRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"NN-C out-of-loop training series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"NN-P out-of-loop training series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dplantid_params {} ; destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \
@@ -282,33 +293,44 @@ proc dplantidCreateWindow {p title sessionDir} {
 
     # 5. Connect callbacks with visual parameters settings
     foreach {dataSource parName} {
-	learn_control in_r
-	learn_observ in_e
 	learn_control in_u
-	test_control test_in_r
-	test_observ test_in_e
-	test_control test_in_u } {
+	learn_observ in_y
+	test_control test_in_u
+	test_observ test_in_y } {
 	$c.$dataSource configure \
 	    -command "dplantidDataFile $w $curSessionDir dplantid_params $parName ; ParFileAssign $parFile dplantid_params"
     }
 
     # TODO: Change to NNPlantWindow
     $c.learn_nnp configure \
-	-command "NNContrWindow $w $curSessionDir dplantid_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dplantid_params"
-    $c.test_nnc configure \
-	-command "NNContrWindow $w $curSessionDir dplantid_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dplantid_params"
+	-command "NNPlantWindow $w $curSessionDir dplantid_params in_nnp_file out_nnp_file; ParFileAssign $parFile dplantid_params"
+    $c.test_nnp configure \
+	-command "NNPlantWindow $w $curSessionDir dplantid_params in_nnp_file out_nnp_file; ParFileAssign $parFile dplantid_params"
 
     $c.learn_training configure \
-	-command "NNTeacherParWindow $w dplantid_params; ParFileAssign $parFile dplantid_params"
+	-command "NNTeacherParWindow $w dplantid_params \$OfflineNNTeacherPar; ParFileAssign $parFile dplantid_params"
 
     # Assign name of check point output files
-    foreach {chkpnt parname} { learn_checkpoint_u in_r
-	learn_checkpoint_y in_e learn_checkpoint_nu nn_u learn_checkpoint_u in_u
-	test_checkpoint_u test_in_r test_checkpoint_y test_in_e
-	test_checkpoint_nu test_nn_u test_checkpoint_u test_in_u } {
+    foreach {chkpnt parname} {
+	learn_checkpoint_u in_u
+	learn_checkpoint_y in_y
+	learn_checkpoint_nny nn_y
+	learn_checkpoint_yd tr_y
+	test_checkpoint_u test_in_u
+	test_checkpoint_y test_in_y
+	test_checkpoint_nny test_nn_y
+	test_checkpoint_yd test_tr_y } {
 	set label [$c.$chkpnt cget -text]
+	switch -glob $chkpnt {
+	    learn_* {
+		set label [format "learn(%s)" $label]
+	    }
+	    test_* {
+		set label [format "test(%s)" $label]
+	    }
+	}
 	$c.$chkpnt configure \
-	    -command "dplantidCheckPoint $w $chkpnt $curSessionDir dplantid_params $parname \"$label\""
+	    -command "dplantidCheckPoint $w $chkpnt $curSessionDir dplantid_params $parname \{$label\}"
     }
 
     # 

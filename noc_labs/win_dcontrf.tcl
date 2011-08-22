@@ -12,11 +12,14 @@ package require win_textedit
 package require win_controller
 package require win_plant
 package require win_signal
+package require win_nncontr
+package require win_nnplant
+package require win_rtseries
 
 # Draw panel contents in given canvas
 proc dcontrfDrawPanel {this c} {
-    set textFont -*-helvetica-bold-r-*-*-14-*-*-*-*-*-koi8-r
-    #[option get $c fontLargeBlock ""]
+    #set textFont -*-helvetica-bold-r-*-*-14-*-*-*-*-*-koi8-r
+    set textFont [option get $c fontLargeBlock ""]
 
     $c create text 0.5c 0.6c -text "Обучение нейронной сети регулятора (НС-Р) в контуре:" \
 	-justify left -anchor nw -fill black -font "$textFont"
@@ -31,9 +34,9 @@ proc dcontrfDrawPanel {this c} {
     DrawLargeBlock $c plant "Объект" 10.4c 4.5c
     DrawLargeBlock $c nnplant "  НС-О  " 10.4c 3c
     DrawGather $c nadd 12c 4.5c "none"
-    DrawLargeBlock $c noise "Помеха" 14.5c 4.5c
-    DrawSmallBlock $c checkpoint_n "n" 13c 4.5c
-    DrawSmallBlock $c checkpoint_y "y" 12c 5.8c
+    DrawLargeBlock $c noise "Помеха" 9.4c 5.5c
+    DrawSmallBlock $c checkpoint_y "y" 13c 4.5c
+    DrawSmallBlock $c checkpoint_n "n" 11c 5.5c
     DrawSmallBlock $c checkpoint_nny "y'" 12c 3c
 
     DrawDirection $c reference "e" checkpoint_r "w" last
@@ -45,33 +48,98 @@ proc dcontrfDrawPanel {this c} {
     DrawDirection $c checkpoint_u "n" nnplant "w" ver
     DrawDirection $c plant "e" nadd "w" last
     DrawDirection $c checkpoint_e "n" teacher "e" ver
-    DrawDirection $c teacher "e" nnplant "nw" last
-    DrawDirection $c nnplant "sw" controller "ne" last
+    DrawDirection $c teacher "e" nnplant "nw" last {color "red"}
+    DrawDirection $c nnplant "sw" controller "ne" last {color "red"}
     DrawDirection $c nnplant "e" checkpoint_nny "w" last
 
-    DrawDirection $c noise "w" checkpoint_n "e" last
-    DrawDirection $c checkpoint_n "w" nadd "e" last
-    DrawDirection $c nadd "s" checkpoint_y "n" last
+    DrawDirection $c noise "e" checkpoint_n "w" last
+    DrawDirection $c nadd "e" checkpoint_y "w" last
+    DrawDirection $c checkpoint_n "e" nadd "s" hor
+    DrawDirection $c checkpoint_y "n" nnplant "s" horMiddle
 
-    DrawDirection $c checkpoint_y "w" cerr "s" hor
-
-#    DrawArrow $c 6c 5c 9c 5c middle
-#    DrawArrow $c 9c 5c 11c 5c last
-#    DrawArrow $c 11c 2c 11c 5c last
+    DrawDirection $c checkpoint_y "s" cerr "s" horMiddle {midCoord 6.2c}
 }
 
+
+# Read given descriptor to get control and identification MSE.  At the
+# EOF return {}.
+# Example:
+# 1: Control MSE= 0.1165 delta=+0.1164858  Ident.MSE= 1.8818 delta=+1.8817559
+# 2: Control MSE= 0.1238 delta=+0.0072690  Ident.MSE= 1.9260 delta=+0.0442196
+# 3: Control MSE= 0.1149 delta=-0.0088581  Ident.MSE= 1.8474 delta=-0.0786195
+# IMPORTANT: net is dead due to data are exhausted.
+proc dcontrfReader {fd} {
+    set i 0
+    global cMSE$fd idMSE$fd
+    while {[gets $fd line] >= 0} {
+	#puts "reader: $line"
+	switch -regexp -- $line {
+	    {^[^:]*: Control MSE=.* Ident\.MSE=} {
+		regexp {Control MSE= *([^ ]*) *delta=([^ ]*) *Ident\.MSE= *([^ ]*) *delta=([^ ]*)} $line cMSE cDelta idMSE idDelta
+		if {[info exists cMSE$fd]} {
+		    set cMSE$fd [expr [set cMSE$fd] + $cDelta]
+		} else {
+		    set cMSE$fd $cDelta
+		}
+		if {[info exists idMSE$fd]} {
+		    set idMSE$fd [expr [set idMSE$fd] + $idDelta]
+		} else {
+		    set idMSE$fd $idDelta
+		}
+		return "[set cMSE$fd] [set idMSE$fd]"
+	    }
+	    IMPORTANT: {
+		return {}
+	    }
+	}
+	incr i
+    }
+    return {}
+}
 
 # 8. Run the program in its session directory
 proc dcontrfRun {p sessionDir parFile} {
     set cwd [pwd]
-    puts "Run dcontrf"
+    puts "Run dcontrf in [SessionDir $sessionDir]"
     catch {cd [SessionDir $sessionDir]} errCode1
     if {$errCode1 != ""} {
 	error $errCode1
 	return
+    } else {
+	set exepath [file join [SystemDir] bin dcontrf]
+	if {![file executable $exepath]} {
+	    error "$exepath is not executable"
+	}
+
+	global dcontrf_params
+	set params {
+	    winWidth 600
+	    winHeight 250
+	    yMin 1e-3
+	    yMax 1e2
+	    yScale log
+	    timeLabel "Epoch:"
+	}
+	set series { ControlMSE IdentifMSE }
+	set pipe [open "|$exepath $parFile" r]
+	fconfigure $pipe -buffering line
+
+	set pipepar [fconfigure $pipe]
+	puts $pipepar
+
+	lappend params \
+	    timeLen $dcontrf_params(max_epochs) \
+	    stopCmd "close $pipe"
+
+	global etaHidden$pipe etaOutput$pipe
+	set etaHidden$pipe $dcontrf_params(eta)
+	set etaOutput$pipe $dcontrf_params(eta_output)
+	RtSeriesWindow $p "NN training" "dcontrfReader $pipe" $params $series
+	close $pipe
+
+	cd $cwd
     }
 
-    catch {exec [file join [SystemDir] bin dcontrf] $parFile >/dev/null} errCode2
     # 9. Refresh state of controls
     # TODO
 
@@ -80,12 +148,11 @@ proc dcontrfRun {p sessionDir parFile} {
     $p.controls.log configure \
 	-command "TextEditWindow $p \"$logFile\" \"$logFile\""
 
-    if {$errCode2 != ""} {
-	set storedBg [$p.controls.log cget -background]
-	$p.controls.log configure -background "red"
-	after 1500 "$p.controls.log configure -background \"$storedBg\""
-	error $errCode2
-    }
+    # blink once to emphasize Log button
+    set storedBg [$p.controls.log cget -background]
+    $p.controls.log configure -background "red"
+    after 1500 "$p.controls.log configure -background \"$storedBg\""
+
     cd $cwd
 }
 
@@ -130,7 +197,7 @@ proc dcontrfCreateWindow {p title sessionDir} {
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w "Control system loop modeling; (session $sessionDir)"
+    wm title $w "Neural network controller training in loop; (session $sessionDir)"
     wm iconname $w "$sessionDir"
 
     # 1. Use current session directory
@@ -187,7 +254,7 @@ proc dcontrfCreateWindow {p title sessionDir} {
 	-command "dcontrfRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"Control loop modeling series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"NN-C in-loop training series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcontrf_params {} ; destroy $w"
     pack $w.controls.params $w.controls.run $w.controls.log \
@@ -218,13 +285,24 @@ proc dcontrfCreateWindow {p title sessionDir} {
 	-command "PlantWindow $w $curSessionDir dcontrf_params linplant_tf ; ParFileAssign $parFile dcontrf_params"
     $c.noise configure \
 	-command "SignalWindow $w $curSessionDir noise dcontrf_params input_kind in_n noise_tf stream_len ; ParFileAssign $parFile dcontrf_params"
+    $c.teacher configure \
+	-command "NNTeacherParWindow $w dcontrf_params \$OnlineNNTeacherPar; ParFileAssign $parFile dcontrf_params"
+    $c.controller configure \
+	-command "NNContrWindow $w $curSessionDir dcontrf_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrf_params"
+    $c.nnplant configure \
+	-command "NNPlantWindow $w $curSessionDir dcontrf_params in_nnp_file {}; ParFileAssign $parFile dcontrf_params"
 
     # Assign name of check point output files
-    foreach {chkpnt parname} {checkpoint_r out_r checkpoint_n out_n
-	checkpoint_u out_u checkpoint_e out_e checkpoint_y out_ny} {
+    foreach {chkpnt parname} {
+	checkpoint_r out_r
+	checkpoint_n out_n
+	checkpoint_u out_u
+	checkpoint_e out_e
+	checkpoint_y out_ny
+	checkpoint_nny out_nn_y} {
 	set label [$c.$chkpnt cget -text]
 	$c.$chkpnt configure \
-	    -command "dcontrfCheckPoint $w $chkpnt $curSessionDir $dcontrf_params($parname) \"$label\""
+	    -command "dcontrfCheckPoint $w $chkpnt $curSessionDir $dcontrf_params($parname) \{$label\}"
     }
 
     # 

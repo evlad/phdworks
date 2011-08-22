@@ -19,7 +19,7 @@ proc setdef {taglist tag defval} {
 # p - parent widget;
 # title - window title;
 # rtreader - procedure to take one more time sample of data as list;
-# rtparam - common named parameters (timeLen,[winWidth,winHeight,deltaTime,yMin,yMax,yStep,yScale,stopCmd,getCmd])
+# rtparam - common named parameters (timeLen,[winWidth,winHeight,deltaTime,yMin,yMax,yStep,yScale,stopCmd,getCmd,timeLabel])
 # rtseries - list of runtime series labels;
 proc RtSeriesWindow {p title rtreader rtparam rtseries} {
     set w $p.rtseries
@@ -50,6 +50,7 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
 
     set timeLen [setdef $rtparam timeLen 1000]
     set timeGrid [expr pow(10,int(0.3+log10($timeLen)))/2]
+    set timeLabel [setdef $rtparam timeLabel "Time:"]
 
     if {"log" == [setdef $rtparam yScale "linear"]} {
 	set yMin [setdef $rtparam yMin 1e-3]
@@ -86,7 +87,7 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
 	$il delete all
 	set xtext 10
 	set ytext 2 ; #$fontm(-ascent)
-	set msg [format "Time:%6g" $tcur]
+	set msg [format "%s%6g" $tcur]
 	set ilt [$il create text $xtext $ytext -text $msg -anchor nw -font fixed]
 	set ilfont [$il itemcget $ilt -font]
 	incr xtext [expr [font measure $ilfont $msg] + 15]
