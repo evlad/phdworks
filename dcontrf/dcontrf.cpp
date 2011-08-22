@@ -51,12 +51,14 @@ PrintLog (int iAct, void* pData)
 	 "  Ident.MSE=%7.4f delta=%+9.7f\n", iAct,
 	 nnocl.cerrstat.RMS[0], nnocl.cerrstat.RMS[0] - fPrevMSEc,
 	 nnocl.iderrstat.RMS[0], nnocl.iderrstat.RMS[0] - fPrevMSEi);
+  fflush(stdout);
 
   fPrevMSEc = nnocl.cerrstat.RMS[0];
   fPrevMSEi = nnocl.iderrstat.RMS[0];
 
   if(nMaxEpochs > 0 && iAct >= nMaxEpochs) {
       printf("Maximum number of epochs %d was reached\n", nMaxEpochs);
+      fflush(stdout);
       NaPrintLog("Maximum number of epochs %d was reached\n", nMaxEpochs);
       /* arbitrary node may be halted to stop the whole network */
       nnocl.plant.halt();
@@ -607,6 +609,7 @@ int main(int argc, char **argv)
 	      ++nSkipped;
 	      printf("Error grows by %g; continue\n",
 		     nnocl.cerrstat.RMS[0] - fPrevMSE);
+	      fflush(stdout);
 	    }else{
 	      nSkipped = 0;
 	      if(ask_user_bool("MSE started to grow; stop learning?", true)){
@@ -667,6 +670,7 @@ int main(int argc, char **argv)
 
     NaPrintLog("%s %s\n", szFirst, szSecond);
     printf("%s %s\n", szFirst, szSecond);
+    fflush(stdout);
 
     delete dfCErr;
     delete dfIdErr;
