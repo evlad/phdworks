@@ -52,6 +52,16 @@ proc DrawSmallBlock {c name label x y} {
     $c create window $x $y -window $c.$name -tags $name
 }
 
+proc DrawImageBlock {c name img x y} {
+    set w [image width $img]
+    set h [image height $img]
+    set i [$c create image $x $y -image $img]
+    set xp [lindex [$c coords $i] 0]
+    set yp [lindex [$c coords $i] 1]
+    $c create rect [expr $xp - $w / 2 - 2] [expr $yp - $h / 2 - 2] \
+	[expr $xp + $w / 2 + 2] [expr $yp + $h / 2 + 2] -tags $name
+}
+
 # Convert given bounding box to point specification:
 #  n - north (center of the top side)
 #  s - north (center of the bottom side)
@@ -84,54 +94,99 @@ proc BBoxSpecPoint {bb ps} {
     return [list $x $y]
 }
 
+# Draw arrow from one to another point.
 # ps1, ps2 - point specification.  May be "n", "s", "w", "e" as well
 # as "[ns][we]".
-# dirflag - arrow flag for direct arrow link and 4 addition values:
-# "hor" and "ver", which mean arrow should go to target point
-# horizontally (vertically) the first; "horOnly" and "verOnly", which
-# mean arrow should go to target point horizontally (vertically) only
-# and avoiding another direction at all.
-proc DrawDirection {c block1 ps1 block2 ps2 dirflag} {
+# dirflag - arrow flag for direct arrow link and 6 additional values:
+# - "hor" and "ver", which mean arrow should go to target point
+# horizontally (vertically) the first;
+# - "horOnly" and "verOnly", which mean arrow should go to target
+# point horizontally (vertically) only and avoiding another direction
+# at all;
+# - "horMiddle" and "verMiddle" allow to draw three segments with
+# horizontal or vertical the middle one.  Coordinate of the middle
+# segment may be given as additional parameter with name midCoord,
+# otherwise it calculated as middle between end points.
+# Named args:
+# - "midCoord" - coordinate of middle segment (horMiddle, verMiddle);
+# - "color" - color of the line and arrow.
+proc DrawDirection {c block1 ps1 block2 ps2 dirflag {namedArgs {}}} {
     set bb1 [$c bbox $block1]
     set bb2 [$c bbox $block2]
     set p1 [BBoxSpecPoint $bb1 $ps1]
     set p2 [BBoxSpecPoint $bb2 $ps2]
+    array set args $namedArgs
+    if {[info exists args(color)]} {
+	set color $args(color)
+    } else {
+	set color "black"
+    }
     switch -exact $dirflag {
 	"horOnly" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
-		[lindex $p2 0] [lindex $p1 1] last
+		[lindex $p2 0] [lindex $p1 1] last $color
+	}
+	"horMiddle" {
+	    if {[info exists args(midCoord)]} {
+		set ymid $args(midCoord)
+	    } else {
+		set ymid [expr ( [lindex $p1 1] + [lindex $p2 1] ) / 2]
+	    }
+	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
+		[lindex $p1 0] $ymid last $color
+	    DrawArrow $c [lindex $p1 0] $ymid \
+		[lindex $p2 0] $ymid middle $color
+	    DrawArrow $c [lindex $p2 0] $ymid \
+		[lindex $p2 0] [lindex $p2 1] last $color
 	}
 	"hor" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
-		[lindex $p2 0] [lindex $p1 1] middle
+		[lindex $p2 0] [lindex $p1 1] middle $color
 	    DrawArrow $c [lindex $p2 0] [lindex $p1 1] \
-		[lindex $p2 0] [lindex $p2 1] middle
+		[lindex $p2 0] [lindex $p2 1] middle $color
 	}
 	"verOnly" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
-		[lindex $p1 0] [lindex $p2 1] last
+		[lindex $p1 0] [lindex $p2 1] last $color
+	}
+	"verMiddle" {
+	    if {[info exists args(midCoord)]} {
+		set xmid $args(midCoord)
+	    } else {
+		set xmid [expr ( [lindex $p1 0] + [lindex $p2 0] ) / 2]
+	    }
+	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
+		$xmid [lindex $p1 1] last $color
+	    DrawArrow $c $xmid [lindex $p1 1] \
+		$xmid [lindex $p2 1] middle $color
+	    DrawArrow $c $xmid [lindex $p2 1] \
+		[lindex $p2 0] [lindex $p2 1] last $color
 	}
 	"ver" {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
-		[lindex $p1 0] [lindex $p2 1] middle
+		[lindex $p1 0] [lindex $p2 1] middle $color
 	    DrawArrow $c [lindex $p1 0] [lindex $p2 1] \
-		[lindex $p2 0] [lindex $p2 1] middle
+		[lindex $p2 0] [lindex $p2 1] middle $color
 	}
 	default {
 	    DrawArrow $c [lindex $p1 0] [lindex $p1 1] \
-		[lindex $p2 0] [lindex $p2 1] $dirflag
+		[lindex $p2 0] [lindex $p2 1] $dirflag $color
 	}
     }
 }
 
-# arrflag - may be "none", "first", "last" and "middle"
-proc DrawArrow {c x1 y1 x2 y2 arrflag} {
+# arrflag - may be "none", "first", "last" and "middle";
+# color - may be default (black).
+proc DrawArrow {c x1 y1 x2 y2 arrflag {color "black"}} {
+    if {$color == {}} {
+	set color "black"
+    }
     if { $arrflag == "middle" } {
-	$c create line $x1 $y1 $x2 $y2 -arrow none
+	$c create line $x1 $y1 $x2 $y2 -arrow none -fill $color
 	set midx [expr ([$c canvasx $x1] + 2 * [$c canvasx $x2]) / 3 ]
 	set midy [expr ([$c canvasy $y1] + 2 * [$c canvasy $y2]) / 3 ]
-	$c create line $x1 $y1 $midx $midy -arrow last
+	$c create line $x1 $y1 $midx $midy -arrow last -fill $color
     } else {
-	$c create line $x1 $y1 $x2 $y2 -arrow $arrflag
+	$c create line $x1 $y1 $x2 $y2 -arrow $arrflag -fill $color
     }
 }
