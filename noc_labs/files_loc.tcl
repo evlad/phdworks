@@ -77,8 +77,7 @@ proc NewUser {w {user ""}} {
     if {$user != ""} {
 	set curUserDir [file join $basedir $user]
     } else {
-	set curUserDir [tk_chooseDirectory \
-			    -initialdir $basedir -title "Choose user directory"]
+	set curUserDir [ChooseUserLabWorkDir $w $basedir]
     }
     if {$curUserDir eq "" || [file isfile $curUserDir]} {
 	return ""
@@ -143,6 +142,103 @@ proc SessionDir {s} {
 proc TemplateDir {} {
     set td [file join [SystemDir] templates]
     return $td
+}
+
+# Scan labwork directory $basedir and fill list $l with item.
+proc ScanUserLabWorkDirs {l basedir} {
+    catch {
+	$l delete 0 end
+    }
+    foreach d [lsort [glob -nocomplain -types d -directory $basedir -tails -- *]] {
+	$l insert end $d
+    }
+    catch {
+	$l selection clear 0 end
+	$l selection set 0
+	$l yview moveto 0.0
+    }
+}
+
+# Create new directory $newdir in $basedir and set it as current item
+# in list $l.
+proc CreateUserLabDir {l basedir newdir} {
+    if { [catch {file mkdir [file join $basedir $newdir]} msg] } {
+	#message $msg
+	return
+    }
+    ScanUserLabWorkDirs $l $basedir
+    set i [lsearch [$l get 0 end] $newdir]
+    $l selection clear 0 end
+    $l selection set $i
+    $l see $i
+
+}
+
+# Remove currently selected item in listbox $l in directory $basedir.
+proc DeleteUserLabDir {l basedir} {
+    set dir [$l get [$l curselection]]
+    set subitems [llength [glob -nocomplain -directory [file join $basedir $dir] -- *]]
+    if {$subitems > 0} {
+	set ret [tk_messageBox -type yesno -icon question -default no -message "Вы хотите удалить ВСЮ работу пользователя $dir ($subitems сеансов)?"]
+    } else {
+	# Empty directory can be removed without question
+	set ret "yes"
+    }
+    if {$ret == "yes"} {
+	file delete -force [file join $basedir $dir]
+	ScanUserLabWorkDirs $l $basedir
+    }
+}
+
+# Dialog window to manage (select/create/delete) user work directories
+# which resides in $basedir.
+proc ChooseUserLabWorkDir {p basedir} {
+    set w $p.userdir
+
+    # Don't create the window twice
+    if {[winfo exists $w]} return
+
+    toplevel $w
+    wm title $w "Choose user work directory"
+    wm iconname $w "Choose user dir"
+
+    set fl $w.flist
+    set l [Scrolled_Listbox $fl -width 20 -height 10 \
+	       -selectmode single]
+
+    global $w.seldir
+    set $w.seldir {}
+
+    global $w.newdir
+    set $w.newdir "Student"
+
+    set fc $w.fctrl
+    frame $fc
+    pack $fc -side right -fill y
+    button $fc.ok -text "Выбрать" -command "set $w.seldir \[$l get \[$l curselection\]\]; destroy $w"
+    button $fc.create -text "Создать" -command "CreateUserLabDir $l $basedir \[set $w.newdir\]"
+    entry $fc.newdir -textvariable $w.newdir
+    button $fc.remove -text "Удалить" -command "DeleteUserLabDir $l $basedir"
+    button $fc.cancel -text "Отмена" -command "set $w.seldir {}; destroy $w"
+
+    pack $fc.cancel -side bottom -fill x
+    foreach b {ok create newdir remove} {
+	pack $fc.$b -side top -fill x
+    }
+
+    # Select and show the first item
+    ScanUserLabWorkDirs $l $basedir
+
+    set $w.seldir [$l get [$l curselection]]
+
+    pack $fl -expand true -fill both
+
+    focus $w
+    grab $w
+    tkwait window $w
+
+    #puts "Done: [set $w.seldir]"
+    return [set $w.seldir]
 }
 
 
