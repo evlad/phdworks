@@ -134,7 +134,7 @@ proc NNPlantWindow {p sessionDir arref nnp_in nnp_out} {
 	    set arvar($nnp_in) [SessionRelPath $sessionDir $var_nnp_in]
 	    set changed 1
 	}
-	if {$var_out != {}} {
+	if {$nnp_out != {}} {
 	    if {[set var_nnp_out] != $arvar($nnp_out)} {
 		set arvar($nnp_out) [SessionRelPath $sessionDir $var_nnp_out]
 		set changed 1

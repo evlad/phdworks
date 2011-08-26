@@ -87,7 +87,7 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
 	$il delete all
 	set xtext 10
 	set ytext 2 ; #$fontm(-ascent)
-	set msg [format "%s%6g" $tcur]
+	set msg [format "%s%6g" $timeLabel $tcur]
 	set ilt [$il create text $xtext $ytext -text $msg -anchor nw -font fixed]
 	set ilfont [$il itemcget $ilt -font]
 	incr xtext [expr [font measure $ilfont $msg] + 15]
