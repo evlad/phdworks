@@ -23,8 +23,10 @@ set menuContent {
 
 proc MenuLab1 {w label} {
     # Create or use session directory and remember it
+    set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
     set sessionDir [NewSession $w "dcsloop.par" "$title"]
+    puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
 	dcsloopCreateWindow $w "$title" $sessionDir
     }
@@ -32,39 +34,42 @@ proc MenuLab1 {w label} {
 
 proc MenuLab2 {w label} {
     # Create or use session directory and remember it
+    set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
-    #set sessionDir [NewSession $w "dcontrp.par" "$title"]
-    #if {$sessionDir != {}} {
-	dcontrpCreateWindow $w "$title" 010
-#$sessionDir
-    #}
+    set sessionDir [NewSession $w "dcontrp.par" "$title"]
+    puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
+    if {$sessionDir != {}} {
+	dcontrpCreateWindow $w "$title" $sessionDir
+    }
 }
 
 proc MenuLab3 {w label} {
     # Create or use session directory and remember it
+    set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
-    #set sessionDir [NewSession $w "dplantid.par" "$title"]
-    #if {$sessionDir != {}} {
-	dplantidCreateWindow $w "$title" 011
-#$sessionDir
-    #}
+    set sessionDir [NewSession $w "dplantid.par" "$title"]
+    puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
+    if {$sessionDir != {}} {
+	dplantidCreateWindow $w "$title" $sessionDir
+    }
 }
 
 proc MenuLab4 {w label} {
     # Create or use session directory and remember it
+    set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
-    #set sessionDir [NewSession $w "dcontrf.par" "$title"]
-    #if {$sessionDir != {}} {
-	dcontrfCreateWindow $w "$title" 012
-#$sessionDir
-    #}
+    set sessionDir [NewSession $w "dcontrf.par" "$title"]
+    puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
+    if {$sessionDir != {}} {
+	dcontrfCreateWindow $w "$title" $sessionDir
+    }
 }
 
 pack [button $w.user_button \
 	  -text "Перед началом\nВыбор/создание нового пользователя" \
 	  -command "NewUser \"$w\""] -fill x -side top -expand yes -pady 2
 
-set curUserDir "/home/user/labworks/EliseevVL"
+#set curUserDir "/home/user/labworks/EliseevVL"
 
 set i 0
 foreach {label title} $menuContent {
