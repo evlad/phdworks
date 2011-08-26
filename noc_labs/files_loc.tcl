@@ -73,6 +73,7 @@ proc SessionAbsPath {sessionDir path} {
 # Create or select new user directory
 proc NewUser {w {user ""}} {
     set basedir [UserBaseDir]
+    puts "Labworks base directory: $basedir"
     global curUserDir
     if {$user != ""} {
 	set curUserDir [file join $basedir $user]
@@ -82,6 +83,8 @@ proc NewUser {w {user ""}} {
     if {$curUserDir eq "" || [file isfile $curUserDir]} {
 	return ""
     }
+    set curUserDir [file join $basedir $curUserDir]
+    puts "User sessions directory: $curUserDir"
     if {![file exists $curUserDir]} {
 	file mkdir $curUserDir
     }
@@ -118,7 +121,7 @@ proc SystemDir {} {
     } else {
 	set dir $env(NNACSSYSDIR)
     }
-    #puts "System directory is expected at $dir"
+    puts "System directory: $dir"
     #file mkdir $dir
     return $dir
 }
@@ -304,7 +307,7 @@ proc NewSession {p markfile {title ""}} {
 	    pack $w.title -side top -fill x
 
 	    frame $w.list
-	    set l [Scrolled_Listbox $w.list.sessions -width 20 -height 5 \
+	    set l [Scrolled_Listbox $w.list.sessions -width 30 -height 15 \
 		       -selectmode single]
 	    foreach it  $sessionList {
 		set comment [ParFileFetchParameter \
@@ -317,7 +320,7 @@ proc NewSession {p markfile {title ""}} {
 	    $l yview moveto 1.0
 
 	    pack $w.list.sessions -side left -expand true -fill both
-	    pack $w.list -side top -expand true -fill x -pady 2m
+	    pack $w.list -side top -expand true -fill both -pady 2m
 
 	    frame $w.buttons
 	    pack $w.buttons -side bottom -fill x -pady 2m
