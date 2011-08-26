@@ -4,36 +4,54 @@
 2 1	 ; Number of inputs and their repeat factor
 0	 ; Output repeat factor on the input
 0	 ; Feedback depth
-1	 ; Number of hidden layers
+2	 ; Number of hidden layers
 5	 ; Hidden layer
+3	 ; Hidden layer
 linear 1	 ; Output layer
 ; Input delays:
 0
 ; Output delays:
 ; Neural network:
 ; Layer #0  (2 inputs, 5 neurons)
-0.793532	 ; Neuron #0 (bias / weights):
--5.9603
--3.20462
-0.637373	 ; Neuron #1 (bias / weights):
-1.12887
-1.84613
-3.49668	 ; Neuron #2 (bias / weights):
-1.10003
-1.86172
--1.28585	 ; Neuron #3 (bias / weights):
-0.39228
-0.777036
--1.85127	 ; Neuron #4 (bias / weights):
-0.758926
-0.688395
-; Layer #1  (5 inputs, 1 neurons)
-0.237559	 ; Neuron #0 (bias / weights):
--0.0262947
-0.383108
-0.645424
-0.637382
-0.531029
+-0.050324	 ; Neuron #0 (bias / weights):
+-0.113227
+-0.102008
+0.000226176	 ; Neuron #1 (bias / weights):
+-0.198646
+-0.0291906
+0.0360253	 ; Neuron #2 (bias / weights):
+0.00455819
+-0.178008
+-0.0963994	 ; Neuron #3 (bias / weights):
+-0.0310279
+-0.213855
+-0.213289	 ; Neuron #4 (bias / weights):
+0.123495
+0.0983044
+; Layer #1  (5 inputs, 3 neurons)
+0.0931374	 ; Neuron #0 (bias / weights):
+0.47792
+0.331716
+0.104402
+0.398978
+-0.608485
+-0.146489	 ; Neuron #1 (bias / weights):
+-0.61536
+-0.346078
+-0.130575
+-0.403433
+0.542072
+0.32619	 ; Neuron #2 (bias / weights):
+-0.440026
+-0.446641
+-0.027948
+-0.595849
+0.568142
+; Layer #2  (3 inputs, 1 neurons)
+-0.0328378	 ; Neuron #0 (bias / weights):
+-0.700986
+0.970303
+1.16129
 ; Input scaler:
 -1 1	 ; min max
 -1 1	 ; min max

@@ -43,10 +43,4 @@ out_n = n_out.dat
 
 nnc_mode = e+r
 
-
-
 comment = Винеровский оптимальный регулятор
-
-
-
-

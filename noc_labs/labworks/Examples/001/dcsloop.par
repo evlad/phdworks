@@ -43,14 +43,4 @@ out_n = noise.dat
 
 nnc_mode = e+r
 
-
-
 comment = Оптимальный ПИД регулятор
-
-
-
-
-
-
-
-
