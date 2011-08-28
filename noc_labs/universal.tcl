@@ -60,9 +60,15 @@ proc focusAndFlash {W fg bg {count 9}} {
 # - types - { {label extension} ... } (OPTIONAL).
 # Return: selected file path
 proc fileSelectionBox {w operation filepath {types {{"Все файлы" *}}}} {
-    set initdir [file dirname $filepath]
-    set initfile [file tail $filepath]
-    set initext [file extension $filepath]
+    if {[file isdirectory $filepath]} {
+	set initdir $filepath
+	set initfile ""
+	set initext ""
+    } else {
+	set initdir [file dirname $filepath]
+	set initfile [file tail $filepath]
+	set initext [file extension $filepath]
+    }
     if { $initext == "" } {
 	# Let's use the first extension among
 	set initext [lindex 0 1 $types]
