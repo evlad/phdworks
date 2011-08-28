@@ -1,4 +1,7 @@
-PAR_TEMPLATES	=dcsloop.par
+PAR_TEMPLATES	=dcsloop.par \
+		dcontrp.par \
+		dcontrf.par \
+		dplantid.par
 TF_TEMPLATES	=1st_order.tf \
 		2nd_order.tf \
 		delay1.tf \
