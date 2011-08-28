@@ -74,6 +74,11 @@ public:/* data */
     NaPNSwitcher    switcher;   // switch in_u to nn_u until real nnc output
     NaPNTrigger     trigger;    // skip in_u for NNT and statistics
 
+private:/* methods */
+
+    // Handle signals during neural network training
+    static void	on_signal (int nSig, siginfo_t* pInfo, void* pData);
+
 private:/* data */
 
     // Kind of controller
@@ -81,6 +86,9 @@ private:/* data */
 
     // Kind of an algorithm
     NaAlgorithmKind	eAlgoKind;
+
+    // User break flag
+    static volatile bool	bUserBreak;
 
 };
 

@@ -11,6 +11,8 @@ static char rcsid[] = "$Id$";
 #include "NaNNOCL.h"
 
 
+volatile bool	NaNNOptimContrLearn::bUserBreak = false;
+
 //---------------------------------------------------------------------------
 // Create NN-C training control system with stream of given length
 // in input or with data files if len=0
@@ -214,10 +216,28 @@ NaNNOptimContrLearn::link_net ()
 
 
 //---------------------------------------------------------------------------
+// Handle signals during neural network training
+void
+NaNNOptimContrLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
+{
+  bUserBreak = true;
+}
+
+
+//---------------------------------------------------------------------------
 // Run the network
 NaPNEvent
 NaNNOptimContrLearn::run_net ()
 {
+  // Catch signals during learning to make smoother stop
+  struct sigaction act;
+  act.sa_sigaction = &on_signal;
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = SA_SIGINFO;
+  sigaction(SIGPIPE, &act, NULL);
+  sigaction(SIGINT, &act, NULL);
+  sigaction(SIGTERM, &act, NULL);
+
   try{ 
     NaVector	rZero(1);
     rZero.init_zero();
@@ -289,7 +309,7 @@ NaNNOptimContrLearn::user_break ()
     }
   }
 #endif /* DOS & Win */
-  return false;
+  return bUserBreak;
 }
 
 

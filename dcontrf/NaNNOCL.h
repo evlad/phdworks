@@ -112,6 +112,11 @@ public:/* data */
   NaPNFileOutput  c_in;       // logging controller input
   NaPNFileOutput  p_in;       // logging plant input
 
+private:/* methods */
+
+  // Handle signals during neural network training
+  static void	on_signal (int nSig, siginfo_t* pInfo, void* pData);
+
 private:/* data */
 
   // Kind of controller
@@ -119,6 +124,9 @@ private:/* data */
 
   // Length of series or 0 for data input
   int			nSeriesLen;
+
+  // User break flag
+  static volatile bool	bUserBreak;
 
 };
 

@@ -158,6 +158,8 @@ ParseHaltCond (NaPNStatistics& pnstat, char* parvalue)
 
 
 //---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)
 {
@@ -515,7 +517,7 @@ int main(int argc, char **argv)
 
     if(nnp_auf > 0)
       NaPrintLog("NNP training is %s\n", (nnp_auf > 0)? "ON": "OFF");
-	  
+
     if(stream_mode == inp_data_mode ||
        file_mode == inp_data_mode && (nnc_auf > 0 || nnp_auf > 0))
       {

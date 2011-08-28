@@ -6,6 +6,8 @@ static char rcsid[] = "$Id$";
 #include "NaNNCPL.h"
 
 
+volatile bool	NaNNContrPreLearn::bUserBreak = false;
+
 //---------------------------------------------------------------------------
 // Create the object
 NaNNContrPreLearn::NaNNContrPreLearn (NaAlgorithmKind akind,
@@ -105,6 +107,15 @@ NaNNContrPreLearn::link_net ()
     }catch(NaException ex){
         NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
     }
+}
+
+
+//---------------------------------------------------------------------------
+// Handle signals during neural network training
+void
+NaNNContrPreLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
+{
+  bUserBreak = true;
 }
 
 

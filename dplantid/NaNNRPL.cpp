@@ -11,6 +11,8 @@ static char rcsid[] = "$Id$";
 #include "NaNNRPL.h"
 
 
+volatile bool	NaNNRegrPlantLearn::bUserBreak = false;
+
 //---------------------------------------------------------------------------
 // Create the object
 NaNNRegrPlantLearn::NaNNRegrPlantLearn (NaAlgorithmKind akind,
@@ -88,6 +90,15 @@ NaNNRegrPlantLearn::link_net ()
     }catch(NaException ex){
         NaPrintLog("EXCEPTION at linkage phase: %s\n", NaExceptionMsg(ex));
     }
+}
+
+
+//---------------------------------------------------------------------------
+// Handle signals during neural network training
+void
+NaNNRegrPlantLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
+{
+  bUserBreak = true;
 }
 
 

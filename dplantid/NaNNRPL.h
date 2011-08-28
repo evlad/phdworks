@@ -76,10 +76,18 @@ public:/* data */
   NaPNSkip		skip_u;		// skip some u due to y isn't available
   NaPNSkip		skip_yt;	// skip started target y values
 
+private:/* methods */
+
+  // Handle signals during neural network training
+  static void	on_signal (int nSig, siginfo_t* pInfo, void* pData);
+
 private:/* data */
 
     // Kind of an algorithm
   NaAlgorithmKind	eAlgoKind;
+
+  // User break flag
+  static volatile bool	bUserBreak;
 
 };
 
