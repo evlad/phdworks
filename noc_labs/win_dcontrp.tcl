@@ -122,13 +122,13 @@ proc dcontrpRun {p sessionDir parFile} {
 
 	lappend params \
 	    timeLen $dcontrp_params(finish_max_epoch) \
-	    stopCmd "close $pipe"
+	    stopCmd "catch {close $pipe}"
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dcontrp_params(eta)
 	set etaOutput$pipe $dcontrp_params(eta_output)
 	RtSeriesWindow $p "NN training" "dcontrpReader $pipe" $params $series
-	close $pipe
+	catch {close $pipe}
 
 	#catch {exec  $parFile >/dev/null} errCode2
 	#if {$errCode2 != ""} {

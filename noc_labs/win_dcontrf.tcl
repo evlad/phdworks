@@ -127,15 +127,29 @@ proc dcontrfRun {p sessionDir parFile} {
 	set pipepar [fconfigure $pipe]
 	puts $pipepar
 
+	switch $dcontrf_params(input_kind) {
+	    stream {
+		set stream_len $dcontrf_params(stream_len)
+		set nnc_auf $dcontrf_params(nnc_auf)
+		set timeLen [expr 1 + int($stream_len / (0.0 + $nnc_auf))]
+	    }
+	    file {
+		set timeLen $dcontrf_params(max_epochs)
+	    }
+	    default {
+		# Just to avoid error with scale step calculation
+		set timeLen 1
+	    }
+	}
 	lappend params \
-	    timeLen $dcontrf_params(max_epochs) \
-	    stopCmd "close $pipe"
+	    timeLen $timeLen \
+	    stopCmd "catch {close $pipe}"
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dcontrf_params(eta)
 	set etaOutput$pipe $dcontrf_params(eta_output)
 	RtSeriesWindow $p "NN training" "dcontrfReader $pipe" $params $series
-	close $pipe
+	catch {close $pipe}
 
 	cd $cwd
     }

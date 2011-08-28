@@ -131,13 +131,13 @@ proc dplantidRun {p sessionDir parFile} {
 
 	lappend params \
 	    timeLen $dplantid_params(finish_max_epoch) \
-	    stopCmd "close $pipe"
+	    stopCmd "catch {close $pipe}"
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dplantid_params(eta)
 	set etaOutput$pipe $dplantid_params(eta_output)
 	RtSeriesWindow $p "NN training" "dplantidReader $pipe" $params $series
-	close $pipe
+	catch {close $pipe}
 
 	#catch {exec  $parFile >/dev/null} errCode2
 	#if {$errCode2 != ""} {
