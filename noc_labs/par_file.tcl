@@ -20,6 +20,15 @@ proc ParFileAssign {filepath params} {
     # name matches
     set fileContents [split [read $fd1] \n]
     close $fd1
+    while {[llength $fileContents] > 0} {
+	# Strip final empty lines
+	if {[lindex $fileContents end] == {}} {
+	    set fileContents [lrange $fileContents 0 end-1]
+	} else {
+	    break
+	}
+    }
+
     set lineNo 0
     set foundNames {}
     foreach line $fileContents {
@@ -80,6 +89,14 @@ proc ParFileFetch {filepath params} {
     # Scan all lines of the file and fetch parameter values
     set fileContents [split [read $fd] \n]
     close $fd
+    while {[llength $fileContents] > 0} {
+	# Strip final empty lines
+	if {[lindex $fileContents end] == {}} {
+	    set fileContents [lrange $fileContents 0 end-1]
+	} else {
+	    break
+	}
+    }
     set lineNo 0
     foreach line $fileContents {
 	incr lineNo
