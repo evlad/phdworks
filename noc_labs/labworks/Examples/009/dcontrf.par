@@ -7,7 +7,7 @@ input_kind = stream
 #input_kind = file
 
 # (input_kind = stream) Length of series
-stream_len = 50000
+stream_len = 10000
 
 # (input_kind = stream,file) Auto update frequency; 0 to disable
 nnc_auf = 50
@@ -23,7 +23,7 @@ refer_tf = ../refer.tf
 noise_tf = ../noise.tf
 
 # (input_kind = file) Maximum number of epochs; 0 is unlimited
-max_epochs = 1000
+max_epochs = 0
 
 # (input_kind = file) Input files
 in_r = r.dat

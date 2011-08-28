@@ -37,8 +37,8 @@ finish_on_grow = 20
 finish_max_epoch = 400
 
 # Learning algorithm setup
-eta = 0.05
-eta_output = 0.005
+eta = 0.02
+eta_output = 0.002
 alpha = 0.0
 
 comment = Предварительное обучение НС-Р подобно ПИД
