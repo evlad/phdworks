@@ -11,7 +11,8 @@ TF_TEMPLATES	=1st_order.tf \
 		integral.tf \
 		pid_kkk.tf \
 		pid_ktt.tf
-PICTURES	=$(TF_TEMPLATES:.tf=.gif)
+PICTURES	=$(TF_TEMPLATES:.tf=.gif) \
+		simple_delayn.gif
 TEMPLATES	=$(PAR_TEMPLATES) $(TF_TEMPLATES) $(PICTURES)
 
 install:	$(TEMPLATES)
