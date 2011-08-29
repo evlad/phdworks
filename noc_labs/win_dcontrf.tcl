@@ -75,7 +75,7 @@ proc dcontrfReader {fd} {
 	#puts "reader: $line"
 	switch -regexp -- $line {
 	    {^[^:]*: Control MSE=.* Ident\.MSE=} {
-		regexp {Control MSE= *([^ ]*) *delta=([^ ]*) *Ident\.MSE= *([^ ]*) *delta=([^ ]*)} $line cMSE cDelta idMSE idDelta
+		regexp {Control MSE= *([^ ]*) *delta=([^ ]*) *Ident\.MSE= *([^ ]*) *delta=([^ ]*)} $line allMatch cMSE cDelta idMSE idDelta
 		if {[info exists cMSE$fd]} {
 		    set cMSE$fd [expr [set cMSE$fd] + $cDelta]
 		} else {
@@ -86,6 +86,9 @@ proc dcontrfReader {fd} {
 		} else {
 		    set idMSE$fd $idDelta
 		}
+		# Not very precise
+		#return "[set cMSE] [set idMSE]"
+		# More precise
 		return "[set cMSE$fd] [set idMSE$fd]"
 	    }
 	    IMPORTANT: {
