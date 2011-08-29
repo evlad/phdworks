@@ -63,12 +63,11 @@ proc dcsloopRun {p sessionDir parFile} {
     $p.controls.log configure \
 	-command "TextEditWindow $p \"$logFile\" \"$logFile\""
 
-    if {$errCode2 != ""} {
-	set storedBg [$p.controls.log cget -background]
-	$p.controls.log configure -background "red"
-	after 1500 "$p.controls.log configure -background \"$storedBg\""
-	error $errCode2
-    }
+    # blink once to emphasize Log button
+    set storedBg [$p.controls.log cget -background]
+    $p.controls.log configure -background "red"
+    after 1500 "$p.controls.log configure -background \"$storedBg\""
+
     cd $cwd
 }
 
