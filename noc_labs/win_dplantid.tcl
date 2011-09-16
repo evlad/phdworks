@@ -131,7 +131,8 @@ proc dplantidRun {p sessionDir parFile} {
 
 	lappend params \
 	    timeLen $dplantid_params(finish_max_epoch) \
-	    stopCmd "catch {close $pipe}"
+	    stopCmd "catch {close $pipe}" \
+	    workDir [SessionDir $sessionDir]
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dplantid_params(eta)
@@ -210,7 +211,7 @@ proc dplantidDataFile {p sessionDir arrayName arrayIndex} {
 }
 
 
-# Create window with panel and controls.  Returns this instance.
+# Create window with panel and controls.
 proc dplantidCreateWindow {p title sessionDir} {
     set w $p.dplantid
 

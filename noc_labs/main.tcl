@@ -10,6 +10,7 @@ package require win_dcsloop
 package require win_dcontrp
 package require win_dplantid
 package require win_dcontrf
+package require win_series
 
 set ScriptsDir [file join [SystemDir] scripts]
 option readfile [file join $ScriptsDir nnacs.ad]
@@ -21,7 +22,7 @@ set menuContent {
     "dcontrf" "Обучение нейросетевого регулятора в контуре"
 }
 
-proc MenuLab1 {w label} {
+proc MenuProg1 {w label} {
     # Create or use session directory and remember it
     set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
@@ -32,7 +33,7 @@ proc MenuLab1 {w label} {
     }
 }
 
-proc MenuLab2 {w label} {
+proc MenuProg2 {w label} {
     # Create or use session directory and remember it
     set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
@@ -43,7 +44,7 @@ proc MenuLab2 {w label} {
     }
 }
 
-proc MenuLab3 {w label} {
+proc MenuProg3 {w label} {
     # Create or use session directory and remember it
     set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
@@ -54,7 +55,7 @@ proc MenuLab3 {w label} {
     }
 }
 
-proc MenuLab4 {w label} {
+proc MenuProg4 {w label} {
     # Create or use session directory and remember it
     set prog [lindex [split "$label" \n] 0]
     set title [lindex [split "$label" \n] 1]
@@ -76,8 +77,14 @@ foreach {label title} $menuContent {
     incr i
     set text "$label\n$title"
     pack [button $w.lab${i}_button -text "$text" \
-	      -command "CheckGoodEnv \"$w\" ; MenuLab$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
+	      -command "CheckGoodEnv \"$w\" ; MenuProg$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
 }
+
+incr i
+set text "Операции с рядами:\nвизуализация, анализ, изменение"
+pack [button $w.lab${i}_button -text "$text" \
+	  -command "seriesCreateWindow \"$w\" \"$text\""] \
+    -fill x -side top -expand yes -pady 2
 
 button $w.quit_button -text "Выход" -command { removeTemporalFiles ; exit }
 pack $w.quit_button -side top -expand yes -pady 2

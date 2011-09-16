@@ -4,6 +4,7 @@ package require Tk
 package require Plotchart
 package require data_file
 package require universal
+package require screenshot
 
 proc PlotSine {c} {
     set s [::Plotchart::createXYPlot $c {5.0 25.0 5.0} {-1.5 1.5 0.25}]
@@ -309,52 +310,6 @@ proc GrSeriesDestroy {c} {
     unset $c.bDrawLegend $c.bDrawGrid
 }
 
-# w - widget
-# c - canvas to screenshot
-# workDir - where to store file
-# type - image type to store
-proc GrSeriesScreenshot {w c workDir type} {
-    # Calculate next free number, considering file names have format
-    # ${rootName}##.*, where ## - two digits
-    set rootName "grplot"
-    set ls [glob -nocomplain -tails -directory $workDir -types f "$rootName\[0-9\]\[0-9\].*"]
-    set lastName [lindex [lsort $ls] end]
-    if {$lastName == ""} {
-	set nextNum 0
-    } elseif {[regexp "^${rootName}(..)\..*\$" $lastName rest lastNum]} {
-	scan $lastNum "%d" nextNum
-	incr nextNum
-    } else {
-	set nextNum 0
-    }
-
-    # Let's compose path
-    set rootPath [file join $workDir [format "%s%02d" $rootName $nextNum]]
-    switch $type {
-	postscript {
-	    set filePath "$rootPath.ps"
-	    # Margins one the page (mm)
-	    set xmar 20
-	    set ymar 20
-	    $c postscript -colormode color -file $filePath \
-		-pagewidth [expr 297 - $xmar].m \
-		-pageheight [expr 210 - $ymar].m
-	}
-	jpeg {
-	    set filePath "$rootPath.jpg"
-	    set img [image create photo -format window -data $c]
-	    $img write -format $type $filePath
-	}
-	default {
-	    # type and file name extension are the same
-	    set filePath "$rootPath.$type"
-	    set img [image create photo -format window -data $c]
-	    $img write -format $type $filePath
-	}
-    }
-    tk_messageBox -parent $w -icon info -type ok -title "Screenshot competed" \
-	-message  "Снимок сохранен в файл\n$filePath"
-}
 
 proc GrSeriesAddFile {p workDir {filePath ""}} {
     set w $p.grseries
@@ -438,19 +393,7 @@ proc GrSeriesWindow {p title {path ""}} {
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
 
-    set m $w.buttons.print.m
-    menubutton $w.buttons.print -text "Снимок экрана" \
-	-direction below -menu $m -relief raised
-    menu $m -tearoff 0
-    set imgfmts {postscript gif}
-    if {0 == [catch {package require Img} res]} {
-	# It's possible to use wide variety of image formats
-	lappend imgfmts png jpeg bmp
-    }
-    foreach imgfmt $imgfmts {
-	$m add command -label $imgfmt \
-	    -command "GrSeriesScreenshot $w $c $workDir $imgfmt"
-    }
+    ScreenshotButton $w $w.buttons.print $c $workDir "grplot"
 
     set m $w.buttons.curves.m
     menubutton $w.buttons.curves -text "Ряды" \

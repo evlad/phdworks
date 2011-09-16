@@ -146,7 +146,8 @@ proc dcontrfRun {p sessionDir parFile} {
 	}
 	lappend params \
 	    timeLen $timeLen \
-	    stopCmd "catch {close $pipe}"
+	    stopCmd "catch {close $pipe}" \
+	    workDir [SessionDir $sessionDir]
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dcontrf_params(eta)
@@ -206,7 +207,7 @@ proc dcontrfLoadParams {parFile} {
     ParFileFetch $parFile dcontrf_params
 }
 
-# Create window with panel and controls.  Returns this instance.
+# Create window with panel and controls.
 proc dcontrfCreateWindow {p title sessionDir} {
     set w $p.dcontrf
 

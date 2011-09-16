@@ -104,7 +104,7 @@ proc dcsloopLoadParams {parFile} {
     ParFileFetch $parFile dcsloop_params
 }
 
-# Create window with panel and controls.  Returns this instance.
+# Create window with panel and controls.
 proc dcsloopCreateWindow {p title sessionDir} {
     set w $p.dcsloop
 

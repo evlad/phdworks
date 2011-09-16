@@ -122,7 +122,8 @@ proc dcontrpRun {p sessionDir parFile} {
 
 	lappend params \
 	    timeLen $dcontrp_params(finish_max_epoch) \
-	    stopCmd "catch {close $pipe}"
+	    stopCmd "catch {close $pipe}" \
+	    workDir [SessionDir $sessionDir]
 
 	global etaHidden$pipe etaOutput$pipe
 	set etaHidden$pipe $dcontrp_params(eta)
@@ -201,7 +202,7 @@ proc dcontrpDataFile {p sessionDir arrayName arrayIndex} {
 }
 
 
-# Create window with panel and controls.  Returns this instance.
+# Create window with panel and controls.
 proc dcontrpCreateWindow {p title sessionDir} {
     set w $p.dcontrp
 

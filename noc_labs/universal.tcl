@@ -216,3 +216,15 @@ proc backtrace {{file stdout}} {
 	puts $file "$x: [info level $x]"
     }
 }
+
+
+# Return $tagarray($tag) if there is a $tag in $tagarray or $defval
+# otherwise.  tagarray is an arrayof $taglist.
+proc setdef {taglist tag defval} {
+    array set arr $taglist
+    if {[info exists arr($tag)]} {
+	return $arr($tag)
+    } else {
+	return $defval
+    }
+}

@@ -2,24 +2,15 @@ package provide win_rtseries 1.0
 
 package require Tk
 package require Plotchart
-#package require universal
+package require universal
+package require screenshot
 #package require win_grseries
-
-
-proc setdef {taglist tag defval} {
-    array set arr $taglist
-    if {[info exists arr($tag)]} {
-	return $arr($tag)
-    } else {
-	return $defval
-    }
-}
 
 
 # p - parent widget;
 # title - window title;
 # rtreader - procedure to take one more time sample of data as list;
-# rtparam - common named parameters (timeLen,[winWidth,winHeight,deltaTime,yMin,yMax,yStep,yScale,stopCmd,getCmd,timeLabel])
+# rtparam - common named parameters (timeLen,[winWidth,winHeight,deltaTime,yMin,yMax,yStep,yScale,stopCmd,getCmd,timeLabel,workDir])
 # rtseries - list of runtime series labels;
 proc RtSeriesWindow {p title rtreader rtparam rtseries} {
     set w $p.rtseries
@@ -44,9 +35,12 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
     pack [canvas $il -background white -width $width -height $ilheight \
 	      -borderwidth 3] \
 	-expand yes -fill both -side top
+
+    ScreenshotButton $w $w.print_button $c [setdef $rtparam workDir [pwd]] "rtplot"
+
     button $w.stop_button -text "Остановить" \
 	-command "RtSeriesStop $w \"$par(stopCmd)\" ; set $w.stop_flag 1"
-    pack $w.stop_button
+    pack $w.print_button $w.stop_button -side left
 
     set timeLen [setdef $rtparam timeLen 1000]
     set timeGrid [expr pow(10,int(0.3+log10($timeLen)))/2]
