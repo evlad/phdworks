@@ -13,7 +13,7 @@ proc TextEditSave {w filepath {onSave {}}} {
     close $fd
     if {$onSave != {}} {
 	catch {eval $onSave $filepath} res
-	puts "onSave: $res"
+	#puts "onSave: $res"
     }
 
     # Restore normal attributes
