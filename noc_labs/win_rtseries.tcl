@@ -4,7 +4,6 @@ package require Tk
 package require Plotchart
 package require universal
 package require screenshot
-#package require win_grseries
 
 
 # p - parent widget;
@@ -30,11 +29,9 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
     pack [canvas $c -background white -width $width -height $height \
 	      -borderwidth 3] \
 	-expand yes -fill both -side top
-    set ilheight 20 ; # Really needs height of the infoline font
-    set il $w.infoline 
-    pack [canvas $il -background white -width $width -height $ilheight \
-	      -borderwidth 3] \
-	-expand yes -fill both -side top
+
+    # Use infoline panel as a bottom of the main canvas (with tag INFO)
+    set il $c
 
     ScreenshotButton $w $w.print_button $c [setdef $rtparam workDir [pwd]] "rtplot"
 
@@ -78,11 +75,11 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
 	#puts "$i# $input"
 	update
 	# Info line composition
-	$il delete all
+	$il delete INFO
 	set xtext 10
-	set ytext 2 ; #$fontm(-ascent)
+	set ytext [expr [$il cget -height] - 10] ; #$fontm(-ascent)
 	set msg [format "%s%6g" $timeLabel $tcur]
-	set ilt [$il create text $xtext $ytext -text $msg -anchor nw -font fixed]
+	set ilt [$il create text $xtext $ytext -text $msg -anchor nw -font fixed -tags INFO]
 	set ilfont [$il itemcget $ilt -font]
 	incr xtext [expr [font measure $ilfont $msg] + 15]
 
@@ -95,10 +92,10 @@ proc RtSeriesWindow {p title rtreader rtparam rtseries} {
 		$s plot series$j $tcur $val
 		set msg "$rts: "
 		$il create text $xtext $ytext -text $msg -anchor nw \
-		    -fill [lindex $colors $j] -font $ilfont
+		    -fill [lindex $colors $j] -font $ilfont -tags INFO
 		incr xtext [font measure $ilfont $msg]
 		set msg [format "%-6.3e" $val]
-		$il create text $xtext $ytext -text $msg -anchor nw -font $ilfont
+		$il create text $xtext $ytext -text $msg -anchor nw -font $ilfont -tags INFO
 		incr xtext [expr [font measure $ilfont $msg] + 15]
 	    }
 	    incr j
@@ -178,4 +175,6 @@ proc RtSeriesTest {} {
 }
 
 #wish win_rtseries.tcl <testdata/nncp_trace.dat
+#pkg_mkIndex .
+#lappend auto_path .
 #RtSeriesTest
