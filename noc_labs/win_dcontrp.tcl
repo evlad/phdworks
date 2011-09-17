@@ -7,6 +7,7 @@ package require win_textedit
 package require win_nncontr
 package require win_nntpar
 package require win_rtseries
+package require screenshot
 
 # Draw panel contents in given canvas
 proc dcontrpDrawPanel {this c} {
@@ -237,8 +238,10 @@ proc dcontrpCreateWindow {p title sessionDir} {
     set hl $w.headline
     frame $hl
     set titleFont [option get $hl headlineFont ""]
-    label $hl.s -text "Сеанс $sessionDir" \
-	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    button $hl.s -text "Сеанс $sessionDir" \
+	-relief flat -padx 0 -pady 0 \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont \
+	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcontrpLoadParams"
     label $hl.t -text $title \
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     pack $hl.s $hl.t -side left
@@ -261,8 +264,9 @@ proc dcontrpCreateWindow {p title sessionDir} {
     # 4. Draw control system loop schema
     frame $w.controls
     pack $w.controls -side bottom -fill x -pady 2m
-    button $w.controls.params -text "Параметры" \
-	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcontrpLoadParams"
+    set c $w.frame.c
+    ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcontrp"
+
     button $w.controls.run -text "Запустить" \
 	-command "dcontrpRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
@@ -270,12 +274,11 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	-command "GrSeriesWindow $w \"NN-C out-of-loop training series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcontrp_params {} ; destroy $w"
-    pack $w.controls.params $w.controls.run $w.controls.log \
+    pack $w.controls.print $w.controls.run $w.controls.log \
 	$w.controls.series $w.controls.close -side left -expand 1
 
     frame $w.frame
     pack $w.frame -side top -fill both -expand yes
-    set c $w.frame.c
 
     canvas $c -width 14c -height 9c -relief sunken -borderwidth 2 \
 	-background white

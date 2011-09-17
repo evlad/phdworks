@@ -9,9 +9,14 @@ package require win_textedit
 package require win_controller
 package require win_plant
 package require win_signal
+package require screenshot
 
 # Draw panel contents in given canvas
 proc dcsloopDrawPanel {this c} {
+    set textFont [option get $c fontLargeBlock ""]
+    $c create text 0.5c 0.6c -text "Контур автоматического управления:" \
+	-justify left -anchor nw -fill black -font "$textFont"
+
     DrawLargeBlock $c reference "Уставка" 1.8c 4c
     DrawSmallBlock $c checkpoint_r "r" 3.5c 4c
     DrawGather $c cerr 4.5c 4c "s"
@@ -139,8 +144,11 @@ proc dcsloopCreateWindow {p title sessionDir} {
     set hl $w.headline
     frame $hl
     set titleFont [option get $hl headlineFont ""]
-    label $hl.s -text "Сеанс $sessionDir" \
-	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    button $hl.s -text "Сеанс $sessionDir" \
+	-relief flat -padx 0 -pady 0 \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont \
+	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcsloopLoadParams"
+
     label $hl.t -text $title \
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     pack $hl.s $hl.t -side left
@@ -163,8 +171,10 @@ proc dcsloopCreateWindow {p title sessionDir} {
     # 4. Draw control system loop schema
     frame $w.controls
     pack $w.controls -side bottom -fill x -pady 2m
-    button $w.controls.params -text "Параметры" \
-	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcsloopLoadParams"
+
+    set c $w.frame.c
+    ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcsloop"
+
     button $w.controls.run -text "Запустить" \
 	-command "dcsloopRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
@@ -172,12 +182,11 @@ proc dcsloopCreateWindow {p title sessionDir} {
 	-command "GrSeriesWindow $w \"Control loop modeling series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcsloop_params {} ; destroy $w"
-    pack $w.controls.params $w.controls.run $w.controls.log \
+    pack $w.controls.print $w.controls.run $w.controls.log \
 	$w.controls.series $w.controls.close -side left -expand 1
 
     frame $w.frame
     pack $w.frame -side top -fill both -expand yes
-    set c $w.frame.c
 
     canvas $c -width 14c -height 7c -relief sunken -borderwidth 2 \
 	-background white

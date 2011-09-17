@@ -15,6 +15,7 @@ package require win_signal
 package require win_nncontr
 package require win_nnplant
 package require win_rtseries
+package require screenshot
 
 # Draw panel contents in given canvas
 proc dcontrfDrawPanel {this c} {
@@ -242,8 +243,10 @@ proc dcontrfCreateWindow {p title sessionDir} {
     set hl $w.headline
     frame $hl
     set titleFont [option get $hl headlineFont ""]
-    label $hl.s -text "Сеанс $sessionDir" \
-	-justify left -anchor nw -fg DarkGreen -font $titleFont
+    button $hl.s -text "Сеанс $sessionDir" \
+	-relief flat -padx 0 -pady 0 \
+	-justify left -anchor nw -fg DarkGreen -font $titleFont \
+	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcontrfLoadParams"
     label $hl.t -text $title \
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     pack $hl.s $hl.t -side left
@@ -266,8 +269,9 @@ proc dcontrfCreateWindow {p title sessionDir} {
     # 4. Draw control system loop schema
     frame $w.controls
     pack $w.controls -side bottom -fill x -pady 2m
-    button $w.controls.params -text "Параметры" \
-	-command "TextEditWindow $w \"$parFile\" \"$parFile\" dcontrfLoadParams"
+    set c $w.frame.c
+    ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcontrf"
+
     button $w.controls.run -text "Запустить" \
 	-command "dcontrfRun $w $curSessionDir $parFile"
     button $w.controls.log -text "Протокол"
@@ -275,21 +279,15 @@ proc dcontrfCreateWindow {p title sessionDir} {
 	-command "GrSeriesWindow $w \"NN-C in-loop training series plot\" [SessionDir $curSessionDir]"
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcontrf_params {} ; destroy $w"
-    pack $w.controls.params $w.controls.run $w.controls.log \
+    pack $w.controls.print $w.controls.run $w.controls.log \
 	$w.controls.series $w.controls.close -side left -expand 1
 
     frame $w.frame
     pack $w.frame -side top -fill both -expand yes
-    set c $w.frame.c
 
     canvas $c -width 16c -height 7c -relief sunken -borderwidth 2 \
 	-background white
     pack $c -side top -fill both -expand yes
-
-    #set t "Моделирование системы автоматического управления"
-    #set textFont [option get $c fontLargeBlock ""]
-    #$c create text 0.5c 0.2c -text "$title\nСеанс $sessionDir" \
-	#	-justify left -anchor nw -fill DarkGreen -font "$textFont"
 
     dcontrfDrawPanel {} $c
 
