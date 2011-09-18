@@ -5,6 +5,7 @@ package require universal
 package require win_textedit
 package require win_grseries
 package require win_trfunc
+package require win_signalgen
 
 proc SignalWindowOk {w entry var} {
     SignalWindowApply $w $entry $var
@@ -146,8 +147,8 @@ proc SignalStatAnDataFile {p sessionDir var} {
 proc SignalSelectFiltFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    puts "sessionDir=$sessionDir"
-    puts "fileRelPath=$fileRelPath"
+    #puts "sessionDir=$sessionDir"
+    #puts "fileRelPath=$fileRelPath"
     set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set trfuncfiletypes {
 	{"Линейные звенья" {.tf}}
@@ -238,14 +239,15 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
     menu $m -tearoff 0
     $m add command -label "Показать..." \
 	-command "SignalViewDataFile $w $sessionDir var_datafile_$signal"
-    #$m add command -label "Создать..." -command "puts TODO"
+    $m add command -label "Создать..." \
+	-command "SignalGenWindow $w $sessionDir var_datafile_$signal"
     $m add command -label "Статистика..." \
 	-command "SignalStatAnDataFile $w $sessionDir var_datafile_$signal"
 
 #SignalViewDataFile $w $sessionDir var_datafile_$signal
 
     grid $f.data_rb
-    grid $f.data_fl $f.data_fe $f.data_fsel $f.data_foper
+    grid $f.data_fl $f.data_fe $f.data_fsel $f.data_foper -sticky news
     grid $f.data_rb -sticky nw
     grid $f.data_fl -sticky e
 

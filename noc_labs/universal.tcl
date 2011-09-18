@@ -211,7 +211,7 @@ proc StatAnDataFile {p sessionDir fileRelPath} {
 
 # Display list of stack
 proc backtrace {{file stdout}} {
-    puts $file "TclCallTrace"
+    puts $file "backtrace:"
     for {set x [expr [info level]-1]} {$x > 0} {incr x -1} {
 	puts $file "$x: [info level $x]"
     }

@@ -21,6 +21,9 @@ proc PlotSine {c} {
 
 # Calculate grid step by simple procedure
 proc GrSeriesGridStep {min max} {
+    if {$min == $max} {
+	return 1.0
+    }
     return [ expr pow(10, int(log10(abs($max - $min)))) ]
 }
 
@@ -148,6 +151,16 @@ proc GrSeriesPlot {c} {
     set xgrid [GrSeriesGridStep [set $c.view_xmin] [set $c.view_xmax]]
     set ygrid [GrSeriesGridStep [set $c.view_ymin] [set $c.view_ymax]]
 
+    if {[set $c.view_xmin] == [set $c.view_xmax]} {
+	set $c.view_xmin [expr [set $c.view_xmin] - $xgrid]
+	set $c.view_xmax [expr [set $c.view_xmax] + $xgrid]
+    }
+
+    if {[set $c.view_ymin] == [set $c.view_ymax]} {
+	set $c.view_ymin [expr [set $c.view_ymin] - $ygrid]
+	set $c.view_ymax [expr [set $c.view_ymax] + $ygrid]
+    }
+
     #puts "xgrid: $xgrid"
     #puts "ygrid: $ygrid"
     set xticks {}
@@ -241,9 +254,49 @@ proc GrSeriesDoResize {c} {
     set redo [after 50 "GrSeriesDoPlot $c"]
 }
 
-# Add series in format {data} or {{data}{min max}{name}}
-proc GrSeriesAddSeries {p series {name ""}} {
+
+# Update data of the series with given index.
+proc GrSeriesUpdateSeries {p ind series {name ""}} {
     if {[llength $series] == 0} return
+    if {$ind < 0 || $ind >= [llength $series]} return
+
+    set c $p.grseries.graphics.c
+
+    global $c.props
+    upvar #0 $c.props props
+
+    puts "$c.props: [array get props]"
+
+    if {[llength $series] > 1 && [llength [lindex $series 0]] > 1 &&
+	[llength [lindex $series 1]] >= 2} {
+	# Thinking series has format {{data}{min max}...}
+	lset props(dataSeries) $ind $series
+	# Replace name if exact one is given
+	if {$name != ""} {
+	    lset props(dataSeries) $ind 2 $name
+	}
+    } else {
+	# Simple list {data}, so let's find min and max
+	set ymin [lindex $series 0]
+	set ymax [lindex $series 0]
+	foreach y $series {
+	    if { $y < $ymin } {
+		set ymin $y
+	    }
+	    if { $y > $ymax } {
+		set ymax $y
+	    }
+	}
+	set minmax [list $ymin $ymax]
+	lset props(dataSeries) $ind "[list $series] [list $minmax] $name"
+    }
+}
+
+
+# Add series in format {data} or {{data}{min max}{name}}
+# Return index of the added series.  -1 means failure.
+proc GrSeriesAddSeries {p series {name ""}} {
+    if {[llength $series] == 0} return -1
 
     #puts "series: $series"
     #puts "name: $name"
@@ -253,6 +306,7 @@ proc GrSeriesAddSeries {p series {name ""}} {
     global $c.props
     upvar #0 $c.props props
 
+    set retindex [llength $props(dataSeries)]
     if {[llength $series] > 1 && [llength [lindex $series 0]] > 1 &&
 	[llength [lindex $series 1]] >= 2} {
 	# Thinking series has format {{data}{min max}...}
@@ -262,7 +316,7 @@ proc GrSeriesAddSeries {p series {name ""}} {
 	    lset props(dataSeries) end 2 $name
 	}
     } else {
-	# Simple list, so let's find min and max
+	# Simple list {data}, so let's find min and max
 	set ymin [lindex $series 0]
 	set ymax [lindex $series 0]
 	foreach y $series {
@@ -278,6 +332,8 @@ proc GrSeriesAddSeries {p series {name ""}} {
 	lappend props(dataSeries) "[list $series] [list $minmax] $name"
 	#puts "[lindex $props(dataSeries) end]"
     }
+    #puts "Add $c.props: [array get props]"
+    return $retindex
 }
 
 proc GrSeriesViewAll {c args} {
@@ -310,13 +366,13 @@ proc GrSeriesDestroy {c} {
     unset $c.bDrawLegend $c.bDrawGrid
 }
 
-
+# Return index of added series or -1 in case of failure.
 proc GrSeriesAddFile {p workDir {filePath ""}} {
     set w $p.grseries
     if {$filePath != ""} {
 	if {![file exists $filePath]} {
 	    error "Failed to open $filePath"
-	    return
+	    return -1
 	}
     } else {
 	set dataFileTypes {
@@ -326,13 +382,14 @@ proc GrSeriesAddFile {p workDir {filePath ""}} {
 	set filePath [fileSelectionBox $w open [file join $workDir ""] $dataFileTypes]
 	if {$filePath == ""} {
 	    # User cancel
-	    return
+	    return -1
 	}
     }
     set wholeData [GrSeriesReadFile $filePath]
     set label [SessionRelPath $workDir $filePath]
-    GrSeriesAddSeries $p "[lindex $wholeData 0]" $label
+    set retindex [GrSeriesAddSeries $p "[lindex $wholeData 0]" $label]
     GrSeriesRedraw $p
+    return $retindex
 }
 
 
@@ -350,7 +407,7 @@ proc GrSeriesCheckPresence {p} {
 # p - parent widget
 # title - window title
 # path - first data file or working directory
-proc GrSeriesWindow {p title {path ""}} {
+proc GrSeriesWindow {p title {path ""} {extproc ""}} {
     #set dataByColumns = ReadSeries $filepath
     set w $p.grseries
     catch {destroy $w}
@@ -369,6 +426,10 @@ proc GrSeriesWindow {p title {path ""}} {
 	set filepath $path
     }
 
+    if {$extproc != {}} {
+	$extproc create $p
+    }
+
     set c $w.graphics.c
     frame $w.graphics
     grid [canvas $c -background white -width 600 -height 300] -sticky news
@@ -378,9 +439,11 @@ proc GrSeriesWindow {p title {path ""}} {
 
     global $c.props
     upvar #0 $c.props props
+    array set props {}
     if { $filepath != "" } {
 	set props(dataSeries) [GrSeriesReadFile $filepath]
     }
+    #puts "Create $c.props: [array get props]"
 
     global $c.bDrawLegend
     set $c.bDrawLegend 1
