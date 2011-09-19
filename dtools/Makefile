@@ -1,6 +1,6 @@
 PROGRAMS	=dtf d2ts drand dwtest dwtest2 dmse dcorr dsum dstat djacob \
 		dsin dmean dstddev dsmooth dconst dmult drandmea dsub dstatsb \
-		dsteps
+		dsteps dranduni
 
 SCRIPTS		=dmeander
 
@@ -36,13 +36,14 @@ SRCS	=dtf.cpp \
 	dsmooth.cpp \
 	dmult.cpp \
 	drandmea.cpp \
+	dranduni.cpp \
 	dsteps.cpp
 
 OBJS	=$(dtf_OBJS) $(d2ts_OBJS) $(drand_OBJS) $(dwtest_OBJS) \
 	$(dmse_OBJS) $(dcorr_OBJS) $(dsum_OBJS) $(dsub_OBJS) $(dstat_OBJS) \
 	$(djacob_OBJS) $(dsin_OBJS) $(dmean_OBJS) $(dstddev_OBJS) \
 	$(dconst_OBJS) $(dsmooth_OBJS) $(dmult_OBJS) $(drandmea_OBJS) \
-	$(dstatsb_OBJS)  $(dsteps_OBJS)
+	$(dstatsb_OBJS)  $(dsteps_OBJS)  $(dranduni_OBJS)
 
 dtf_OBJS	=dtf.o
 dtf:	$(dtf_OBJS) $(LIBS)
@@ -119,6 +120,10 @@ dmult:		$(dmult_OBJS) $(LIBS)
 drandmea_OBJS	=drandmea.o
 drandmea:	$(drandmea_OBJS) $(LIBS)
 	$(LD) -o $@ $(drandmea_OBJS) $(LIBS) $(SYSLIBS)
+
+dranduni_OBJS	=dranduni.o
+dranduni:	$(dranduni_OBJS) $(LIBS)
+	$(LD) -o $@ $(dranduni_OBJS) $(LIBS) $(SYSLIBS)
 
 dsteps_OBJS	=dsteps.o
 dsteps:	$(dsteps_OBJS) $(LIBS)

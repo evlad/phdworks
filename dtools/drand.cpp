@@ -55,8 +55,6 @@ main (int argc, char* argv[])
 	dtf_file = argv[4];
     }
 
-  NaOpenLogFile("drand.log");
-
   try{
     int		i;
     NaTransFunc	dtf;	/* K=1 */
