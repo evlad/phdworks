@@ -221,11 +221,13 @@ proc GrSeriesPlot {c} {
 	    set iStep 1
 	}
 	#puts "iSeries=$iS -> plotting step $iStep"
-	for { set x $props(xmin); set i $props(xmin) } \
+	for { set i 0 ; set x $props(xmin) } \
 	    { $i < [llength [lindex $dataSeries $iS 0]] } \
-	    { set x [expr {$props(xmin) + $i * $xstep}]; incr i $iStep } {
+	    { incr i $iStep ; set x [expr {$props(xmin) + $i * $xstep}] } {
+		#puts "$i: x=$x y=[lindex $dataSeries $iS 0 $i]"
 		$s plot series$iS $x [lindex $dataSeries $iS 0 $i]
 	    }
+	#puts "Plotted $i points"
     }
 }
 
@@ -258,19 +260,25 @@ proc GrSeriesDoResize {c} {
 # Update data of the series with given index.
 proc GrSeriesUpdateSeries {p ind series {name ""}} {
     if {[llength $series] == 0} return
-    if {$ind < 0 || $ind >= [llength $series]} return
 
     set c $p.grseries.graphics.c
 
     global $c.props
     upvar #0 $c.props props
+    if {$ind < 0 || $ind > [llength $props(dataSeries)]} return
 
-    puts "$c.props: [array get props]"
+    if {$ind == [llength $props(dataSeries)]} {
+	lappend $props(dataSeries) {}
+    }
 
     if {[llength $series] > 1 && [llength [lindex $series 0]] > 1 &&
 	[llength [lindex $series 1]] >= 2} {
 	# Thinking series has format {{data}{min max}...}
-	lset props(dataSeries) $ind $series
+	if {$ind == [llength $props(dataSeries)]} {
+	    lappend props(dataSeries) $series
+	} else {
+	    lset props(dataSeries) $ind $series
+	}
 	# Replace name if exact one is given
 	if {$name != ""} {
 	    lset props(dataSeries) $ind 2 $name
@@ -288,7 +296,11 @@ proc GrSeriesUpdateSeries {p ind series {name ""}} {
 	    }
 	}
 	set minmax [list $ymin $ymax]
-	lset props(dataSeries) $ind "[list $series] [list $minmax] $name"
+	if {$ind == [llength $props(dataSeries)]} {
+	    lappend props(dataSeries) "[list $series] [list $minmax] $name"
+	} else {
+	    lset props(dataSeries) $ind "[list $series] [list $minmax] $name"
+	}
     }
 }
 

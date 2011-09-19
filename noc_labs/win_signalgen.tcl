@@ -118,7 +118,11 @@ proc SignalGenAction {p n} {
 	NNTeacherParWindow $p $n.par_arr [set $n.par_gui]
     }
     $n.gen $p $n.par_arr $filepath
-    GrSeriesUpdateSeries $p 0 [GrSeriesReadFile $filepath]
+    set wholeData [GrSeriesReadFile $filepath]
+    GrSeriesUpdateSeries $p 0 [lindex $wholeData 0]
+    GrSeriesViewAll $p.grseries.graphics.c x
+    GrSeriesViewAll $p.grseries.graphics.c y
+    GrSeriesRedraw $p
 }
 
 
