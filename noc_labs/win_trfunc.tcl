@@ -33,11 +33,15 @@ package require win_grseries
 proc TrFuncParseFile {filepath} {
     if [ catch {open $filepath} fdtmpl ] {
 	error "Failed to open $filepath: $fdtmpl"
-	return
     }
     set tmpl [split [read $fdtmpl] \n]
     close $fdtmpl
+    return TrFuncParseDescr $tmpl
+}
 
+# Take text buffer, find keywords in it, extracts the whole description
+# and return it.
+proc TrFuncParseDescr {tmpl} {
     # Empty description
     set descr {{} {} {} {}}
 
