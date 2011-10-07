@@ -45,6 +45,35 @@ proc rnd_gauss.gen {p arref filepath} {
 
 
 #
+# Random unified distributed series
+#
+
+# What is to enter?
+set rnd_unified.par_gui {
+    -1 "Равномерно распределенный случайный ряд"
+    length "Длина ряда"
+    minampl "Минимальное значение амплитуды"
+    maxampl "Максимальное значение амплитуды"
+}
+
+# Which values are default ones? (==> *_par_arr)
+set rnd_unified.par_initial {
+    length 100
+    minampl -1.0
+    maxampl 1.0
+}
+
+# What is to do to generate the series with given parameters?
+proc rnd_unified.gen {p arref filepath} {
+    global $arref
+    upvar #0 $arref arr
+    catch {exec [file join [SystemDir] bin dranduni] >> $filepath \
+	       $arr(length) $arr(minampl) $arr(maxampl) } errCode
+    puts "Run dranduni: $errCode"
+}
+
+
+#
 # Random unified distributed meander series
 #
 
@@ -76,6 +105,64 @@ proc rnd_meander.gen {p arref filepath} {
 	       $arr(length) $arr(maxhalfper) $arr(maxhalfper) \
 	       $arr(minampl) $arr(maxampl) } errCode
     puts "Run drandmea: $errCode"
+}
+
+
+#
+# Meander series
+#
+
+# What is to enter?
+set meander.par_gui {
+    -1 "Меандр"
+    length "Длина ряда"
+    halfperiod "Полупериод"
+    phaseshift "Фазовый сдвиг"
+}
+
+# Which values are default ones? (==> *_par_arr)
+set meander.par_initial {
+    length 100
+    halfperiod 10
+    phaseshift 0
+}
+
+# What is to do to generate the series with given parameters?
+proc meander.gen {p arref filepath} {
+    global $arref
+    upvar #0 $arref arr
+    catch {exec [file join [SystemDir] bin dmeander] >> $filepath \
+	       $arr(length) $arr(halfperiod) $arr(phaseshift) } errCode
+    puts "Run dmeander: $errCode"
+}
+
+
+#
+# Harmonic series
+#
+
+# What is to enter?
+set harmonic.par_gui {
+    -1 "Меандр"
+    length "Длина ряда"
+    period "Период"
+    phaseshift "Фазовый сдвиг"
+}
+
+# Which values are default ones? (==> *_par_arr)
+set harmonic.par_initial {
+    length 100
+    period 20
+    phaseshift 0
+}
+
+# What is to do to generate the series with given parameters?
+proc harmonic.gen {p arref filepath} {
+    global $arref
+    upvar #0 $arref arr
+    catch {exec [file join [SystemDir] bin dsin] >> $filepath \
+	       $arr(length) $arr(period) $arr(phaseshift) } errCode
+    puts "Run dsin: $errCode"
 }
 
 
@@ -114,7 +201,7 @@ proc SignalGenAction {p n} {
     upvar #0 signal_target_gen_filepath filepath
 
     if {[info exists $n.par_initial]} {
-	puts "$n.par_arr: [array get $n.par_arr]"
+	#puts "$n.par_arr: [array get $n.par_arr]"
 	NNTeacherParWindow $p $n.par_arr [set $n.par_gui]
     }
     $n.gen $p $n.par_arr $filepath
@@ -140,7 +227,7 @@ proc SignalGenExtGrSeries {cmd p} {
 		constant "Постоянное значение"
 		meander "Меандр"
 		harmonic "Синусоида"
-		delta_pulse "Дельта-импульсы"
+#		delta_pulse "Дельта-импульсы"
 	    }
 	    foreach {n t} $buttons {
 		button $f.$n -text $t -command "SignalGenAction $p $n"
@@ -154,7 +241,8 @@ proc SignalGenExtGrSeries {cmd p} {
 	    }
 
 	    pack $f.clear_series $f.rnd_gauss $f.rnd_unified $f.rnd_meander \
-		$f.constant $f.meander $f.harmonic $f.delta_pulse -fill x
+		$f.constant $f.meander $f.harmonic -fill x
+	    # $f.delta_pulse
 	    pack $f -side left -fill y
 	}
     }
