@@ -305,20 +305,35 @@ proc GrSeriesUpdateSeries {p ind series {name ""}} {
 }
 
 
-# Add series in format {data} or {{data}{min max}{name}}
+# Add series in format {data} or {{data}{min max}{name}}.
+# - name is a label to display in legend.
+# - utag is an unique tag which allows to prevent addition of the series
+# with the same tag.
 # Return index of the added series.  -1 means failure.
-proc GrSeriesAddSeries {p series {name ""}} {
-    if {[llength $series] == 0} return -1
+proc GrSeriesAddSeries {p series {name ""} {utag ""}} {
+    if {[llength $series] == 0} {
+	puts "Can not add empty series"
+	return -1
+    }
 
     #puts "series: $series"
     #puts "name: $name"
 
     set c $p.grseries.graphics.c
 
-    global $c.props
-    upvar #0 $c.props props
+    global $c.props $c.utags
+    upvar #0 $c.props props $c.utags utags
 
-    set retindex [llength $props(dataSeries)]
+    if {[info exists utags($utag)]} {
+	puts "Can not add twice the same series $utag"
+	return -1
+    }
+
+    if {[info exists props(dataSeries)]} {
+	set retindex [llength $props(dataSeries)]
+    } else {
+	set retindex 0
+    }
     if {[llength $series] > 1 && [llength [lindex $series 0]] > 1 &&
 	[llength [lindex $series 1]] >= 2} {
 	# Thinking series has format {{data}{min max}...}
@@ -345,6 +360,7 @@ proc GrSeriesAddSeries {p series {name ""}} {
 	#puts "[lindex $props(dataSeries) end]"
     }
     #puts "Add $c.props: [array get props]"
+    set utags($utag) $retindex
     return $retindex
 }
 
@@ -356,18 +372,25 @@ proc GrSeriesViewAll {c args} {
 	set dim {x y}
     }
     foreach v $dim {
-	eval puts \"${v} range: \$props(${v}min) \$props(${v}max)\"
-	global $c.view_${v}min
-	global $c.view_${v}max
-	set $c.view_${v}min $props(${v}min)
-	set $c.view_${v}max $props(${v}max)
+	#eval puts \"${v} range: \$props(${v}min) \$props(${v}max)\"
+	if {[info exists props(${v}min)] && [info exists props(${v}max)]} {
+	    global $c.view_${v}min
+	    global $c.view_${v}max
+	    set $c.view_${v}min $props(${v}min)
+	    set $c.view_${v}max $props(${v}max)
+	}
+	# else
+	#   After the first plot they will be assigned
     }
     #GrSeriesDoPlot $c
 }
 
-proc GrSeriesDestroy {c} {
-    global $c.props
+proc GrSeriesDestroy {w} {
+    set c $w.graphics.c
+
+    global $c.props $c.utags
     array unset $c.props
+    array unset $c.utags
 
     foreach v {xmin xmax ymin ymax} {
 	global $c.view_$v
@@ -457,6 +480,10 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
     }
     #puts "Create $c.props: [array get props]"
 
+    # Array of unique tags
+    global $c.utags
+    array set $c.utags {}
+
     global $c.bDrawLegend
     set $c.bDrawLegend 1
 
@@ -497,7 +524,7 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
     # after entries to make exact focus order by Tab/Shift-Tab
     button $w.buttons.redraw -text "Обновить" -command "GrSeriesDoPlot $c"
     button $w.buttons.close -text "Закрыть" \
-	-command "GrSeriesDestroy $c ; destroy $w"
+	-command "GrSeriesDestroy $w ; destroy $w"
 
     grid $o.grid $o.xlabel $o.xmin $o.xmax -sticky w
     grid $o.legend $o.ylabel $o.ymin $o.ymax -sticky w

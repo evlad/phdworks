@@ -153,24 +153,20 @@ proc dcontrpCheckPoint {p chkpnt sessionDir arrayName arrayIndex label} {
     upvar #0 $arrayName ar
     set fileName $ar($arrayIndex)
     set filePath [SessionAbsPath $sessionDir $fileName]
-    global dcontrp_grSeries
+
+    if {![file exists $filePath]} return
+
     if {[GrSeriesCheckPresence $p]} {
+	set wholeData [GrSeriesReadFile $filePath]
 	# Avoid adding one series several times
-	if {[lsearch -exact $dcontrp_grSeries $fileName] == -1} {
-	    if {[file exists $filePath]} {
-		set wholeData [GrSeriesReadFile $filePath]
-		GrSeriesAddSeries $p "[lindex $wholeData 0]" $label
-		GrSeriesRedraw $p
-		lappend dcontrp_grSeries $fileName
-	    }
+	if {0 <= [GrSeriesAddSeries $p "[lindex $wholeData 0]" \
+		      $label $filePath]} {
+	    GrSeriesRedraw $p
 	} else {
 	    # If series already plotted then let's show statistics,
 	    StatAnDataFile $p $sessionDir $fileName
 	}
     } else {
-	# Make empty list of series to plot
-	set dcontrp_grSeries {}
-
 	# If plot does not exist let's show statistics
 	StatAnDataFile $p $sessionDir $fileName
     }

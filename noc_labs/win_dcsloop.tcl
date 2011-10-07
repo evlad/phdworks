@@ -79,24 +79,20 @@ proc dcsloopRun {p sessionDir parFile} {
 # Add given checkpoint to plotter window or display the data file.
 proc dcsloopCheckPoint {p chkpnt sessionDir fileName label} {
     set filePath [SessionAbsPath $sessionDir $fileName]
-    global dcsloop_grSeries
+
+    if {![file exists $filePath]} return
+
     if {[GrSeriesCheckPresence $p]} {
+	set wholeData [GrSeriesReadFile $filePath]
 	# Avoid adding one series several times
-	if {[lsearch -exact $dcsloop_grSeries $fileName] == -1} {
-	    if {[file exists $filePath]} {
-		set wholeData [GrSeriesReadFile $filePath]
-		GrSeriesAddSeries $p "[lindex $wholeData 0]" $label
-		GrSeriesRedraw $p
-		lappend dcsloop_grSeries $fileName
-	    }
+	if {0 <= [GrSeriesAddSeries $p "[lindex $wholeData 0]" \
+		      $label $filePath]} {
+	    GrSeriesRedraw $p
 	} else {
 	    # If series already plotted then let's show statistics,
 	    StatAnDataFile $p $sessionDir $fileName
 	}
     } else {
-	# Make empty list of series to plot
-	set dcsloop_grSeries {}
-
 	# If plot does not exist let's show statistics
 	StatAnDataFile $p $sessionDir $fileName
     }
