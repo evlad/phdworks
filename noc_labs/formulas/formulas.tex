@@ -8,6 +8,8 @@
 
 \begin{itemize}
 
+% rm -rf formulas
+% latex2html formulas.tex
 % awk '$1=="%%file:" {printf "convert formulas/%s.png ../templates/%s.gif\n", $2, $3}' formulas.tex | bash
 
 %%file: img1 pid_kkk
@@ -32,7 +34,7 @@ $$G^*(z)=K\frac{z-d_1}{z-d_2}$$
 
 %%file: img6 2nd_order
 \item Звено 2-го порядка:
-$$G^*(z)=K\frac{z^2+d_1z+d_2}{z^2+d_1z+d_2}$$
+$$G^*(z)=K\frac{d_1z^2+d_2z+d_3}{z^2+d_4z+d_5}$$
 
 %%file: img7 delay1
 \item Задержка на 1 такт:
