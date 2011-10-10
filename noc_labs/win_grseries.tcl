@@ -321,12 +321,19 @@ proc GrSeriesAddSeries {p series {name ""} {utag ""}} {
 
     set c $p.grseries.graphics.c
 
-    global $c.props $c.utags
+    global $c.props $c.utags $c.utagCounter
     upvar #0 $c.props props $c.utags utags
 
-    if {[info exists utags($utag)]} {
+    if {$utag != "" && [info exists utags($utag)]} {
 	puts "Can not add twice the same series $utag"
 	return -1
+    }
+    if {$utag == ""} {
+	# Let's generate utag automatically
+	if {![info exists $c.utagCounter]} {
+	    set $c.utagCounter 0
+	}
+	set utag "$c.utag[incr $c.utagCounter]"
     }
 
     if {[info exists props(dataSeries)]} {
@@ -388,9 +395,10 @@ proc GrSeriesViewAll {c args} {
 proc GrSeriesDestroy {w} {
     set c $w.graphics.c
 
-    global $c.props $c.utags
+    global $c.props $c.utags $c.utagCounter
     array unset $c.props
     array unset $c.utags
+    unset $c.utagCounter
 
     foreach v {xmin xmax ymin ymax} {
 	global $c.view_$v
@@ -428,6 +436,7 @@ proc GrSeriesAddFile {p workDir {filePath ""}} {
 }
 
 
+# Check whether graphics series window exist for given parent.
 proc GrSeriesCheckPresence {p} {
     set w $p.grseries
     if {[catch {$w cget -menu} rc]} {
@@ -438,6 +447,15 @@ proc GrSeriesCheckPresence {p} {
 	return 1
     }
 }
+
+# View the whole plot in both dimensions, x and y.
+proc GrSeriesZoomAll {p} {
+    set c $p.grseries.graphics.c
+    GrSeriesViewAll $c x
+    GrSeriesViewAll $c y
+    GrSeriesDoPlot $c
+}
+
 
 # p - parent widget
 # title - window title
@@ -474,7 +492,9 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
 
     global $c.props
     upvar #0 $c.props props
-    array set props {}
+    if {![array exists props]} {
+	array set props {}
+    }
     if { $filepath != "" } {
 	set props(dataSeries) [GrSeriesReadFile $filepath]
     }
@@ -482,7 +502,13 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
 
     # Array of unique tags
     global $c.utags
-    array set $c.utags {}
+    if {![array exists $c.utags]} {
+	array set $c.utags {}
+    }
+
+    # Counter of undefined utags
+    global $c.utagCounter
+    set $c.utagCounter 0
 
     global $c.bDrawLegend
     set $c.bDrawLegend 1
@@ -503,6 +529,13 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
     menu $m -tearoff 0
     $m add command -label "Добавить..." \
 	-command "GrSeriesAddFile $p $workDir"
+    # To implement Delete action one needs to implement associative
+    # indexing of data series based on utag.  Also,
+    # GrSeriesUpdateSeries must be considered.
+    # GUI part may start with next code:
+    #$m add cascade -label "Удалить" -menu $m.delete
+    #set d [menu $m.delete -tearoff 0]
+    #$m.delete add command -label "$label" -command "GrSeriesDeleteSeries $p \"$utag\""
 
     set o $w.buttons.options
     frame $o
@@ -549,7 +582,7 @@ proc GrSeriesTest {} {
 	set xold $xnew
     }
 
-    set wholeData [GrSeriesReadFile testdata/r.dat]
+    set wholeData [GrSeriesReadFile testdata/r_short.dat]
     GrSeriesAddSeries "" "[lindex $wholeData 0]" "Var1"
     GrSeriesAddSeries "" "[lindex $wholeData 3]" "Var4"
     GrSeriesAddSeries "" "[lindex $wholeData 5]" "Var6"
