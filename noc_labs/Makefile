@@ -7,6 +7,7 @@ TCLSCRIPTS	=nnacs.ad \
 		main.tcl \
 		nnio.tcl \
 		par_file.tcl \
+		screenshot.tcl \
 		universal.tcl \
 		win_checkpnt.tcl \
 		win_controller.tcl \
@@ -23,6 +24,7 @@ TCLSCRIPTS	=nnacs.ad \
 		win_plant.tcl \
 		win_rtseries.tcl \
 		win_signal.tcl \
+		win_signalgen.tcl \
 		win_textedit.tcl \
 		win_trfunc.tcl
 
