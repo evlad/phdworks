@@ -5,6 +5,7 @@ package require Tk
 package require files_loc
 package require universal
 package require win_grseries
+package require win_textedit
 
 # ; idname: 
 # ; label: Bla-bla-bla
@@ -36,7 +37,7 @@ proc TrFuncParseFile {filepath} {
     }
     set tmpl [split [read $fdtmpl] \n]
     close $fdtmpl
-    return TrFuncParseDescr $tmpl
+    return [TrFuncParseDescr $tmpl]
 }
 
 # Take text buffer, find keywords in it, extracts the whole description
@@ -456,6 +457,116 @@ proc TrFuncSelect {p} {
 	return {}
     }
     return $label2idname($trfunc_selected)
+}
+
+
+# Create transfer function of new type at given file path.
+# Return: type or {} is case of cancel.
+proc TrFuncNewType {p sessionDir fileRelPath {force false}} {
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
+    if {[file exists $fileName] && !$force} {
+	# Not created
+	return {}
+    }
+
+    # New file must be created; let's ask about its type
+    # Let's determine type of the file
+    switch -glob -- $fileName {
+	*.tf {
+	    set ftype trfunc
+	    puts "TrFuncNewType: - new .tf file"
+	    set idname [TrFuncSelect $p]
+	    if {$idname == {}} {
+		# Cancel
+		return {}
+	    }
+	    TrFuncUseTemplate $idname $fileName
+	}
+	default {
+	    set ftype undefined
+	    puts "TrFuncNewType: - undefined"
+	    # Let's create empty file
+	    if [catch {open $fileName w} fdNewFile] {
+		close $fdNewFile
+	    }
+	}
+    }
+    return $ftype
+}
+
+
+# Call file transfer function editor
+# - forceNew - boolean: true to create new file anyway
+# - asText - boolean: true to edit as text file
+proc TrFuncEdit {p sessionDir title fileRelPath {forceNew false} {asText false}} {
+    puts "TrFuncEdit: $sessionDir $fileRelPath"
+    set ftype [TrFuncNewType $p $sessionDir $fileRelPath $forceNew]
+    if {$forceNew && $ftype == {}} {
+	# User cancelled transfer function creation
+	return
+    }
+    set fileName [SessionAbsPath $sessionDir $fileRelPath]
+    # Now it's possible to edit the file
+
+    # Let's determine type of the file
+    switch -glob -- $fileName {
+	*.tf {
+	    set descr [TrFuncParseFile $fileName]
+	    if {[llength $descr] == 4 &&
+		[lindex $descr 0] != {} && [lindex $descr 1] != {} &&
+		[lindex $descr 2] != {} && [lindex $descr 3] != {}} {
+		# The whole definition is in the file
+		set ftype trfunc
+	    } elseif {[llength $descr] == 4 &&
+		      [lindex $descr 0] != {}} {
+		# Only idname was found: let's use template
+		set descr [TrFuncParseTemplate [lindex $descr 0]]
+		if {$descr != {}} {
+		    set ftype trfunc
+		} else {
+		    set ftype undefined
+		}
+	    } else {
+		set ftype undefined
+	    }
+	}
+	default {
+	    set ftype undefined
+	}
+    }
+    # Let's call edit method
+    if {$asText} {
+	set ftype undefined
+    }
+    switch -exact -- $ftype {
+	trfunc {
+	    array set params {}
+	    set fd [open $fileName]
+	    set ftext [split [read $fd] \n]
+	    close $fd
+	    set idname [lindex $descr 0]
+	    set type [lindex $descr 1]
+	    set label [lindex $descr 2]
+	    set key_pos [lindex $descr 3]
+	    TrFuncLoadConfig params $descr $ftext
+	    if {[TrFuncEditor $p params $descr]} {
+		set headLineFields [split [lindex $ftext 0]]
+		set fd [open $fileName "w"]
+		if {[lindex $headLineFields 0] != ";NeuCon" &&
+		    [lindex $headLineFields 1] != "transfer" } {
+		    puts $fd ";NeuCon transfer 1.0"
+		    puts $fd "\[$type $idname\]"
+		}
+		TrFuncSaveConfig params $descr $fd $ftext
+		flush $fd
+		close $fd
+	    }
+	    # otherwise no changes took place
+	}
+	undefined {
+	    TextEditWindow $p "$title" $fileName
+	}
+    }
 }
 
 

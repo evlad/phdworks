@@ -44,88 +44,6 @@ proc PlantWindowModified {w entry} {
     return 1
 }
 
-# Call file transfer function editor
-proc PlantEdit {p sessionDir title fileRelPath} {
-    puts "PlantEdit: $sessionDir $fileRelPath"
-    set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    if {![file exists $fileName]} {
-	# New file must be created; let's ask about its type
-	# Let's determine type of the file
-	switch -glob -- $fileName {
-	    *.tf {
-		set ftype trfunc
-		puts "PlantEdit:TODO - new .tf file"
-		set idname [TrFuncSelect $p]
-		if {$idname != {}} {
-		    TrFuncUseTemplate $idname $fileName
-		}
-	    }
-	    default {
-		set ftype undefined
-		puts "PlantEdit:TODO - undefined"
-		return
-	    }
-	}
-	# Now it's possible to edit the file
-    }
-    # Let's determine type of the file
-    switch -glob -- $fileName {
-	*.tf {
-	    set descr [TrFuncParseFile $fileName]
-	    if {[llength $descr] == 4 &&
-		[lindex $descr 0] != {} && [lindex $descr 1] != {} &&
-		[lindex $descr 2] != {} && [lindex $descr 3] != {}} {
-		# The whole definition is in the file
-		set ftype trfunc
-	    } elseif {[llength $descr] == 4 &&
-		      [lindex $descr 0] != {}} {
-		# Only idname was found: let's use template
-		set descr [TrFuncParseTemplate [lindex $descr 0]]
-		if {$descr != {}} {
-		    set ftype trfunc
-		} else {
-		    set ftype undefined
-		}
-	    } else {
-		set ftype undefined
-	    }
-	}
-	default {
-	    set ftype undefined
-	}
-    }
-    switch -exact -- $ftype {
-	trfunc {
-	    array set params {}
-	    set fd [open $fileName]
-	    set ftext [split [read $fd] \n]
-	    close $fd
-	    set idname [lindex $descr 0]
-	    set type [lindex $descr 1]
-	    set label [lindex $descr 2]
-	    set key_pos [lindex $descr 3]
-	    TrFuncLoadConfig params $descr $ftext
-	    if {[TrFuncEditor $p params $descr]} {
-		set headLineFields [split [lindex $ftext 0]]
-		set fd [open $fileName "w"]
-		if {[lindex $headLineFields 0] != ";NeuCon" &&
-		    [lindex $headLineFields 1] != "transfer" } {
-		    puts $fd ";NeuCon transfer 1.0"
-		    puts $fd "\[$type $idname\]"
-		}
-		TrFuncSaveConfig params $descr $fd $ftext
-		flush $fd
-		close $fd
-	    }
-	    # otherwise no changes took place
-	}
-	undefined {
-	    TextEditWindow $p "$title" $fileName
-	}
-    }
-}
-
-
 # Select file for plant and store new value to var global variable.
 proc PlantSelectTrFile {p sessionDir var} {
     global $var
@@ -174,8 +92,19 @@ proc PlantWindow {p sessionDir arref plantfile} {
     entry $f.lin_fe -width 30 -textvariable var_plantfile
     button $f.lin_fsel -text "Выбор..." \
 	-command "PlantSelectTrFile $w $sessionDir var_plantfile"
-    button $f.lin_fedit -text "Изменить..." \
-	-command "PlantEdit $w $sessionDir \"$var_plantfile\" $var_plantfile"
+
+    set m $f.lin_fedit.m
+    menubutton $f.lin_fedit -text "Изменить..."  -underline 0 \
+	-direction below -menu $m -relief raised
+    menu $m -tearoff 0
+    $m add command -label "Тип звена" \
+	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile true"
+    $m add command -label "Параметры" \
+	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile"
+    $m add command -label "Как текст" \
+	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile false true"
+
+
     grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit
     grid $f.lin_fl -sticky e
 

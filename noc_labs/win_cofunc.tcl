@@ -4,6 +4,7 @@ package provide win_cofunc 1.0
 
 #package require win_textedit
 package require win_trfunc
+package require Tk
 
 
 # Combined function file (.cof) is an array of INI-like sections.  One
@@ -88,12 +89,12 @@ proc CoFuncParseSection {type name stext} {
 	    # Read general description of the transfer
 	    # function object as names of parameters.
 	    set descr [TrFuncParseDescr $stext]
-	    puts "descr: $descr"
+	    #puts "descr: $descr"
 	    array set trf {}
 	    # Read exact definition of the transfer
 	    # function object as array of parameters.
 	    TrFuncLoadConfig trf $descr $stext
-	    puts "config: [array get trf]"
+	    #puts "config: [array get trf]"
 	    return [list descr $descr config [array get trf]]
 	}
 	CustomFunction {
@@ -198,5 +199,11 @@ proc CuFuncLoadConfig {ftext} {
 
 # To test:
 #CoFuncParseFile testdata/test.cof
+
+# Print test results:
+#array set cof [CoFuncParseFile testdata/test.cof]
+#foreach n [array names cof] {
+#  puts "$n: $cof($n)"
+#}
 
 # End of file

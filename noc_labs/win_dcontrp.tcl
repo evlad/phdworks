@@ -119,7 +119,7 @@ proc dcontrpRun {p sessionDir parFile} {
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
-	puts $pipepar
+	#puts $pipepar
 
 	lappend params \
 	    timeLen $dcontrp_params(finish_max_epoch) \

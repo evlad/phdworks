@@ -128,7 +128,7 @@ proc dplantidRun {p sessionDir parFile} {
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
-	puts $pipepar
+	#puts $pipepar
 
 	lappend params \
 	    timeLen $dplantid_params(finish_max_epoch) \

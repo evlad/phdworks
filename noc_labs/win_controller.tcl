@@ -45,109 +45,6 @@ proc ContrWindowModified {w entry} {
 }
 
 
-# Create controller of new type at given file path
-proc ContrNewType {p sessionDir fileRelPath {force false}} {
-    set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    if {[file exists $fileName] && !$force} {
-	# Not created
-	return {}
-    }
-
-    # New file must be created; let's ask about its type
-    # Let's determine type of the file
-    switch -glob -- $fileName {
-	*.tf {
-	    set ftype trfunc
-	    puts "ContrNewType: - new .tf file"
-	    set idname [TrFuncSelect $p]
-	    if {$idname != {}} {
-		TrFuncUseTemplate $idname $fileName
-	    }
-	}
-	default {
-	    set ftype undefined
-	    puts "ContrNewType: - undefined"
-	    # Let's create empty file
-	    if [catch {open $fileName w} fdNewFile] {
-		close $fdNewFile
-	    }
-	}
-    }
-    return $ftype
-}
-
-
-# Call file transfer function editor
-# - forceNew - boolean: true to create new file anyway
-# - asText - boolean: true to edit as text file
-proc ContrEdit {p sessionDir title fileRelPath {forceNew false} {asText false}} {
-    puts "ContrEdit: $sessionDir $fileRelPath"
-    set ftype [ContrNewType $p $sessionDir $fileRelPath $forceNew]
-    set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    # Now it's possible to edit the file
-
-    # Let's determine type of the file
-    switch -glob -- $fileName {
-	*.tf {
-	    set descr [TrFuncParseFile $fileName]
-	    if {[llength $descr] == 4 &&
-		[lindex $descr 0] != {} && [lindex $descr 1] != {} &&
-		[lindex $descr 2] != {} && [lindex $descr 3] != {}} {
-		# The whole definition is in the file
-		set ftype trfunc
-	    } elseif {[llength $descr] == 4 &&
-		      [lindex $descr 0] != {}} {
-		# Only idname was found: let's use template
-		set descr [TrFuncParseTemplate [lindex $descr 0]]
-		if {$descr != {}} {
-		    set ftype trfunc
-		} else {
-		    set ftype undefined
-		}
-	    } else {
-		set ftype undefined
-	    }
-	}
-	default {
-	    set ftype undefined
-	}
-    }
-    # Let's call edit method
-    if {$asText} {
-	set ftype undefined
-    }
-    switch -exact -- $ftype {
-	trfunc {
-	    array set params {}
-	    set fd [open $fileName]
-	    set ftext [split [read $fd] \n]
-	    close $fd
-	    set idname [lindex $descr 0]
-	    set type [lindex $descr 1]
-	    set label [lindex $descr 2]
-	    set key_pos [lindex $descr 3]
-	    TrFuncLoadConfig params $descr $ftext
-	    if {[TrFuncEditor $p params $descr]} {
-		set headLineFields [split [lindex $ftext 0]]
-		set fd [open $fileName "w"]
-		if {[lindex $headLineFields 0] != ";NeuCon" &&
-		    [lindex $headLineFields 1] != "transfer" } {
-		    puts $fd ";NeuCon transfer 1.0"
-		    puts $fd "\[$type $idname\]"
-		}
-		TrFuncSaveConfig params $descr $fd $ftext
-		flush $fd
-		close $fd
-	    }
-	    # otherwise no changes took place
-	}
-	undefined {
-	    TextEditWindow $p "$title" $fileName
-	}
-    }
-}
-
-
 # Select file for traditional controller and store new value to var
 # global variable.
 proc ContrSelectTrFile {p sessionDir var} {
@@ -242,11 +139,11 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     $m add command -label "Тип звена" \
-	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile true"
+	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile true"
     $m add command -label "Параметры" \
-	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile"
+	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile"
     $m add command -label "Как текст" \
-	-command "ContrEdit $w $sessionDir \"$var_trcfile\" $var_trcfile false true"
+	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile false true"
 
     grid $f.lin_rb
     grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit
@@ -263,18 +160,19 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
 	-command "ContrViewNNFile $w $sessionDir var_nncfile"
     label $f.inp_l -text "Входы:"
     frame $f.inputs
-    foreach {n v} {re "e+r" eee "e+e+..." ede "e+de"} {
-	radiobutton $f.inputs.$n -variable var_nncinputs -value $v -text $v
-	pack $f.inputs.$n -padx 2 -side left
-    }
+    set var_nncinputs "e+r"
+    #foreach {n v} {re "e+r" eee "e+e+..." ede "e+de"} {
+    #radiobutton $f.inputs.$n -variable var_nncinputs -value $v -text $v
+    #pack $f.inputs.$n -padx 2 -side left
+    #}
     grid $f.nnc_rb
     grid $f.nnc_fl $f.nnc_fe $f.nnc_fsel $f.nnc_fview
-    grid $f.inp_l -row 5 -column 0
-    grid $f.inputs -row 5 -column 1 -columnspan 2
+    #grid $f.inp_l -row 5 -column 0
+    #grid $f.inputs -row 5 -column 1 -columnspan 2
     grid $f.nnc_rb -sticky nw
     grid $f.nnc_fl -sticky e
-    grid $f.inp_l -sticky e
-    grid $f.inputs -sticky w
+    #grid $f.inp_l -sticky e
+    #grid $f.inputs -sticky w
 
     pack $f -side top
 

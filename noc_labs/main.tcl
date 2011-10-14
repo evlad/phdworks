@@ -10,7 +10,7 @@ package require win_dcsloop
 package require win_dcontrp
 package require win_dplantid
 package require win_dcontrf
-package require win_series
+#package require win_series
 
 set ScriptsDir [file join [SystemDir] scripts]
 option readfile [file join $ScriptsDir nnacs.ad]
@@ -80,11 +80,11 @@ foreach {label title} $menuContent {
 	      -command "CheckGoodEnv \"$w\" ; MenuProg$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
 }
 
-incr i
-set text "Операции с рядами:\nвизуализация, анализ, изменение"
-pack [button $w.lab${i}_button -text "$text" \
-	  -command "seriesCreateWindow \"$w\" \"$text\""] \
-    -fill x -side top -expand yes -pady 2
+#incr i
+#set text "Операции с рядами:\nвизуализация, анализ, изменение"
+#pack [button $w.lab${i}_button -text "$text" \
+#	  -command "seriesCreateWindow \"$w\" \"$text\""] \
+#    -fill x -side top -expand yes -pady 2
 
 button $w.quit_button -text "Выход" -command { removeTemporalFiles ; exit }
 pack $w.quit_button -side top -expand yes -pady 2

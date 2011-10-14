@@ -129,7 +129,7 @@ proc dcontrfRun {p sessionDir parFile} {
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
-	puts $pipepar
+	#puts $pipepar
 
 	switch $dcontrf_params(input_kind) {
 	    stream {
