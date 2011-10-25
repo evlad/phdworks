@@ -34,9 +34,12 @@
 % Moreover, if epstopdf is installed then file.eps is converted to
 % file-eps-converted-to.pdf automatically.
 %
+% If convertion does not work automatically, next command will help:
+% epstopdf --outfile=file-eps-converted-to.pdf file.eps
+%
 % Convert landscape oriented .ps files (created by gnuplot) to .eps
 % not by default but using next parameters:
-% ps2eps -R + -l -B -f nnp_step_trained.ps nnp_step_trained.ps
+% ps2eps -R + -l -B -f nnp_step_trained.eps nnp_step_trained.ps
 \usepackage{latexcad}
 \usepackage{amsmath}
 \usepackage{amssymb}
