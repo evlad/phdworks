@@ -9,26 +9,27 @@
 % To produce eliseev_phd.rtf run:
 %   $ latex2rtf -i russian -M 12 -S eliseev_phd.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[candidate,subf,href,colorlinks=false
+\documentclass[autoref,subf,href,colorlinks=false
+%,facsimile
 %,openright
 %,fixint=false
 %,times
-%,facsimile
 %,classified
 ]{disser}
 
 \usepackage[
-  a4paper, mag=1000, includefoot,
-  left=1.7cm, right=1.7cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm
+  a4paper, nohead, mag=1000, includefoot,
+  margin=2cm, footskip=1cm
 ]{geometry}
 
-%  left=2.5cm, right=1cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm
+%  margin=2cm, footskip=1cm
 
 \usepackage[T2A]{fontenc}
 \usepackage[cp1251]{inputenc}
 \usepackage{rotating}
 \usepackage{graphicx}
 \usepackage{epstopdf} 
+
 % Now its possible to \includegraphics{file} without extension and
 % file.eps or file.pdf will be found depending latex or pdflatex run.
 % Moreover, if epstopdf is installed then file.eps is converted to
@@ -58,7 +59,7 @@
 
 \hypersetup{
 pdfauthor = {Vladimir Eliseev},
-pdftitle = {Vladimir Eliseev - Ph.D. thesis},
+pdftitle = {Vladimir Eliseev - Ph.D. thesis autoreferate},
 pdfsubject = {Research and development of neural network control
   algorithms for stationary and non-stationary objects},
 pdfkeywords = {neural network, automated control, optimal control,
@@ -120,25 +121,6 @@ pdfproducer = {pdflatex}}
 не-чет-ко-ло-ги-че-ский на-уч-но-ис-сле-до-ва-тель-ских
 back-pro-pa-ga-tion out-put}
 
-% Нумерация совсем мелких пунктов
-% Не нумеровать параграфы
-\setcounter{secnumdepth}{3}
-
-%\newcounter{subbbcounter}[subsubsection]
-%\renewcommand{\thesubbbcounter}{%
-%\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.%
-%\arabic{subbbcounter}}
-%\newcommand{\subbbsection}[1]{\par\bigskip\noindent%
-%\refstepcounter{subbbcounter}%
-%{\bf\thesubbbcounter.\quad#1}\nopagebreak\smallskip\par}
-
-% Выводы
-%\makeatletter
-%\newcommand{\l@conclusion}[2]{\noindent\textbf{#1\hfill #2}}
-%\newcommand{\conclusion}[1]{\section*{#1}%
-%\addcontentsline{toc}{conclusion}{#1}}
-%\makeatother
-
 \input{txdtools.tex}
 \input{blockdiagram.tex}
 
@@ -146,76 +128,33 @@ back-pro-pa-ga-tion out-put}
 %texdraw \everytexdraw{\drawdim mm}
 
 \begin{document}
+
 \input{common_defines.tex}
 
-\title{ДИССЕРТАЦИЯ\\
-на соискание ученой степени\\
+\title{АВТОРЕФЕРАТ\\
+диссертации на соискание ученой степени\\
 кандидата технических наук}
 
 % Титульные страницы
 \maketitle
 
-% Оглавление
-% Не вставлять параграфы в оглавление
-\setcounter{tocdepth}{3}\tableofcontents
-%\newpage
+\nsection{Введение}
 
-% Введение
-\chapter*{Введение}
-\addcontentsline{toc}{chapter}{Введение}
-\input{intro.tex}
+\newcommand{\NumberOfPages}{215}
+\input{common_intro.tex}
 
-% Глава 1
-\chapter{Современные тенденции применения нейронных сетей в задачах автоматического управления}
-\input{part_review.tex}
+\nsection{Содержание работы}
 
-% Глава 2
-\chapter{Методика замены линейного регулятора на нейросетевой}%
-\label{linear_to_neural}
-\input{part_nnc.tex}
+% Собственно, автореферат
+\input{autoref.tex}
 
-% Глава 3
-\chapter{Синтез нейросетевого оптимального регулятора}%
-\label{neural_optimal_control}
-\input{part_noc.tex}
-
-% Глава 4
-\chapter{Нейросетевое управление нестационарным объектом}%
-\label{nonst_neural_control}
-\input{part_nonst.tex}
-
-% Глава 5
-\chapter{Нейросетевое управление мобильным роботом}%
-\label{mobile_robot}
-\input{part_mobot.tex}
-
-% Глава 6
-\chapter{Программный пакет для моделирования и обучения методам нейросетевого управления}%
-\label{lab_works}
-\input{part_lab.tex}
-
-% Заключение
-\chapter*{Заключение}
-\addcontentsline{toc}{chapter}{Заключение}
-\label{conclusion}
+\nsection{Основные результаты}
 \input{conclusion.tex}
 
 % Библиография
 %\bibliographystyle{gost705s}
-\bibliography{bibliogr,mypapers}
-
-% Приложения
-%\appendix
-
-% Приложение 1 - Эксперименты
-%\section{Сравнительные эксперименты с ПИД, Винеровским и нейросетевым
-%         оптимальными регуляторами}
-%\input{Appendix1.tex}
-
-%\chapter{Вывод кинематических уравнений движения маяка в поле
-%         зрения видеокамеры мобильного робота}
-%\input{AppendixMobotKin.tex}
+\renewcommand\bibsection{\nsection{Публикации по теме диссертации}}
+\bibliography{mypapers}
+%\input{eliseev_autoref.bbl}
 
 \end{document}
-
-% Конец главного файла
