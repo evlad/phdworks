@@ -1,0 +1,112 @@
+\makeatletter\renewcommand{\@biblabel}[1]{#1.}\makeatother
+\ifx\undefined\BibPrefix\def\BibPrefix{}\else\fi
+\ifx\undefined\BibPostfix\def\BibPostfix{}\else\fi
+\ifx\undefined\BibEmph\def\BibEmph#1{#1}\else\fi
+\ifx\undefined\href\def\href#1#2{#2}\else\fi
+\ifx\undefined\url\def\url#1{\texttt{#1}}\else\fi
+\ifx\undefined\urlprefix\def\urlprefix{URL: }\else\fi
+\ifx\undefined\BibUrl\def\BibUrl#1{\urlprefix\url{#1}}\else\fi
+\ifx\undefined\BibUrlDate\long\def\BibUrlDate#1{({%
+\cyr\cyrd\cyra\cyrt\cyra\ %
+\cyro\cyrb\cyrr\cyra\cyrshch\cyre\cyrn\cyri\cyrya}: #1)}\else\fi
+\ifx\undefined\BibAnnote\long\def\BibAnnote#1{#1}\else\fi
+\begin{thebibliography}{\BibPrefix10\BibPostfix}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\language\csname l@#1\endcsname\fi}
+
+{\bf
+\bibitem[\BibPrefix1\BibPostfix]{elfil-vestmei2010}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Методика синтеза нейросетевой системы
+  управления нестационарным объектом~// \BibEmph{Вестник МЭИ}.
+\newblock 2010.
+\newblock {\cyr\textnumero}~3.
+\newblock {\cyr\CYRS.}~100--106.
+
+\bibitem[\BibPrefix2\BibPostfix]{elfil-labsoft2011}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Программный пакет для моделирования и
+  обучения методам нейросетевого управления~// \BibEmph{Открытое образование}.
+\newblock 2011.
+\newblock {\cyr\textnumero} 2(86), Ч.2.
+\newblock {\cyr\CYRS.}~98--101.
+}
+
+\bibitem[\BibPrefix3\BibPostfix]{el-neurocomp2002}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л.} Нейросетевое оптимальное управление движением
+  мобильного робота~// Доклады 10-го Всероссийского семинара ``Нейроинформатика
+  и ее приложения''.
+\newblock Красноярск: 2002. "--- \bbloct{}.
+
+\bibitem[\BibPrefix4\BibPostfix]{el-trainset2010}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л.} Методика построения обучающей выборки при нейросетевой
+  идентификации в условиях стохастических сигналов~// Труды XXXVII
+  международной конференции ``Информационные технологии в науке, образовании,
+  телекоммуникации и бизнесе''.
+\newblock Алушта: 2010. "--- \bblmay{}.
+
+\bibitem[\BibPrefix5\BibPostfix]{elzenk-extrob2006}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л., Зенкевич~С.~Л.} Метод нейросетевого оптимального
+  управления~// Труды Девятой Всероссийской научно-практической конференции
+  ``Актуальные проблемы защиты и безопасности''.
+\newblock {\cyr\CYRT.}~5.
+\newblock Санкт-Петербург: 2006. "--- \bblapr{}.
+\newblock {\cyr\CYRS.}~251--256.
+
+\bibitem[\BibPrefix6\BibPostfix]{elfil-pta99}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Моделирование ПИД-контроллера с
+  помощью искусственной нейронной сети~// Перспективные технологии
+  автоматизации.
+\newblock Вологда: 1999.
+\newblock {\cyr\CYRS.}~108.
+
+\bibitem[\BibPrefix7\BibPostfix]{elfil-modctrl2006}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Особенности настройки нейросетевого
+  регулятора в контуре управления~// Труды XV международного
+  научно-технического семинара ``Современные технологии в задачах управления,
+  автоматики и обработки информации''.
+\newblock Алушта: 2006. "--- \bblsep{}.
+\newblock {\cyr\CYRS.}~155.
+
+\bibitem[\BibPrefix8\BibPostfix]{filel-ict2000}
+\selectlanguageifdefined{russian}
+\BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л.} Нейросетевой оптимальный регулятор~//
+  Доклады международной конференции ``Информационные средства и технологии''.
+\newblock {\cyr\CYRT.}~3.
+\newblock Москва: 2000. "--- \bbloct{}.
+\newblock {\cyr\CYRS.}~64--67.
+
+\bibitem[\BibPrefix9\BibPostfix]{filel-ict2003}
+\selectlanguageifdefined{russian}
+\BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л.} Особенности применения нейронных сетей
+  в системах управления~// Доклады международной конференции ``Информационные
+  средства и технологии''.
+\newblock Москва: 2003. "--- \bbloct{}.
+
+\bibitem[\BibPrefix10\BibPostfix]{filelav-ict99}
+\selectlanguageifdefined{russian}
+\BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л., Аверченков~Е.~О.} Разработка
+  программных средств нейросетевого моделирования случайных процессов и систем
+  управления~// Доклады международной конференции ``Информационные средства и
+  технологии''.
+\newblock Москва: 1999. "--- \bbloct{}.
+
+\bibitem[\BibPrefix11\BibPostfix]{elfil-iwk2000}
+\selectlanguageifdefined{english}
+\BibEmph{Eliseev~V.~L., Filaretov~G.~F.} Software tool for neural network
+  control algorithm research~// 45h International Scientific Colloquium,.
+\newblock Ilmenau Technical University: 2000. "--- October.
+
+\bibitem[\BibPrefix12\BibPostfix]{filel-iwk2010}
+\selectlanguageifdefined{english}
+\BibEmph{Filaretov~G.~F., Eliseev~V.~L.} Modified Algorithm of Neural Network
+  Control for Non-stationary Object~// 55h International Scientific Colloquium.
+\newblock Ilmenau University of Technology: 2010. "--- September.
+
+\end{thebibliography}

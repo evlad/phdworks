@@ -22,6 +22,9 @@
   margin=2cm, footskip=1cm
 ]{geometry}
 
+% Standard is 1.5
+\renewcommand{\baselinestretch}{1.4}
+
 %  margin=2cm, footskip=1cm
 
 \usepackage[T2A]{fontenc}
@@ -143,6 +146,24 @@ back-pro-pa-ga-tion out-put}
 \newcommand{\NumberOfPages}{215}
 \input{common_intro.tex}
 
+
+\paragraph{Публикации}
+По результатам исследований опубликовано 12 научных работ, в том
+числе, 2 публикации в рецензируемых журналах, входящих в список ВАК
+РФ.
+
+\paragraph{Структура и объем работы}
+\marginpar{ПРОВЕРИТЬ!}
+Диссертационная работа состоит из введения, шести глав, заключения и
+списка литературы из 84 наименований, включает \NumberOfPages\ страниц
+текста, 69 рисунков, 14 таблиц.
+
+% Take care of autoreferat!!!
+% Number of figures may be counted so:
+%  $ grep 'label[{]fig:' *.tex | wc -l
+% Number of tables may be counted so:
+%  $ grep 'label[{]tabl:' *.tex | wc -l
+
 \nsection{Содержание работы}
 
 % Собственно, автореферат
@@ -154,7 +175,7 @@ back-pro-pa-ga-tion out-put}
 % Библиография
 %\bibliographystyle{gost705s}
 \renewcommand\bibsection{\nsection{Публикации по теме диссертации}}
-\bibliography{mypapers}
-%\input{eliseev_autoref.bbl}
+%\bibliography{mypapers}
+\input{eliseev_autoref.bbl}
 
 \end{document}
