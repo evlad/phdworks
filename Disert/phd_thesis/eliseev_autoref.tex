@@ -32,6 +32,7 @@
 \usepackage{rotating}
 \usepackage{graphicx}
 \usepackage{epstopdf} 
+\usepackage{tabularx}
 
 % Now its possible to \includegraphics{file} without extension and
 % file.eps or file.pdf will be found depending latex or pdflatex run.
@@ -140,6 +141,57 @@ back-pro-pa-ga-tion out-put}
 
 % Титульные страницы
 \maketitle
+
+% Внутренняя сторона обложки
+\noindent
+\begin{center}
+Работа выполнена в \emph{название организации}.
+\end{center}
+\vskip1ex
+\begin{tabularx}{\linewidth}{lp{1cm}X}
+Научный руководитель:  & & доктор технических наук, \\
+                       & & профессор, \\
+                       & & Филаретов Геннадий Федорович
+\\
+Официальные оппоненты: & & доктор физико-математических наук, \\
+                       & & профессор, \\
+                       & & Лохин Валерий Михайлович\\
+                       & & доктор технических наук, \\
+                       & & профессор, \\
+                       & & Ермуратский Петр Васильевич
+\\
+Ведущая организация:   & & \emph{название организации}\\
+\end{tabularx}
+
+\vskip2ex\noindent
+Защита состоится \datefield{} в \rule[0pt]{1cm}{0.5pt} часов
+на заседании диссертационного совета Д212.157.08 при Национальном исследовательском университете МЭИ, расположенном по адресу: 111250, Москва, Е-250, Красноказарменная улица, дом ????14.
+
+\vskip1ex\noindent
+С диссертацией можно ознакомиться в библиотеке НИУ МЭИ.
+
+\vskip1ex\noindent
+Автореферат разослан \datefield{}
+
+\vskip2ex\noindent
+Отзывы и замечания по автореферату в двух экземплярах, заверенные
+печатью, просьба высылать по вышеуказанному адресу на имя ученого секретаря
+диссертационного совета.
+
+\vfill\noindent
+Ученый секретарь\\
+диссертационного совета,\\
+кандидат технических наук, доцент%
+\hfill
+\makeatletter
+% вставка файла, содержащего факсимиле ученого секретаря
+%\ifDis@facsimile
+%  \raisebox{-4pt}{\includegraphics[width=3cm]{sec-facsimile}}\hfill
+%\fi%
+\makeatother%
+Анисимов Д. Н.
+
+\clearpage
 
 \nsection{Введение}
 
