@@ -48,7 +48,17 @@
   телекоммуникации и бизнесе''.
 \newblock Алушта: 2010. "--- \bblmay{}.
 
-\bibitem[\BibPrefix5\BibPostfix]{elzenk-extrob2006}
+\bibitem[\BibPrefix5
+\BibPostfix]{el-nit2011}
+\selectlanguageifdefined{russian}
+\BibEmph{Елисеев~В.~Л.} Нейросетевой аналог ПИД регулятора при управлении
+  нелинейным объектом~// Труды XVI всероссийской научно-технической конференции
+  студентов, молодых ученых и специалистов ``Новые информационные технологии в
+  научных исследованиях''.
+\newblock Рязань: 2011.
+\newblock {\cyr\CYRS.}~199--201.
+
+\bibitem[\BibPrefix6\BibPostfix]{elzenk-extrob2006}
 \selectlanguageifdefined{russian}
 \BibEmph{Елисеев~В.~Л., Зенкевич~С.~Л.} Метод нейросетевого оптимального
   управления~// Труды Девятой Всероссийской научно-практической конференции
@@ -57,7 +67,7 @@
 \newblock Санкт-Петербург: 2006. "--- \bblapr{}.
 \newblock {\cyr\CYRS.}~251--256.
 
-\bibitem[\BibPrefix6\BibPostfix]{elfil-pta99}
+\bibitem[\BibPrefix7\BibPostfix]{elfil-pta99}
 \selectlanguageifdefined{russian}
 \BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Моделирование ПИД-контроллера с
   помощью искусственной нейронной сети~// Перспективные технологии
@@ -65,7 +75,7 @@
 \newblock Вологда: 1999.
 \newblock {\cyr\CYRS.}~108.
 
-\bibitem[\BibPrefix7\BibPostfix]{elfil-modctrl2006}
+\bibitem[\BibPrefix8\BibPostfix]{elfil-modctrl2006}
 \selectlanguageifdefined{russian}
 \BibEmph{Елисеев~В.~Л., Филаретов~Г.~Ф.} Особенности настройки нейросетевого
   регулятора в контуре управления~// Труды XV международного
@@ -74,7 +84,7 @@
 \newblock Алушта: 2006. "--- \bblsep{}.
 \newblock {\cyr\CYRS.}~155.
 
-\bibitem[\BibPrefix8\BibPostfix]{filel-ict2000}
+\bibitem[\BibPrefix9\BibPostfix]{filel-ict2000}
 \selectlanguageifdefined{russian}
 \BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л.} Нейросетевой оптимальный регулятор~//
   Доклады международной конференции ``Информационные средства и технологии''.
@@ -82,14 +92,14 @@
 \newblock Москва: 2000. "--- \bbloct{}.
 \newblock {\cyr\CYRS.}~64--67.
 
-\bibitem[\BibPrefix9\BibPostfix]{filel-ict2003}
+\bibitem[\BibPrefix10\BibPostfix]{filel-ict2003}
 \selectlanguageifdefined{russian}
 \BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л.} Особенности применения нейронных сетей
   в системах управления~// Доклады международной конференции ``Информационные
   средства и технологии''.
 \newblock Москва: 2003. "--- \bbloct{}.
 
-\bibitem[\BibPrefix10\BibPostfix]{filelav-ict99}
+\bibitem[\BibPrefix11\BibPostfix]{filelav-ict99}
 \selectlanguageifdefined{russian}
 \BibEmph{Филаретов~Г.~Ф., Елисеев~В.~Л., Аверченков~Е.~О.} Разработка
   программных средств нейросетевого моделирования случайных процессов и систем
@@ -97,13 +107,13 @@
   технологии''.
 \newblock Москва: 1999. "--- \bbloct{}.
 
-\bibitem[\BibPrefix11\BibPostfix]{elfil-iwk2000}
+\bibitem[\BibPrefix12\BibPostfix]{elfil-iwk2000}
 \selectlanguageifdefined{english}
 \BibEmph{Eliseev~V.~L., Filaretov~G.~F.} Software tool for neural network
   control algorithm research~// 45h International Scientific Colloquium,.
 \newblock Ilmenau Technical University: 2000. "--- October.
 
-\bibitem[\BibPrefix12\BibPostfix]{filel-iwk2010}
+\bibitem[\BibPrefix13\BibPostfix]{filel-iwk2010}
 \selectlanguageifdefined{english}
 \BibEmph{Filaretov~G.~F., Eliseev~V.~L.} Modified Algorithm of Neural Network
   Control for Non-stationary Object~// 55h International Scientific Colloquium.
