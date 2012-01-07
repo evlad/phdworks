@@ -14,11 +14,18 @@ pictures:
 	  fi; \
 	done
 
-autoref: pictures eliseev_autoref.pdf
+autoref: pictures eliseev_autoref-$(THISDATE).pdf
 
-eliseev_autoref.pdf: eliseev_autoref.tex
-	@echo "Make PDF version of autoreferat"
-	pdflatex eliseev_autoref.tex
+eliseev_autoref.aux: eliseev_autoref.tex
+	@echo "Make PDF version of autoreferat (1st run)"
+	pdflatex eliseev_autoref.tex </dev/null >eliseev_autoref.1st.log
+
+eliseev_autoref.pdf: eliseev_autoref.aux
+	@echo "Make PDF version of autoreferat (2nd run)"
+	pdflatex eliseev_autoref.tex </dev/null >eliseev_autoref.2nd.log
+
+eliseev_autoref-$(THISDATE).pdf: eliseev_autoref.pdf
+	cp eliseev_autoref.pdf eliseev_autoref-$(THISDATE).pdf
 
 thesis: pictures eliseev_phd-$(THISDATE).pdf eliseev_phd_gost-$(THISDATE).pdf
 #thesis: pictures eliseev_phd.ps
@@ -29,7 +36,7 @@ eliseev_phd.aux: eliseev_phd.tex
 	@echo ">>> Make PDF version of thesis (1st run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.1st.log
 
-eliseev_phd.pdf: eliseev_phd.tex eliseev_phd.bbl
+eliseev_phd.pdf: eliseev_phd.aux eliseev_phd.bbl
 	@echo ">>> Make PDF version of thesis (2nd run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.2nd.log
 	@echo ">>> Make PDF version of thesis (3rd run - put bibliography to TOC)"
