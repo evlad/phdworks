@@ -1,5 +1,8 @@
 all: thesis autoref
 
+# Date as YYYY-MM-DD
+THISDATE=$(shell date '+%F')
+
 .PHONY: pictures thesis autoref clean clean-phd clean-autoref
 
 pictures:
@@ -17,7 +20,7 @@ eliseev_autoref.pdf: eliseev_autoref.tex
 	@echo "Make PDF version of autoreferat"
 	pdflatex eliseev_autoref.tex
 
-thesis: pictures eliseev_phd.pdf eliseev_phd_gost.pdf
+thesis: pictures eliseev_phd-$(THISDATE).pdf eliseev_phd_gost-$(THISDATE).pdf
 #thesis: pictures eliseev_phd.ps
 #thesis: pictures eliseev_phd.dvi
 #thesis: pictures eliseev_phd.rtf
@@ -32,6 +35,9 @@ eliseev_phd.pdf: eliseev_phd.tex eliseev_phd.bbl
 	@echo ">>> Make PDF version of thesis (3rd run - put bibliography to TOC)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.3rd.log
 
+eliseev_phd-$(THISDATE).pdf: eliseev_phd.pdf
+	cp eliseev_phd.pdf eliseev_phd-$(THISDATE).pdf
+
 eliseev_phd_gost.pdf: eliseev_phd.pdf
 	@echo ">>> Make PDF version of thesis (4th run - single side gost version)"
 	mv eliseev_phd.pdf eliseev_phd.pdf.BAK
@@ -41,6 +47,9 @@ eliseev_phd_gost.pdf: eliseev_phd.pdf
 	mv eliseev_phd.pdf eliseev_phd_gost.pdf
 	mv eliseev_phd.pdf.BAK eliseev_phd.pdf
 	mv eliseev_phd.tex.BAK eliseev_phd.tex
+
+eliseev_phd_gost-$(THISDATE).pdf: eliseev_phd_gost.pdf
+	cp eliseev_phd_gost.pdf eliseev_phd_gost-$(THISDATE).pdf
 
 eliseev_phd.bbl: eliseev_phd.aux
 	@echo ">>> Make bibliography"
