@@ -3,7 +3,10 @@ all: thesis autoref
 # Date as YYYY-MM-DD
 THISDATE=$(shell date '+%F')
 
-.PHONY: pictures thesis autoref clean clean-phd clean-autoref
+# For -nt
+SHELL=/bin/bash
+
+.PHONY: pictures phd autoref clean clean-phd clean-autoref
 
 pictures:
 	@echo ">>> Convert all eps files to pdf"
@@ -27,18 +30,22 @@ eliseev_autoref.pdf: eliseev_autoref.aux
 eliseev_autoref-$(THISDATE).pdf: eliseev_autoref.pdf
 	cp eliseev_autoref.pdf eliseev_autoref-$(THISDATE).pdf
 
-thesis: pictures eliseev_phd-$(THISDATE).pdf eliseev_phd_gost-$(THISDATE).pdf
-#thesis: pictures eliseev_phd.ps
-#thesis: pictures eliseev_phd.dvi
-#thesis: pictures eliseev_phd.rtf
+phd: pictures eliseev_phd-$(THISDATE).pdf eliseev_phd_gost-$(THISDATE).pdf
+#phd: pictures eliseev_phd.ps
+#phd: pictures eliseev_phd.dvi
+#phd: pictures eliseev_phd.rtf
 
 eliseev_phd.aux: eliseev_phd.tex
 	@echo ">>> Make PDF version of thesis (1st run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.1st.log
+	@echo ">>> Make bibliography"
+	bibtex8 -H -c cp1251 eliseev_phd.aux
 
-eliseev_phd.pdf: eliseev_phd.aux eliseev_phd.bbl
+eliseev_phd.pdf: eliseev_phd.aux
 	@echo ">>> Make PDF version of thesis (2nd run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.2nd.log
+	@echo ">>> Make bibliography"
+	bibtex8 -H -c cp1251 eliseev_phd.aux
 	@echo ">>> Make PDF version of thesis (3rd run - put bibliography to TOC)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.3rd.log
 
@@ -57,10 +64,6 @@ eliseev_phd_gost.pdf: eliseev_phd.pdf
 
 eliseev_phd_gost-$(THISDATE).pdf: eliseev_phd_gost.pdf
 	cp eliseev_phd_gost.pdf eliseev_phd_gost-$(THISDATE).pdf
-
-eliseev_phd.bbl: eliseev_phd.aux
-	@echo ">>> Make bibliography"
-	-bibtex8 -H -c cp1251 eliseev_phd.aux
 
 eliseev_phd.ps: eliseev_phd.dvi
 	@echo ">>> Make PS version of thesis"
