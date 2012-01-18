@@ -39,13 +39,13 @@ eliseev_phd.aux: eliseev_phd.tex
 	@echo ">>> Make PDF version of thesis (1st run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.1st.log
 	@echo ">>> Make bibliography"
-	bibtex8 -H -c cp1251 eliseev_phd.aux
+	-bibtex8 -H -c cp1251 eliseev_phd.aux
 
 eliseev_phd.pdf: eliseev_phd.aux
 	@echo ">>> Make PDF version of thesis (2nd run)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.2nd.log
 	@echo ">>> Make bibliography"
-	bibtex8 -H -c cp1251 eliseev_phd.aux
+	-bibtex8 -H -c cp1251 eliseev_phd.aux
 	@echo ">>> Make PDF version of thesis (3rd run - put bibliography to TOC)"
 	pdflatex eliseev_phd.tex </dev/null >eliseev_phd.3rd.log
 
