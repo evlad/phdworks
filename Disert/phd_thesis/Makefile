@@ -1,4 +1,4 @@
-all: thesis autoref
+all: phd autoref
 
 # Date as YYYY-MM-DD
 THISDATE=$(shell date '+%F')
