@@ -26,6 +26,7 @@ Directories:
 3   - NNC in-the-loop training
 3new- NNC in-the-loop training to compare with state of the art (2 May 2010)
 4   - NOC evaluation in the loop
+4_1 - NOC and WOC comparative evaluation for series of harmonic signals
 4a  - NNP and NNC evaluation when plant becomes changed
       at t=500 from plant1.tf to plant2.tf
 4b  - NNP evaluation when plant becomes changed
