@@ -139,7 +139,7 @@
 @timestamp rot 0
 @timestamp font 0
 @timestamp char size 1.000000
-@timestamp def "Wed Jan  5 10:21:37 2011"
+@timestamp def "Tue Jan 24 00:07:11 2012"
 @with string
 @    string on
 @    string loctype world
@@ -231,10 +231,10 @@
 @    xaxis  bar color 1
 @    xaxis  bar linestyle 1
 @    xaxis  bar linewidth 1.0
-@    xaxis  label "Дискретное время"
+@    xaxis  label "Время, отсчеты"
 @    xaxis  label layout para
 @    xaxis  label place auto
-@    xaxis  label char size 1.000000
+@    xaxis  label char size 2.000000
 @    xaxis  label font 0
 @    xaxis  label color 1
 @    xaxis  label place normal
@@ -282,10 +282,10 @@
 @    yaxis  bar color 1
 @    yaxis  bar linestyle 1
 @    yaxis  bar linewidth 1.0
-@    yaxis  label "Среднеквадратическая ошибка управления"
+@    yaxis  label "СКО управления"
 @    yaxis  label layout para
 @    yaxis  label place auto
-@    yaxis  label char size 1.000000
+@    yaxis  label char size 2.000000
 @    yaxis  label font 0
 @    yaxis  label color 1
 @    yaxis  label place normal
@@ -330,7 +330,7 @@
 @    altyaxis  off
 @    legend on
 @    legend loctype view
-@    legend 0.55, 0.83
+@    legend 0.4, 0.845
 @    legend box color 1
 @    legend box pattern 1
 @    legend box linewidth 1.0
@@ -338,7 +338,7 @@
 @    legend box fill color 0
 @    legend box fill pattern 1
 @    legend font 0
-@    legend char size 1.000000
+@    legend char size 1.250000
 @    legend color 1
 @    legend length 4
 @    legend vgap 1
@@ -354,7 +354,7 @@
 @    s0 hidden false
 @    s0 type xy
 @    s0 symbol 0
-@    s0 symbol size 1.000000
+@    s0 symbol size 1.500000
 @    s0 symbol color 1
 @    s0 symbol pattern 1
 @    s0 symbol fill color 1
@@ -403,7 +403,7 @@
 @    s1 hidden false
 @    s1 type xy
 @    s1 symbol 0
-@    s1 symbol size 1.000000
+@    s1 symbol size 1.500000
 @    s1 symbol color 1
 @    s1 symbol pattern 1
 @    s1 symbol fill color 1
@@ -452,7 +452,7 @@
 @    s2 hidden false
 @    s2 type xy
 @    s2 symbol 0
-@    s2 symbol size 1.000000
+@    s2 symbol size 1.500000
 @    s2 symbol color 1
 @    s2 symbol pattern 1
 @    s2 symbol fill color 1
