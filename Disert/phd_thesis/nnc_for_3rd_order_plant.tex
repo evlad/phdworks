@@ -25,9 +25,9 @@ C_{PID}^*(z)=K_p\Bigl(1+\displaystyle\frac{z}{T_i(z-1)}+\displaystyle\frac{z^2-2
 перерегулирования.  Реакция исходной системы управления на ступенчатую
 уставку приведена на~\figref{fig:3rd_order_step_response}.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{3rd_order_step_response_ru}
+\includegraphics[width=0.65\textwidth]{3rd_order_step_response_ru}
 \caption{Реакция контура управления с ПИД регулятором и объектом 3-го порядка на ступенчатую уставку.}\label{fig:3rd_order_step_response}
 \end{figure}
 
@@ -52,15 +52,15 @@ $N^*(z)=0.07$.  На обучающей выборке длиной 2000 отсчетов амплитуда
 На \figref{fig:3rd_nnc_step_response} показана реакция системы под
 управлением НС--Р на ступенчатое возмущение.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{3rd_order_nnc_arch}
-\caption{Архитектуры нейросетевого регулятора с входами $r_k,e_k$.}\label{fig:3rd_order_nn_arch}
+\includegraphics[width=0.6\textwidth]{3rd_order_nnc_arch}
+\caption{Архитектура нейросетевого регулятора с входами $r_k,e_k$.}\label{fig:3rd_order_nn_arch}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{3rd_nnc_step_response_ru}
+\includegraphics[width=0.65\textwidth]{3rd_nnc_step_response_ru}
 \caption{Реакция контура управления с НС--Р и объектом 3-го порядка на ступенчатую уставку.}\label{fig:3rd_nnc_step_response}
 \end{figure}
 
