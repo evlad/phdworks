@@ -171,7 +171,7 @@ proc NNCEditWindow {p title filepath nncinputs} {
 
     set nnarch {}
     if {[file exists $filepath]} {
-	set nnarch [ReadNeuralNetFile $filepath]
+	set nnarch [NNSimpleArch [NNReadFile $filepath]]
     }
     if {$nnarch == {}} {
 	# Default parameters
