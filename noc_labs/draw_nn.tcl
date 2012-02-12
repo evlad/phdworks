@@ -1,82 +1,8 @@
 package provide draw_nn 1.0
 
 package require Tk
-
-# Return architecture in format acceptable for DrawNeuralNetArch
-proc ReadNeuralNetFile {filepath} {
-    if [ catch {open $filepath r} fd ] {
-	error "Failed to open $filepath: $fd"
-	return
-    }
-    # read all lines
-    set contents [split [read -nonewline $fd] \n]
-    close $fd
-
-    foreach line $contents {
-	if [regexp {^\s*;} $line match] {
-	    # comment - let's skip it
-	    continue
-	}
-	if [regexp {^\s*\[\s*NeuralNet\s*[^\]]*\]} $line match] {
-	    if {[info exists nnName]} {
-		# error
-		puts stderr "Not the only NeuralNet in file!"
-		return
-	    }
-	    regexp {^\s*\[\s*NeuralNet\s+([^\]]*)\]} $line match nnName
-	    set lineNo 0
-	    continue
-	}
-	if {![info exists nnName]} {
-	    # before [NeuralNet] anything is allowed
-	    continue
-	}
-	# let's count lines inside the section
-	incr lineNo
-	switch -exact $lineNo {
-	    1 {
-		regexp {^\s*(\d+)\s+(\d+)} $line match nInputs nInpRep
-	    }
-	    2 {
-		regexp {^\s*(\d+)} $line match nOutRep
-	    }
-	    3 {
-		regexp {^\s*(\d+)} $line match nFeedback
-	    }
-	    4 {
-		regexp {^\s*(\d+)} $line match nHidLayers
-		set iHidLayer 0
-		set listHidLayers {}
-	    }
-	    default {
-		if {[info exists iHidLayer]} {
-		    if {$iHidLayer < $nHidLayers} {
-			regexp {^\s*(\d+)} $line match num
-			lappend listHidLayers "$num tanh"
-			incr iHidLayer
-		    } else {
-			unset iHidLayer
-		    }
-		}
-		if {$lineNo == [expr $nHidLayers + 5]} {
-		    regexp {^\s*(\w+)\s+(\d+)} $line match eOutType nOutputs
-		}
-	    }
-	}
-    }
-    if {[info exists nnName] && [info exists nInputs] && \
-	    [info exists nInpRep] && \
-	    [info exists nOutRep] && [info exists nFeedback] && \
-	    [info exists nHidLayers] && [info exists listHidLayers] && \
-	    [info exists eOutType] && [info exists nOutputs]} {
-	set nnArch "[expr $nInputs * $nInpRep + $nOutputs * $nOutRep] \
-	    $listHidLayers"
-	lappend nnArch "$nOutputs $eOutType"
-	return $nnArch
-    }
-    puts stderr "Wrong NeuralNet format!"
-    return {}
-}
+package require screenshot
+package require nnio
 
 # nnarch = {{Inputs [InputLabels]} {HidNeurons1 HidType1} {HidNeurons2
 # HidType2} ...  {Outputs OutputType OutputLabels}}, where type is
@@ -236,10 +162,15 @@ proc DisplayNeuralNetArch {p title nnFilePath} {
     wm title $w $title
 
     button $w.close -text "Закрыть" -command "destroy $w"
+
     canvas $w.c -width 400 -height 200
-    pack $w.close -side bottom -expand 1
+
+    ScreenshotButton $w $w.print $w.c [file dirname $nnFilePath] [file tai $nnFilePath]
+
+    pack $w.close $w.print -side bottom -expand 1
     pack $w.c -fill both -expand yes
-    DrawNeuralNetArch $w.c [ReadNeuralNetFile $nnFilePath]
+    set nnarch [NNReadFile $nnFilePath]
+    DrawNeuralNetArch $w.c [NNSimpleArch $nnarch]
 }
 
 proc TestDrawNeuralNetArch {{nnarch {6 {7 "tanh"} {4 "tanh"} {3 "linear"}}}} {

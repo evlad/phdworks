@@ -20,7 +20,7 @@ proc NNDefault {} {
     }
 }
 
-# Return architecture in format acceptable for DrawNeuralNetArch
+# Return the complete representation of NN architecture in tagged list format
 proc NNReadFile {filepath} {
     if [ catch {open $filepath r} fd ] {
 	error "Failed to open $filepath: $fd"
@@ -222,6 +222,24 @@ proc NNReadFile {filepath} {
     }
     puts stderr "Wrong NeuralNet format!"
     return
+}
+
+# Convert the complete representation of NN architecture to the
+# simplified form acceptable for DrawNeuralNetArch
+proc NNSimpleArch {nnarch} {
+    array set nnar $nnarch
+    if {[info exists nnar(nHidNeurons)] && [info exists nnar(eLastActFunc)] && \
+	    [info exists nnar(nOutNeurons)] && [info exists nnar(nOutputsRepeat)] && \
+	    [info exists nnar(nInputsNumber)] && [info exists nnar(nInputsRepeat)]} {
+	lappend simple [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat) \
+			    + $nnar(nOutNeurons) * $nnar(nOutputsRepeat)]
+	foreach n $nnar(nHidNeurons) {
+	    lappend simple [list $n tanh]
+	}
+	lappend simple [list $nnar(nOutNeurons) $nnar(eLastActFunc)]
+	return $simple
+    }
+    error "Wrong neural network architecture format"
 }
 
 proc NNTest {} {
