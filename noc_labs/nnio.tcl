@@ -46,6 +46,7 @@ proc NNReadFile {filepath} {
 	    }
 	    regexp {^\s*\[\s*NeuralNet\s+([^\]]*)\]} $line match nnName
 	    set lineNo 0
+	    set nnar(nnName) $nnName
 	    continue
 	}
 	if {![info exists nnName]} {
@@ -112,6 +113,7 @@ proc NNReadFile {filepath} {
 		    set nnar(nOutNeurons) $nOutputs
 		    set nnar(eLastActFunc) $eOutType
 		    set nOutputScalers [expr $nOutputs * $nOutRep]
+		    incr nInputScalers $nOutputScalers
 		    set nnar(vOutputScaler) {}
 
 		    if {$nnar(nHidLayers) > 0} {
@@ -224,6 +226,72 @@ proc NNReadFile {filepath} {
     return
 }
 
+
+# Write the complete NN architecture.
+proc NNWriteFile {filepath nnarch} {
+    if [ catch {open $filepath w} fd ] {
+	error "Failed to create $filepath: $fd"
+	return
+    }
+    # default
+    array set nnar $nnarch
+
+    puts $fd ";NeuCon NeuralNet 1.1"
+    if {[info exists nnar(nnName)]} {
+	puts $fd "\[NeuralNet $nnar(nnName)\]"
+    } else {
+	puts $fd "\[NeuralNet\]"
+    }
+
+    puts $fd "; Neural network architecture definition"
+    puts $fd "$nnar(nInputsNumber) $nnar(nInputsRepeat)\t ; Number of inputs and their repeat factor\n$nnar(nOutputsRepeat)\t ; Output repeat factor on the input\n$nnar(nFeedbackDepth)\t ; Feedback depth\n$nnar(nHidLayers)\t ; Number of hidden layers"
+    foreach nH $nnar(nHidNeurons) {
+	puts $fd "$nH\t ; Hidden layer"
+    }
+    puts $fd "$nnar(eLastActFunc) $nnar(nOutNeurons)\t ; Output layer"
+
+    puts $fd "; Input delays:"
+    foreach d $nnar(vInputDelays) {
+	puts $fd $d
+    }
+    puts $fd "; Output delays:"
+    foreach d $nnar(vOutputDelays) {
+	puts $fd $d
+    }
+    puts $fd "; Neural network:"
+
+    set nNeuronsPerLayer $nnar(nHidNeurons)
+    lappend nNeuronsPerLayer $nnar(nOutNeurons)
+    set iL 0
+    set nInputs [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat) \
+		     + $nnar(nOutNeurons) * $nnar(nOutputsRepeat)]
+    foreach nL $nNeuronsPerLayer {
+	puts $fd "; Layer #$iL  ($nInputs inputs, $nL neurons)"
+	set vBias [lindex $nnar(vBias) $iL]
+	set mWeight [lindex $nnar(mWeight) $iL]
+	set iN 0
+	foreach fBias $vBias {
+	    puts $fd "$fBias\t ; Neuron #$iN (bias / weights):"
+	    puts $fd [join [lindex $mWeight $iN] \n]
+	    incr iN
+	}
+	incr iL
+	set nInputs $nL
+    }
+
+    puts $fd "; Input scaler:"
+    foreach mm $nnar(vInputScaler) {
+	puts $fd "[join $mm \ ]\t ; min max"
+    }
+    puts $fd "; Output scaler:"
+    foreach mm $nnar(vOutputScaler) {
+	puts $fd "[join $mm \ ]\t ; min max"
+    }
+
+    close $fd
+}
+
+
 # Convert the complete representation of NN architecture to the
 # simplified form acceptable for DrawNeuralNetArch
 proc NNSimpleArch {nnarch} {
@@ -243,5 +311,7 @@ proc NNSimpleArch {nnarch} {
 }
 
 proc NNTest {} {
-    NNReadFile testdata/test.nn
+    set nnarch [NNReadFile testdata/test.nn]
+    NNWriteFile testdata/test_copy.nn $nnarch
+    exec diff testdata/test.nn testdata/test_copy.nn
 }
