@@ -159,9 +159,27 @@ proc NNPEditWindow {p title filepath} {
 
     set nnarch {}
     if {[file exists $filepath]} {
-	set nnarch [NNSimpleArch [NNReadFile $filepath]]
+	set nnarch [NNReadFile $filepath]
+	array set nnar $nnarch
+	set nnarch [NNSimpleArch $nnarch]
+	puts "nnarch: $nnarch"
+
+	set $f.inputrep_var [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat)]
+	set $f.outputrep_var $nnar(nOutputsRepeat)
+	set $f.numlayers_var $nnar(nHidLayers)
+	foreach i {0 1 2} {
+	    if {[llength $nnar(nHidNeurons)] > $i} {
+		set n [lindex $nnar(nHidNeurons) $i]
+	    } else {
+		set n 5
+	    }
+	    incr i
+	    set $f.numneurons${i}_var $n
+	}
+	set $f.outputfunc_var $nnar(eLastActFunc)
     }
     if {$nnarch == {}} {
+	puts "path $filepath does not exist"
 	# Default parameters
 	set $f.inputrep_var 2
 	set $f.outputrep_var 3
