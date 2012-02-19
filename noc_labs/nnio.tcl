@@ -131,9 +131,9 @@ proc NNReadFile {filepath} {
 			}
 			set readWeights $newReadWeights
 		    }
-		    incr nWeights [expr $nOutputScalers * \
-					   [lindex $nnar(nHidNeurons) end]]
-		    incr nBiases $nOutputScalers
+		    incr nWeights [expr $nOutputs * \
+				       [lindex $nnar(nHidNeurons) end]]
+		    incr nBiases $nOutputs
 		    #puts "total: $nWeights weights, $nBiases biases"
 		    # Remember plan to read values
 		    for {set i 0} {$i < $nOutputs} {incr i} {
@@ -148,7 +148,8 @@ proc NNReadFile {filepath} {
 		    lappend nnar(vOutputDelays) $delay
 		} elseif {$nBiases > 0 || $nWeights > 0} {
 		    regexp {^\s*([^\s;]+)} $line match value
-		    # TODO: read mWeight and vBias according to readWeights
+		    #puts "value: $value"
+		    # read mWeight and vBias according to readWeights
 		    if {$iC == {}} {
 			set iC 0
 			set mWeight {}
@@ -157,6 +158,7 @@ proc NNReadFile {filepath} {
 		    set iL [lindex $readWeights [expr 3 * $iC + 0]]
 		    set iN [lindex $readWeights [expr 3 * $iC + 1]]
 		    set nI [lindex $readWeights [expr 3 * $iC + 2]]
+		    #puts "iL=$iL iN=$iN nI=$nI iC=$iC"
 		    if {$iI == {}} {
 			set iI 0
 			set curWeights {}
@@ -165,6 +167,7 @@ proc NNReadFile {filepath} {
 			lappend nnar(vBias) $curBias
 			set curBias {}
 		    }
+		    #puts "iI=$iI curBias=$curBias"
 		    if {$iI == 0} {
 			lappend curBias $value
 			incr nBiases -1
@@ -178,7 +181,7 @@ proc NNReadFile {filepath} {
 		    }
 		    incr iI
 		    if {$iI > $nI} {
-			#puts "$iL $iN: $curBias / $curWeights"
+			#puts "$iL $iN: [lindex $curBias end] / $curWeights"
 			lappend mWeight $curWeights
 			set iI {}
 			incr iC
@@ -191,7 +194,7 @@ proc NNReadFile {filepath} {
 			puts stderr "Wrong NeuralNet format: failed to read input scaler"
 			lappend nnar(vInputScaler) [list -1 1]
 		    }
-		} elseif {[incr nOutputScalers -1] >= 0} {
+		} elseif {[incr nOutputs -1] >= 0} {
 		    if {[regexp {^\s*([^\s;]+)\s+([^\s;]+)} $line match min max]} {
 			lappend nnar(vOutputScaler) [list $min $max]
 		    } else {
@@ -314,4 +317,8 @@ proc NNTest {} {
     set nnarch [NNReadFile testdata/test.nn]
     NNWriteFile testdata/test_copy.nn $nnarch
     exec diff testdata/test.nn testdata/test_copy.nn
+
+    set nnarch [NNReadFile testdata/test2.nn]
+    NNWriteFile testdata/test2_copy.nn $nnarch
+    exec diff testdata/test2.nn testdata/test2_copy.nn
 }
