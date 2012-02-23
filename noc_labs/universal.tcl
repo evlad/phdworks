@@ -116,7 +116,7 @@ proc temporalFileName {suffix} {
     global tempFileList
     set tempFileCounter [llength $tempFileList]
     incr tempFileCounter
-    set fileName [file join [temporalDirectory] neucon_[pid]_${tempFileCounter}$suffix]
+    set fileName [file join [temporalDirectory] nnacs_[pid]_${tempFileCounter}$suffix]
     lappend tempFileList $fileName
     return $fileName
 }
