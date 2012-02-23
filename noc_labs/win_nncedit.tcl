@@ -5,7 +5,12 @@ package provide win_nncedit 1.0
 package require Tk
 package require draw_nn
 
-proc NNCEditSave {w filepath nncinputs} {
+
+# filepath - where to create neural network file;
+# nncinputs - "e+r", "e+de", "e+e+...";
+# postproc - name of the post processing procedure with passed file
+#   path and nncinputs.
+proc NNCEditSave {w filepath nncinputs postproc} {
     set f $w.nnarch
     upvar #0 $f.inputrep_var inputrep
     upvar #0 $f.outputrep_var outputrep
@@ -34,11 +39,9 @@ proc NNCEditSave {w filepath nncinputs} {
     if {$errCode != ""} {
 	error $errCode
     }
-}
-
-proc NNCEditOk {w filepath nncinputs} {
-    NNCEditSave $w $filepath $nncinputs
-    destroy $w
+    if {[llength [info procs $postproc]] == 1} {
+	$postproc $filepath $nncinputs
+    }
 }
 
 proc NNCEditDoResize {w nncinputs} {
@@ -73,7 +76,7 @@ proc NNCEditDoPlot {w nncinputs} {
     set inputs [expr $inputrep + $outputrep]
     switch -exact $nncinputs {
 	"e+r" {
-	    set inputlabels {"e(k)" "r(k)"}
+	    set inputlabels {"r(k)" "e(k)"}
 	}
 	"e+de" {
 	    set inputlabels {"e(k)" "Δe(k)"}
@@ -150,7 +153,9 @@ proc NNCEditHiddenLayersChange {w p nncinputs} {
 # title - text to show
 # filepath - file to store neural network
 # nncinputs - "e+r", "e+de", "e+e+..."
-proc NNCEditWindow {p title filepath nncinputs} {
+# postproc - name of the post processing procedure with passed file
+#   path and nncinputs.
+proc NNCEditWindow {p title filepath nncinputs postproc} {
     set w $p.textedit
     catch {destroy $w}
     toplevel $w
@@ -158,8 +163,8 @@ proc NNCEditWindow {p title filepath nncinputs} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "NNCEditOk $w $filepath $nncinputs"
-    button $w.buttons.save -text "Сохранить" -command "NNCEditSave $w $filepath $nncinputs"
+    button $w.buttons.ok -text "OK" -command "NNCEditSave $w $filepath $nncinputs $postproc ; destroy $w"
+    button $w.buttons.save -text "Сохранить" -command "NNCEditSave $w $filepath $nncinputs $postproc"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 

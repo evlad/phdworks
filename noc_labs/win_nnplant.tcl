@@ -55,11 +55,45 @@ proc NNPlantViewNNFile {p sessionDir var} {
     DisplayNeuralNetArch $p $fileRelPath [SessionAbsPath $sessionDir $fileRelPath]
 }
 
+
+
+# Postprocessing after NN creation
+proc NNPlantSetScalers {filepath} {
+    foreach t {in_u inout_y} {
+	global var_nnp_${t}_min var_nnp_${t}_max
+    }
+    set nnarch [NNReadFile $filepath]
+    array set nnar $nnarch
+
+    set scaler {}
+    set i 0
+    foreach dummy $nnar(vInputScaler) {
+	if {$i < [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat)]} {
+	    lappend scaler [list $var_nnp_in_u_min \
+				$var_nnp_in_u_max]
+	} else {
+	    lappend scaler [list $var_nnp_inout_y_min \
+				$var_nnp_inout_y_max]
+	}
+	incr i
+    }
+    set nnar(vInputScaler) $scaler
+
+    set scaler {}
+    foreach dummy $nnar(vOutputScaler) {
+	lappend scaler [list $var_nnp_inout_y_min \
+			    $var_nnp_inout_y_max]
+    }
+    set nnar(vOutputScaler) $scaler
+
+    NNWriteFile $filepath [array get nnar]
+}
+
 # Create neural network where filepath is referred by var1.
 proc NNPlantCreateNNFile {p sessionDir var1} {
     global $var1
     upvar #0 $var1 fileRelPath
-    NNPEditWindow $p "Create neural network for plant" [SessionAbsPath $sessionDir $fileRelPath]
+    NNPEditWindow $p "Create neural network for plant" [SessionAbsPath $sessionDir $fileRelPath] NNPlantSetScalers
 }
 
 # Create dialog window with neural network settings.
@@ -102,7 +136,43 @@ proc NNPlantWindow {p sessionDir arref nnp_in nnp_out} {
 	-command "NNPlantViewNNFile $w $sessionDir var_nnp_in"
     button $f.in_fcreate -text "Создать..." \
 	-command "NNPlantCreateNNFile $w $sessionDir var_nnp_in"
-    grid $f.in_fcreate -row 1 -column 3
+
+    set limit_width 7
+
+    label $f.in_u_range -text "Диапазон изменения u:"
+    label $f.inout_y_range -text "Диапазон изменения y:"
+    foreach t {in_u inout_y} {
+	global var_nnp_${t}_min var_nnp_${t}_max
+	set var_nnp_${t}_min -1
+	set var_nnp_${t}_max 1
+	entry $f.${t}_min -width $limit_width -textvariable var_nnp_${t}_min \
+	    -validate all -vcmd {string is double %P}
+	entry $f.${t}_max -width $limit_width -textvariable var_nnp_${t}_max \
+	    -validate all -vcmd {string is double %P}
+    }
+
+    # Try to guess ranges (scalers)
+    set nnpfilepath [SessionAbsPath $sessionDir $arvar($nnp_in)]
+    if {![catch {set nnarch [NNReadFile $nnpfilepath]} errMsg]} {
+	array set nnar $nnarch
+	if {[llength $nnar(vInputScaler)] > 0} {
+	    set var_nnp_in_u_min [lindex $nnar(vInputScaler) 0 0]
+	    set var_nnp_in_u_max [lindex $nnar(vInputScaler) 0 1]
+	}
+	if {[llength $nnar(vOutputScaler)] > 0} {
+	    set var_nnp_inout_y_min [lindex $nnar(vOutputScaler) 0 0]
+	    set var_nnp_inout_y_max [lindex $nnar(vOutputScaler) 0 1]
+	}
+    }
+
+    set i 1
+    foreach t {in_u inout_y} {
+	grid $f.${t}_range -row $i -column 1 -sticky e
+	grid $f.${t}_min -row $i -column 2 -sticky e
+	grid $f.${t}_max -row $i -column 3 -sticky w
+	incr i
+    }
+    grid $f.in_fcreate -row [incr i] -column 3
     grid $f.in_fl $f.in_fe $f.in_fsel $f.in_fview
     grid $f.in_fl -sticky e
 

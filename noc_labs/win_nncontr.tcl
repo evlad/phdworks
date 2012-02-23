@@ -55,13 +55,50 @@ proc NNContrViewNNFile {p sessionDir var} {
     DisplayNeuralNetArch $p $fileRelPath [SessionAbsPath $sessionDir $fileRelPath]
 }
 
+
+# Postprocessing after NN creation
+proc NNContrSetScalers {filepath nncinputs} {
+    foreach t {in_r in_e out_u} {
+	global var_nnc_${t}_min var_nnc_${t}_max
+    }
+    set nnarch [NNReadFile $filepath]
+    array set nnar $nnarch
+    switch -exact $nncinputs {
+	"e+r" {
+	    set nnar(vInputScaler) [list [list $var_nnc_in_r_min \
+					      $var_nnc_in_r_max] \
+					[list $var_nnc_in_e_min \
+					     $var_nnc_in_e_max]]
+	}
+	"e+de" {
+	    set nnar(vInputScaler) [list [list $var_nnc_in_e_min \
+					      $var_nnc_in_e_max] \
+					[list $var_nnc_in_e_min \
+					     $var_nnc_in_e_max]]
+	}
+	"e+e+..." {
+	    set scaler {}
+	    foreach dummy $nnar(vInputScaler) {
+		lappend scaler [list $var_nnc_in_e_min \
+				    $var_nnc_in_e_max]
+	    }
+	    set nnar(vInputScaler) $scaler
+	}
+    }
+    set nnar(vOutputScaler) [list [list $var_nnc_out_u_min \
+				       $var_nnc_out_u_max]]
+    NNWriteFile $filepath [array get nnar]
+}
+
+
 # Create neural network where filepath is referred by var1 and inputs by var2.
 proc NNContrCreateNNFile {p sessionDir var1 var2} {
     global $var1 $var2
     upvar #0 $var1 fileRelPath
     upvar #0 $var2 nncInputs
-    NNCEditWindow $p "Create neural network for controller" [SessionAbsPath $sessionDir $fileRelPath] $nncInputs
+    NNCEditWindow $p "Create neural network for controller" [SessionAbsPath $sessionDir $fileRelPath] $nncInputs NNContrSetScalers
 }
+
 
 # Create dialog window with neural network settings.
 # - p - parent widget;
@@ -96,6 +133,39 @@ proc NNContrWindow {p sessionDir arref nnc_in nnc_out nncinputs} {
 
     label $f.in_fl -text "Исходная нейронная сеть:"
     entry $f.in_fe -width 30 -textvariable var_nnc_in
+    set limit_width 7
+
+    label $f.in_r_range -text "Диапазон изменения r:"
+    label $f.in_e_range -text "Диапазон изменения e:"
+    label $f.out_u_range -text "Диапазон изменения u:"
+    foreach t {in_r in_e out_u} {
+	global var_nnc_${t}_min var_nnc_${t}_max
+	set var_nnc_${t}_min -1
+	set var_nnc_${t}_max 1
+	entry $f.${t}_min -width $limit_width -textvariable var_nnc_${t}_min \
+	    -validate all -vcmd {string is double %P}
+	entry $f.${t}_max -width $limit_width -textvariable var_nnc_${t}_max \
+	    -validate all -vcmd {string is double %P}
+    }
+
+    # Try to guess ranges (scalers)
+    set nncfilepath [SessionAbsPath $sessionDir $arvar($nnc_in)]
+    if {![catch {set nnarch [NNReadFile $nncfilepath]} errMsg]} {
+	array set nnar $nnarch
+	if {[llength $nnar(vInputScaler)] > 0} {
+	    set var_nnc_in_r_min [lindex $nnar(vInputScaler) 0 0]
+	    set var_nnc_in_r_max [lindex $nnar(vInputScaler) 0 1]
+	}
+	if {[llength $nnar(vInputScaler)] > 1} {
+	    set var_nnc_in_e_min [lindex $nnar(vInputScaler) 1 0]
+	    set var_nnc_in_e_max [lindex $nnar(vInputScaler) 1 1]
+	}
+	if {[llength $nnar(vOutputScaler)] > 0} {
+	    set var_nnc_out_u_min [lindex $nnar(vOutputScaler) 0 0]
+	    set var_nnc_out_u_max [lindex $nnar(vOutputScaler) 0 1]
+	}
+    }
+
     button $f.in_fsel -text "Выбор..." \
 	-command "NNContrSelectNNFile $w $sessionDir var_nnc_in"
     button $f.in_fview -text "Показать..." \
@@ -110,7 +180,17 @@ proc NNContrWindow {p sessionDir arref nnc_in nnc_out nncinputs} {
     }
     grid $f.inp_l -row 1 -column 0
     grid $f.inputs -row 1 -column 1 -columnspan 2
-    grid $f.in_fcreate -row 1 -column 3
+
+    set i 2
+    foreach t {in_r in_e out_u} {
+	grid $f.${t}_range -row $i -column 1 -sticky e
+	grid $f.${t}_min -row $i -column 2 -sticky e
+	grid $f.${t}_max -row $i -column 3 -sticky w
+	incr i
+    }
+
+    grid $f.in_fcreate -row [incr i] -column 3
+
     grid $f.in_fl $f.in_fe $f.in_fsel $f.in_fview
     grid $f.in_fl -sticky e
     grid $f.inp_l -sticky e

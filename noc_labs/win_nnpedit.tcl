@@ -5,7 +5,10 @@ package provide win_nnpedit 1.0
 package require Tk
 package require draw_nn
 
-proc NNPEditSave {w filepath} {
+
+# filepath - where to create neural network file;
+# postproc - name of the post processing procedure with passed filepath.
+proc NNPEditSave {w filepath postproc} {
     set f $w.nnarch
     upvar #0 $f.inputrep_var inputrep
     upvar #0 $f.outputrep_var outputrep
@@ -31,11 +34,9 @@ proc NNPEditSave {w filepath} {
     if {$errCode != ""} {
 	error $errCode
     }
-}
-
-proc NNPEditOk {w filepath} {
-    NNPEditSave $w $filepath
-    destroy $w
+    if {[llength [info procs $postproc]] == 1} {
+	$postproc $filepath
+    }
 }
 
 proc NNPEditDoResize {w} {
@@ -136,7 +137,8 @@ proc NNPEditHiddenLayersChange {w p} {
 # w - parent
 # title - text to show
 # filepath - name of variable where to store filename
-proc NNPEditWindow {p title filepath} {
+# postproc - name of the post processing procedure with passed filepath.
+proc NNPEditWindow {p title filepath postproc} {
     set w $p.textedit
     catch {destroy $w}
     toplevel $w
@@ -144,8 +146,8 @@ proc NNPEditWindow {p title filepath} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "NNPEditOk $w $filepath"
-    button $w.buttons.save -text "Сохранить" -command "NNPEditSave $w $filepath"
+    button $w.buttons.ok -text "OK" -command "NNPEditSave $w $filepath $postproc ; destroy $w"
+    button $w.buttons.save -text "Сохранить" -command "NNPEditSave $w $filepath $postproc"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
