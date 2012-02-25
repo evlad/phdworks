@@ -6,7 +6,8 @@ EXFUNCMODULES=deadzone.so \
 	polynomial.so \
 	cstr.so \
 	randmeander.so \
-	randunified.so
+	randunified.so \
+	dummy.so
 
 SYSLIBS	=-lm
 LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
@@ -19,7 +20,8 @@ SRCS	=deadzone.cpp \
 	polynomial.cpp \
 	cstr.cpp \
 	randmeander.cpp \
-	randunified.cpp
+	randunified.cpp \
+	dummy.cpp
 
 OBJS	=$(deadzone_OBJS) \
 	$(saturat_OBJS) \
@@ -29,7 +31,8 @@ OBJS	=$(deadzone_OBJS) \
 	$(polynomial_OBJS) \
 	$(cstr_OBJS) \
 	$(randmeander_OBJS) \
-	$(randunified_OBJS)
+	$(randunified_OBJS) \
+	$(dummy_OBJS)
 
 LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
@@ -75,6 +78,10 @@ randunified_OBJS	=randunified.o
 randunified.so:	$(randunified_OBJS) $(LIBS)
 	$(LINK.so) -o $@ $(randunified_OBJS) $(LIBS) $(SYSLIBS)
 
+dummy_OBJS	=dummy.o
+dummy.so:	$(dummy_OBJS) $(LIBS)
+	$(LINK.so) -o $@ $(dummy_OBJS) $(LIBS) $(SYSLIBS)
+
 clean:
 	rm -f $(EXFUNCMODULES) $(OBJS)
 
@@ -91,3 +98,4 @@ polynomial.o:	polynomial.h
 cstr.o:	cstr.h
 randmeander.o:	randmeander.h
 randunified.o:	randunified.h
+dummy.o:	dummy.h
