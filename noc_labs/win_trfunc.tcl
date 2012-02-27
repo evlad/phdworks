@@ -74,6 +74,22 @@ proc TrFuncParseTemplate {idname} {
 }
 
 
+# Take given function type, the template, extract default
+# configuration parameters and return them.
+proc TrFuncGetDefaultConfig {idname} {
+    set tmplfpath [file join [TemplateDir] "$idname.tf"]
+    set descr [TrFuncParseFile $tmplfpath]
+
+    array set params {}
+    set fd [open $tmplfpath]
+    set ftext [split [read $fd] \n]
+    close $fd
+
+    TrFuncLoadConfig params $descr $ftext
+    return [array get params]
+}
+
+
 # Copy given template to pointed file.
 proc TrFuncUseTemplate {idname filePath} {
     file copy -force [file join [TemplateDir] "$idname.tf"] $filePath
@@ -294,7 +310,7 @@ proc TrFuncProbeTemporal {w descr probesignal} {
 # - p - parent widget
 # - thisvar - name of the array in calling context to list name=value pairs
 # - descr - description of the function: name, type, label, parameters
-# Returns: 1 - if there were changes; 0 - there were not changes in
+# Returns: 1 - if there were changes; 0 - there were no changes in
 # parameters
 proc TrFuncEditor {p thisvar descr} {
     set w $p.tfeditor
@@ -365,7 +381,6 @@ proc TrFuncEditor {p thisvar descr} {
     }
     grid $w.buttons.probe -row 1 -column 0 -sticky n
 
-
     pack $w.buttons.ok $w.buttons.probe $w.buttons.cancel -side left -expand 1
 
     tkwait window $w
@@ -384,8 +399,7 @@ proc TrFuncEditor {p thisvar descr} {
     return $changed
 }
 
-
-proc TrFuncSelectOk {w} {
+proc TrFuncTypeSelectOk {w} {
     global trfunc_selected
     set cursel [$w.common.funclist curselection]
     if {$cursel != {}} {
@@ -399,7 +413,7 @@ proc TrFuncSelectOk {w} {
 # user to select one of them.
 # - p - parent widget
 # Returns: idname of selected function.
-proc TrFuncSelect {p} {
+proc TrFuncTypeSelect {p} {
     set w $p.tfselect
     catch {destroy $w}
     toplevel $w
@@ -446,7 +460,7 @@ proc TrFuncSelect {p} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "TrFuncSelectOk $w"
+    button $w.buttons.ok -text "OK" -command "TrFuncTypeSelectOk $w"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
 
     pack $w.buttons.ok $w.buttons.cancel -side left -expand 1
@@ -475,7 +489,7 @@ proc TrFuncNewType {p sessionDir fileRelPath {force false}} {
 	*.tf {
 	    set ftype trfunc
 	    puts "TrFuncNewType: - new .tf file"
-	    set idname [TrFuncSelect $p]
+	    set idname [TrFuncTypeSelect $p]
 	    if {$idname == {}} {
 		# Cancel
 		return {}

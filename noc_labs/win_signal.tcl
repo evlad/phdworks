@@ -56,7 +56,7 @@ proc SignalEditFilter {p sessionDir title fileRelPath} {
 	    *.tf {
 		set ftype trfunc
 		puts "SignalEditFilter:TODO - new .tf file"
-		set idname [TrFuncSelect $p]
+		set idname [TrFuncTypeSelect $p]
 		if {$idname != {}} {
 		    TrFuncUseTemplate $idname $fileName
 		}
