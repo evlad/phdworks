@@ -7,6 +7,32 @@ package require win_trfunc
 package require Tk
 
 
+# Take given name, find the template, extract and return the whole
+# description in form of tagged list (good for array representation):
+# { options {0.5 2}
+#   file deadzone
+#   initial {1 2 3}
+#   title_label "Extendened human-readable name of the function"
+#   options_descr "Arbitrary multiline description text about options"
+#   initial_descr "Arbitrary multiline description text about initial vector"
+# }
+proc CuFuncParseTemplate {idname} {
+    set filepath [file join [TemplateDir] "$idname.cof"]
+    puts "template=$filepath"
+    if {![file exists $filepath]} {
+	error "Template file $filepath was not found!"
+    }
+    # The first custom function encountered in parsed output (not in
+    # file!) is solved as custom function template.
+    foreach {name definition} [CoFuncParseFile $filepath] {
+	if {[lindex $definition 0] == "CustomFunction"} {
+	    return [lindex $definition 1]
+	}
+    }
+    error "Failed to find custom function definition in $filepath!"
+}
+
+
 # Combined function file (.cof) is an array of INI-like sections.  One
 # of them is [CombinedFunction main].  It lists all active functions
 # in their order and optional time range.  Rest sections may be
@@ -148,16 +174,22 @@ proc CoFuncLoadConfig {ftext} {
 # - ftext - file contents to parse (.cof format, CustomFunction).
 # Example of ftext contents:
 #  [CustomFunction DeadZone1]
+#  ; title_label: Extendened human-readable name of the function
 #  ;              .so/.dll depending the OS
 #  file    deadzone
 #  ;HalfWidth Gain
+#  ; options_descr: Arbitrary multiline description text about options
 #  options 0.5 2
+#  ; initial_descr: Arbitrary multiline description text about initial vector
 #  ;Dummy initial (deadzone object skips this vector)
 #  initial 1 2 3
 # Result is a list of next format:
 #  { options {0.5 2}
 #    file deadzone
 #    initial {1 2 3}
+#    title_label "Extendened human-readable name of the function"
+#    options_descr "Arbitrary multiline description text about options"
+#    initial_descr "Arbitrary multiline description text about initial vector"
 #  }
 proc CuFuncLoadConfig {ftext} {
     array set cupar {}
@@ -167,8 +199,27 @@ proc CuFuncLoadConfig {ftext} {
 	if {[regexp {^\s*$} $line]} {
 	    continue
 	}
-	# let's skip comments
-	if {[regexp {^\s*;} $line]} {
+	# let's parse comments with keywords and skip rest of them
+	if {[regexp {^\s*;\s*([^\s]+)\s+(.*)$} $line match keyword value]} {
+	    switch -exact -- $keyword {
+		title_label: {
+		    set cupar(title_label) "$value"
+		}
+		options_descr: {
+		    if {[info exists cupar(options_descr)]} {
+			set cupar(options_descr) "$cupar(options_descr)\n$value"
+		    } else {
+			set cupar(options_descr) "$value"
+		    }
+		}
+		initial_descr: {
+		    if {[info exists cupar(initial_descr)]} {
+			set cupar(initial_descr) "$cupar(initial_descr)\n$value"
+		    } else {
+			set cupar(initial_descr) "$value"
+		    }
+		}
+	    }
 	    continue
 	}
 	# let's parse as not empty space separated fields
@@ -181,12 +232,14 @@ proc CuFuncLoadConfig {ftext} {
 	switch -exact [lindex $fields 0] {
 	    file {
 		set cupar(file) [lindex $fields 1]
+		set cupar(options) {}
+		set cupar(initial) {}
 	    }
 	    options {
-		set cupar(options) [lrange $fields 1 end]
+		lappend cupar(options) [lrange $fields 1 end]
 	    }
 	    initial {
-		set cupar(initial) [lrange $fields 1 end]
+		lappend cupar(initial) [lrange $fields 1 end]
 	    }
 	    default {
 		puts "CuFuncLoadConfig: can not parse line \"$line\""
