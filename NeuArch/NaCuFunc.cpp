@@ -251,32 +251,39 @@ NaCustomFunc::Load (NaDataStream& ds)
   // Try to load shared object file
   if(NULL != getenv(NaEXFUNC_DIR_ENV)){
     char	*filepath = new char[strlen(getenv(NaEXFUNC_DIR_ENV))
-				    + strlen(szFile)
-				    + strlen(NaEXFUNC_DIR_SEP)
-				    + strlen(NaEXFUNC_FILE_EXT) + 1];
+				     + strlen(szFile)
+				     + strlen(NaEXFUNC_DIR_SEP)
+				     + strlen(NaEXFUNC_FILE_EXT) + 1];
     sprintf(filepath, "%s%s%s%s", getenv(NaEXFUNC_DIR_ENV),
 	    NaEXFUNC_DIR_SEP, szFile, NaEXFUNC_FILE_EXT);
     NaPrintLog("Loading '%s' ...\n", filepath);
     so = dlopen(filepath, RTLD_LAZY);
     if(NULL == so)
-      NaPrintLog("Can't find shared object '%s': %s\n",
-		 filepath, dlerror());
+	NaPrintLog("Can't open shared object '%s': %s\n",
+		   filepath, dlerror());
     delete[] filepath;
   }
 
   if(NULL == so){
-    NaPrintLog("Loading '%s' ...\n", szFile);
-    so = dlopen(szFile, RTLD_LAZY);
+      char	*filepath = new char[strlen(szFile)
+				     + strlen(NaEXFUNC_FILE_EXT) + 1];
+      sprintf(filepath, "%s%s", szFile, NaEXFUNC_FILE_EXT);
+      NaPrintLog("Loading '%s' ...\n", filepath);
+      so = dlopen(filepath, RTLD_LAZY);
+      if(NULL == so)
+	  NaPrintLog("Can't open shared object '%s': %s\n",
+		     filepath, dlerror());
+      delete[] filepath;
   }
   if(NULL == so){
-    NaPrintLog("Failed to open %s\n", dlerror());
-    return;
+      NaPrintLog("Failed to open external function %s\n", szFile);
+      return;
   }
 
   NaCreateExternFuncProto	create =
     (NaCreateExternFuncProto)dlsym(so, NaCreateExternFunc);
   if(NULL == create){
-    NaPrintLog("Bad external function object %s\n", dlerror());
+    NaPrintLog("Bad external function object %s\n", szFile);
     dlclose(so);
     so = NULL;
     return;
