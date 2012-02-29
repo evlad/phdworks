@@ -1,5 +1,14 @@
-all:	libpnna.a
+LIBROOT	=pnna
+DYNLIB	=lib$(LIBROOT).so
+STATLIB	=lib$(LIBROOT).a
 
+all:	$(STATLIB) $(DYNLIB)
+
+install:	$(DYNLIB)
+	install -d $(PREFIX)/lib
+	install -t $(PREFIX)/lib $(DYNLIB)
+
+LINK.so	=g++ -shared
 CXXFLAGS=$(FLAGS) -fPIC -I../Matrix.041 -I.
 
 SRCS	=NaConLaw.cpp \
@@ -89,23 +98,28 @@ SRCS	=NaConLaw.cpp \
 
 OBJS	=$(SRCS:.cpp=.o)
 
-TestNN:	TestNN.o libpnna.a
-	$(LINK.cpp) -o $@ TestNN.o libpnna.a ../Matrix.041/libmatrix.a -lm
+TestNN:	TestNN.o $(STATLIB)
+	$(LINK.cpp) -o $@ TestNN.o $(STATLIB) ../Matrix.041/libmatrix.a -lm
 
-TestTF:	TestTF.o libpnna.a
-	$(LINK.cpp) -o $@ TestTF.o libpnna.a ../Matrix.041/libmatrix.a -lm
+TestTF:	TestTF.o $(STATLIB)
+	$(LINK.cpp) -o $@ TestTF.o $(STATLIB) ../Matrix.041/libmatrix.a -lm
 
-TestCF:	TestCF.o libpnna.a
-	$(LINK.cpp) -o $@ TestCF.o libpnna.a ../Matrix.041/libmatrix.a -ldl -lm
+TestCF:	TestCF.o $(STATLIB)
+	$(LINK.cpp) -o $@ TestCF.o $(STATLIB) ../Matrix.041/libmatrix.a -ldl -lm
 
-TestQIO:	TestQIO.o libpnna.a
-	$(LINK.cpp) -o $@ TestQIO.o libpnna.a ../Matrix.041/libmatrix.a -lm
+TestQIO:	TestQIO.o $(STATLIB)
+	$(LINK.cpp) -o $@ TestQIO.o $(STATLIB) ../Matrix.041/libmatrix.a -lm
 
 clean:
 	-@rm -f $(OBJS)
 
-libpnna.a:	$(OBJS)
+$(DYNLIB):	$(OBJS)
+	$(LINK.so) $@ $(OBJS)
+
+$(STATLIB):	$(OBJS)
 	ar -ruv $@ $(OBJS)
 
 .cpp.o:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
+.PHONY:	all install clean

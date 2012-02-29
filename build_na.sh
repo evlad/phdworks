@@ -7,7 +7,7 @@
 targetdir=$HOME/nnacs
 mkdir -p $targetdir
 
-libdirs='Matrix.041 NeuArch'
+libdirs='Matrix.041 NeuArch NeuArch/ExFuncs'
 progdirs='NaTools dtools dcsloop dplantid dcontrp dcontrf noc_labs'
 
 echo "#######################"
@@ -15,11 +15,8 @@ echo "### Build libraries ###"
 echo "#######################"
 for dir in $libdirs
 do
-  cd $dir && {
-      echo "### $dir ###"
-      make PREFIX=$targetdir FLAGS="$FLAGS" $* all
-      cd ..
-  }
+  echo "### $dir ###"
+  make -C $dir PREFIX=$targetdir FLAGS="$FLAGS" $* install
 done
 
 echo "######################"
@@ -27,11 +24,8 @@ echo "### Build programs ###"
 echo "######################"
 for dir in $progdirs
 do
-  cd $dir && {
-      echo "### $dir ###"
-      make PREFIX=$targetdir FLAGS="$FLAGS" $* install
-      cd ..
-  }
+  echo "### $dir ###"
+  make -C $dir PREFIX=$targetdir FLAGS="$FLAGS" $* install
 done
 
 # End of file

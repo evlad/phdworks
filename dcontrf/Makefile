@@ -8,7 +8,8 @@ install:	$(PROGRAM)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
-LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
+LIBDEPS	=../NeuArch/libpnna.so ../Matrix.041/libmatrix.a
+LIBS	=-L ../NeuArch -L ../Matrix.041 -lpnna -lmatrix
 
 
 SRCS	=dcontrf.cpp \
@@ -20,7 +21,7 @@ OBJS	=dcontrf.o \
 
 NaNNOCL2.o: NaNNOCL2.h
 
-$(PROGRAM):	$(OBJS) $(LIBS)
+$(PROGRAM):	$(OBJS) $(LIBDEPS)
 	g++ -o $@ $(OBJS) $(LIBS) $(LDFLAGS) -ldl -lm
 
 clean:

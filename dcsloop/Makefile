@@ -8,7 +8,8 @@ install:	$(PROGRAM)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
-LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
+LIBDEPS	=../NeuArch/libpnna.so ../Matrix.041/libmatrix.a
+LIBS	=-L ../NeuArch -L ../Matrix.041 -lpnna -lmatrix
 
 
 SRCS	=dcsloop.cpp \
@@ -17,7 +18,7 @@ SRCS	=dcsloop.cpp \
 OBJS	=dcsloop.o \
 	NaCSM.o
 
-$(PROGRAM):	$(OBJS) $(LIBS)
+$(PROGRAM):	$(OBJS) $(LIBDEPS)
 	g++ -o $@ $(OBJS) $(LIBS) -ldl -lm
 
 clean:

@@ -1,3 +1,11 @@
+LIBROOT	=matrix
+STATLIB	=lib$(LIBROOT).a
+
+all:	$(STATLIB)
+
+# Prepare but do not install static libs
+install: all
+
 CFLAGS	=$(FLAGS) -fPIC
 
 SRCS	=matcreat.c \
@@ -28,10 +36,10 @@ OBJS	=matcreat.o \
 	matsubx.o \
 	mattran.o
 
-all:	libmatrix.a
-
 clean:
 	-@rm -f $(OBJS)
 
-libmatrix.a:	$(OBJS)
+$(STATLIB):	$(OBJS)
 	ar -ruv $@ $(OBJS)
+
+.PHONY:	all install clean

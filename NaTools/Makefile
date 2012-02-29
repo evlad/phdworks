@@ -10,33 +10,34 @@ CCC	=g++
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
-LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
+LIBDEPS	=../NeuArch/libpnna.so ../Matrix.041/libmatrix.a
+LIBS	=-L ../NeuArch -L ../Matrix.041 -lpnna -lmatrix -ldl -lm
 
-StatAn:	StatAn.o $(LIBS)
+StatAn:	StatAn.o $(LIBDEPS)
 	$(CCC) -o $@ $@.o $(LDFLAGS) $(LIBS)
 
-Distr2D:	Distr2D.o $(LIBS)
+Distr2D:	Distr2D.o $(LIBDEPS)
 	$(CCC) -o $@ Distr2D.o $(LDFLAGS) $(LIBS)
 
-Distr1D:	Distr1D.o $(LIBS)
+Distr1D:	Distr1D.o $(LIBDEPS)
 	$(CCC) -o $@ Distr1D.o $(LDFLAGS) $(LIBS)
 
-MakeNN:	MakeNN.o $(LIBS)
+MakeNN:	MakeNN.o $(LIBDEPS)
 	$(CCC) -o $@ MakeNN.o $(LDFLAGS) $(LIBS)
 
-ResetNN:	ResetNN.o $(LIBS)
+ResetNN:	ResetNN.o $(LIBDEPS)
 	$(CCC) -o $@ ResetNN.o $(LDFLAGS) $(LIBS)
 
-EvalNN:	EvalNN.o $(LIBS)
+EvalNN:	EvalNN.o $(LIBDEPS)
 	$(CCC) -o $@ EvalNN.o $(LDFLAGS) $(LIBS)
 
-TrainNN:	TrainNN.o $(LIBS)
+TrainNN:	TrainNN.o $(LIBDEPS)
 	$(CCC) -o $@ TrainNN.o $(LDFLAGS) $(LIBS)
 
-UNGen:	UNGen.o $(LIBS)
+UNGen:	UNGen.o $(LIBDEPS)
 	$(CCC) -o $@ UNGen.o $(LDFLAGS) $(LIBS)
 
-FileCvt:	FileCvt.o $(LIBS)
+FileCvt:	FileCvt.o $(LIBDEPS)
 	$(CCC) -o $@ FileCvt.o $(LDFLAGS) $(LIBS)
 
 clean:

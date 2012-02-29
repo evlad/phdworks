@@ -10,7 +10,8 @@ EXFUNCMODULES=deadzone.so \
 	dummy.so
 
 SYSLIBS	=-lm
-LIBS	=../libpnna.a ../../Matrix.041/libmatrix.a
+LIBDEPS	=../libpnna.so ../../Matrix.041/libmatrix.a
+LIBS	=-L .. -L ../../Matrix.041 -lpnna -lmatrix
 
 SRCS	=deadzone.cpp \
 	saturat.cpp \
@@ -40,46 +41,47 @@ CXXFLAGS=$(FLAGS) -fPIC -I../../Matrix.041 -I.. -I.
 all:	$(EXFUNCMODULES)
 
 install:	$(EXFUNCMODULES)
-	install -m 664 $(EXFUNCMODULES) $(PREFIX)/lib
+	install -d $(PREFIX)/lib
+	install -t $(PREFIX)/lib $(EXFUNCMODULES)
 
 deadzone_OBJS	=deadzone.o
-deadzone.so:	$(deadzone_OBJS) $(LIBS)
+deadzone.so:	$(deadzone_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(deadzone_OBJS) $(LIBS) $(SYSLIBS)
 
 saturat_OBJS	=saturat.o
-saturat.so:	$(saturat_OBJS) $(LIBS)
+saturat.so:	$(saturat_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(saturat_OBJS) $(LIBS) $(SYSLIBS)
 
 luft_OBJS	=luft.o
-luft.so:	$(luft_OBJS) $(LIBS)
+luft.so:	$(luft_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(luft_OBJS) $(LIBS) $(SYSLIBS)
 
 sine_OBJS	=sine.o
-sine.so:	$(sine_OBJS) $(LIBS)
+sine.so:	$(sine_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(sine_OBJS) $(LIBS) $(SYSLIBS)
 
 watertank_OBJS	=watertank.o
-watertank.so:	$(watertank_OBJS) $(LIBS)
+watertank.so:	$(watertank_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(watertank_OBJS) $(LIBS) $(SYSLIBS)
 
 polynomial_OBJS	=polynomial.o
-polynomial.so:	$(polynomial_OBJS) $(LIBS)
+polynomial.so:	$(polynomial_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(polynomial_OBJS) $(LIBS) $(SYSLIBS)
 
 cstr_OBJS	=cstr.o
-cstr.so:	$(cstr_OBJS) $(LIBS)
+cstr.so:	$(cstr_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(cstr_OBJS) $(LIBS) $(SYSLIBS)
 
 randmeander_OBJS	=randmeander.o
-randmeander.so:	$(randmeander_OBJS) $(LIBS)
+randmeander.so:	$(randmeander_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(randmeander_OBJS) $(LIBS) $(SYSLIBS)
 
 randunified_OBJS	=randunified.o
-randunified.so:	$(randunified_OBJS) $(LIBS)
+randunified.so:	$(randunified_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(randunified_OBJS) $(LIBS) $(SYSLIBS)
 
 dummy_OBJS	=dummy.o
-dummy.so:	$(dummy_OBJS) $(LIBS)
+dummy.so:	$(dummy_OBJS) $(LIBDEPS)
 	$(LINK.so) -o $@ $(dummy_OBJS) $(LIBS) $(SYSLIBS)
 
 clean:
@@ -87,6 +89,8 @@ clean:
 
 .cpp.o:
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
+.PHONY:	all install clean
 
 ###
 deadzone.o:	deadzone.h

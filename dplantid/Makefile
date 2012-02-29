@@ -9,7 +9,8 @@ install:	$(PROGRAMS)
 
 CXXFLAGS=$(FLAGS) -I../Matrix.041 -I../NeuArch
 
-LIBS	=../NeuArch/libpnna.a ../Matrix.041/libmatrix.a
+LIBDEPS	=../NeuArch/libpnna.so ../Matrix.041/libmatrix.a
+LIBS	=-L ../NeuArch -L ../Matrix.041 -lpnna -lmatrix
 
 
 SRCS	=dplantid.cpp \
@@ -26,11 +27,11 @@ dplantid_OBJS	=dplantid.o
 
 dnnplant_OBJS	=dnnplant.o
 
-dplantid:	$(dplantid_OBJS) $(common_OBJS) $(LIBS)
-	g++ -o $@ $(dplantid_OBJS) $(common_OBJS) $(LIBS) -lm
+dplantid:	$(dplantid_OBJS) $(common_OBJS) $(LIBDEPS)
+	g++ -o $@ $(dplantid_OBJS) $(common_OBJS) $(LIBS) -ldl -lm
 
-dnnplant:	$(dnnplant_OBJS) $(common_OBJS) $(LIBS)
-	g++ -o $@ $(dnnplant_OBJS) $(common_OBJS) $(LIBS) -lm
+dnnplant:	$(dnnplant_OBJS) $(common_OBJS) $(LIBDEPS)
+	g++ -o $@ $(dnnplant_OBJS) $(common_OBJS) $(LIBS) -ldl -lm
 
 clean:
 	-@rm -f $(OBJS) $(PROGRAMS)
