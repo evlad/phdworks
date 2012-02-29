@@ -1,0 +1,104 @@
+Index: eliseev_autoref.tex
+===================================================================
+--- eliseev_autoref.tex	(revision 799)
++++ eliseev_autoref.tex	(working copy)
+@@ -72,6 +72,33 @@
+ pdfproducer = {pdflatex}}
+ \language=4
+ 
++% Make smaller vertical space in several types of content:
++\usepackage{natbibspacing}
++\setlength{\bibspacing}{2pt}
++\usepackage{tweaklist}
++\renewcommand{\enumhook}{%
++  \setlength{\topsep}{0pt}%
++  \setlength{\parskip}{0pt}%
++  \setlength{\parsep}{0pt}%
++  \setlength{\itemsep}{1pt}%
++}
++\renewcommand{\itemhook}{%
++  \setlength{\topsep}{0pt}%
++  \setlength{\parskip}{0pt}%
++  \setlength{\parsep}{0pt}%
++  \setlength{\itemsep}{1pt}%
++}
++\makeatletter
++% Величина вертикального отступа перед параграфом.
++\renewcommand\beforeparagraph{0.25ex \@plus.3ex \@minus.2ex}
++% Величина вертикального отступа после параграфа.
++\renewcommand\afterparagraph{-0.5em}
++% Величина вертикального отступа перед заголовком секции.
++\providecommand\beforesection{-0.5ex \@plus -.5ex \@minus -.2ex}
++% Величина вертикального отступа после заголовка секции.
++\providecommand\aftersection{0.3ex \@plus.2ex}
++\makeatother
++
+ %\bibliographystyle{plain}
+ %  $ bibtex eliseev_phd.aux
+ 
+Index: common_intro.tex
+===================================================================
+--- common_intro.tex	(revision 776)
++++ common_intro.tex	(working copy)
+@@ -75,7 +75,6 @@
+ подвижным роботом и в учебном процессе.
+ \end{enumerate}
+ 
+-\newpage
+ \paragraph{Научная новизна}%
+ \begin{enumerate}
+ \item
+Index: autoref.tex
+===================================================================
+--- autoref.tex	(revision 801)
++++ autoref.tex	(working copy)
+@@ -248,18 +248,18 @@
+ \centering
+ \begin{tabular}{lclc}
+   \begin{sideways}
+-    {\hspace{0.7cm}\small Финальная ошибка управления}
++    {\hspace{0cm}\small Финальная ошибка управления}
+   \end{sideways}
+   &
+-  \includegraphics[width=0.45\textwidth,%
+-    totalheight=0.25\textheight]{noc_c_tr_mse_L}
++  \includegraphics[width=0.42\textwidth,%
++    totalheight=0.22\textheight]{noc_c_tr_mse_L}
+   &
+   \begin{sideways}
+-    {\hspace{2.6cm}\small Ошибка}
++    {\hspace{2cm}\small Ошибка}
+   \end{sideways}
+   &
+-  \includegraphics[width=0.45\textwidth,%
+-    totalheight=0.25\textheight]{noc_test_mse_L} \\
++  \includegraphics[width=0.42\textwidth,%
++    totalheight=0.22\textheight]{noc_test_mse_L} \\
+   & {\small Длина эпохи} & & {\small Длина эпохи} \\
+   & а) & & б)\\
+ \end{tabular}
+@@ -403,18 +403,18 @@
+   \centering
+   \begin{tabular}{rcrc}
+     \begin{sideways}
+-      {\hspace{1.3cm}\small Координата маяка}
++      {\hspace{1.1cm}\small Координата маяка}
+     \end{sideways}
+     &
+-    \includegraphics[width=0.45\textwidth,%
+-                     totalheight=0.25\textheight]{moby_pc_x0-9_explore}
++    \includegraphics[width=0.42\textwidth,%
++                     totalheight=0.22\textheight]{moby_pc_x0-9_explore}
+     &
+     \begin{sideways}
+-      {\hspace{1.3cm}\small Координата маяка}
++      {\hspace{1.1cm}\small Координата маяка}
+     \end{sideways}
+     &
+-    \includegraphics[width=0.45\textwidth,%
+-                     totalheight=0.25\textheight]{moby_fnnc_x01-06_test}\\
++    \includegraphics[width=0.42\textwidth,%
++                     totalheight=0.22\textheight]{moby_fnnc_x01-06_test}\\
+     & {\small Время, отсчеты} &
+     & {\small Время, отсчеты} \\
+     & а) & & б)
