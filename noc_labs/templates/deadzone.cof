@@ -3,7 +3,7 @@
 CustomFunction DeadZone1
 
 [CustomFunction DeadZone1]
-; title_label: Звено "зона нечувствительности"
+; title_label: Зона нечувствительности
 ;              .so/.dll depending the OS
 file    deadzone
 ; options_descr: Параметры:

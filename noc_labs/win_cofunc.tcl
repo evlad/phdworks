@@ -7,7 +7,7 @@ package require win_trfunc
 package require Tk
 
 
-# Take given name, find the template, extract and return the whole
+# Take given template filename, extract and return the whole
 # description in form of tagged list (good for array representation):
 # { options {0.5 2}
 #   file deadzone
@@ -16,8 +16,7 @@ package require Tk
 #   options_descr "Arbitrary multiline description text about options"
 #   initial_descr "Arbitrary multiline description text about initial vector"
 # }
-proc CuFuncParseTemplate {idname} {
-    set filepath [file join [TemplateDir] "$idname.cof"]
+proc CuFuncParseTemplateFile {filepath} {
     puts "template=$filepath"
     if {![file exists $filepath]} {
 	error "Template file $filepath was not found!"
@@ -249,6 +248,75 @@ proc CuFuncLoadConfig {ftext} {
     return [array get cupar]
 }
 
+
+proc CuFuncTypeSelectOk {w} {
+    global cufunc_selected
+    set cursel [$w.common.funclist curselection]
+    if {$cursel != {}} {
+	set cufunc_selected [$w.common.funclist get $cursel]
+    }
+    destroy $w
+}
+
+# Let's list all different custom functions defined in templates and
+# allow user to select one of them.
+# - p - parent widget
+# Returns: idname of selected function.
+proc CuFuncTypeSelect {p} {
+    set w $p.cufselect
+    catch {destroy $w}
+    toplevel $w
+
+    set width 0
+    set height 0
+    array set label2idname {}
+    foreach cufpath [glob -directory [TemplateDir] -nocomplain *.cof] {
+	array set cuf [CuFuncParseTemplateFile $cufpath]
+	set idname $cuf(file)
+	if {[info exists cuf(title_label)]} {
+	    set label $cuf(title_label)
+	} else {
+	    set label $idname
+	}
+	incr height
+	set len [string length $label]
+	if {$width < $len} {
+	    set width $len
+	}
+	set label2idname($label) $idname
+    }
+
+    # List item which is selected
+    global cufunc_selected
+    set cufunc_selected {}
+
+    wm title $w "Function selection"
+
+    frame $w.common
+    label $w.common.title -text "Выберите тип функции" -anchor w
+    listbox $w.common.funclist -width $width -height $height \
+	-selectmode single
+    foreach cuflabel [lsort [array names label2idname]] {
+	$w.common.funclist insert end $cuflabel
+    }
+    $w.common.funclist activate 0
+    pack $w.common.title $w.common.funclist -side top
+    pack $w.common -side top
+
+    frame $w.buttons
+    pack $w.buttons -side bottom -fill x -pady 2m
+    button $w.buttons.ok -text "OK" -command "CuFuncTypeSelectOk $w"
+    button $w.buttons.cancel -text "Отмена" -command "destroy $w"
+
+    pack $w.buttons.ok $w.buttons.cancel -side left -expand 1
+
+    tkwait window $w
+
+    if {$cufunc_selected == {}} {
+	return {}
+    }
+    return $label2idname($cufunc_selected)
+}
 
 # To test:
 #CoFuncParseFile testdata/test.cof
