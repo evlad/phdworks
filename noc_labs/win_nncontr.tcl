@@ -191,6 +191,15 @@ proc NNContrWindow {p sessionDir arref nnc_in nnc_out nncinputs} {
 
     grid $f.in_fcreate -row [incr i] -column 3
 
+
+    set i 2
+    foreach t {in_r in_e out_u} {
+	grid $f.${t}_range -row $i -column 1 -sticky e
+	grid $f.${t}_min -row $i -column 2 -sticky e
+	grid $f.${t}_max -row $i -column 3 -sticky w
+	incr i
+    }
+
     grid $f.in_fl $f.in_fe $f.in_fsel $f.in_fview
     grid $f.in_fl -sticky e
     grid $f.inp_l -sticky e
