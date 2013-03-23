@@ -73,7 +73,7 @@ NaDPlotFile::WriteDPlotFile ()
         nRest = CountOfRecord() - 5 * nBy5;
 
         // Number of values in the series
-        fprintf(fp, "%u\n", CountOfRecord());
+        fprintf(fp, "%lu\n", CountOfRecord());
         // Values in the series
         for(iSer = 0; iSer < nBy5; ++iSer){
             fprintf(fp, "%g,%g,%g,%g,%g\n", aVars[iVar][5*iSer+0],
@@ -87,7 +87,7 @@ NaDPlotFile::WriteDPlotFile ()
             fprintf(fp, "%g\n", aVars[iVar][5 * nBy5 + iSer]);
         }
         // Argument range for the series
-        fprintf(fp, "0,%d\n", CountOfRecord() - 1);
+        fprintf(fp, "0,%ld\n", CountOfRecord() - 1);
         // Type of curve -- solid line without knots
         fputs(" 1    0\n", fp);
         // Name of the series
