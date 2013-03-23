@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 
 project(noc_labs)
 
-#if(UNIX)
-#install(PROGRAMS nnacs DESTINATION bin)
-#endif(UNIX)
+if(UNIX)
+install(PROGRAMS nnacs.tcl DESTINATION bin RENAME nnacs)
+endif(UNIX)
 
-#if(WIN32)
+if(WIN32)
 install(PROGRAMS nnacs.tcl DESTINATION bin)
-#endif(WIN32)
+endif(WIN32)
 
 set(TCL_SCRIPTS data_file.tcl
 	draw_nn.tcl
