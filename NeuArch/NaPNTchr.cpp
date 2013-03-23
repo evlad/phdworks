@@ -8,7 +8,7 @@ static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 // Create node for Petri network
 NaPNTeacher::NaPNTeacher (const char* szNodeName)
-  : NaPetriNode(szNodeName), nAutoUpdateFreq(0), auProc(NULL),
+  : NaPetriNode(szNodeName), nAutoUpdateFreq(0), nLastUpdate(0), auProc(NULL),
     pnn(NULL), bpe(NULL), bLearn(true), 
   ////////////////
   // Connectors //
