@@ -111,9 +111,9 @@ proc dcontrfRun {p sessionDir parFile} {
 	return
     } else {
 	set exepath [file join [SystemDir] bin dcontrf]
-	if {![file executable $exepath]} {
-	    error "$exepath is not executable"
-	}
+	#if {![file executable $exepath]} {
+	#    error "$exepath is not executable"
+	#}
 
 	global dcontrf_params
 	set params {
@@ -125,7 +125,7 @@ proc dcontrfRun {p sessionDir parFile} {
 	    timeLabel "Epoch:"
 	}
 	set series { ControlMSE IdentifMSE }
-	set pipe [open "|$exepath $parFile" r]
+	set pipe [open "|\"$exepath\" \"$parFile\"" r]
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
@@ -256,8 +256,8 @@ proc dcontrfCreateWindow {p title sessionDir} {
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     entry $uc.e -textvariable dcontrf_params(comment) \
 	-width 30 -relief flat -font $titleFont -bg white
-    bind $uc.e <Return> "ParFileAssign $parFile dcontrf_params"
-    bind $uc.e <FocusOut> "ParFileAssign $parFile dcontrf_params"
+    bind $uc.e <Return> "ParFileAssign \"$parFile\" dcontrf_params"
+    bind $uc.e <FocusOut> "ParFileAssign \"$parFile\" dcontrf_params"
     pack $uc.l -side left
     pack $uc.e -side left -fill x -expand true
     pack $uc -side top -fill x -pady 2m
@@ -269,10 +269,10 @@ proc dcontrfCreateWindow {p title sessionDir} {
     ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcontrf"
 
     button $w.controls.run -text "Запустить" \
-	-command "dcontrfRun $w $curSessionDir $parFile"
+	-command "dcontrfRun $w \"$curSessionDir\" \"$parFile\""
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"NN-C in-loop training series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"NN-C in-loop training series plot\" \"[SessionDir $curSessionDir]\""
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcontrf_params {} ; destroy $w"
     pack $w.controls.print $w.controls.run $w.controls.log \
@@ -290,19 +290,19 @@ proc dcontrfCreateWindow {p title sessionDir} {
     # 5. Connect callbacks with visual parameters settings
     # (reference+noise, modelling length) including selection of tf
     $c.reference configure \
-	-command "SignalWindow $w $curSessionDir refer dcontrf_params input_kind in_r refer_tf stream_len ; ParFileAssign $parFile dcontrf_params"
+	-command "SignalWindow $w \"$curSessionDir\" refer dcontrf_params input_kind in_r refer_tf stream_len ; ParFileAssign \"$parFile\" dcontrf_params"
     $c.controller configure \
-	-command "ContrWindow $w $curSessionDir dcontrf_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign $parFile dcontrf_params"
+	-command "ContrWindow $w \"$curSessionDir\" dcontrf_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign \"$parFile\" dcontrf_params"
     $c.plant configure \
-	-command "PlantWindow $w $curSessionDir dcontrf_params linplant_tf ; ParFileAssign $parFile dcontrf_params"
+	-command "PlantWindow $w \"$curSessionDir\" dcontrf_params linplant_tf ; ParFileAssign \"$parFile\" dcontrf_params"
     $c.noise configure \
-	-command "SignalWindow $w $curSessionDir noise dcontrf_params input_kind in_n noise_tf stream_len ; ParFileAssign $parFile dcontrf_params"
+	-command "SignalWindow $w \"$curSessionDir\" noise dcontrf_params input_kind in_n noise_tf stream_len ; ParFileAssign \"$parFile\" dcontrf_params"
     $c.teacher configure \
-	-command "NNTeacherParWindow $w dcontrf_params \$OnlineNNTeacherPar; ParFileAssign $parFile dcontrf_params"
+	-command "NNTeacherParWindow $w dcontrf_params \$OnlineNNTeacherPar; ParFileAssign \"$parFile\" dcontrf_params"
     $c.controller configure \
-	-command "NNContrWindow $w $curSessionDir dcontrf_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrf_params"
+	-command "NNContrWindow $w \"$curSessionDir\" dcontrf_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign \"$parFile\" dcontrf_params"
     $c.nnplant configure \
-	-command "NNPlantWindow $w $curSessionDir dcontrf_params in_nnp_file {}; ParFileAssign $parFile dcontrf_params"
+	-command "NNPlantWindow $w \"$curSessionDir\" dcontrf_params in_nnp_file {}; ParFileAssign \"$parFile\" dcontrf_params"
 
     # Assign name of check point output files
     foreach {chkpnt parname} {
@@ -314,7 +314,7 @@ proc dcontrfCreateWindow {p title sessionDir} {
 	checkpoint_nny out_nn_y} {
 	set label [$c.$chkpnt cget -text]
 	$c.$chkpnt configure \
-	    -command "dcontrfCheckPoint $w $chkpnt $curSessionDir $dcontrf_params($parname) \{$label\}"
+	    -command "dcontrfCheckPoint $w $chkpnt \"$curSessionDir\" $dcontrf_params($parname) \{$label\}"
     }
 
     # 

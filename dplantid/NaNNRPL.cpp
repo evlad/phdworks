@@ -92,7 +92,7 @@ NaNNRegrPlantLearn::link_net ()
     }
 }
 
-
+#ifndef WIN32
 //---------------------------------------------------------------------------
 // Handle signals during neural network training
 void
@@ -100,7 +100,7 @@ NaNNRegrPlantLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
 {
   bUserBreak = true;
 }
-
+#endif
 
 //---------------------------------------------------------------------------
 // Run the network

@@ -101,9 +101,9 @@ proc dcontrpRun {p sessionDir parFile} {
 	return
     } else {
 	set exepath [file join [SystemDir] bin dcontrp]
-	if {![file executable $exepath]} {
-	    error "$exepath is not executable"
-	}
+	#if {![file executable $exepath]} {
+	#    error "$exepath is not executable"
+	#}
 
 	global dcontrp_params
 	set params {
@@ -115,7 +115,7 @@ proc dcontrpRun {p sessionDir parFile} {
 	    timeLabel "Epoch:"
 	}
 	set series { LearnMSE TestMSE EtaHidden EtaOutput }
-	set pipe [open "|$exepath $parFile" r]
+	set pipe [open "|\"$exepath\" \"$parFile\"" r]
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
@@ -132,7 +132,7 @@ proc dcontrpRun {p sessionDir parFile} {
 	RtSeriesWindow $p "NN training" "dcontrpReader $pipe" $params $series
 	catch {close $pipe}
 
-	#catch {exec  $parFile >/dev/null} errCode2
+	#catch {exec  $parFile >$NullDev} errCode2
 	#if {$errCode2 != ""} {
 	#    error $errCode2
 	#}
@@ -251,8 +251,8 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     entry $uc.e -textvariable dcontrp_params(comment) \
 	-width 30 -relief flat -font $titleFont -bg white
-    bind $uc.e <Return> "ParFileAssign $parFile dcontrp_params"
-    bind $uc.e <FocusOut> "ParFileAssign $parFile dcontrp_params"
+    bind $uc.e <Return> "ParFileAssign \"$parFile\" dcontrp_params"
+    bind $uc.e <FocusOut> "ParFileAssign \"$parFile\" dcontrp_params"
     pack $uc.l -side left
     pack $uc.e -side left -fill x -expand true
     pack $uc -side top -fill x -pady 2m
@@ -264,10 +264,10 @@ proc dcontrpCreateWindow {p title sessionDir} {
     ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcontrp"
 
     button $w.controls.run -text "Запустить" \
-	-command "dcontrpRun $w $curSessionDir $parFile"
+	-command "dcontrpRun $w \"$curSessionDir\" \"$parFile\""
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"NN-C out-of-loop training series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"NN-C out-of-loop training series plot\" \"[SessionDir $curSessionDir]\""
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcontrp_params {} ; destroy $w"
     pack $w.controls.print $w.controls.run $w.controls.log \
@@ -291,16 +291,16 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	test_error test_in_e
 	test_control test_in_u } {
 	$c.$dataSource configure \
-	    -command "dcontrpDataFile $w $curSessionDir dcontrp_params $parName ; ParFileAssign $parFile dcontrp_params"
+	    -command "dcontrpDataFile $w \"$curSessionDir\" dcontrp_params $parName ; ParFileAssign \"$parFile\" dcontrp_params"
     }
 
     $c.learn_nnc configure \
-	-command "NNContrWindow $w $curSessionDir dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrp_params"
+	-command "NNContrWindow $w \"$curSessionDir\" dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign \"$parFile\" dcontrp_params"
     $c.test_nnc configure \
-	-command "NNContrWindow $w $curSessionDir dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign $parFile dcontrp_params"
+	-command "NNContrWindow $w \"$curSessionDir\" dcontrp_params in_nnc_file out_nnc_file nnc_mode; ParFileAssign \"$parFile\" dcontrp_params"
 
     $c.learn_training configure \
-	-command "NNTeacherParWindow $w dcontrp_params \$OfflineNNTeacherPar; ParFileAssign $parFile dcontrp_params"
+	-command "NNTeacherParWindow $w dcontrp_params \$OfflineNNTeacherPar; ParFileAssign \"$parFile\" dcontrp_params"
 
     # Assign name of check point output files
     foreach {chkpnt parname} {
@@ -322,7 +322,7 @@ proc dcontrpCreateWindow {p title sessionDir} {
 	    }
 	}
 	$c.$chkpnt configure \
-	    -command "dcontrpCheckPoint $w $chkpnt $curSessionDir dcontrp_params $parname \{$label\}"
+	    -command "dcontrpCheckPoint $w $chkpnt \"$curSessionDir\" dcontrp_params $parname \{$label\}"
     }
 
     # 

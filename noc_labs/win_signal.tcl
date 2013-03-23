@@ -48,17 +48,17 @@ proc SignalWindowModified {w entry} {
 # Call file transfer function editor
 proc SignalEditFilter {p sessionDir title fileRelPath} {
     puts "SignalEditFilter: $sessionDir $fileRelPath"
-    set fileName [SessionAbsPath $sessionDir $fileRelPath]
-    if {![file exists $fileName]} {
+    set fileName [SessionAbsPath "$sessionDir" "$fileRelPath"]
+    if {![file exists "$fileName"]} {
 	# New file must be created; let's ask about its type
 	# Let's determine type of the file
-	switch -glob -- $fileName {
+	switch -glob -- "$fileName" {
 	    *.tf {
 		set ftype trfunc
 		puts "SignalEditFilter:TODO - new .tf file"
-		set idname [TrFuncTypeSelect $p]
+		set idname [TrFuncSelect $p]
 		if {$idname != {}} {
-		    TrFuncUseTemplate $idname $fileName
+		    TrFuncUseTemplate $idname "$fileName"
 		}
 	    }
 	    default {
@@ -70,9 +70,9 @@ proc SignalEditFilter {p sessionDir title fileRelPath} {
 	# Now it's possible to edit the file
     }
     # Let's determine type of the file
-    switch -glob -- $fileName {
+    switch -glob -- "$fileName" {
 	*.tf {
-	    set descr [TrFuncParseFile $fileName]
+	    set descr [TrFuncParseFile "$fileName"]
 	    if {[llength $descr] == 4 &&
 		[lindex $descr 0] != {} && [lindex $descr 1] != {} &&
 		[lindex $descr 2] != {} && [lindex $descr 3] != {}} {
@@ -98,7 +98,7 @@ proc SignalEditFilter {p sessionDir title fileRelPath} {
     switch -exact -- $ftype {
 	trfunc {
 	    array set params {}
-	    set fd [open $fileName]
+	    set fd [open "$fileName"]
 	    set ftext [split [read $fd] \n]
 	    close $fd
 	    set idname [lindex $descr 0]
@@ -231,18 +231,18 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
     label $f.data_fl -text "Имя файла:"
     entry $f.data_fe -width 30 -textvariable var_datafile_$signal
     button $f.data_fsel -text "Выбор..." \
-	-command "SignalSelectDataFile $w $sessionDir var_datafile_$signal"
+	-command "SignalSelectDataFile $w \"$sessionDir\" var_datafile_$signal"
 
     set m $f.data_foper.m
     menubutton $f.data_foper -text "Операции" \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     $m add command -label "Показать..." \
-	-command "SignalViewDataFile $w $sessionDir var_datafile_$signal"
+	-command "SignalViewDataFile $w \"$sessionDir\" var_datafile_$signal"
     $m add command -label "Создать..." \
-	-command "SignalGenWindow $w $sessionDir var_datafile_$signal"
+	-command "SignalGenWindow $w \"$sessionDir\" var_datafile_$signal"
     $m add command -label "Статистика..." \
-	-command "SignalStatAnDataFile $w $sessionDir var_datafile_$signal"
+	-command "SignalStatAnDataFile $w \"$sessionDir\" var_datafile_$signal"
 
 #SignalViewDataFile $w $sessionDir var_datafile_$signal
 
@@ -256,9 +256,9 @@ proc SignalWindow {p sessionDir signal arref sigsrc datafile filtfile filtlen} {
     label $f.filt_fl -text "Имя файла:" -anchor w
     entry $f.filt_fe -width 30 -textvariable var_filtfile_$signal
     button $f.filt_fsel -text "Выбор..." \
-	-command "SignalSelectFiltFile $w $sessionDir var_filtfile_$signal"
+	-command "SignalSelectFiltFile $w \"$sessionDir\" var_filtfile_$signal"
     button $f.filt_fedit -text "Изменить..." \
-	-command "SignalEditFilter $w $sessionDir [set var_filtfile_$signal] [set var_filtfile_$signal]"
+	-command "SignalEditFilter $w \"$sessionDir\" [set var_filtfile_$signal] [set var_filtfile_$signal]"
     label $f.filt_ll -text "Длина ряда:" -anchor w
     entry $f.filt_le -width 8 -textvariable var_filtlen
 

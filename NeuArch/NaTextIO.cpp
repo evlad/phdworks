@@ -18,10 +18,10 @@ NaTextStreamFile::NaTextStreamFile (const char* fname,
     switch(eFileMode){
 
     case fmReadOnly:
-        fp = fopen(szFileName, "r");
+        fp = fopen(szFileName, "rb"); // rt
         break;
     case fmCreateEmpty:
-        fp = fopen(szFileName, "w");
+        fp = fopen(szFileName, "wb"); // wt
         break;
     }
 

@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -19,7 +19,7 @@ static char rcsid[] = "$Id$";
  * jacobian estimation.  Output contains Delta u(k), Delta y(k) and
  * Jacobian(k)=Delta u(k)/Delta y(k)
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc != 3)
     {

@@ -36,7 +36,7 @@ handle_sigint (int signo)
    argv[5] - test output       {"-" or absent means learning output}
    argv[6] - NN file (target)  {optional}
 */
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc < 4)
     {

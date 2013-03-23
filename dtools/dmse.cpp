@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -19,7 +19,7 @@ static char rcsid[] = "$Id$";
  * Read discrete signal and observed output and compute continous mean
  * squared error signal.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc != 2 && argc != 3)
     {

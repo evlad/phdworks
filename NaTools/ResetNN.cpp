@@ -1,12 +1,8 @@
 
-#ifndef unix
-#pragma hdrstop
-#include <condefs.h>
-#endif /* unix */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaMath.h>
 #include <NaLogFil.h>
@@ -21,11 +17,6 @@
 // (C)opyright by Eliseev Vladimir
 //---------------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------------
-#ifndef unix
-USELIB("NeuArch.lib");
-#endif /* unix */
 
 //---------------------------------------------------------------------------
 #pragma argsused

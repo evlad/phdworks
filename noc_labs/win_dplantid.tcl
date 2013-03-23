@@ -110,9 +110,9 @@ proc dplantidRun {p sessionDir parFile} {
 	return
     } else {
 	set exepath [file join [SystemDir] bin dplantid]
-	if {![file executable $exepath]} {
-	    error "$exepath is not executable"
-	}
+	#if {![file executable $exepath]} {
+	#    error "$exepath is not executable"
+	#}
 
 	global dplantid_params
 	set params {
@@ -124,7 +124,7 @@ proc dplantidRun {p sessionDir parFile} {
 	    timeLabel "Epoch:"
 	}
 	set series { LearnMSE TestMSE EtaHidden EtaOutput }
-	set pipe [open "|$exepath $parFile" r]
+	set pipe [open "|\"$exepath\" \"$parFile\"" r]
 	fconfigure $pipe -buffering line
 
 	set pipepar [fconfigure $pipe]
@@ -141,7 +141,7 @@ proc dplantidRun {p sessionDir parFile} {
 	RtSeriesWindow $p "NN training" "dplantidReader $pipe" $params $series
 	catch {close $pipe}
 
-	#catch {exec  $parFile >/dev/null} errCode2
+	#catch {exec  $parFile >$NullDev} errCode2
 	#if {$errCode2 != ""} {
 	#    error $errCode2
 	#}
@@ -260,8 +260,8 @@ proc dplantidCreateWindow {p title sessionDir} {
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     entry $uc.e -textvariable dplantid_params(comment) \
 	-width 30 -relief flat -font $titleFont -bg white
-    bind $uc.e <Return> "ParFileAssign $parFile dplantid_params"
-    bind $uc.e <FocusOut> "ParFileAssign $parFile dplantid_params"
+    bind $uc.e <Return> "ParFileAssign \"$parFile\" dplantid_params"
+    bind $uc.e <FocusOut> "ParFileAssign \"$parFile\" dplantid_params"
     pack $uc.l -side left
     pack $uc.e -side left -fill x -expand true
     pack $uc -side top -fill x -pady 2m
@@ -274,10 +274,10 @@ proc dplantidCreateWindow {p title sessionDir} {
     ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dplantid"
 
     button $w.controls.run -text "Запустить" \
-	-command "dplantidRun $w $curSessionDir $parFile"
+	-command "dplantidRun $w \"$curSessionDir\" \"$parFile\""
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"NN-P out-of-loop training series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"NN-P out-of-loop training series plot\" \"[SessionDir $curSessionDir]\""
     button $w.controls.close -text "Закрыть" \
 	-command "array set dplantid_params {} ; destroy $w"
     pack $w.controls.print $w.controls.run $w.controls.log \
@@ -299,17 +299,17 @@ proc dplantidCreateWindow {p title sessionDir} {
 	test_control test_in_u
 	test_observ test_in_y } {
 	$c.$dataSource configure \
-	    -command "dplantidDataFile $w $curSessionDir dplantid_params $parName ; ParFileAssign $parFile dplantid_params"
+	    -command "dplantidDataFile $w $curSessionDir dplantid_params $parName ; ParFileAssign \"$parFile\" dplantid_params"
     }
 
     # TODO: Change to NNPlantWindow
     $c.learn_nnp configure \
-	-command "NNPlantWindow $w $curSessionDir dplantid_params in_nnp_file out_nnp_file; ParFileAssign $parFile dplantid_params"
+	-command "NNPlantWindow $w \"$curSessionDir\" dplantid_params in_nnp_file out_nnp_file; ParFileAssign \"$parFile\" dplantid_params"
     $c.test_nnp configure \
-	-command "NNPlantWindow $w $curSessionDir dplantid_params in_nnp_file out_nnp_file; ParFileAssign $parFile dplantid_params"
+	-command "NNPlantWindow $w \"$curSessionDir\" dplantid_params in_nnp_file out_nnp_file; ParFileAssign \"$parFile\" dplantid_params"
 
     $c.learn_training configure \
-	-command "NNTeacherParWindow $w dplantid_params \$OfflineNNTeacherPar; ParFileAssign $parFile dplantid_params"
+	-command "NNTeacherParWindow $w dplantid_params \$OfflineNNTeacherPar; ParFileAssign \"$parFile\" dplantid_params"
 
     # Assign name of check point output files
     foreach {chkpnt parname} {
@@ -331,7 +331,7 @@ proc dplantidCreateWindow {p title sessionDir} {
 	    }
 	}
 	$c.$chkpnt configure \
-	    -command "dplantidCheckPoint $w $chkpnt $curSessionDir dplantid_params $parname \{$label\}"
+	    -command "dplantidCheckPoint $w $chkpnt \"$curSessionDir\" dplantid_params $parname \{$label\}"
     }
 
     # 

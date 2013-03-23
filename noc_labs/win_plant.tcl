@@ -91,18 +91,18 @@ proc PlantWindow {p sessionDir arref plantfile} {
     label $f.lin_fl -text "Имя файла:" -anchor w
     entry $f.lin_fe -width 30 -textvariable var_plantfile
     button $f.lin_fsel -text "Выбор..." \
-	-command "PlantSelectTrFile $w $sessionDir var_plantfile"
+	-command "PlantSelectTrFile $w \"$sessionDir\" var_plantfile"
 
     set m $f.lin_fedit.m
     menubutton $f.lin_fedit -text "Изменить..."  -underline 0 \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     $m add command -label "Тип звена" \
-	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile true"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_plantfile\" $var_plantfile true"
     $m add command -label "Параметры" \
-	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_plantfile\" $var_plantfile"
     $m add command -label "Как текст" \
-	-command "TrFuncEdit $w $sessionDir \"$var_plantfile\" $var_plantfile false true"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_plantfile\" $var_plantfile false true"
 
 
     grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit

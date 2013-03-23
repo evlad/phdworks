@@ -6,6 +6,14 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WIN32
+#include <malloc.h>
+#define strcasecmp _stricmp
+#define alloca _alloca
+#else
+#include <alloca.h>
+#endif
+
 #include "NaPNStat.h"
 
 

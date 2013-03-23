@@ -5,6 +5,9 @@
 #ifndef NaMathH
 #define NaMathH
 
+// Especially to get defined M_PI for MSVC
+#define _USE_MATH_DEFINES
+
 #include <math.h>
 
 #include <NaGenerl.h>

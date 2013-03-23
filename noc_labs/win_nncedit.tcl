@@ -5,12 +5,7 @@ package provide win_nncedit 1.0
 package require Tk
 package require draw_nn
 
-
-# filepath - where to create neural network file;
-# nncinputs - "e+r", "e+de", "e+e+...";
-# postproc - name of the post processing procedure with passed file
-#   path and nncinputs.
-proc NNCEditSave {w filepath nncinputs postproc} {
+proc NNCEditSave {w filepath nncinputs} {
     set f $w.nnarch
     upvar #0 $f.inputrep_var inputrep
     upvar #0 $f.outputrep_var outputrep
@@ -35,13 +30,16 @@ proc NNCEditSave {w filepath nncinputs postproc} {
 	eval lappend args \$numneurons$iL
     }
     puts "Run MakeNN $args"
-    catch {eval exec [file join [SystemDir] bin MakeNN] $args >/dev/null} errCode
+    global NullDev
+    catch {eval exec [file join [SystemDir] bin MakeNN] $args >$NullDev} errCode
     if {$errCode != ""} {
 	error $errCode
     }
-    if {[llength [info procs $postproc]] == 1} {
-	$postproc $filepath $nncinputs
-    }
+}
+
+proc NNCEditOk {w filepath nncinputs} {
+    NNCEditSave $w $filepath $nncinputs
+    destroy $w
 }
 
 proc NNCEditDoResize {w nncinputs} {
@@ -68,15 +66,13 @@ proc NNCEditDoPlot {w nncinputs} {
     upvar #0 $f.inputlabels_var inputlabels
     upvar #0 $f.outputlabels_var outputlabels
 
-    #puts "NNCEditDoPlot: $inputrep $outputrep $numlayers $numneurons1 $numneurons2 $numneurons3 $inputlabels $outputlabels"
-
     # Common output of any neural controller
     set outputlabels {"u'(k)"}
 
     set inputs [expr $inputrep + $outputrep]
     switch -exact $nncinputs {
 	"e+r" {
-	    set inputlabels {"r(k)" "e(k)"}
+	    set inputlabels {"e(k)" "r(k)"}
 	}
 	"e+de" {
 	    set inputlabels {"e(k)" "Δe(k)"}
@@ -153,9 +149,7 @@ proc NNCEditHiddenLayersChange {w p nncinputs} {
 # title - text to show
 # filepath - file to store neural network
 # nncinputs - "e+r", "e+de", "e+e+..."
-# postproc - name of the post processing procedure with passed file
-#   path and nncinputs.
-proc NNCEditWindow {p title filepath nncinputs postproc} {
+proc NNCEditWindow {p title filepath nncinputs} {
     set w $p.textedit
     catch {destroy $w}
     toplevel $w
@@ -163,8 +157,8 @@ proc NNCEditWindow {p title filepath nncinputs postproc} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "NNCEditSave $w $filepath $nncinputs $postproc ; destroy $w"
-    button $w.buttons.save -text "Сохранить" -command "NNCEditSave $w $filepath $nncinputs $postproc"
+    button $w.buttons.ok -text "OK" -command "NNCEditOk $w \"$filepath\" $nncinputs"
+    button $w.buttons.save -text "Сохранить" -command "NNCEditSave $w \"$filepath\" $nncinputs"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
@@ -178,27 +172,9 @@ proc NNCEditWindow {p title filepath nncinputs postproc} {
 
     set nnarch {}
     if {[file exists $filepath]} {
-	set nnarch [NNReadFile $filepath]
-	array set nnar $nnarch
-	set nnarch [NNSimpleArch $nnarch]
-	puts "nnarch: $nnarch"
-
-	set $f.inputrep_var [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat)]
-	set $f.outputrep_var $nnar(nOutputsRepeat)
-	set $f.numlayers_var $nnar(nHidLayers)
-	foreach i {0 1 2} {
-	    if {[llength $nnar(nHidNeurons)] > $i} {
-		set n [lindex $nnar(nHidNeurons) $i]
-	    } else {
-		set n 5
-	    }
-	    incr i
-	    set $f.numneurons${i}_var $n
-	}
-	set $f.outputfunc_var $nnar(eLastActFunc)
+	set nnarch [ReadNeuralNetFile $filepath]
     }
     if {$nnarch == {}} {
-	puts "path $filepath does not exist"
 	# Default parameters
 	set $f.inputrep_var 2
 	set $f.outputrep_var 0

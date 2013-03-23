@@ -1,9 +1,4 @@
 
-#ifndef unix
-#pragma hdrstop
-#include <condefs.h>
-#endif /* unix */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -12,13 +7,6 @@
 #include <NaExcept.h>
 #include <NaDataIO.h>
 #include <kbdif.h>
-
-//---------------------------------------------------------------------------
-#ifndef unix
-USELIB("..\NeuArch\NeuArch.lib");
-USELIB("..\StaDev\stadev32.lib");
-#endif /* unix */
-//---------------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------------

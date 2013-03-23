@@ -5,7 +5,7 @@ static char rcsid[] = "$Id";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -84,7 +84,7 @@ write_output (NaDataFile* df, unsigned vec_len, const NaReal* vec)
 /***********************************************************************
  * Test neural network on array of preset data.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc < 2 || argc > 4)
     {

@@ -151,12 +151,17 @@ protected:
 };
 
 #include <NaTextIO.h>
-#if defined(WIN32)
+#if defined(do_not_use_WIN32)
 #include <NaStaIO.h>
 #endif /* WIN32 */
 #include <NaPlotIO.h>
 #include <NaBinrIO.h>
 
+#ifdef WIN32
+#define DEV_NULL	"NUL"
+#else
+#define DEV_NULL	"/dev/null"
+#endif
 
 // Create object (NaDataFile descendant) for reading given data file
 NaDataFile* OpenInputDataFile (const char* szPath);

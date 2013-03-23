@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 		csm.statan_cerr.set_floating_gap(atoi(par("cerr_avg_base")));
 	    }
 	} else {
-	    csm.cerr_fout.set_output_filename("/dev/null");
+	    csm.cerr_fout.set_output_filename(DEV_NULL);
 	}
 
 	if(par.CheckParam("tdg_stpardet_len") &&
@@ -232,11 +232,11 @@ int main(int argc, char **argv)
 	    if(par.CheckParam("tdg_u"))
 	      csm.tdg_u.set_output_filename(par("tdg_u"));
 	    else
-	      csm.tdg_u.set_output_filename("/dev/null");
+	      csm.tdg_u.set_output_filename(DEV_NULL);
 	    if(par.CheckParam("tdg_ny"))
 	      csm.tdg_ny.set_output_filename(par("tdg_ny"));
 	    else
-	      csm.tdg_ny.set_output_filename("/dev/null");
+	      csm.tdg_ny.set_output_filename(DEV_NULL);
 	  }
 	else
 	  csm.set_tdg_flag(false);
@@ -280,7 +280,7 @@ int main(int argc, char **argv)
 			.set_floating_gap(atoi(par("iderr_avg_base")));
 		}
 	    } else {
-		csm.iderr_fout.set_output_filename("/dev/null");
+		csm.iderr_fout.set_output_filename(DEV_NULL);
 	    }
 
 	    // Get NNP delays

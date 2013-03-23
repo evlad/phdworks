@@ -1,17 +1,15 @@
 
-#ifndef unix
-#pragma hdrstop
-#include <condefs.h>
-#endif /* unix */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#if defined(__MSDOS__) || defined(__WIN32__)
+#if defined(__MSDOS__) || defined(__WIN32__) || defined(WIN32)
 #include <io.h>     /* for access() */
+#   define access _access
 #   ifndef F_OK
 #       define F_OK        0
 #   endif /* F_OK */
+#else
+#include <unistd.h>
 #endif /* defined(__MSDOS__) || defined(__WIN32__) */
 
 #include <NaMath.h>
@@ -27,12 +25,12 @@
 // (C)opyright by Eliseev Vladimir
 //---------------------------------------------------------------------------
 
-
-//---------------------------------------------------------------------------
-#ifndef unix
-USELIB("NeuArch.lib");
-#endif /* unix */
-
+/* #ifdef WIN32
+#include <io.h>
+#define access _access
+#define F_OK 0
+#endif
+ */
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)

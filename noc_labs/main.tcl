@@ -13,6 +13,7 @@ package require win_dcontrf
 #package require win_series
 
 set ScriptsDir [file join [SystemDir] scripts]
+#set ScriptsDir {Z:\Home\nnacs-1.3b_win\noc_labs}
 option readfile [file join $ScriptsDir nnacs.ad]
 
 set menuContent {
@@ -29,7 +30,7 @@ proc MenuProg1 {w label} {
     set sessionDir [NewSession $w "dcsloop.par" "$title"]
     puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
-	dcsloopCreateWindow $w "$title" $sessionDir
+	dcsloopCreateWindow $w "$title" "$sessionDir"
     }
 }
 
@@ -40,7 +41,7 @@ proc MenuProg2 {w label} {
     set sessionDir [NewSession $w "dcontrp.par" "$title"]
     puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
-	dcontrpCreateWindow $w "$title" $sessionDir
+	dcontrpCreateWindow $w "$title" "$sessionDir"
     }
 }
 
@@ -51,7 +52,7 @@ proc MenuProg3 {w label} {
     set sessionDir [NewSession $w "dplantid.par" "$title"]
     puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
-	dplantidCreateWindow $w "$title" $sessionDir
+	dplantidCreateWindow $w "$title" "$sessionDir"
     }
 }
 
@@ -62,7 +63,7 @@ proc MenuProg4 {w label} {
     set sessionDir [NewSession $w "dcontrf.par" "$title"]
     puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
-	dcontrfCreateWindow $w "$title" $sessionDir
+	dcontrfCreateWindow $w "$title" "$sessionDir"
     }
 }
 
@@ -85,7 +86,9 @@ foreach {label title} $menuContent {
 #pack [button $w.lab${i}_button -text "$text" \
 #	  -command "seriesCreateWindow \"$w\" \"$text\""] \
 #    -fill x -side top -expand yes -pady 2
-
+#button $w.russian_button -text "\u0420\u0443\u0441\u0441\u043A\u0438\u0439 \u044F\u0437\u044B\u043A" \
+#		  -font {Helvetica 12}
+#pack $w.russian_button -fill x -side top -expand yes -pady 2
 button $w.quit_button -text "Выход" -command { removeTemporalFiles ; exit }
 pack $w.quit_button -side top -expand yes -pady 2
 

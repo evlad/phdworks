@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -17,7 +17,7 @@ static char rcsid[] = "$Id$";
 /***********************************************************************
  * Read discrete signals and prints mean value of them to output.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc == 1)
     {

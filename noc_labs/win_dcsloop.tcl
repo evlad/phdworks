@@ -59,7 +59,8 @@ proc dcsloopRun {p sessionDir parFile} {
 	return
     }
 
-    catch {exec [file join [SystemDir] bin dcsloop] $parFile >/dev/null} errCode2
+    global NullDev
+    catch {exec [file join [SystemDir] bin dcsloop] $parFile >$NullDev} errCode2
     # 9. Refresh state of controls
     # TODO
 
@@ -158,8 +159,8 @@ proc dcsloopCreateWindow {p title sessionDir} {
 	-justify left -anchor nw -fg DarkGreen -font $titleFont
     entry $uc.e -textvariable dcsloop_params(comment) \
 	-width 30 -relief flat -font $titleFont -bg white
-    bind $uc.e <Return> "ParFileAssign $parFile dcsloop_params"
-    bind $uc.e <FocusOut> "ParFileAssign $parFile dcsloop_params"
+    bind $uc.e <Return> "ParFileAssign \"$parFile\" dcsloop_params"
+    bind $uc.e <FocusOut> "ParFileAssign \"$parFile\" dcsloop_params"
     pack $uc.l -side left
     pack $uc.e -side left -fill x -expand true
     pack $uc -side top -fill x -pady 2m
@@ -172,10 +173,10 @@ proc dcsloopCreateWindow {p title sessionDir} {
     ScreenshotButton $w $w.controls.print $c [SessionDir $curSessionDir] "dcsloop"
 
     button $w.controls.run -text "Запустить" \
-	-command "dcsloopRun $w $curSessionDir $parFile"
+	-command "dcsloopRun $w \"$curSessionDir\" \"$parFile\""
     button $w.controls.log -text "Протокол"
     button $w.controls.series -text "Графики" \
-	-command "GrSeriesWindow $w \"Control loop modeling series plot\" [SessionDir $curSessionDir]"
+	-command "GrSeriesWindow $w \"Control loop modeling series plot\" \"[SessionDir $curSessionDir]\""
     button $w.controls.close -text "Закрыть" \
 	-command "array set dcsloop_params {} ; destroy $w"
     pack $w.controls.print $w.controls.run $w.controls.log \
@@ -198,13 +199,13 @@ proc dcsloopCreateWindow {p title sessionDir} {
     # 5. Connect callbacks with visual parameters settings
     # (reference+noise, modelling length) including selection of tf
     $c.reference configure \
-	-command "SignalWindow $w $curSessionDir refer dcsloop_params input_kind in_r refer_tf stream_len ; ParFileAssign $parFile dcsloop_params"
+	-command "SignalWindow $w \"$curSessionDir\" refer dcsloop_params input_kind in_r refer_tf stream_len ; ParFileAssign \"$parFile\" dcsloop_params"
     $c.controller configure \
-	-command "ContrWindow $w $curSessionDir dcsloop_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign $parFile dcsloop_params"
+	-command "ContrWindow $w \"$curSessionDir\" dcsloop_params contr_kind lincontr_tf nncontr nnc_mode ; ParFileAssign \"$parFile\" dcsloop_params"
     $c.plant configure \
-	-command "PlantWindow $w $curSessionDir dcsloop_params linplant_tf ; ParFileAssign $parFile dcsloop_params"
+	-command "PlantWindow $w \"$curSessionDir\" dcsloop_params linplant_tf ; ParFileAssign \"$parFile\" dcsloop_params"
     $c.noise configure \
-	-command "SignalWindow $w $curSessionDir noise dcsloop_params input_kind in_n noise_tf stream_len ; ParFileAssign $parFile dcsloop_params"
+	-command "SignalWindow $w \"$curSessionDir\" noise dcsloop_params input_kind in_n noise_tf stream_len ; ParFileAssign \"$parFile\" dcsloop_params"
 
     # Assign name of check point output files
     foreach {chkpnt parname} {
@@ -215,7 +216,7 @@ proc dcsloopCreateWindow {p title sessionDir} {
 	checkpoint_y out_ny} {
 	set label [$c.$chkpnt cget -text]
 	$c.$chkpnt configure \
-	    -command "dcsloopCheckPoint $w $chkpnt $curSessionDir $dcsloop_params($parname) \{$label\}"
+	    -command "dcsloopCheckPoint $w $chkpnt \"$curSessionDir\" $dcsloop_params($parname) \{$label\}"
     }
 
     # 

@@ -5,6 +5,10 @@
 #ifndef NaCuFuncH
 #define NaCuFuncH
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include <NaGenerl.h>
 #include <NaUnit.h>
 #include <NaConfig.h>
@@ -12,7 +16,6 @@
 #include <NaVector.h>
 #include <NaLogFil.h>
 #include <NaExFunc.h>
-
 
 // Name of the type for config file
 #define NaTYPE_CustomFunc	"CustomFunction"
@@ -102,7 +105,11 @@ protected:
   NaVector	vInitial;
 
   // Shared object handle
+#if defined(unix)
   void		*so;
+#else
+  HINSTANCE so;
+#endif
 
   // Pointer to external function definition
   NaExternFunc	*exfunc;

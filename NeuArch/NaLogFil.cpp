@@ -39,7 +39,7 @@ void    NaOpenLogFile (const char* szFile)
     TheLogFileLock->Enter();
 #endif // ThreadSafe_BCB
 
-    fpNaLog = fopen(szFile, "w");
+    fpNaLog = fopen(szFile, "wt");
 
 #ifdef ThreadSafe_BCB
     TheLogFileLock->Leave();

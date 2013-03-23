@@ -1,9 +1,9 @@
 /* NaInvPnd.cpp */
 static char rcsid[] = "$Id$";
 
-#include <math.h>
 #include <stdio.h>
 
+#include "NaMath.h"
 #include "NaInvPnd.h"
 
 

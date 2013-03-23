@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -21,7 +21,7 @@ static char rcsid[] = "$Id$";
  * Generates randomized series with normal gaussian sources of given
  * mean and std.dev.  Puts the series to output.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc != 3 && argc != 4 && argc != 5)
     {

@@ -593,7 +593,7 @@ NaVector::export_to_file (const char* szFilePath) const
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    FILE    *fp = fopen(szFilePath, "w");
+    FILE    *fp = fopen(szFilePath, "wt");
     if(NULL == fp)
         throw(na_cant_open_file);
 
@@ -615,7 +615,7 @@ NaVector::import_from_file (const char* szFilePath)
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    FILE    *fp = fopen(szFilePath, "r");
+    FILE    *fp = fopen(szFilePath, "rt"); // rt
     if(NULL == fp)
         throw(na_cant_open_file);
 

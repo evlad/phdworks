@@ -521,7 +521,7 @@ NaMatrix::export_to_file (const char* szFilePath) const
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    FILE    *fp = fopen(szFilePath, "w");
+    FILE    *fp = fopen(szFilePath, "wt");
     if(NULL == fp)
         throw(na_cant_open_file);
 
@@ -546,7 +546,7 @@ NaMatrix::import_from_file (const char* szFilePath)
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    FILE    *fp = fopen(szFilePath, "r");
+    FILE    *fp = fopen(szFilePath, "rt");
     if(NULL == fp)
         throw(na_cant_open_file);
 

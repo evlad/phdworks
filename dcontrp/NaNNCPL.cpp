@@ -112,11 +112,13 @@ NaNNContrPreLearn::link_net ()
 
 //---------------------------------------------------------------------------
 // Handle signals during neural network training
+#ifndef WIN32
 void
 NaNNContrPreLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
 {
   bUserBreak = true;
 }
+#endif
 
 
 //---------------------------------------------------------------------------

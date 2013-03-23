@@ -86,7 +86,7 @@ NaPetriNet::NaPetriNet (const char* szNetName)
     if(bDigPrintout) {
 	char	*szDigName = new char[strlen(name()) + sizeof(".dot")];
 	sprintf(szDigName, "%s.dot", name());
-	fpDig = fopen(szDigName, "w");
+	fpDig = fopen(szDigName, "wt");
 	if(NULL == fpDig){
 	    NaPrintLog("Failed to write digraph output\n");
 	}else{
@@ -178,7 +178,7 @@ NaPetriNet::prepare (bool bDoPrintouts)
     if(bMapPrintout){
       char	*szMapName = new char[strlen(name()) + sizeof(".map")];
       sprintf(szMapName, "%s.map", name());
-      fpMap = fopen(szMapName, "w");
+      fpMap = fopen(szMapName, "wt");
       if(NULL == fpMap){
 	NaPrintLog("Failed to write activation map\n");
       }else{

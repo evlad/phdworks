@@ -2,6 +2,9 @@
 static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 
+// Especially to get defined M_PI for MSVC
+#define _USE_MATH_DEFINES
+
 #include <math.h>
 
 #include "NaPNCuSu.h"

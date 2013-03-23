@@ -132,18 +132,18 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     label $f.lin_fl -text "Имя файла:" -anchor w
     entry $f.lin_fe -width 30 -textvariable var_trcfile
     button $f.lin_fsel -text "Выбор..." \
-	-command "ContrSelectTrFile $w $sessionDir var_trcfile"
+	-command "ContrSelectTrFile $w \"$sessionDir\" var_trcfile"
 
     set m $f.lin_fedit.m
     menubutton $f.lin_fedit -text "Изменить..."  -underline 0 \
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     $m add command -label "Тип звена" \
-	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile true"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_trcfile\" $var_trcfile true"
     $m add command -label "Параметры" \
-	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_trcfile\" $var_trcfile"
     $m add command -label "Как текст" \
-	-command "TrFuncEdit $w $sessionDir \"$var_trcfile\" $var_trcfile false true"
+	-command "TrFuncEdit $w \"$sessionDir\" \"$var_trcfile\" $var_trcfile false true"
 
     grid $f.lin_rb
     grid $f.lin_fl $f.lin_fe $f.lin_fsel $f.lin_fedit
@@ -155,9 +155,9 @@ proc ContrWindow {p sessionDir arref ckind trcfile nncfile nncinputs} {
     label $f.nnc_fl -text "Имя файла:"
     entry $f.nnc_fe -width 30 -textvariable var_nncfile
     button $f.nnc_fsel -text "Выбор..." \
-	-command "ContrSelectNNFile $w $sessionDir var_nncfile"
+	-command "ContrSelectNNFile $w \"$sessionDir\" var_nncfile"
     button $f.nnc_fview -text "Показать..." \
-	-command "ContrViewNNFile $w $sessionDir var_nncfile"
+	-command "ContrViewNNFile $w \"$sessionDir\" var_nncfile"
     label $f.inp_l -text "Входы:"
     frame $f.inputs
     set var_nncinputs "e+r"

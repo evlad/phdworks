@@ -4,7 +4,7 @@ static char rcsid[] = "$Id$";
 
 #pragma hdrstop
 #ifndef unix
-#include <condefs.h>
+//#include <condefs.h>
 #endif /* unix */
 
 //---------------------------------------------------------------------------
@@ -432,7 +432,7 @@ int main(int argc, char **argv)
 	    nnocl.cerrstat.set_floating_gap(atoi(par("cerr_avg_base")));
 	}
     } else {
-	nnocl.cerr_fout.set_output_filename("/dev/null");
+	nnocl.cerr_fout.set_output_filename(DEV_NULL);
     }
 
     if(par.CheckParam("iderr_trace_file")) {
@@ -446,7 +446,7 @@ int main(int argc, char **argv)
 	    nnocl.cerrstat.set_floating_gap(atoi(par("iderr_avg_base")));
 	}
     } else {
-	nnocl.iderr_fout.set_output_filename("/dev/null");
+	nnocl.iderr_fout.set_output_filename(DEV_NULL);
     }
 
     nnocl.nn_u.set_output_filename(par("out_u"));

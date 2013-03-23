@@ -4,7 +4,7 @@ static char rcsid[] = "$Id$";
 
 #include <stdio.h>
 #if defined(__MSDOS__) || defined(__WIN32__)
-#include <conio.h>
+//#include <conio.h>
 #endif /* DOS & Win */
 
 #include <NaExcept.h>
@@ -217,12 +217,13 @@ NaNNOptimContrLearn::link_net ()
 
 //---------------------------------------------------------------------------
 // Handle signals during neural network training
+#ifndef WIN32
 void
 NaNNOptimContrLearn::on_signal (int nSig, siginfo_t* pInfo, void* pData)
 {
   bUserBreak = true;
 }
-
+#endif
 
 //---------------------------------------------------------------------------
 // Run the network
@@ -230,6 +231,7 @@ NaPNEvent
 NaNNOptimContrLearn::run_net ()
 {
   // Catch signals during learning to make smoother stop
+#ifndef WIN32
   struct sigaction act;
   act.sa_sigaction = &on_signal;
   sigemptyset(&act.sa_mask);
@@ -237,6 +239,7 @@ NaNNOptimContrLearn::run_net ()
   sigaction(SIGPIPE, &act, NULL);
   sigaction(SIGINT, &act, NULL);
   sigaction(SIGTERM, &act, NULL);
+#endif
 
   try{ 
     NaVector	rZero(1);

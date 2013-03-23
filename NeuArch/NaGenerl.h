@@ -41,5 +41,19 @@ typedef double	NaReal;
  *************************************************************/
 extern FILE *fpNaLog;
 
+#ifdef WIN32
+#include <stdarg.h>
+#ifdef __cplusplus
+extern "C" {
+#endif // C++
+int vsscanf(
+    const char  *buffer,
+    const char  *format,
+    va_list     argPtr
+);
+#ifdef __cplusplus
+};
+#endif // C++
+#endif // WIN32
 
 #endif /* NaGeneral.h */

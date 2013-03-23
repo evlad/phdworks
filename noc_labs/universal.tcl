@@ -103,6 +103,8 @@ proc temporalDirectory {} {
     # TODO: make OS dependent!
     if {[file isdirectory /tmp]} {
 	return /tmp
+    } elseif {[file isdirectory {C:\WINDOWS\TEMP}]} {
+	return {C:\WINDOWS\TEMP}
     }
     # Return current directory
     return .

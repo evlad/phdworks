@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 
 /***********************************************************************
@@ -15,7 +15,7 @@
  * -1
  * 1
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
     if(3 != argc && 4 != argc) {
 	fprintf(stderr, "Usage: dmeander Length HalfPeriod [PhaseShift]\n");

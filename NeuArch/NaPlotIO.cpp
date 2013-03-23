@@ -19,10 +19,10 @@ NaDPlotFile::NaDPlotFile (const char* fname, NaFileMode fm)
     switch(eFileMode){
 
     case fmReadOnly:
-        fp = fopen(szFileName, "r");
+        fp = fopen(szFileName, "rb"); // rt
         break;
     case fmCreateEmpty:
-        fp = fopen(szFileName, "w");
+        fp = fopen(szFileName, "wb"); // wt
         break;
     }
     if(NULL == fp)

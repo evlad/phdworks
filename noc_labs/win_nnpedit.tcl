@@ -5,10 +5,7 @@ package provide win_nnpedit 1.0
 package require Tk
 package require draw_nn
 
-
-# filepath - where to create neural network file;
-# postproc - name of the post processing procedure with passed filepath.
-proc NNPEditSave {w filepath postproc} {
+proc NNPEditSave {w filepath} {
     set f $w.nnarch
     upvar #0 $f.inputrep_var inputrep
     upvar #0 $f.outputrep_var outputrep
@@ -20,7 +17,7 @@ proc NNPEditSave {w filepath postproc} {
     upvar #0 $f.inputlabels_var inputlabels
     upvar #0 $f.outputlabels_var outputlabels
 
-    set args $filepath
+    set args \"$filepath\"
     lappend args "Plant"
     lappend args 1 $inputrep
 
@@ -30,13 +27,16 @@ proc NNPEditSave {w filepath postproc} {
 	eval lappend args \$numneurons$iL
     }
     puts "Run MakeNN $args"
-    catch {eval exec [file join [SystemDir] bin MakeNN] $args >/dev/null} errCode
+    global NullDev
+    catch {exec [file join [SystemDir] bin MakeNN] $args >$NullDev} errCode
     if {$errCode != ""} {
 	error $errCode
     }
-    if {[llength [info procs $postproc]] == 1} {
-	$postproc $filepath
-    }
+}
+
+proc NNPEditOk {w filepath} {
+    NNPEditSave $w $filepath
+    destroy $w
 }
 
 proc NNPEditDoResize {w} {
@@ -137,8 +137,7 @@ proc NNPEditHiddenLayersChange {w p} {
 # w - parent
 # title - text to show
 # filepath - name of variable where to store filename
-# postproc - name of the post processing procedure with passed filepath.
-proc NNPEditWindow {p title filepath postproc} {
+proc NNPEditWindow {p title filepath} {
     set w $p.textedit
     catch {destroy $w}
     toplevel $w
@@ -146,8 +145,8 @@ proc NNPEditWindow {p title filepath postproc} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "NNPEditSave $w $filepath $postproc ; destroy $w"
-    button $w.buttons.save -text "Сохранить" -command "NNPEditSave $w $filepath $postproc"
+    button $w.buttons.ok -text "OK" -command "NNPEditOk $w \"$filepath\""
+    button $w.buttons.save -text "Сохранить" -command "NNPEditSave $w \"$filepath\""
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
     pack $w.buttons.ok $w.buttons.save $w.buttons.cancel -side left -expand 1
 
@@ -161,27 +160,9 @@ proc NNPEditWindow {p title filepath postproc} {
 
     set nnarch {}
     if {[file exists $filepath]} {
-	set nnarch [NNReadFile $filepath]
-	array set nnar $nnarch
-	set nnarch [NNSimpleArch $nnarch]
-	puts "nnarch: $nnarch"
-
-	set $f.inputrep_var [expr $nnar(nInputsNumber) * $nnar(nInputsRepeat)]
-	set $f.outputrep_var $nnar(nOutputsRepeat)
-	set $f.numlayers_var $nnar(nHidLayers)
-	foreach i {0 1 2} {
-	    if {[llength $nnar(nHidNeurons)] > $i} {
-		set n [lindex $nnar(nHidNeurons) $i]
-	    } else {
-		set n 5
-	    }
-	    incr i
-	    set $f.numneurons${i}_var $n
-	}
-	set $f.outputfunc_var $nnar(eLastActFunc)
+	set nnarch [ReadNeuralNetFile $filepath]
     }
     if {$nnarch == {}} {
-	puts "path $filepath does not exist"
 	# Default parameters
 	set $f.inputrep_var 2
 	set $f.outputrep_var 3

@@ -528,7 +528,7 @@ proc GrSeriesWindow {p title {path ""} {extproc ""}} {
 	-direction below -menu $m -relief raised
     menu $m -tearoff 0
     $m add command -label "Добавить..." \
-	-command "GrSeriesAddFile $p $workDir"
+	-command "GrSeriesAddFile $p \"$workDir\""
     # To implement Delete action one needs to implement associative
     # indexing of data series based on utag.  Also,
     # GrSeriesUpdateSeries must be considered.

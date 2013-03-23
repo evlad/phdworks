@@ -114,15 +114,9 @@ proc UserBaseDir {} {
 
 # Return system directory
 proc SystemDir {} {
-    global env
-    if {![info exists env(NNACSSYSDIR)]} {
-	# Not defined special place -> let's use the default one
-	set dir [file join $env(HOME) noclab]
-    } else {
-	set dir $env(NNACSSYSDIR)
-    }
+    global SystemDirPath
+    set dir $SystemDirPath
     puts "System directory: $dir"
-    #file mkdir $dir
     return $dir
 }
 
@@ -166,7 +160,7 @@ proc ScanUserLabWorkDirs {l basedir} {
 # in list $l.
 proc CreateUserLabDir {l basedir newdir} {
     if { [catch {file mkdir [file join $basedir $newdir]} msg] } {
-	#message $msg
+	message $msg
 	return
     }
     ScanUserLabWorkDirs $l $basedir
@@ -215,13 +209,15 @@ proc ChooseUserLabWorkDir {p basedir} {
     global $w.newdir
     set $w.newdir "Student"
 
+    puts "Newdir: [set $w.newdir]"
+
     set fc $w.fctrl
     frame $fc
     pack $fc -side right -fill y
     button $fc.ok -text "Выбрать" -command "set $w.seldir \[$l get \[$l curselection\]\]; destroy $w"
-    button $fc.create -text "Создать" -command "CreateUserLabDir $l $basedir \[set $w.newdir\]"
+    button $fc.create -text "Создать" -command "CreateUserLabDir $l \"$basedir\" \[set $w.newdir\]"
     entry $fc.newdir -textvariable $w.newdir
-    button $fc.remove -text "Удалить" -command "DeleteUserLabDir $l $basedir"
+    button $fc.remove -text "Удалить" -command "DeleteUserLabDir $l \"$basedir\""
     button $fc.cancel -text "Отмена" -command "set $w.seldir {}; destroy $w"
 
     pack $fc.cancel -side bottom -fill x
@@ -230,9 +226,11 @@ proc ChooseUserLabWorkDir {p basedir} {
     }
 
     # Select and show the first item
-    ScanUserLabWorkDirs $l $basedir
+    ScanUserLabWorkDirs $l "$basedir"
 
-    set $w.seldir [$l get [$l curselection]]
+    if {[$l curselection] != {} } {
+	set $w.seldir [$l get [$l curselection]]
+    }
 
     pack $fl -expand true -fill both
 

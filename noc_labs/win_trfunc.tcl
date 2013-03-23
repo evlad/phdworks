@@ -74,22 +74,6 @@ proc TrFuncParseTemplate {idname} {
 }
 
 
-# Take given function type, the template, extract default
-# configuration parameters and return them.
-proc TrFuncGetDefaultConfig {idname} {
-    set tmplfpath [file join [TemplateDir] "$idname.tf"]
-    set descr [TrFuncParseFile $tmplfpath]
-
-    array set params {}
-    set fd [open $tmplfpath]
-    set ftext [split [read $fd] \n]
-    close $fd
-
-    TrFuncLoadConfig params $descr $ftext
-    return [array get params]
-}
-
-
 # Copy given template to pointed file.
 proc TrFuncUseTemplate {idname filePath} {
     file copy -force [file join [TemplateDir] "$idname.tf"] $filePath
@@ -267,7 +251,7 @@ proc TrFuncProbe {w trFilePath probe} {
     # Execute probing procedure
     set cwd [pwd]
     cd [temporalDirectory]
-    exec cat $trFilePath
+    #exec cat $trFilePath
     set rc [catch { exec [file join [SystemDir] bin dtf] $trFilePath $nameInput $nameOutput } dummy]
     cd $cwd
     puts "rc=$rc; dummy=$dummy"
@@ -310,7 +294,7 @@ proc TrFuncProbeTemporal {w descr probesignal} {
 # - p - parent widget
 # - thisvar - name of the array in calling context to list name=value pairs
 # - descr - description of the function: name, type, label, parameters
-# Returns: 1 - if there were changes; 0 - there were no changes in
+# Returns: 1 - if there were changes; 0 - there were not changes in
 # parameters
 proc TrFuncEditor {p thisvar descr} {
     set w $p.tfeditor
@@ -379,7 +363,7 @@ proc TrFuncEditor {p thisvar descr} {
 	$m add command -label $probesignal \
 	    -command "TrFuncProbeTemporal $w [list $descr] $probesignal"
     }
-    grid $w.buttons.probe -row 1 -column 0 -sticky n
+    #grid $w.buttons.probe -row 1 -column 0 -sticky n
 
     pack $w.buttons.ok $w.buttons.probe $w.buttons.cancel -side left -expand 1
 
@@ -399,7 +383,8 @@ proc TrFuncEditor {p thisvar descr} {
     return $changed
 }
 
-proc TrFuncTypeSelectOk {w} {
+
+proc TrFuncSelectOk {w} {
     global trfunc_selected
     set cursel [$w.common.funclist curselection]
     if {$cursel != {}} {
@@ -413,7 +398,7 @@ proc TrFuncTypeSelectOk {w} {
 # user to select one of them.
 # - p - parent widget
 # Returns: idname of selected function.
-proc TrFuncTypeSelect {p} {
+proc TrFuncSelect {p} {
     set w $p.tfselect
     catch {destroy $w}
     toplevel $w
@@ -460,7 +445,7 @@ proc TrFuncTypeSelect {p} {
 
     frame $w.buttons
     pack $w.buttons -side bottom -fill x -pady 2m
-    button $w.buttons.ok -text "OK" -command "TrFuncTypeSelectOk $w"
+    button $w.buttons.ok -text "OK" -command "TrFuncSelectOk $w"
     button $w.buttons.cancel -text "Отмена" -command "destroy $w"
 
     pack $w.buttons.ok $w.buttons.cancel -side left -expand 1
@@ -489,7 +474,7 @@ proc TrFuncNewType {p sessionDir fileRelPath {force false}} {
 	*.tf {
 	    set ftype trfunc
 	    puts "TrFuncNewType: - new .tf file"
-	    set idname [TrFuncTypeSelect $p]
+	    set idname [TrFuncSelect $p]
 	    if {$idname == {}} {
 		# Cancel
 		return {}

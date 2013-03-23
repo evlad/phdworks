@@ -24,11 +24,11 @@ proc CheckPntFileDialog {w ent operation filepath} {
 
     if {$operation == "open"} {
 	set filepath [tk_getOpenFile -filetypes $types -parent $w \
-			  -initialdir $initdir -initialfile $initfile \
+			  -initialdir "$initdir" -initialfile "$initfile" \
 			  -defaultextension $initext ]
     } else {
 	set filepath [tk_getSaveFile -filetypes $types -parent $w \
-			  -initialdir $initdir -initialfile $initfile \
+			  -initialdir "$initdir" -initialfile "$initfile" \
 			  -defaultextension $initext ]
     }
     if {[string compare $filepath ""]} {

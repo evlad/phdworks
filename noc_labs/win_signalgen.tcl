@@ -38,11 +38,9 @@ proc rnd_gauss.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
     #set tmpfilepath [::fileutil::tempfile drand]
-    set cmdline [list [file join [SystemDir] bin drand] >> $filepath \
-		     $arr(length) $arr(mean) $arr(variance)]
-    puts "Run drand: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run drand status: $errCode"
+    catch {exec [file join [SystemDir] bin drand] >> $filepath \
+	       $arr(length) $arr(mean) $arr(variance) } errCode
+    puts "Run drand: $errCode"
 }
 
 
@@ -69,11 +67,9 @@ set rnd_unified.par_initial {
 proc rnd_unified.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
-    set cmdline [list [file join [SystemDir] bin dranduni] >> $filepath \
-		     $arr(length) $arr(minampl) $arr(maxampl)]
-    puts "Run dranduni: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run dranduni status: $errCode"
+    catch {exec [file join [SystemDir] bin dranduni] >> $filepath \
+	       $arr(length) $arr(minampl) $arr(maxampl) } errCode
+    puts "Run dranduni: $errCode"
 }
 
 
@@ -105,12 +101,10 @@ proc rnd_meander.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
     #set tmpfilepath [::fileutil::tempfile drandmea]
-    set cmdline [list [file join [SystemDir] bin drandmea] >> $filepath \
-		     $arr(length) $arr(maxhalfper) $arr(maxhalfper) \
-		     $arr(minampl) $arr(maxampl)]
-    puts "Run drandmea: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run drandmea status: $errCode"
+    catch {exec [file join [SystemDir] bin drandmea] >> $filepath \
+	       $arr(length) $arr(maxhalfper) $arr(maxhalfper) \
+	       $arr(minampl) $arr(maxampl) } errCode
+    puts "Run drandmea: $errCode"
 }
 
 
@@ -121,7 +115,6 @@ proc rnd_meander.gen {p arref filepath} {
 # What is to enter?
 set meander.par_gui {
     -1 "Меандр"
-    ampl "Амплитуда"
     length "Длина ряда"
     halfperiod "Полупериод"
     phaseshift "Фазовый сдвиг"
@@ -129,7 +122,6 @@ set meander.par_gui {
 
 # Which values are default ones? (==> *_par_arr)
 set meander.par_initial {
-    ampl 1
     length 100
     halfperiod 10
     phaseshift 0
@@ -139,17 +131,9 @@ set meander.par_initial {
 proc meander.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
-    set tmpfile [temporalFileName ".dat"]
-    set cmdline [list [file join [SystemDir] bin dmeander] > $tmpfile \
-		     $arr(length) $arr(halfperiod) $arr(phaseshift)]
-    puts "Run dmeander: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run dmeander status: $errCode"
-    set cmdline [list [file join [SystemDir] bin dmult] >> $filepath \
-		     $arr(ampl) $tmpfile]
-    puts "Run dmult: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run dmult status: $errCode"
+    catch {exec [file join [SystemDir] bin dmeander] >> $filepath \
+	       $arr(length) $arr(halfperiod) $arr(phaseshift) } errCode
+    puts "Run dmeander: $errCode"
 }
 
 
@@ -159,8 +143,7 @@ proc meander.gen {p arref filepath} {
 
 # What is to enter?
 set harmonic.par_gui {
-    -1 "Синусоида"
-    ampl "Амплитуда"
+    -1 "Меандр"
     length "Длина ряда"
     period "Период"
     phaseshift "Фазовый сдвиг"
@@ -168,7 +151,6 @@ set harmonic.par_gui {
 
 # Which values are default ones? (==> *_par_arr)
 set harmonic.par_initial {
-    ampl 1
     length 100
     period 20
     phaseshift 0
@@ -178,17 +160,9 @@ set harmonic.par_initial {
 proc harmonic.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
-    set tmpfile [temporalFileName ".dat"]
-    set cmdline [list [file join [SystemDir] bin dsin] > $tmpfile \
-		     $arr(length) $arr(period) $arr(phaseshift)]
-    puts "Run dsin: $cmdline"
-    catch {eval exec $cmdline } errCode
-    puts "Run dsin status: $errCode"
-    set cmdline [list [file join [SystemDir] bin dmult] >> $filepath \
-		     $arr(ampl) $tmpfile]
-    puts "Run dmult: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run dmult status: $errCode"
+    catch {exec [file join [SystemDir] bin dsin] >> $filepath \
+	       $arr(length) $arr(period) $arr(phaseshift) } errCode
+    puts "Run dsin: $errCode"
 }
 
 
@@ -213,11 +187,9 @@ set constant.par_initial {
 proc constant.gen {p arref filepath} {
     global $arref
     upvar #0 $arref arr
-    set cmdline [list [file join [SystemDir] bin dsteps] >> $filepath \
-		     $arr(ampl) $arr(length)]
-    puts "Run dsteps: $cmdline"
-    catch {eval exec $cmdline} errCode
-    puts "Run dsteps status: $errCode"
+    catch {exec [file join [SystemDir] bin dsteps] >> $filepath \
+	       $arr(ampl) $arr(length) } errCode
+    puts "Run dsteps: $errCode"
 }
 
 
@@ -279,15 +251,15 @@ proc SignalGenExtGrSeries {cmd p} {
 
 proc SignalGenWindow {p workDir var_fileRelPath} {
     upvar #0 $var_fileRelPath fileRelPath
-    set filepath [SessionAbsPath $workDir $fileRelPath]
+    set filepath [SessionAbsPath "$workDir" "$fileRelPath"]
     # Create empty file
-    if {![catch {open $filepath a} fd]} {
+    if {![catch {open "$filepath" a} fd]} {
 	# Create if does not exist
 	close $fd
     }
     # else Failed to read/create
     global signal_target_gen_filepath
-    set signal_target_gen_filepath $filepath
+    set signal_target_gen_filepath "$filepath"
 
-    GrSeriesWindow $p "Create $filepath series" $filepath SignalGenExtGrSeries
+    GrSeriesWindow $p "Create $filepath series" "$filepath" SignalGenExtGrSeries
 }

@@ -13,8 +13,7 @@
 ///
 /// given in command lines as: a1 n1 a2 n2 a3 n3
 
-int
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
     if(argc < 3) {
 	printf("Generate steps:\n"\

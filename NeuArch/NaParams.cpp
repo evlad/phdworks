@@ -50,7 +50,7 @@ NaParams::NaParams (const char* szFileName,
       free(szPath);
 
       // open file
-      fp = fopen(szFileName, "r");
+      fp = fopen(szFileName, "rb"); // rt
       if(NULL == fp)
 	throw(na_cant_open_file);
 
@@ -381,7 +381,7 @@ NaParams::parse_line (char* line, char*& name, char*& value)
     }
 
   // skip leading spaces before value
-  while(isspace(*value) && *value != '\0')
+  while(isspace((unsigned char)*value) && *value != '\0')
     ++value;
 
   // skip final spaces after value
@@ -395,7 +395,7 @@ NaParams::parse_line (char* line, char*& name, char*& value)
   *eov = '\0';
 
   // skip final spaces after value
-  while(isspace(*eov))
+  while(isspace((unsigned char)*eov))
     --eov;
 
   *eov = '\0';
@@ -429,7 +429,7 @@ NaParams::stored_cmp (const void* p1, const void* p2)
 #include <NaParams.h>
 
 
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(2 != argc)
     {

@@ -1,10 +1,4 @@
 
-#ifndef unix
-#pragma hdrstop
-#include <condefs.h>
-#include <stdio.h>
-#endif /* unix */
-
 //---------------------------------------------------------------------------
 // Statistics computation for the given input file
 // (C)opyright by Eliseev Vladimir
@@ -20,12 +14,6 @@
 #include "NaPNFIn.h"
 
 
-//---------------------------------------------------------------------------
-#ifndef unix
-USELIB("..\NeuArch\NeuArch.lib");
-USELIB("..\NeuArch\PetriNet.lib");
-USELIB("..\StaDev\stadev32.lib");
-#endif /* unix */
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)

@@ -4,10 +4,12 @@ static char rcsid[] = "$Id$";
 
 #include <math.h>
 #include <time.h>
+#ifndef WIN32
 #include <sys/time.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "NaMath.h"
 #include "NaLogFil.h"
@@ -29,14 +31,17 @@ reset_rand ()
   if(NULL != p)
     if(strlen(p) > 0)
       {
-	/* wait a bit to prevent random number generator
-	   initialization with the same seed (time(NULL)) */
-	sleep(1);
+		/* wait a bit to prevent random number generator
+			initialization with the same seed (time(NULL)) */
+		sleep(1);
       }
 
   /* very standardized but very slow way */
   time_t	tTime = time(NULL);
   srand(tTime);
+#endif
+#ifdef WIN32
+  srand(time(NULL) + clock() * CLOCKS_PER_SEC);
 #else
   struct timeval	tv;
   gettimeofday(&tv, NULL);

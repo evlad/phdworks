@@ -1,7 +1,4 @@
-#ifndef unix
-#pragma hdrstop
-#include <condefs.h>
-#endif /* unix */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,11 +20,6 @@
 #include "NaDataIO.h"
 #include "NaTimer.h"
 
-//---------------------------------------------------------------------------
-#ifndef unix
-USELIB("..\NeuArch\NeuArch.lib");
-USELIB("..\StaDev\stadev32.lib");
-#endif /* unix */
 //---------------------------------------------------------------------------
 #pragma argsused
 int main(int argc, char **argv)

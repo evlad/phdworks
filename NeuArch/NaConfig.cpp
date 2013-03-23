@@ -10,9 +10,10 @@ static char rcsid[] = "$Id$";
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <ctype.h>
 
+//#define CONFIG_DEBUG
 #include "NaLogFil.h"
 #include "NaConfig.h"
 
@@ -394,7 +395,7 @@ NaConfigFile::SaveToFile (const char* szFilePath)
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    fp = fopen(szFilePath, "w");
+    fp = fopen(szFilePath, "wt");
     if(NULL == fp)
         throw(na_cant_open_file);
 
@@ -448,7 +449,7 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
     if(NULL == szFilePath)
         throw(na_null_pointer);
 
-    fp = fopen(szFilePath, "r");
+    fp = fopen(szFilePath, "rb");
     if(NULL == fp)
         throw(na_cant_open_file);
 
@@ -465,7 +466,7 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
 
     // Parse version of file
     sscanf(szLineBuf + strlen(Magic()), "%u.%u",
-           &nFileVer[NaMajorVerNo], &nFileVer[NaMinorVerNo]);
+           nFileVer + NaMajorVerNo, nFileVer + NaMinorVerNo);
 
     if(nVer[NaMajorVerNo] == nFileVer[NaMajorVerNo] &&
        nVer[NaMinorVerNo] > nFileVer[NaMinorVerNo] ||
@@ -480,6 +481,9 @@ NaConfigFile::LoadFromFile (const char* szFilePath)
         NaPrintLog("Future file format version %u.%u is detected: failed.\n",
                    nFileVer[NaMajorVerNo], nFileVer[NaMinorVerNo]);
         goto CloseFile;
+    } else {
+	NaPrintLog("File format version %u.%u is detected: ok.\n",
+                   nFileVer[NaMajorVerNo], nFileVer[NaMinorVerNo]);
     }
 
     NaConfigLineKind    eLineKind;

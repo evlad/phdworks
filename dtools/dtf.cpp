@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <locale.h>
 
 #include <NaLogFil.h>
@@ -23,7 +23,7 @@ static char rcsid[] = "$Id$";
  * Feed input series to given discrete transfer function and put the
  * result to output series.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc != 4)
     {

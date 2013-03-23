@@ -10,11 +10,11 @@ package require Tk
 proc ScreenshotAction {w c workDir rootName type} {
     # Calculate next free number, considering file names have format
     # ${rootName}##.*, where ## - two digits
-    set ls [glob -nocomplain -tails -directory $workDir -types f "$rootName\[0-9\]\[0-9\].*"]
+    set ls [glob -nocomplain -tails -directory "$workDir" -types f "$rootName\[0-9\]\[0-9\].*"]
     set lastName [lindex [lsort $ls] end]
     if {$lastName == ""} {
 	set nextNum 0
-    } elseif {[regexp "^${rootName}(..)\..*\$" $lastName rest lastNum]} {
+    } elseif {[regexp "^${rootName}(..)\..*\$" "$lastName" rest lastNum]} {
 	scan $lastNum "%d" nextNum
 	incr nextNum
     } else {
@@ -22,8 +22,8 @@ proc ScreenshotAction {w c workDir rootName type} {
     }
 
     # Let's compose path
-    set fileName [format "%s%02d" $rootName $nextNum]
-    set rootPath [file join $workDir $fileName]
+    set fileName [format "%s%02d" "$rootName" $nextNum]
+    set rootPath [file join "$workDir" "$fileName"]
     switch $type {
 	postscript {
 	    set ext "ps"
@@ -39,14 +39,14 @@ proc ScreenshotAction {w c workDir rootName type} {
 	    set ext "jpg"
 	    set filePath "$rootPath.$ext"
 	    set img [image create photo -format window -data $c]
-	    $img write -format $type $filePath
+	    $img write -format $type "$filePath"
 	}
 	default {
 	    # type and file name extension are the same
 	    set ext $type
 	    set filePath "$rootPath.$ext"
 	    set img [image create photo -format window -data $c]
-	    $img write -format $type $filePath
+	    $img write -format $type "$filePath"
 	}
     }
     puts "Screenshot is in $filePath"
@@ -75,6 +75,6 @@ proc ScreenshotButton {w b c workDir rootName} {
     }
     foreach imgfmt $imgfmts {
 	$m add command -label $imgfmt \
-	    -command "ScreenshotAction $w $c $workDir $rootName $imgfmt"
+	    -command "ScreenshotAction $w $c \"$workDir\" \"$rootName\" $imgfmt"
     }
 }

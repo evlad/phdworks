@@ -7,8 +7,9 @@
 //---------------------------------------------------------------------------
 
 #include <stdio.h>
+#include "NaGenerl.h"
 
-extern FILE *fpNaLog;
+//extern FILE *fpNaLog;
 
 // Open log file
 void    NaOpenLogFile (const char* szFile);

@@ -1,16 +1,19 @@
 /* dsin.cpp */
 static char rcsid[] = "$Id$";
 
+// Especially to get defined M_PI for MSVC
+#define _USE_MATH_DEFINES
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 
 /***********************************************************************
  * Generate sine of given length, with given period and phase shift.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(3 != argc && 4 != argc)
     {

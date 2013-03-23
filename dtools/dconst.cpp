@@ -5,7 +5,7 @@ static char rcsid[] = "$Id$";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <NaLogFil.h>
 #include <NaGenerl.h>
@@ -18,7 +18,7 @@ static char rcsid[] = "$Id$";
  * Check for hypothesis of constant mean value (no trend).  Read one
  * discrete signal series and perform "median series criteria".
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   int	rc;
 
@@ -106,8 +106,8 @@ main (int argc, char* argv[])
     NaPrintLog("Length of the longest \"+\" or \"-\" series:\t%d\n", tau);
 
     /* test for hypothesis */
-    NaReal	nu_95 = 0.5 * (N + 2 - 1.96 * sqrt(N - 1));
-    NaReal	tau_05 = 1.43 * log(N + 1);
+    NaReal	nu_95 = 0.5 * (N + 2 - 1.96 * sqrt((double)N - 1));
+    NaReal	tau_05 = 1.43 * log((double)N + 1);
 
     NaPrintLog("nu(95%)=%g\n", nu_95);
     NaPrintLog("tau(5%)=%g\n", tau_05);

@@ -115,7 +115,9 @@ public:/* data */
 private:/* methods */
 
   // Handle signals during neural network training
+#ifndef WIN32
   static void	on_signal (int nSig, siginfo_t* pInfo, void* pData);
+#endif
 
 private:/* data */
 

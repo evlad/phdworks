@@ -3,7 +3,7 @@ static char rcsid[] = "$Id$";
 //---------------------------------------------------------------------------
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <string.h>
 
 #ifdef unix
@@ -22,8 +22,13 @@ NaDataFile::NaDataFile (const char* fname,
 {
     if(NULL == fname)
         throw(na_null_pointer);
-    szFileName = new char[strlen(fname) + 1];
-    strcpy(szFileName, fname);
+	if(!strcmp(fname, "/dev/null")) {
+		szFileName = new char[strlen(DEV_NULL) + 1];
+		strcpy(szFileName, DEV_NULL);
+	} else {
+		szFileName = new char[strlen(fname) + 1];
+		strcpy(szFileName, fname);
+	}
     eFileMode = fm;
     nRecords = 0;
 }
@@ -87,10 +92,18 @@ NaFileFormat NaDataFile::GuessFileFormatByName (const char* szFName)
     // Text output in case of character device or FIFO
     struct stat	st;
     if(-1 != stat(szFName, &st)){
+#ifdef WIN32
+	  if(!!(st.st_mode & _S_IFCHR) || !stricmp(szFName, "NUL"))
+#else
       if(S_ISFIFO(st.st_mode) || S_ISCHR(st.st_mode))
-	return ffTextStream;
+#endif
+		return ffTextStream;
+#ifdef WIN32
+	  if(!(st.st_mode & _S_IFREG))
+#else
       if(S_ISBLK(st.st_mode) || S_ISDIR(st.st_mode))
-	return ffUnknown;
+#endif
+		return ffUnknown;
     }
     /* else
        don't user stat() results in case of it's error */
@@ -119,7 +132,7 @@ NaFileFormat NaDataFile::GuessFileFormatByMagic (const char* szFName)
     if(NULL == szFName)
         throw(na_null_pointer);
 
-    FILE    *fp = fopen(szFName, "r");
+    FILE    *fp = fopen(szFName, "rb");
     if(NULL == fp)
         throw(na_cant_open_file);
 

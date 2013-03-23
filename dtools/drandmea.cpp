@@ -15,7 +15,7 @@
  * Generates series with quasi-meander with randomized amplitude and
  * given or randomized half period.  Puts the series to output.
  ***********************************************************************/
-main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
   if(argc != 5 && argc != 6)
     {
