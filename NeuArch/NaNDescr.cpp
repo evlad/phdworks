@@ -196,7 +196,6 @@ void    NaNeuralNetDescr::Load (NaDataStream& ds)
     NaPrintLog("Data stream version %u.%u\n",
 	       ds.GetVersion(NaMajorVerNo), ds.GetVersion(NaMinorVerNo));
     ds.GetF("%u %u", &nInputsNumber, &nInputsRepeat);
-    NaPrintLog("%u %u\n", nInputsNumber, nInputsRepeat);
     ds.GetF("%u", &nOutputsRepeat);
     ds.GetF("%u", &nFeedbackDepth);
     ds.GetF("%u", &nHidLayers);

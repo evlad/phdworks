@@ -762,18 +762,10 @@ NaConfigFile::ParseTitle (const char* szLine,
                        strlen(szTitleStartMark)))
         ++i;
     i += strlen(szTitleStartMark);
-#ifdef DEBUG_TITLE
-    NaPrintLog("Pos=%u, Char='%c', isspace()=%d\n",
-               i, szLine[i], isspace(szLine[i]));
-#endif /* DEBUG_TITLE */
 
     /* skip spaces */
     while(isspace(szLine[i]))
         ++i;
-
-#ifdef DEBUG_TITLE
-    NaPrintLog("Pos=%u, Char='%c'\n", i, szLine[i]);
-#endif /* DEBUG_TITLE */
 
     /* partition type start */
     unsigned    iTypeStart = i, iTypeLen;
@@ -781,10 +773,6 @@ NaConfigFile::ParseTitle (const char* szLine,
           0 != strncmp(szLine + i, szTitleEndMark, strlen(szTitleEndMark)))
         ++i;
     iTypeLen = i - iTypeStart;
-
-#ifdef DEBUG_TITLE
-    NaPrintLog("Pos=%u, Char='%c'\n", i, szLine[i]);
-#endif /* DEBUG_TITLE */
 
     szType = new char[iTypeLen + 1];
     strncpy(szType, szLine + iTypeStart, iTypeLen);
