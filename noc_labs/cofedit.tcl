@@ -21,26 +21,27 @@ proc TrFuncSetParamsText {w config} {
 # Call transfer function parameters editor for parameters located in
 # array $configvar.  Transfer function description is in $descr.
 # Optionally, parameters may be displayed as text in $parwidget.
-proc TrFuncChangeParameters {w configvar descr {parwidget {}}} {
-    global $configvar
-    puts "before: [array get $configvar]"
+proc TrFuncChangeParameters {w configvar descrvar {parwidget {}}} {
+    global $configvar $descrvar
+    set descr [set $descrvar]
+    puts "descr before: [set $descrvar]"
+    puts "config before: [array get $configvar]"
     if {[TrFuncEditor $w $configvar $descr]} {
-	global $configvar
-	puts "after: [array get $configvar]"
+	puts "config after: [array get $configvar]"
     }
     if {$parwidget != {}} {
 	TrFuncSetParamsText $parwidget [array get $configvar]
     }
 }
 
-
 # Call transfer function type changer which leads to parameters changer.
-proc TrFuncChangeType {w configvar descr {parwidget {}}  {typewidget {}}} {
-    set tftype [TrFuncTypeSelect $w]
+proc TrFuncChangeType {w configvar descrvar {parwidget {}}  {typewidget {}}} {
+    set tftype [TrFuncSelect $w]
     if {$tftype == {}} {
 	# Cancel
 	return
     }
+    puts "type=$tftype"
 
     # Let's parse descripton
     set descr [TrFuncParseTemplate $tftype]
@@ -49,10 +50,19 @@ proc TrFuncChangeType {w configvar descr {parwidget {}}  {typewidget {}}} {
     }
 
     # Let's extract default parameters and put them into config array
-    global $configvar
+    global $configvar $descrvar
+
+    puts "descr=$descr"
+    set $descrvar $descr
+
     # Reset array of parameters by new values
-    array set $configvar [TrFuncGetDefaultConfig $tftype]
-    TrFuncChangeParameters $w $configvar $descr $parwidget
+    array unset $configvar
+    # Set new default parameters
+    array set $configvar [lindex $descr 3]
+    if {$parwidget != {}} {
+	TrFuncSetParamsText $parwidget [array get $configvar]
+    }
+    TrFuncChangeParameters $w $configvar $descrvar $parwidget
 }
 
 
@@ -103,14 +113,19 @@ proc CoFuncEditor {p thisvar} {
 	[label $g.hl_from -text "От"] \
 	[label $g.hl_to -text "До"]
 
-    foreach {name descr} [lindex $cof($combined) 1] {
+    # The variable stores list of {name ftype} pairs in raw list:
+    # {plant1 TransferFunction plant2 CustomFunction ...}
+    # It is used to locate all contents of combined function
+    global $w.var_root_list
+    foreach {name typeRange} [lindex $cof($combined) 1] {
 	puts "name=$name"
 	if { ! [info exists cof($name)]} {
 	    set ftype {}
 	} else {
-	    set ftype [lindex $descr 0]
+	    set ftype [lindex $typeRange 0]
 	    set fparams [lindex $cof($name) 1]
 	}
+	lappend $w.var_root_list $name $ftype
 
 	switch -exact $ftype {
 	    TransferFunction {
@@ -131,25 +146,31 @@ proc CoFuncEditor {p thisvar} {
 	}
 
 	global $g.var_${name}_sel $g.var_${name}_from $g.var_${name}_to
+	global $g.var_${name}_name $g.var_${name}_config $g.var_${name}_descr
 	set $g.var_${name}_sel 0
-	set $g.var_${name}_from [lindex $descr 1]
-	set $g.var_${name}_to [lindex $descr 2]
+	set $g.var_${name}_name "$name"
+	set $g.var_${name}_from [lindex $typeRange 1]
+	set $g.var_${name}_to [lindex $typeRange 2]
 
 	checkbutton $g.sel_${name} -text "" -variable $g.var_${name}_sel
-	label $g.name_${name} -text "$name"
-	button $g.type_${name} -text $type -relief flat
-	button $g.params_${name} -relief flat
+	#label $g.name_${name} -text "$name"
+	entry $g.name_${name} -textvariable $g.var_${name}_name \
+	    -width 16 -relief sunken
+	button $g.type_${name} -text $type -relief flat -pady 0
+	button $g.params_${name} -relief flat -pady 0
 	switch -exact $ftype {
 	    TransferFunction {
-		global $g.var_${name}_config
 		array set $g.var_${name}_config $trfunc(config)
+		puts "\$trfunc(config): $trfunc(config)"
+		set $g.var_${name}_descr $trfunc(descr)
+		puts "\$trfunc(descr): $trfunc(descr)"
 		TrFuncSetParamsText $g.params_${name} $trfunc(config)
 		$g.params_${name} configure -command \
-		    "TrFuncChangeParameters $w $g.var_${name}_config \"$trfunc(descr)\" $g.params_${name}"
+		    "TrFuncChangeParameters $w $g.var_${name}_config $g.var_${name}_descr $g.params_${name}"
 		#"if {\[TrFuncEditor $w $g.var_${name}_config \"$trfunc(descr)\"\]} { TrFuncSetParamsText $g.params_${name} \[array get $g.var_${name}_config\] }"
 #
 		$g.type_${name} configure -command \
-		    "TrFuncChangeType $w $g.var_${name}_config \"$trfunc(descr)\" $g.params_${name} $g.type_${name}"
+		    "TrFuncChangeType $w $g.var_${name}_config $g.var_${name}_descr $g.params_${name} $g.type_${name}"
 #		    "set tftype \[TrFuncTypeSelect $w\] ; puts \"new type: \$tftype\""
 #
 	    }
@@ -170,7 +191,7 @@ proc CoFuncEditor {p thisvar} {
 	    -width 6 -relief sunken
 
 	grid $g.sel_${name} $g.name_${name} $g.type_${name} $g.params_${name} \
-	    $g.from_${name} $g.to_${name} -sticky nw
+	    $g.from_${name} $g.to_${name} -sticky nw -pady 2
     }
     pack $g -side top -fill both -expand 1
 
@@ -190,8 +211,9 @@ proc CoFuncEditor {p thisvar} {
     frame $b
 
     button $b.ok -text "OK"
-    button $b.schema -text "Схема"
-    button $b.cancel -text "Отмена"
+    button $b.schema -text "Схема" \
+	-command "CoFuncEditorSaveFile $w new_test.cof"
+    button $b.cancel -text "Отмена" -command "destroy $w"
 
     set m $b.probe.m
     menubutton $b.probe -text "Отклик" \
@@ -203,7 +225,8 @@ proc CoFuncEditor {p thisvar} {
 # \
 #	    -command "TrFuncProbeTemporal $w [list $descr] $probesignal"
     }
-    grid $b.probe -row 1 -column 0 -sticky news
+    #grid $b.probe -row 1 -column 0 -sticky news
+    #pack $b.probe 
     pack $b.ok $b.schema $b.probe $b.cancel -side left -expand 1
 
     pack $b -side right
@@ -217,7 +240,79 @@ proc CoFuncEditor {p thisvar} {
     return $changed
 }
 
+proc CoFuncEditorSaveFile {w filePath} {
+    global $w.var_root_list
+    set g $w.grid
+
+    # Prepare root combined function
+    foreach {name ftype} [set $w.var_root_list] {
+	upvar #0 $g.var_${name}_from from
+	upvar #0 $g.var_${name}_to to
+	lappend funcList $name [list $ftype $from $to]
+    }
+    lappend cofSections "main" [list "CombinedFunction" $funcList]
+
+    # Prepare other functions
+    foreach {name ftype} [set $w.var_root_list] {
+	switch -exact $ftype {
+	    TransferFunction {
+		upvar #0 $g.var_${name}_descr descr
+		global $g.var_${name}_config
+		set config [array get $g.var_${name}_config]
+		set trfunc {}
+		lappend trfunc descr $descr
+		lappend trfunc config $config
+		lappend cofSections $name [list "TransferFunction" $trfunc]
+	    }
+	    CustomFunction {
+		#array set cufunc $fparams
+		#set type $cufunc(file)
+		#set params $cufunc(options)
+		#set initial $cufunc(initial)
+	    }
+	    default {
+		#set type "Неизвестен"
+		#set params "Неизвестны"
+	    }
+	}
+    }
+
+    puts $cofSections
+    CoFuncComposeFile $filePath $cofSections
+}
+
 proc CoFuncTest {} {
+    global NullDev
+    global tcl_platform
+    global env
+    global SystemDirPath
+
+    if {$tcl_platform(platform) == "windows"} {
+	set NullDev "NUL"
+    } else {
+	set NullDev "/dev/null"
+    }
+
+    # Let's find system directory
+    if {![info exists env(NNACSSYSDIR)]} {
+	# Not defined special place -> let's use the default one
+	if {$tcl_platform(platform) == "windows"} {
+	    set SystemDirPath {C:\Program Files\NNACS}
+	} else {
+	    set SystemDirPath [file join $env(HOME) nnacs]
+	}
+    } else {
+	set SystemDirPath $env(NNACSSYSDIR)
+    }
+#    global SystemDirPath
+
+    # Let's find scripts
+    #set scriptsdir [file join $SystemDirPath scripts]
+    #puts "Script directory: $scriptsdir"
+    #pkg_mkIndex $scriptsdir
+    #lappend auto_path $scriptsdir
+    encoding system utf-8
+
     array set cof [CoFuncParseFile testdata/test.cof]
     #foreach n [array names cof] {
     #  puts "$n: $cof($n)"

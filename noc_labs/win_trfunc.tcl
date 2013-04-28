@@ -136,7 +136,7 @@ proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
 
     # It's suggested:
     #puts $fd ";NeuCon transfer 1.0"
-    #puts $fd "\[$type $idname\]"
+    #puts $fd "\[TransferFunction\]"
     foreach line $tmpl {
 	#puts "Line: $line"
 	# Let's exclude empty items to get fields

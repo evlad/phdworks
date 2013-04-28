@@ -20,6 +20,60 @@ package require Tk
 #   "nameN" {"TransferFunction" {transfer function description}}
 # }
 
+# Prepare file with text content of given list of combined function
+# sections.
+proc CoFuncComposeFile {filePath cofSections} {
+    if [ catch {open $filePath w} fd ] {
+	error "Failed to create $filePath: $fd"
+    }
+    puts $fd ";NeuCon combined function 1.0"
+
+    foreach {sectionName section} $cofSections {
+	set sectionType [lindex $section 0]
+	puts "sectionName=$sectionName sectionType=$sectionType"
+	switch -exact $sectionType {
+	    CombinedFunction {
+		#if {$sectionName == "main"}
+		set funcList [lindex $section 1]
+		puts $fd "\[CombinedFunction main\]"
+		foreach {funcName funcTypeRange} $funcList {
+		    set funcType [lindex $funcTypeRange 0]
+		    set funcFrom [lindex $funcTypeRange 1]
+		    set funcTo [lindex $funcTypeRange 2]
+		    puts $fd "$funcType $funcName $funcFrom $funcTo"
+		}
+	    }
+	    TransferFunction {
+		array set trfunc [lindex $section 1]
+		set this $trfunc(config)
+		puts $fd "\n\[$sectionType $sectionName\]"
+
+		# Read template
+		set idname [lindex $trfunc(descr) 0]
+		set filepath [file join [TemplateDir] "$idname.tf"]
+		if [ catch {open $filepath} fdtmpl ] {
+		    error "Failed to open template $filepath: $fdtmpl"
+		    return
+		}
+		set tmpl [split [read $fdtmpl] \n]
+		close $fdtmpl
+
+		# Use template without two first lines
+		TrFuncSaveConfig this $trfunc(descr) $fd [lrange $tmpl 2 end]
+	    }
+	    CustomFunction {
+		array set cufunc [lindex $section 1]
+		puts $fd "\n\[$sectionType $sectionName\]"
+		puts $fd "file $cufunc(file)"
+		puts $fd "options $cufunc(options)"
+		puts $fd "initial $cufunc(initial)"
+	    }
+	}
+    }
+
+    close $fd
+}
+
 #proc CoFuncEditFile {p filePath} {
 
 # Parse content of given file and return tagged list with all sections
