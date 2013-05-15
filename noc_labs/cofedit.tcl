@@ -41,7 +41,7 @@ proc TrFuncChangeType {w configvar descrvar {parwidget {}}  {typewidget {}}} {
 	# Cancel
 	return
     }
-    puts "type=$tftype"
+    #puts "type=$tftype"
 
     # Let's parse descripton
     set descr [TrFuncParseTemplate $tftype]
@@ -49,19 +49,31 @@ proc TrFuncChangeType {w configvar descrvar {parwidget {}}  {typewidget {}}} {
 	$typewidget configure -text [lindex $descr 2]
     }
 
-    # Let's extract default parameters and put them into config array
     global $configvar $descrvar
-
-    puts "descr=$descr"
     set $descrvar $descr
+
+    #puts "descr=$descr"
+
+    # Let's extract default parameters
+    set filePath [TrFuncTemplatePath [lindex $descr 0]]
+    array set params {}
+    set fd [open $filePath]
+    set ftext [split [read $fd] \n]
+    close $fd
 
     # Reset array of parameters by new values
     array unset $configvar
-    # Set new default parameters
-    array set $configvar [lindex $descr 3]
+
+    # Assign new config parameters
+    TrFuncLoadConfig $configvar $descr $ftext
+    #puts "config: [array get $configvar]"
+
+    # Optionally show parameters
     if {$parwidget != {}} {
 	TrFuncSetParamsText $parwidget [array get $configvar]
     }
+
+    # Call parameters change dialog
     TrFuncChangeParameters $w $configvar $descrvar $parwidget
 }
 
@@ -181,6 +193,36 @@ proc CoFuncEditorTableRowsExchange {g i j} {
 }
 
 
+# Copy the first row (i) to the last one (j) (additional refresh may
+# be needed)
+proc CoFuncEditorTableRowsCopy {g i j} {
+    # Copy usual variables
+    foreach suffix {_sel _name _from _to _ftype _descr} {
+	global $g.var_${i}${suffix} $g.var_${j}${suffix}
+	set exist_i [info exist $g.var_${i}${suffix}]
+	set exist_j [info exist $g.var_${j}${suffix}]
+	if { $exist_i } {
+	    set $g.var_${j}${suffix} [set $g.var_${i}${suffix}]
+	} elseif { $exist_j } {
+	    unset $g.var_${j}${suffix}
+	}
+    }
+    # Copy arrays
+    foreach suffix {_config} {
+	global $g.var_${i}${suffix} $g.var_${j}${suffix}
+	set exist_i [info exist $g.var_${i}${suffix}]
+	set exist_j [info exist $g.var_${j}${suffix}]
+
+	if { $exist_j } {
+	    array unset $g.var_${j}${suffix}
+	}
+	if { $exist_i } {
+	    array set $g.var_${j}${suffix} [array get $g.var_${i}${suffix}]
+	}
+    }
+}
+
+
 # Move selected rows one step upward
 proc CoFuncEditorTableRowsMoveUp {g} {
     upvar #0 $g.var_cof_count var_cof_count
@@ -231,6 +273,46 @@ proc CoFuncEditorNewName {g template} {
 
 # Add new row
 proc CoFuncEditorTableAddRow {w} {
+    set g $w.grid
+    upvar #0 $g.var_cof_count var_cof_count
+    CoFuncEditorTableSetRows $g [expr $var_cof_count + 1]
+    puts "CoFuncEditorTableAddRow: var_cof_count=$var_cof_count"
+
+    set i [expr $var_cof_count - 1]
+    global $g.var_${i}_sel $g.var_${i}_name \
+	$g.var_${i}_ftype $g.var_${i}_from $g.var_${i}_to \
+	$g.var_${i}_config $g.var_${i}_descr
+
+    set $g.var_${i}_sel 0
+    if {$i == 0} {
+	# Use "Function#" template
+	set $g.var_${i}_name [CoFuncEditorNewName $g "Function"]
+    } else {
+	# Use previous function name as a template
+	set j [expr $i - 1]
+	global $g.var_${j}_name
+	set $g.var_${i}_name [CoFuncEditorNewName $g [set $g.var_${j}_name]]
+    }
+    set $g.var_${i}_from 0
+    set $g.var_${i}_to -1
+    set $g.var_${i}_ftype TransferFunction
+
+    switch -exact [set $g.var_${i}_ftype] {
+	TransferFunction {
+	    array unset $g.var_${i}_config
+	    set $g.var_${i}_descr [TrFuncParseTemplate "gain"]
+	    TrFuncChangeType $w $g.var_${i}_config $g.var_${i}_descr $g.params_${i} $g.type_${i}
+	}
+	CustomFunction {
+	    puts "N/A"
+	    #array set $g.var_${j}_config [array get $g.var_${i}_config]
+	}
+    }
+}
+
+
+# Add new row as a copy of the last row
+proc CoFuncEditorTableDupLastRow {w} {
     set g $w.grid
     upvar #0 $g.var_cof_count var_cof_count
     CoFuncEditorTableSetRows $g [expr $var_cof_count + 1]
@@ -289,6 +371,8 @@ proc CoFuncEditorTableDeleteRows {w} {
 
     # Set less rows
     CoFuncEditorTableSetRows $g [expr $var_cof_count - $numSelected]
+
+    puts "CoFuncEditorTableDeleteRows: var_cof_count=$var_cof_count"
 }
 
 
@@ -386,7 +470,6 @@ proc CoFuncEditorExport {w thisvar} {
 
 # Refresh GUI from list of global variables to widget.
 proc CoFuncEditorRefresh {w} {
-    #upvar #0 $w.var_root_list var_root_list
     set g $w.grid
     upvar #0 $g.var_cof_count var_cof_count
     for {set i 0} {$i < $var_cof_count} {incr i} {
@@ -426,6 +509,41 @@ proc CoFuncEditorRefresh {w} {
 	}
     }
 }
+
+
+# Display schema of the combined function
+# - p - window name of COF editor
+proc CoFuncEditorDisplaySchema {p} {
+    set w $p.schema
+    catch {destroy $w}
+    toplevel $w
+
+    wm title $w "Combined function schema"
+
+    set g $p.grid
+    upvar #0 $g.var_cof_count var_cof_count
+    for {set i 0} {$i < $var_cof_count} {incr i} {
+	upvar #0 $g.var_${i}_ftype ftype
+
+	# Define variables depending function type
+	switch -exact $ftype {
+	    TransferFunction {
+		upvar #0 $g.var_${i}_descr descr
+		set type [lindex $descr 2]
+		puts "$i: descr=$descr"
+	    }
+	    CustomFunction {
+		global $g.var_${i}_config
+		array set cufparams [array get $g.var_${i}_config]
+		puts "$i: type=$cufparams(file) params=$cufparams(options)"
+	    }
+	    default {
+		puts "$i: unknown type"
+	    }
+	}
+    }
+}
+
 
 # Display combined function editor window.
 # - p - parent widget;
@@ -489,9 +607,10 @@ proc CoFuncEditor {p thisvar} {
     set b $w.buttons
     frame $b
 
-    button $b.ok -text "OK"
-    button $b.schema -text "Схема" \
+    button $b.ok -text "OK" \
 	-command "CoFuncEditorSaveFile $w new_test.cof"
+    button $b.schema -text "Схема" \
+	-command "CoFuncEditorDisplaySchema $w"
     button $b.cancel -text "Отмена" -command "destroy $w"
 
     set m $b.probe.m
@@ -520,40 +639,45 @@ proc CoFuncEditor {p thisvar} {
 }
 
 proc CoFuncEditorSaveFile {w filePath} {
-    global $w.var_root_list
     set g $w.grid
+    upvar #0 $g.var_cof_count var_cof_count
 
     # Prepare root combined function
-    foreach {name ftype} [set $w.var_root_list] {
-	upvar #0 $g.var_${name}_name actualName
-	upvar #0 $g.var_${name}_from from
-	upvar #0 $g.var_${name}_to to
-	lappend funcList $actualName [list $ftype $from $to]
+    for {set i 0} {$i < $var_cof_count} {incr i} {
+	upvar #0 $g.var_${i}_ftype ftype
+	upvar #0 $g.var_${i}_name name
+	upvar #0 $g.var_${i}_from from
+	upvar #0 $g.var_${i}_to to
+	lappend funcList $name [list $ftype $from $to]
     }
     lappend cofSections "main" [list "CombinedFunction" $funcList]
 
-    # Prepare other functions
-    foreach {name ftype} [set $w.var_root_list] {
+
+    for {set i 0} {$i < $var_cof_count} {incr i} {
+	upvar #0 $g.var_${i}_ftype ftype
+
+	# Define variables depending function type
 	switch -exact $ftype {
 	    TransferFunction {
-		upvar #0 $g.var_${name}_name actualName
-		upvar #0 $g.var_${name}_descr descr
-		global $g.var_${name}_config
-		set config [array get $g.var_${name}_config]
+		upvar #0 $g.var_${i}_name name
+		upvar #0 $g.var_${i}_descr descr
+		global $g.var_${i}_config
+		set config [array get $g.var_${i}_config]
 		set trfunc {}
 		lappend trfunc descr $descr
 		lappend trfunc config $config
-		lappend cofSections $actualName [list "TransferFunction" $trfunc]
+		lappend cofSections $name [list "TransferFunction" $trfunc]
 	    }
 	    CustomFunction {
-		#array set cufunc $fparams
-		#set type $cufunc(file)
-		#set params $cufunc(options)
-		#set initial $cufunc(initial)
-	    }
-	    default {
-		#set type "Неизвестен"
-		#set params "Неизвестны"
+		upvar #0 $g.var_${i}_name name
+		global $g.var_${i}_config
+		array set cufparams [array get $g.var_${i}_config]
+
+		set cufunc {}
+		lappend cufunc file $cufparams(file)
+		lappend cufunc options $cufparams(options)
+		lappend cufunc initial $cufparams(initial)
+		lappend cofSections $name [list "CustomFunction" $cufunc]
 	    }
 	}
     }
@@ -561,6 +685,7 @@ proc CoFuncEditorSaveFile {w filePath} {
     puts $cofSections
     CoFuncComposeFile $filePath $cofSections
 }
+
 
 proc CoFuncTest {} {
     global NullDev

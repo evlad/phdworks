@@ -67,16 +67,27 @@ proc TrFuncParseDescr {tmpl} {
 }
 
 
+# Return file path to the template of given function or {} if the is
+# no such name.
+proc TrFuncTemplatePath {idname} {
+    set filePath [file join [TemplateDir] "$idname.tf"]
+    if { ![file exists $filePath] || [file isdirectory $filePath] } {
+	return {}
+    }
+    return $filePath
+}
+
+
 # Take given name, find the template, extracts the whole description
 # and return it.
 proc TrFuncParseTemplate {idname} {
-    return [TrFuncParseFile [file join [TemplateDir] "$idname.tf"]]
+    return [TrFuncParseFile [TrFuncTemplatePath $idname]]
 }
 
 
 # Copy given template to pointed file.
 proc TrFuncUseTemplate {idname filePath} {
-    file copy -force [file join [TemplateDir] "$idname.tf"] $filePath
+    file copy -force [TrFuncTemplatePath $idname] $filePath
 }
 
 
@@ -125,7 +136,7 @@ proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
 
     # Take template
     if {$tmpl == {}} {
-	set filepath [file join [TemplateDir] "$idname.tf"]
+	set filepath [TrFuncTemplatePath $idname]
 	if [ catch {open $filepath} fdtmpl ] {
 	    error "Failed to open template $filepath: $fdtmpl"
 	    return
@@ -175,6 +186,8 @@ proc TrFuncLoadConfig {thisvar descr ftext} {
     set label [lindex $descr 2]
     set key_pos [lindex $descr 3]
 
+    #puts "idname=$idname descr=$descr"
+
     foreach line $ftext {
 	# Let's exclude empty items to get fields
 	set fields {}
@@ -184,7 +197,7 @@ proc TrFuncLoadConfig {thisvar descr ftext} {
 	    }
 	}
 	# Let's try to find key in the line
-	#puts "this: [array get this]"
+	#puts "key_pos: $key_pos"
 	foreach {key pos} $key_pos {
 	    # Key presents somewhere after ;
 	    set cindex [lsearch -exact $fields ";"]
@@ -193,7 +206,7 @@ proc TrFuncLoadConfig {thisvar descr ftext} {
 		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
 		    set this($key) [lindex $fields $pos]
 		    #puts "[lindex $fields $pos] ==> $key=$this($key)"
-		}
+		} 
 	    }
 	}
     }
