@@ -593,7 +593,8 @@ proc CoFuncEditor {p thisvar} {
 
     button $a.append -text "Добавить" \
 	-command "CoFuncEditorTableAddRow $w ; CoFuncEditorRefresh $w"
-    button $a.insert -text "Вставить"
+    button $a.duplicate -text "Дублировать" \
+	-command "CoFuncEditorTableDupLastRow $w ; CoFuncEditorRefresh $w"
     button $a.delete -text "Удалить" \
 	-command "CoFuncEditorTableDeleteRows $w ; CoFuncEditorRefresh $w"
     button $a.up -text "Вверх" \
@@ -601,7 +602,7 @@ proc CoFuncEditor {p thisvar} {
     button $a.down -text "Вниз" \
 	-command "CoFuncEditorTableRowsMoveDown $g ; CoFuncEditorRefresh $w"
 
-    pack $a.append $a.insert $a.delete $a.up $a.down -side left -expand 1
+    pack $a.append $a.duplicate $a.delete $a.up $a.down -side left -expand 1
     pack $a -side top
 
     set b $w.buttons
