@@ -10,6 +10,7 @@ package require win_dcsloop
 package require win_dcontrp
 package require win_dplantid
 package require win_dcontrf
+package require win_dcsloop_cusum
 #package require win_series
 
 set ScriptsDir [file join [SystemDir] scripts]
@@ -21,6 +22,7 @@ set menuContent {
     "dcontrp" "Обучение нейросетевого регулятора вне контура"
     "dplantid" "Обучение нейросетевой модели объекта управления"
     "dcontrf" "Обучение нейросетевого регулятора в контуре"
+    "dcsloop_" "Обнаружение разладки в системе автоматического управления"
 }
 
 proc MenuProg1 {w label} {
@@ -64,6 +66,17 @@ proc MenuProg4 {w label} {
     puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
     if {$sessionDir != {}} {
 	dcontrfCreateWindow $w "$title" "$sessionDir"
+    }
+}
+
+proc MenuProg5 {w label} {
+    # Create or use session directory and remember it
+    set prog [lindex [split "$label" \n] 0]
+    set title [lindex [split "$label" \n] 1]
+    set sessionDir [NewSession $w "dcsloop_cusum.par" "$title"]
+    puts "Program: $prog,  session directory: [SessionDir $sessionDir]"
+    if {$sessionDir != {}} {
+	dcsloopCusumCreateWindow $w "$title" "$sessionDir"
     }
 }
 
