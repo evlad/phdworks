@@ -143,7 +143,7 @@ proc meander.gen {p arref filepath} {
 
 # What is to enter?
 set harmonic.par_gui {
-    -1 "Меандр"
+    -1 "Синусоида"
     length "Длина ряда"
     period "Период"
     phaseshift "Фазовый сдвиг"

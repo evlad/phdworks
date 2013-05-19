@@ -45,9 +45,9 @@ c_in = c_in.dat
 p_in = p_in.dat
 
 # Neural net files
-in_nnp_file = ../1/nnp_res.nn
-in_nnc_file = ../2/pre.nnc
-out_nnc_file = res.nnc
+in_nnp_file = ../001/nnp_res.nn
+in_nnc_file = ../002/nnc_pre.nn
+out_nnc_file = nnc_res.nn
 
 # Optional to select exact input of NN-P as a error conductor in
 # backpropagation chain.  Defined automatically by default.

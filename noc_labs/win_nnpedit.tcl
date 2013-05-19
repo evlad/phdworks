@@ -17,8 +17,7 @@ proc NNPEditSave {w filepath} {
     upvar #0 $f.inputlabels_var inputlabels
     upvar #0 $f.outputlabels_var outputlabels
 
-    set args \"$filepath\"
-    lappend args "Plant"
+    set args {}
     lappend args 1 $inputrep
 
     array set act {linear 0 tanh 1}
@@ -26,9 +25,10 @@ proc NNPEditSave {w filepath} {
     for {set iL 1} {$iL <= $numlayers} {incr iL} {
 	eval lappend args \$numneurons$iL
     }
-    puts "Run MakeNN $args"
+    set exefile [file join [SystemDir] bin MakeNN]
+    puts "Run MakeNN: \"$exefile\" \"$filepath\" Plant $args"
     global NullDev
-    catch {exec [file join [SystemDir] bin MakeNN] $args >$NullDev} errCode
+    catch {eval exec \"$exefile\" \"$filepath\" Plant $args >$NullDev} errCode
     if {$errCode != ""} {
 	error $errCode
     }

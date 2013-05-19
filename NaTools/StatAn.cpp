@@ -20,9 +20,11 @@ int main(int argc, char **argv)
 {
     char    *fname[2];
     
+    NaOpenLogFile("StatAn.log");
+
     if(2 != argc && 3 != argc){
-        printf("Usage: statan.exe ErrorFile\n"
-	       "    or statan.exe SignalFile1 SignalFile2\n");
+        printf("Usage: StatAn ErrorFile\n"
+	       "    or StatAn SignalFile1 SignalFile2\n");
         return 2;
     }
 

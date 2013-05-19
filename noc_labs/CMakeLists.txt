@@ -8,6 +8,7 @@ endif(UNIX)
 
 if(WIN32)
 install(PROGRAMS nnacs.tcl DESTINATION bin)
+install(PROGRAMS setnnacs.bat DESTINATION bin)
 endif(WIN32)
 
 set(TCL_SCRIPTS data_file.tcl
@@ -71,3 +72,6 @@ set(TEMPLATES
 
 install(FILES ${TCL_SCRIPTS} nnacs.ad DESTINATION scripts)
 install(FILES ${TEMPLATES} DESTINATION templates)
+
+install(DIRECTORY labworks/Examples DESTINATION labworks
+        PATTERN ".svn" EXCLUDE)

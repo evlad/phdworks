@@ -184,6 +184,17 @@ proc CreateUserLabDir {l basedir newdir} {
 
 }
 
+# Select currect selection as a directory for user.  List to select is
+# given by $l. $w is a dialog window.
+proc SelectUserLabDir {w l} {
+    global $w.seldir
+    if {{} != [$l curselection]} {
+	set $w.seldir [$l get [$l curselection]]
+	destroy $w
+    }
+}
+
+
 # Remove currently selected item in listbox $l in directory $basedir.
 proc DeleteUserLabDir {l basedir} {
     set dir [$l get [$l curselection]]
@@ -227,7 +238,7 @@ proc ChooseUserLabWorkDir {p basedir} {
     set fc $w.fctrl
     frame $fc
     pack $fc -side right -fill y
-    button $fc.ok -text "Выбрать" -command "set $w.seldir \[$l get \[$l curselection\]\]; destroy $w"
+    button $fc.ok -text "Выбрать" -command "SelectUserLabDir $w $l"
     button $fc.create -text "Создать" -command "CreateUserLabDir $l \"$basedir\" \[set $w.newdir\]"
     entry $fc.newdir -textvariable $w.newdir
     button $fc.remove -text "Удалить" -command "DeleteUserLabDir $l \"$basedir\""

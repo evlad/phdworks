@@ -17,8 +17,7 @@ proc NNCEditSave {w filepath nncinputs} {
     upvar #0 $f.inputlabels_var inputlabels
     upvar #0 $f.outputlabels_var outputlabels
 
-    set args $filepath
-    lappend args "Controller"
+    set args {}
     if {$nncinputs == "e+r" || $nncinputs == "e+de"} {
 	lappend args 2 1
     } else {
@@ -29,9 +28,10 @@ proc NNCEditSave {w filepath nncinputs} {
     for {set iL 1} {$iL <= $numlayers} {incr iL} {
 	eval lappend args \$numneurons$iL
     }
-    puts "Run MakeNN $args"
+    set exefile [file join [SystemDir] bin MakeNN]
+    puts "Run MakeNN: \"$exefile\" \"$filepath\" Controller $args"
     global NullDev
-    catch {eval exec [file join [SystemDir] bin MakeNN] $args >$NullDev} errCode
+    catch {eval exec \"$exefile\" \"$filepath\" Controller $args >$NullDev} errCode
     if {$errCode != ""} {
 	error $errCode
     }
