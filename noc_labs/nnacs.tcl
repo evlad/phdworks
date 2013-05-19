@@ -7,7 +7,6 @@ if {$tcl_platform(platform) == "windows"} {
 } else {
     set NullDev "/dev/null"
 }
-global NullDev
 
 # Let's find system directory
 if {![info exists env(NNACSSYSDIR)]} {
@@ -17,10 +16,11 @@ if {![info exists env(NNACSSYSDIR)]} {
     } else {
 	set SystemDirPath [file join $env(HOME) nnacs]
     }
+      puts "System directory: $SystemDirPath (use NNACSSYSDIR)"
 } else {
     set SystemDirPath $env(NNACSSYSDIR)
+    puts "System directory: $SystemDirPath (see NNACSSYSDIR)"
 }
-global SystemDirPath
 
 # Let's find scripts
 set scriptsdir [file join $SystemDirPath scripts]

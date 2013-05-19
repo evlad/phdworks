@@ -12,6 +12,8 @@ package require win_textedit
 package require win_controller
 package require win_plant
 package require win_signal
+package require win_model
+package require win_cusum
 package require screenshot
 
 # Draw panel contents in given canvas
@@ -76,7 +78,7 @@ proc dcsloopCusumDrawPanel {this c} {
 # 8. Run the program in its session directory
 proc dcsloopCusumRun {p sessionDir parFile} {
     set cwd [pwd]
-    puts "Run dcsloop"
+    puts "Run dcsloop (cusum)"
     catch {cd [SessionDir $sessionDir]} errCode1
     if {$errCode1 != ""} {
 	error $errCode1
@@ -138,7 +140,7 @@ proc dcsloopCusumCreateWindow {p title sessionDir} {
     if {[winfo exists $w]} return
 
     toplevel $w
-    wm title $w "Control system loop modeling; (session $sessionDir)"
+    wm title $w "Plant disorder detection modeling; (session $sessionDir)"
     wm iconname $w "$sessionDir"
 
     # 1. Use current session directory
@@ -213,11 +215,6 @@ proc dcsloopCusumCreateWindow {p title sessionDir} {
 	-background white
     pack $c -side top -fill both -expand yes
 
-    #set t "Моделирование системы автоматического управления"
-    #set textFont [option get $c fontLargeBlock ""]
-    #$c create text 0.5c 0.2c -text "$title\nСеанс $sessionDir" \
-	#	-justify left -anchor nw -fill DarkGreen -font "$textFont"
-
     dcsloopCusumDrawPanel {} $c
 
     # 5. Connect callbacks with visual parameters settings
@@ -231,13 +228,22 @@ proc dcsloopCusumCreateWindow {p title sessionDir} {
     $c.noise configure \
 	-command "SignalWindow $w \"$curSessionDir\" noise dcsloopCusum_params input_kind in_n noise_tf stream_len ; ParFileAssign \"$parFile\" dcsloopCusum_params"
 
+    $c.model configure \
+	-command "ModelWindow $w \"$curSessionDir\" dcsloopCusum_params in_nnp_file ; ParFileAssign \"$parFile\" dcsloopCusum_params"
+    $c.cusum configure \
+	-command "CusumWindow $w \"$curSessionDir\" dcsloopCusum_params sigma0 sigma1 h_sol k_const detect_interval ; ParFileAssign \"$parFile\" dcsloopCusum_params"
+
     # Assign name of check point output files
     foreach {chkpnt parname} {
 	checkpoint_r out_r
 	checkpoint_n out_n
 	checkpoint_u out_u
 	checkpoint_e out_e
-	checkpoint_y out_ny} {
+	checkpoint_y out_ny
+	checkpoint_p out_nn_y
+	checkpoint_d out_nn_e
+	checkpoint_ip cusum
+    } {
 	set label [$c.$chkpnt cget -text]
 	$c.$chkpnt configure \
 	    -command "dcsloopCusumCheckPoint $w $chkpnt \"$curSessionDir\" $dcsloopCusum_params($parname) \{$label\}"

@@ -50,8 +50,8 @@ proc ContrWindowModified {w entry} {
 proc ContrSelectTrFile {p sessionDir var} {
     global $var
     upvar #0 $var fileRelPath
-    puts "sessionDir=$sessionDir"
-    puts "fileRelPath=$fileRelPath"
+    #puts "sessionDir=$sessionDir"
+    #puts "fileRelPath=$fileRelPath"
     set fileName [SessionAbsPath $sessionDir $fileRelPath]
     set trfuncfiletypes {
 	{"Линейные звенья" {.tf}}

@@ -88,6 +88,17 @@ proc NewUser {w {user ""}} {
     if {![file exists $curUserDir]} {
 	file mkdir $curUserDir
     }
+
+    # Append user name to the title of main menu
+    set title [wm title .]
+    set semicol [string last : $title]
+    set userName [file tail $curUserDir]
+    if {-1 == $semicol} {
+	wm title . "$title: $userName"
+    } else {
+	wm title . "[string range $title 0 $semicol] $userName"
+    }
+
     return $curUserDir
 }
 
@@ -95,7 +106,8 @@ proc NewUser {w {user ""}} {
 proc CheckGoodEnv {w} {
     global curUserDir
     if {![info exists curUserDir] || ![file isdirectory $curUserDir]} {
-	error "Current user is not defined"
+	NewUser "$w"
+	#error "Current user is not defined"
     }
 }
 
@@ -105,8 +117,10 @@ proc UserBaseDir {} {
     if {![info exists env(NNACSUSERDIR)]} {
 	# Not defined special place -> let's use the default one
 	set dir [file join $env(HOME) labworks]
+	puts "User directory: $dir (use NNACSUSERDIR)"
     } else {
 	set dir $env(NNACSUSERDIR)
+	puts "User directory: $dir (see NNACSUSERDIR)"
     }
     file mkdir $dir
     return $dir
@@ -116,7 +130,6 @@ proc UserBaseDir {} {
 proc SystemDir {} {
     global SystemDirPath
     set dir $SystemDirPath
-    puts "System directory: $dir"
     return $dir
 }
 

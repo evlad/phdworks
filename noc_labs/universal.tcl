@@ -230,3 +230,42 @@ proc setdef {taglist tag defval} {
 	return $defval
     }
 }
+
+
+# Auxiliary procedure for lequal
+proc lequalK {a b} {
+    return $a
+}
+
+# Deep compare of two lists.
+proc lequal {l1 l2} {
+    if {[llength $l1] != [llength $l2]} {
+        return 0
+    }
+    set l2 [lsort $l2]
+    foreach elem $l1 {
+        set idx [lsearch -exact -sorted $l2 $elem]
+        if {$idx == -1} {
+            return 0
+        } else {
+            set l2 [lreplace [lequalK $l2 [unset l2]] $idx $idx]
+        }
+    }
+    return [expr {[llength $l2] == 0}]
+}
+
+# Deep compare of two arrays.
+proc array_equal {a1_ a2_} {
+    upvar a1_ a1 a2_ a2
+    # Not equal names
+    if {! [lequal [lsort [array names a1]] [lsort [array names a2]]] } {
+	return 0
+    }
+    # Check elements for equality
+    foreach n [array names a1] {
+	if {![lequal $a1($n) $a2($n)]} {
+	    return 0
+	}
+    }
+    return 1
+}

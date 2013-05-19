@@ -6,6 +6,7 @@ package require files_loc
 package require universal
 package require win_grseries
 package require win_textedit
+package require win_cofunc
 
 # ; idname: 
 # ; label: Bla-bla-bla
@@ -134,6 +135,8 @@ proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
     set label [lindex $descr 2]
     set key_pos [lindex $descr 3]
 
+    puts "SaveConfig: [array get this]"
+
     # Take template
     if {$tmpl == {}} {
 	set filepath [TrFuncTemplatePath $idname]
@@ -160,13 +163,15 @@ proc TrFuncSaveConfig {thisvar descr fd {tmpl {}}} {
 	#puts "Fields: $fields"
 	# Let's try to find key in the line
 	foreach {key pos} $key_pos {
+	    #puts "key=$key pos=$pos"
 	    # Key presents somewhere after ;
 	    set cindex [lsearch -exact $fields ";"]
+	    #puts "\"$fields\" ==> ; at $cindex"
 	    if {[info exists this($key)] && $cindex > 0} {
 		# There is a comment, let's find keyword
 		if {[lsearch -exact [lrange $fields $cindex end] $key] > 0} {
 		    lset fields $pos $this($key)
-		    #puts "$key=$this($key)"
+		    puts "$key=$this($key)"
 		}
 	    }
 	}
@@ -355,7 +360,8 @@ proc TrFuncEditor {p thisvar descr} {
 	} else {
 	    set $evar ""
 	}
-	entry $e -width 12 -validate focus -vcmd {string is double %P}
+	entry $e -width 12 -justify right -validate focus \
+	    -vcmd {string is double %P}
 	$e insert 0 [set $evar]
 	set $save_all_vars "set $evar \[$e get\] ; [set $save_all_vars]"
 	$e configure -invalidcommand "focusAndFlash %W [$e cget -fg] [$e cget -bg]"
@@ -542,6 +548,9 @@ proc TrFuncEdit {p sessionDir title fileRelPath {forceNew false} {asText false}}
 		set ftype undefined
 	    }
 	}
+	*.cof {
+	    set ftype cofunc
+	}
 	default {
 	    set ftype undefined
 	}
@@ -552,15 +561,18 @@ proc TrFuncEdit {p sessionDir title fileRelPath {forceNew false} {asText false}}
     }
     switch -exact -- $ftype {
 	trfunc {
+	    # Load
 	    array set params {}
 	    set fd [open $fileName]
 	    set ftext [split [read $fd] \n]
 	    close $fd
+	    # Parse
 	    set idname [lindex $descr 0]
 	    set type [lindex $descr 1]
 	    set label [lindex $descr 2]
 	    set key_pos [lindex $descr 3]
 	    TrFuncLoadConfig params $descr $ftext
+	    # Edit
 	    if {[TrFuncEditor $p params $descr]} {
 		set headLineFields [split [lindex $ftext 0]]
 		set fd [open $fileName "w"]
@@ -569,9 +581,23 @@ proc TrFuncEdit {p sessionDir title fileRelPath {forceNew false} {asText false}}
 		    puts $fd ";NeuCon transfer 1.0"
 		    puts $fd "\[$type $idname\]"
 		}
+		# Save
 		TrFuncSaveConfig params $descr $fd $ftext
 		flush $fd
 		close $fd
+	    }
+	    # otherwise no changes took place
+	}
+	cofunc {
+	    # Load & parse
+	    array set cof {main {CombinedFunction {}}}
+	    catch {array set cof [CoFuncParseFile $fileName]}
+	    puts "LOAD: $fileName [array get cof]"
+	    # Edit
+	    if {[CoFuncEditor $p cof]} {
+		# Save
+		puts "SAVE: $fileName [array get cof]"
+		CoFuncComposeFile $fileName [array get cof]
 	    }
 	    # otherwise no changes took place
 	}

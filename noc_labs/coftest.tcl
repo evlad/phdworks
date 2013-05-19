@@ -1,2 +1,2 @@
-source cofedit.tcl
-CoFuncTest
+#source cofedit.tcl
+#CoFuncTest
