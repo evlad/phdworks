@@ -152,14 +152,6 @@ foreach {label title} $menuContent {
 	      -command "CheckGoodEnv \"$w\" ; MenuProg$i \"$w\" \"$text\""] -fill x -side top -expand yes -pady 2
 }
 
-#incr i
-#set text "Операции с рядами:\nвизуализация, анализ, изменение"
-#pack [button $w.lab${i}_button -text "$text" \
-#	  -command "seriesCreateWindow \"$w\" \"$text\""] \
-#    -fill x -side top -expand yes -pady 2
-#button $w.russian_button -text "\u0420\u0443\u0441\u0441\u043A\u0438\u0439 \u044F\u0437\u044B\u043A" \
-#		  -font {Helvetica 12}
-#pack $w.russian_button -fill x -side top -expand yes -pady 2
 button $w.info_button -text "О программе" -command "AboutWindow \"$w\""
 button $w.quit_button -text "Выход" -command { removeTemporalFiles ; exit }
 
