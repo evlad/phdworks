@@ -8,6 +8,8 @@ if {$tcl_platform(platform) == "windows"} {
     set NullDev "/dev/null"
 }
 
+encoding system utf-8
+
 # Let's find system directory
 if {![info exists env(NNACSSYSDIR)]} {
     # Not defined special place -> let's use the default one
@@ -16,7 +18,7 @@ if {![info exists env(NNACSSYSDIR)]} {
     } else {
 	set SystemDirPath [file join $env(HOME) nnacs]
     }
-      puts "System directory: $SystemDirPath (use NNACSSYSDIR)"
+    puts "System directory: $SystemDirPath (use NNACSSYSDIR)"
 } else {
     set SystemDirPath $env(NNACSSYSDIR)
     puts "System directory: $SystemDirPath (see NNACSSYSDIR)"
@@ -27,7 +29,6 @@ set scriptsdir [file join $SystemDirPath scripts]
 puts "Script directory: $scriptsdir"
 pkg_mkIndex $scriptsdir
 lappend auto_path $scriptsdir
-encoding system utf-8
 
 set mainpath [file join $scriptsdir main.tcl]
 if {[file exists $mainpath]} {
